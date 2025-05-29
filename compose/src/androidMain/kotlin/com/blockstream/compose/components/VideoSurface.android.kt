@@ -35,7 +35,9 @@ actual fun VideoSurface(modifier: Modifier, videoUri: String) {
     }
 
     AndroidView(
-        modifier = Modifier.clipToBounds().then(modifier),
+        modifier = Modifier
+            .clipToBounds()
+            .then(modifier),
         factory = {
             PlayerView(it).apply {
                 player = exoPlayer

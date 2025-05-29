@@ -16,7 +16,6 @@ import com.blockstream.common.looks.transaction.Unconfirmed
 import com.blockstream.compose.theme.GreenChromePreview
 import org.jetbrains.compose.resources.painterResource
 
-
 @Preview
 @Composable
 fun TransactionStatusIconPreview() {

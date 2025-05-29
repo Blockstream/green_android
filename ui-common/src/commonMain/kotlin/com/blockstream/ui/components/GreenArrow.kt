@@ -16,7 +16,6 @@ import com.adamglin.PhosphorIcons
 import com.adamglin.phosphoricons.Regular
 import com.adamglin.phosphoricons.regular.ArrowRight
 
-
 @Composable
 fun GreenArrow(modifier: Modifier = Modifier, enabled: Boolean = true) {
 

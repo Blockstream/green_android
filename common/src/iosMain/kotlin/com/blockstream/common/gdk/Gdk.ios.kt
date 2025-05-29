@@ -129,7 +129,6 @@ import kotlinx.cinterop.staticCFunction
 import kotlinx.cinterop.toKString
 import kotlinx.cinterop.usePinned
 import kotlinx.cinterop.value
-import kotlinx.serialization.encodeToString
 import kotlinx.serialization.json.Json
 import kotlinx.serialization.json.JsonElement
 
@@ -162,7 +161,6 @@ fun <R> CPointer<cnames.structs.GA_json>?.destroyGAJson(memScope: MemScope, use:
     return use(this)
 }
 
-
 @Suppress("UNCHECKED_CAST")
 fun GASession.asGASession(): CPointer<cnames.structs.GA_session> =
     this as CPointer<GA_session>
@@ -170,7 +168,6 @@ fun GASession.asGASession(): CPointer<cnames.structs.GA_session> =
 @Suppress("UNCHECKED_CAST")
 fun GAAuthHandler.asGAAuthHandler(): CPointer<cnames.structs.GA_auth_handler> =
     this as CPointer<GA_auth_handler>
-
 
 fun MemScope.gdkStringOrNull(block: (CPointerVar<ByteVar>) -> Unit): String? {
     return allocPointerTo<ByteVar>().let { pointer ->
@@ -237,7 +234,6 @@ fun <R> Int.okOrThrow(block: () -> R): R {
     }
 }
 
-
 class NotifyContext constructor(
     val session: CPointer<GA_session>,
     val notificationHandler: ((session: GASession, jsonObject: JsonElement) -> Unit)? = null
@@ -247,7 +243,7 @@ private val _gdkNotificationHandler = staticCFunction { context: COpaquePointer?
     val ref: StableRef<NotifyContext>? = context?.asStableRef()
     val notifyContext = ref?.get()
 
-    if(ref != null && gaJson != null && notifyContext != null){
+    if (ref != null && gaJson != null && notifyContext != null) {
         memScoped {
             gaJson.destroyGAJson(this) {
                 gaJson.toJsonString(this).also {
@@ -299,9 +295,10 @@ class IOSGdkBinding constructor(private val config: InitConfig) : GdkBinding {
             return GA_create_session(gaSessionPointer.ptr).okOrThrow {
                 val gaSession = gaSessionPointer.value!!
 
-                val notify: StableRef<NotifyContext> = StableRef.create(NotifyContext(gaSession, _notificationHandler)).also { notifyContext ->
-                    _notifyContexts[gaSession] = notifyContext
-                }
+                val notify: StableRef<NotifyContext> =
+                    StableRef.create(NotifyContext(gaSession, _notificationHandler)).also { notifyContext ->
+                        _notifyContexts[gaSession] = notifyContext
+                    }
 
                 GA_set_notification_handler(
                     session = gaSession,

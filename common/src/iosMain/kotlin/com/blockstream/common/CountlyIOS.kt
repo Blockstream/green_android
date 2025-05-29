@@ -13,10 +13,10 @@ import cocoapods.Countly.CLYConsentUserDetails
 import cocoapods.Countly.CLYConsentViewTracking
 import cocoapods.Countly.Countly
 import cocoapods.Countly.CountlyConfig
-import com.blockstream.green.data.config.AppInfo
 import com.blockstream.common.database.Database
 import com.blockstream.common.di.ApplicationScope
 import com.blockstream.common.managers.SettingsManager
+import com.blockstream.green.data.config.AppInfo
 import com.blockstream.green.utils.Loggable
 import kotlinx.cinterop.convert
 import platform.Foundation.NSException
@@ -28,7 +28,7 @@ class CountlyIOS(
     database: Database
 ) : CountlyBase(appInfo, applicationScope, settingsManager, database) {
 
-    private val _countly : Countly
+    private val _countly: Countly
 
     init {
         logger.i { "Countly init. A privacy-first, user opt-in version of Countly." }
@@ -41,7 +41,7 @@ class CountlyIOS(
         config.host = SERVER_URL
         // TODO support ONION ?
 
-        if(appInfo.isDevelopmentOrDebug){
+        if (appInfo.isDevelopmentOrDebug) {
             config.eventSendThreshold = 1u
         }
 
@@ -92,14 +92,14 @@ class CountlyIOS(
         _countly.giveConsentForFeatures(noConsentRequiredGroup)
 
         // The following block is required only if you initiate a reset from the ConcentBottomSheetDialog
-        if(analyticsConsent){
+        if (analyticsConsent) {
             _countly.giveConsentForFeatures(consentRequiredGroup)
         }
     }
 
     override fun updateConsent(withUserConsent: Boolean) {
 
-        if(withUserConsent) {
+        if (withUserConsent) {
             _countly.giveConsentForFeatures(consentRequiredGroup)
         } else {
             _countly.cancelConsentForFeatures(consentRequiredGroup)
@@ -107,17 +107,17 @@ class CountlyIOS(
     }
 
     override fun viewRecord(viewName: String, segmentation: Map<String, Any>?) {
-        if(segmentation == null){
+        if (segmentation == null) {
             _countly.recordView(viewName)
-        }else{
+        } else {
             _countly.recordView(viewName, segmentation as Map<Any?, *>)
         }
     }
 
     override fun eventRecord(key: String, segmentation: Map<String, Any>?) {
-        if(segmentation == null){
+        if (segmentation == null) {
             _countly.recordEvent(key)
-        }else{
+        } else {
             _countly.recordEvent(key, segmentation as Map<Any?, *>)
         }
     }
@@ -131,9 +131,9 @@ class CountlyIOS(
     }
 
     override fun eventEnd(key: String, segmentation: Map<String, Any>?) {
-        if(segmentation == null) {
+        if (segmentation == null) {
             _countly.endEvent(key)
-        }else{
+        } else {
             _countly.endEvent(key, segmentation as Map<Any?, *>, 1u, 0.0)
         }
     }

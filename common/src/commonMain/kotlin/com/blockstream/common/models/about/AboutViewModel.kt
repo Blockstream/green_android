@@ -5,17 +5,16 @@ import blockstream_green.common.generated.resources.id_thank_you_for_your_feedba
 import com.blockstream.common.SupportType
 import com.blockstream.common.Urls
 import com.blockstream.common.data.SupportData
-import com.blockstream.ui.events.Event
 import com.blockstream.common.events.Events
 import com.blockstream.common.extensions.isNotBlank
 import com.blockstream.common.extensions.launchIn
 import com.blockstream.common.fcm.FcmCommon
-import com.blockstream.common.fcm.Firebase
 import com.blockstream.common.gdk.events.GenericEvent
 import com.blockstream.common.models.GreenViewModel
 import com.blockstream.common.navigation.NavigateDestinations
 import com.blockstream.common.sideeffects.SideEffects
 import com.blockstream.common.utils.StringHolder
+import com.blockstream.ui.events.Event
 import com.rickclephas.kmp.nativecoroutines.NativeCoroutinesState
 import com.rickclephas.kmp.observableviewmodel.launch
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -50,7 +49,6 @@ class AboutViewModel : AboutViewModelAbstract() {
     override val email: MutableStateFlow<String> = MutableStateFlow("")
     override val feedback: MutableStateFlow<String> = MutableStateFlow("")
 
-
     class LocalEvents {
         object ClickTermsOfService : Events.OpenBrowser(Urls.TERMS_OF_SERVICE)
         object ClickPrivacyPolicy : Events.OpenBrowser(Urls.PRIVACY_POLICY)
@@ -72,7 +70,7 @@ class AboutViewModel : AboutViewModelAbstract() {
         object ResetPromos : Event
         object DeleteEvents : Event
         object CrashReport : Event
-        object SendFeedback: Event
+        object SendFeedback : Event
     }
 
     override val year: String =

@@ -7,7 +7,8 @@ import kotlinx.serialization.Serializable
 
 @Serializable
 data class DeviceParams constructor(
-    @SerialName("device") val device: Device? = null,
+    @SerialName("device")
+    val device: Device? = null,
 ) : GreenJson<DeviceParams>() {
     override fun encodeDefaultsValues() = false
 

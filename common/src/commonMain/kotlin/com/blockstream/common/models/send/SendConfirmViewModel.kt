@@ -36,7 +36,6 @@ import kotlinx.coroutines.flow.onEach
 import kotlinx.coroutines.launch
 import org.jetbrains.compose.resources.getString
 
-
 abstract class SendConfirmViewModelAbstract(greenWallet: GreenWallet, accountAsset: AccountAsset) :
     CreateTransactionViewModelAbstract(greenWallet = greenWallet, accountAssetOrNull = accountAsset) {
     override fun screenName(): String = "SendConfirm"
@@ -71,7 +70,7 @@ class SendConfirmViewModel constructor(
 
     class LocalEvents {
         object Note : Event
-        object VerifyOnDevice: Event
+        object VerifyOnDevice : Event
     }
 
     init {
@@ -167,7 +166,15 @@ class SendConfirmViewModel constructor(
             }
 
             is LocalEvents.Note -> {
-                postSideEffect(SideEffects.NavigateTo(NavigateDestinations.Note(greenWallet = greenWallet, note = note.value, noteType = NoteType.Note)))
+                postSideEffect(
+                    SideEffects.NavigateTo(
+                        NavigateDestinations.Note(
+                            greenWallet = greenWallet,
+                            note = note.value,
+                            noteType = NoteType.Note
+                        )
+                    )
+                )
             }
 
             is LocalEvents.VerifyOnDevice -> {
@@ -180,7 +187,7 @@ class SendConfirmViewModel constructor(
         val hwWallet = session.gdkHwWallet
         val transaction = session.pendingTransaction?.transaction
 
-        if(hwWallet != null && transaction != null){
+        if (hwWallet != null && transaction != null) {
             doAsync({
                 countly.verifyAddress(session, account)
 
@@ -195,13 +202,14 @@ class SendConfirmViewModel constructor(
                         )
                     )
 
-                    if(hwWallet.getGreenAddress(
+                    if (hwWallet.getGreenAddress(
                             network = account.network,
                             hwInteraction = null,
                             account = account,
                             path = output.userPath ?: listOf(),
                             csvBlocks = output.subType ?: 0
-                        ) != output.address){
+                        ) != output.address
+                    ) {
                         throw Exception("id_the_addresses_dont_match")
                     }
 
@@ -220,7 +228,7 @@ class SendConfirmViewModel constructor(
         }
     }
 
-    companion object: Loggable()
+    companion object : Loggable()
 }
 
 class SendConfirmViewModelPreview(

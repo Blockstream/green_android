@@ -52,18 +52,23 @@ val greenModules = module {
                         usbDevice = usbDevice
                     )
             } ?: peripheral?.let {
-                LedgerDevice.fromScan(deviceManager = deviceManagerAndroid, bleService = bleService, peripheral = peripheral, isBonded = isBonded == true)
+                LedgerDevice.fromScan(
+                    deviceManager = deviceManagerAndroid,
+                    bleService = bleService,
+                    peripheral = peripheral,
+                    isBonded = isBonded == true
+                )
             }
         }
     } binds (arrayOf(DeviceManager::class, DeviceManagerAndroid::class))
     single {
         DeviceConnectionManagerAndroid(
-            get(), get(),get(), get(),get()
+            get(), get(), get(), get(), get()
         )
     } binds (arrayOf(DeviceConnectionManagerAndroid::class, DeviceConnectionManager::class, DeviceConnectionInterface::class))
     single {
-         FcmAndroid(androidContext(), get())
-    } binds(arrayOf(FcmCommon::class))
+        FcmAndroid(androidContext(), get())
+    } binds (arrayOf(FcmCommon::class))
     single {
         androidContext().getSystemService(Context.NOTIFICATION_SERVICE) as android.app.NotificationManager
     }

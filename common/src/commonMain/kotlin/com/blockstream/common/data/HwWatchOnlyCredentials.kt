@@ -8,20 +8,21 @@ import kotlinx.serialization.json.Json
 
 @Serializable
 data class HwWatchOnlyCredentials constructor(
-    @SerialName("credentials") val credentials: Map<String, WatchOnlyCredentials> = emptyMap(),
-): GreenJson<HwWatchOnlyCredentials>() {
+    @SerialName("credentials")
+    val credentials: Map<String, WatchOnlyCredentials> = emptyMap(),
+) : GreenJson<HwWatchOnlyCredentials>() {
     override fun encodeDefaultsValues() = false
 
     override fun kSerializer() = serializer()
 
     fun toLoginCredentials() = LoginCredentialsParams(hwWatchOnlyCredentials = this)
 
-    companion object{
+    companion object {
         fun fromByteArray(byteArray: ByteArray): HwWatchOnlyCredentials {
             return Json.decodeFromString(byteArray.decodeToString())
         }
 
-        fun fromWatchOnlyCredentials(network: String, watchOnlyCredentials : WatchOnlyCredentials): HwWatchOnlyCredentials {
+        fun fromWatchOnlyCredentials(network: String, watchOnlyCredentials: WatchOnlyCredentials): HwWatchOnlyCredentials {
             return HwWatchOnlyCredentials(
                 mapOf(network to watchOnlyCredentials)
             )

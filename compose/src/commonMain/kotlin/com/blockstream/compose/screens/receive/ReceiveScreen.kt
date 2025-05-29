@@ -154,7 +154,7 @@ fun ReceiveScreen(
 
     NavigateDestinations.Menu.getResult<Int> {
         scope.launch {
-            val qrCode : Painter = QrCodePainter(
+            val qrCode: Painter = QrCodePainter(
                 data = receiveAddressUri ?: "",
             )
 
@@ -177,8 +177,8 @@ fun ReceiveScreen(
     val liquidityFee by viewModel.liquidityFee.collectAsStateWithLifecycle()
     val showRecoveryConfirmation by viewModel.showRecoveryConfirmation.collectAsStateWithLifecycle()
 
-    LaunchedEffect(showRequestAmount){
-        if(showRequestAmount && amount.isBlank()){
+    LaunchedEffect(showRequestAmount) {
+        if (showRequestAmount && amount.isBlank()) {
             focusRequester.requestFocus()
         }
     }
@@ -210,11 +210,12 @@ fun ReceiveScreen(
                 Column {
 
                     AnimatedVisibility(visible = showLedgerAssetWarning) {
-                        GreenCard(padding = 8, colors = CardDefaults.elevatedCardColors(
-                            containerColor = orange
-                        ), onClick = {
-                            viewModel.postEvent(ReceiveViewModel.LocalEvents.ClickLedgerSupportedAssets)
-                        }
+                        GreenCard(
+                            padding = 8, colors = CardDefaults.elevatedCardColors(
+                                containerColor = orange
+                            ), onClick = {
+                                viewModel.postEvent(ReceiveViewModel.LocalEvents.ClickLedgerSupportedAssets)
+                            }
                         ) {
                             GreenRow(
                                 padding = 0,
@@ -269,7 +270,7 @@ fun ReceiveScreen(
                     }
                 }
 
-                if(accountAsset == null && !viewModel.session.isWatchOnlyValue){
+                if (accountAsset == null && !viewModel.session.isWatchOnlyValue) {
                     GreenButton(text = stringResource(Res.string.id_create_new_account), modifier = Modifier.fillMaxWidth()) {
                         viewModel.postEvent(ReceiveViewModel.LocalEvents.CreateAccount)
                     }
@@ -537,16 +538,18 @@ fun ReceiveScreen(
                             viewModel.postEvent(
                                 NavigateDestinations.Menu(
                                     title = getString(Res.string.id_share),
-                                    entries = MenuEntryList(listOf(
-                                        MenuEntry(
-                                            title = getString(Res.string.id_address),
-                                            iconRes = "text_aa"
-                                        ),
-                                        MenuEntry(
-                                            title = getString(Res.string.id_qr_code),
-                                            iconRes = "qr_code"
-                                        ),
-                                    ))
+                                    entries = MenuEntryList(
+                                        listOf(
+                                            MenuEntry(
+                                                title = getString(Res.string.id_address),
+                                                iconRes = "text_aa"
+                                            ),
+                                            MenuEntry(
+                                                title = getString(Res.string.id_qr_code),
+                                                iconRes = "qr_code"
+                                            ),
+                                        )
+                                    )
                                 )
                             )
                         }

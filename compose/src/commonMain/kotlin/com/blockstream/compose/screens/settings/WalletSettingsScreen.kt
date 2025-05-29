@@ -216,9 +216,14 @@ fun WalletSettingsScreen(
             ) { position ->
                 showTwoFactorChangeDialog = null
 
-                if(position != null){
+                if (position != null) {
                     disable2fa.availableMethods.getOrNull(position)?.also {
-                        viewModel.postEvent(WalletSettingsViewModel.LocalEvents.Disable2FA(method = disable2fa.method, authenticateMethod = it))
+                        viewModel.postEvent(
+                            WalletSettingsViewModel.LocalEvents.Disable2FA(
+                                method = disable2fa.method,
+                                authenticateMethod = it
+                            )
+                        )
                     }
                 }
             }
@@ -266,85 +271,86 @@ fun WalletSettingsScreen(
         withBottomInsets = false,
         onProgressStyle = OnProgressStyle.Full(bluBackground = true),
         sideEffectsHandler = {
-        when (it) {
-            is LocalSideEffects.CopyAmpId -> {
-                viewModel.postEvent(
-                    NavigateDestinations.Accounts(
-                        greenWallet = viewModel.greenWallet,
-                        title = getString(Res.string.id_copy_amp_id),
-                        accounts = AccountAssetBalanceList(it.accounts.map { it.accountAssetBalance }),
-                        withAsset = false,
-                        withAssetIcon = false,
-                        withArrow = false,
+            when (it) {
+                is LocalSideEffects.CopyAmpId -> {
+                    viewModel.postEvent(
+                        NavigateDestinations.Accounts(
+                            greenWallet = viewModel.greenWallet,
+                            title = getString(Res.string.id_copy_amp_id),
+                            accounts = AccountAssetBalanceList(it.accounts.map { it.accountAssetBalance }),
+                            withAsset = false,
+                            withAssetIcon = false,
+                            withArrow = false,
+                        )
                     )
-                )
-            }
-            is LocalSideEffects.ArchivedAccountDialog -> {
-                launch {
-                    dialog.openDialog(
-                        OpenDialogData(
-                            title = StringHolder.create(Res.string.id_archived_account),
-                            message = StringHolder.create(Res.string.id_there_is_already_an_archived),
-                            icon = Res.drawable.box_arrow_down,
-                            primaryText = getString(Res.string.id_continue),
-                            onPrimary = {
-                                viewModel.postEvent(it.event)
-                            },
-                            secondaryText = getString(Res.string.id_archived_accounts),
-                            onSecondary = {
-                                viewModel.postEvent(
-                                    NavigateDestinations.ArchivedAccounts(
-                                        greenWallet = viewModel.greenWallet,
-                                        navigateToRoot = true
+                }
+
+                is LocalSideEffects.ArchivedAccountDialog -> {
+                    launch {
+                        dialog.openDialog(
+                            OpenDialogData(
+                                title = StringHolder.create(Res.string.id_archived_account),
+                                message = StringHolder.create(Res.string.id_there_is_already_an_archived),
+                                icon = Res.drawable.box_arrow_down,
+                                primaryText = getString(Res.string.id_continue),
+                                onPrimary = {
+                                    viewModel.postEvent(it.event)
+                                },
+                                secondaryText = getString(Res.string.id_archived_accounts),
+                                onSecondary = {
+                                    viewModel.postEvent(
+                                        NavigateDestinations.ArchivedAccounts(
+                                            greenWallet = viewModel.greenWallet,
+                                            navigateToRoot = true
+                                        )
                                     )
-                                )
-                            }
+                                }
+                            )
                         )
-                    )
+                    }
+                }
+
+                is LocalSideEffects.ExperimentalFeaturesDialog -> {
+                    launch {
+                        dialog.openDialog(
+                            OpenDialogData(
+                                title = StringHolder.create(Res.string.id_experimental_feature),
+                                message = StringHolder.create(Res.string.id_experimental_features_might),
+                                icon = Res.drawable.flask_fill,
+                                onPrimary = {
+                                    viewModel.postEvent(it.event)
+                                }
+                            )
+                        )
+                    }
+                }
+
+                is LocalSideEffects.OpenAutoLogoutTimeout -> {
+                    showAutologoutTimeoutDialog = it.minutes
+                }
+
+                is LocalSideEffects.OpenPgpKey -> {
+                    showPgpDialog = it.pgp
+                }
+
+                is LocalSideEffects.OpenTwoFactorThershold -> {
+                    showThresholdDialog = it.threshold
+                }
+
+                is LocalSideEffects.LaunchBiometrics -> {
+                    biometricsState?.getBiometricsCipher(viewModel)
+                }
+
+                is LocalSideEffects.Disable2FA -> {
+                    showTwoFactorChangeDialog = it
+                }
+
+                is SideEffects.OpenDenominationExchangeRate -> {
+                    denominationExchangeRateViewModel =
+                        DenominationExchangeRateViewModel(viewModel.greenWallet)
                 }
             }
-            is LocalSideEffects.ExperimentalFeaturesDialog -> {
-                launch {
-                    dialog.openDialog(
-                        OpenDialogData(
-                            title = StringHolder.create(Res.string.id_experimental_feature),
-                            message = StringHolder.create(Res.string.id_experimental_features_might),
-                            icon = Res.drawable.flask_fill,
-                            onPrimary = {
-                                viewModel.postEvent(it.event)
-                            }
-                        )
-                    )
-                }
-            }
-
-            is LocalSideEffects.OpenAutoLogoutTimeout -> {
-                showAutologoutTimeoutDialog = it.minutes
-            }
-
-            is LocalSideEffects.OpenPgpKey -> {
-                showPgpDialog = it.pgp
-            }
-
-            is LocalSideEffects.OpenTwoFactorThershold ->{
-                showThresholdDialog = it.threshold
-            }
-
-            is LocalSideEffects.LaunchBiometrics -> {
-                biometricsState?.getBiometricsCipher(viewModel)
-            }
-
-            is LocalSideEffects.Disable2FA -> {
-                showTwoFactorChangeDialog = it
-            }
-
-            is SideEffects.OpenDenominationExchangeRate -> {
-                denominationExchangeRateViewModel =
-                    DenominationExchangeRateViewModel(viewModel.greenWallet)
-            }
-        }
-    }) {
-
+        }) {
 
         LazyColumn(
             contentPadding = innerPadding.bottom()
@@ -671,6 +677,7 @@ fun WalletSettingsScreen(
                             },
                         )
                     }
+
                     WalletSetting.GetSupport -> {
                         Setting(
                             title = stringResource(Res.string.id_get_support),
@@ -686,6 +693,7 @@ fun WalletSettingsScreen(
                             }
                         )
                     }
+
                     WalletSetting.RenameWallet -> {
                         Setting(
                             title = stringResource(Res.string.id_rename_wallet),
@@ -700,10 +708,11 @@ fun WalletSettingsScreen(
                             title = stringResource(Res.string.id_copy_amp_id),
                             imageVector = PhosphorIcons.Regular.CaretRight,
                             modifier = Modifier.clickable {
-                                 viewModel.postEvent(LocalEvents.CopyAmpId())
+                                viewModel.postEvent(LocalEvents.CopyAmpId())
                             }
                         )
                     }
+
                     WalletSetting.CreateAmpAccount -> {
                         Setting(
                             title = stringResource(Res.string.id_generate_amp_id),
@@ -717,7 +726,6 @@ fun WalletSettingsScreen(
         }
     }
 }
-
 
 @Composable
 fun Setting(
@@ -740,7 +748,7 @@ fun Setting(
                 modifier = Modifier
                     .padding(vertical = 24.dp)
                     .padding(start = 16.dp)
-                    .ifTrue(imageVector == null && painter == null && checked == null){
+                    .ifTrue(imageVector == null && painter == null && checked == null) {
                         it.padding(end = 16.dp)
                     }
                     .weight(1f)

@@ -7,9 +7,12 @@ import kotlinx.serialization.json.JsonObject
 
 @Serializable
 data class ValidateAddressees constructor(
-    @SerialName("addressees") val addressees: List<JsonObject>,
-    @SerialName("errors") val errors: List<String>? = null,
-    @SerialName("is_valid") val isValid: Boolean,
-): GreenJson<ValidateAddressees>() {
+    @SerialName("addressees")
+    val addressees: List<JsonObject>,
+    @SerialName("errors")
+    val errors: List<String>? = null,
+    @SerialName("is_valid")
+    val isValid: Boolean,
+) : GreenJson<ValidateAddressees>() {
     override fun kSerializer() = serializer()
 }

@@ -13,7 +13,6 @@ import org.mockito.junit.MockitoJUnitRunner
 import org.mockito.kotlin.anyOrNull
 import org.mockito.kotlin.mock
 import org.mockito.kotlin.whenever
-import java.util.*
 
 @RunWith(MockitoJUnitRunner::class)
 class JsonConverterUnitTest {
@@ -29,8 +28,8 @@ class JsonConverterUnitTest {
 
         whenever(settings.pricing).thenReturn(
             Pricing(
-            fiat, fiat
-        )
+                fiat, fiat
+            )
         )
         whenever(session.getSettings(anyOrNull())).thenReturn(settings)
     }
@@ -84,7 +83,12 @@ class JsonConverterUnitTest {
         for (test in tests) {
             Assert.assertEquals(
                 test.key,
-                UserInput.parseUserInput(session, test.value.replace(' ', ','), locale = dotLocale, denomination = Denomination.SATOSHI).amount
+                UserInput.parseUserInput(
+                    session,
+                    test.value.replace(' ', ','),
+                    locale = dotLocale,
+                    denomination = Denomination.SATOSHI
+                ).amount
             )
         }
 
@@ -120,7 +124,12 @@ class JsonConverterUnitTest {
         for (test in tests) {
             Assert.assertEquals(
                 test.key,
-                UserInput.parseUserInput(session, test.value.replace(' ', ','), denomination = Denomination.fiat(session), locale = dotLocale).amount
+                UserInput.parseUserInput(
+                    session,
+                    test.value.replace(' ', ','),
+                    denomination = Denomination.fiat(session),
+                    locale = dotLocale
+                ).amount
             )
         }
 
@@ -158,10 +167,9 @@ class JsonConverterUnitTest {
         }
     }
 
-
     @Test
     fun test_grouping() {
-        Assert.assertEquals("123123.1", UserInput.parseUserInputSafe(session, "123,123.10", locale =  dotLocale).amount)
-        Assert.assertEquals("123123.1", UserInput.parseUserInputSafe(session, "123.123,10", locale =  commaLocale).amount)
+        Assert.assertEquals("123123.1", UserInput.parseUserInputSafe(session, "123,123.10", locale = dotLocale).amount)
+        Assert.assertEquals("123123.1", UserInput.parseUserInputSafe(session, "123.123,10", locale = commaLocale).amount)
     }
 }

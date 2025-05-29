@@ -18,7 +18,6 @@ expect class ImagePickerLauncher(
     fun launch()
 }
 
-
 @Composable
 expect fun rememberPlatformManager(): PlatformManager
 

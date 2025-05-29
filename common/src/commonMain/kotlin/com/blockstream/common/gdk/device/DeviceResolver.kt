@@ -136,6 +136,7 @@ class DeviceResolver constructor(
 
                 DeviceResolvedData(publicKeys = publicKeys)
             }
+
             else -> {
                 throw RuntimeException("Unsupported action")
             }

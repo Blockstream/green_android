@@ -2,13 +2,13 @@ package com.blockstream.green
 
 import androidx.arch.core.executor.testing.InstantTaskExecutorRule
 import com.blockstream.common.CountlyBase
-import com.blockstream.green.data.config.AppInfo
 import com.blockstream.common.database.Database
 import com.blockstream.common.gdk.GdkSession
 import com.blockstream.common.managers.PromoManager
 import com.blockstream.common.managers.SessionManager
 import com.blockstream.common.managers.SettingsManager
 import com.blockstream.common.models.GreenViewModel
+import com.blockstream.green.data.config.AppInfo
 import io.mockk.every
 import io.mockk.mockk
 import io.mockk.mockkClass
@@ -32,8 +32,8 @@ import org.koin.test.mock.declareMock
 import org.mockito.Mock
 
 @OptIn(ExperimentalCoroutinesApi::class)
-open class TestViewModel<VM : GreenViewModel>: KoinTest {
-    internal lateinit var viewModel : VM
+open class TestViewModel<VM : GreenViewModel> : KoinTest {
+    internal lateinit var viewModel: VM
 
     @get:Rule
     val taskExecutorRule = InstantTaskExecutorRule()
@@ -62,7 +62,7 @@ open class TestViewModel<VM : GreenViewModel>: KoinTest {
                 module {
                     single { AppInfo("green_test", "1.0.0-test", true, true) }
 
-                    declareMock<CountlyBase>{
+                    declareMock<CountlyBase> {
                         every { viewModel(any()) } returns Unit
                         every { remoteConfigUpdateEvent } returns MutableSharedFlow<Unit>()
                         every { updateRemoteConfig(any()) } returns Unit

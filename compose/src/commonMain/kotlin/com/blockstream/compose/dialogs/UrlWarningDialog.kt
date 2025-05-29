@@ -56,7 +56,6 @@ import com.blockstream.ui.components.GreenRow
 import org.jetbrains.compose.resources.painterResource
 import org.jetbrains.compose.resources.stringResource
 
-
 @Composable
 fun UrlWarningDialog(
     viewModel: GreenViewModel,

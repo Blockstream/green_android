@@ -50,7 +50,6 @@ import com.blockstream.compose.components.GreenButtonColor
 import com.blockstream.compose.components.GreenButtonType
 import com.blockstream.compose.extensions.icon
 import com.blockstream.compose.managers.LocalPlatformManager
-import com.blockstream.ui.navigation.LocalInnerPadding
 import com.blockstream.compose.theme.MonospaceFont
 import com.blockstream.compose.theme.bodyMedium
 import com.blockstream.compose.theme.titleMedium
@@ -59,6 +58,7 @@ import com.blockstream.compose.theme.whiteMedium
 import com.blockstream.compose.utils.SetupScreen
 import com.blockstream.ui.components.GreenColumn
 import com.blockstream.ui.components.GreenRow
+import com.blockstream.ui.navigation.LocalInnerPadding
 import com.blockstream.ui.utils.bottom
 import com.blockstream.ui.utils.plus
 import kotlinx.coroutines.launch
@@ -272,7 +272,6 @@ fun WatchOnlyScreen(
         }
     }
 }
-
 
 @Composable
 fun Descriptor(

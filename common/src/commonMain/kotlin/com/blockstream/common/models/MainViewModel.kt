@@ -31,7 +31,8 @@ class MainViewModel : GreenViewModel(), JadeHttpRequestUrlValidator {
         sessionManager.httpRequestHandler.jadeHttpRequestUrlValidator = this
 
         viewModelScope.launch {
-            appInitWallet.value = DataState.Success(database.getAllWallets().takeIf { it.size == 1 && settingsManager.isV5Upgraded()}?.firstOrNull())
+            appInitWallet.value =
+                DataState.Success(database.getAllWallets().takeIf { it.size == 1 && settingsManager.isV5Upgraded() }?.firstOrNull())
         }
 
         bootstrap()
@@ -42,14 +43,14 @@ class MainViewModel : GreenViewModel(), JadeHttpRequestUrlValidator {
 
         if (event is LocalEvents.UrlWarningResponse) {
             unsafeUrls?.also {
-                if(event.remember && event.allow){
+                if (event.remember && event.allow) {
                     settingsManager.setAllowCustomPinServer(it)
                 }
             }
 
             unsafeUrlWarningEmitter?.complete(event.allow)
             unsafeUrlWarningEmitter = null
-        } else if(event is LocalEvents.TorWarningResponse) {
+        } else if (event is LocalEvents.TorWarningResponse) {
             settingsManager.saveApplicationSettings(
                 settingsManager.getApplicationSettings().copy(tor = true)
             )

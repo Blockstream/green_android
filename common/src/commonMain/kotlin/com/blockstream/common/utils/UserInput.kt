@@ -20,9 +20,14 @@ data class UserInput(
     fun toLimit() = Limits.fromUnit(denomination.denomination, amount)
 
     suspend fun getBalance(onlyInAcceptableRange: Boolean = true): Balance? {
-        return if(amount.isNotBlank()){
-            session.convert(assetId = assetId, asString = amount, denomination = denomination.denomination, onlyInAcceptableRange = onlyInAcceptableRange)
-        }else{
+        return if (amount.isNotBlank()) {
+            session.convert(
+                assetId = assetId,
+                asString = amount,
+                denomination = denomination.denomination,
+                onlyInAcceptableRange = onlyInAcceptableRange
+            )
+        } else {
             null
         }
     }
@@ -49,7 +54,7 @@ data class UserInput(
         } ?: "")
     }
 
-    companion object{
+    companion object {
 
         @Throws(Exception::class)
         private fun parse(
@@ -60,11 +65,11 @@ data class UserInput(
             throws: Boolean = true,
             locale: String? = null
         ): UserInput {
-            val unitKey : String
+            val unitKey: String
             // Users Locale
-            val userNumberFormat : DecimalFormat
+            val userNumberFormat: DecimalFormat
             // GDK format
-            val gdkNumberFormat : DecimalFormat
+            val gdkNumberFormat: DecimalFormat
 
             val asset: Asset?
 
@@ -74,28 +79,45 @@ data class UserInput(
                     userNumberFormat = userNumberFormat(asset.precision, withDecimalSeparator = false, withGrouping = true, locale = locale)
                     gdkNumberFormat = gdkNumberFormat(asset.precision)
                 }
+
                 denomination.isFiat -> { // Fiat
                     asset = null
                     userNumberFormat = userNumberFormat(decimals = 2, withDecimalSeparator = true, withGrouping = true, locale = locale)
                     gdkNumberFormat = gdkNumberFormat(decimals = 2, withDecimalSeparator = true)
                 }
+
                 else -> { // Policy Asset
                     asset = null
                     unitKey = denomination.denomination
-                    userNumberFormat = userNumberFormat(getDecimals(unitKey), withDecimalSeparator = false, withGrouping = true, locale = locale)
+                    userNumberFormat =
+                        userNumberFormat(getDecimals(unitKey), withDecimalSeparator = false, withGrouping = true, locale = locale)
                     gdkNumberFormat = gdkNumberFormat(getDecimals(unitKey))
                 }
             }
 
-            return try{
+            return try {
                 val parsed = userNumberFormat.parseTo(input, gdkNumberFormat)
 
-                UserInput(session = session, amount = parsed!!.first, amountAsDouble = parsed.second, denomination = denomination, assetId = assetId, asset = asset)
-            }catch (e: Exception){
-                if(throws){
+                UserInput(
+                    session = session,
+                    amount = parsed!!.first,
+                    amountAsDouble = parsed.second,
+                    denomination = denomination,
+                    assetId = assetId,
+                    asset = asset
+                )
+            } catch (e: Exception) {
+                if (throws) {
                     throw e
-                }else{
-                    UserInput(session = session, amount = "", amountAsDouble = 0.0, denomination = denomination, assetId = assetId, asset = asset)
+                } else {
+                    UserInput(
+                        session = session,
+                        amount = "",
+                        amountAsDouble = 0.0,
+                        denomination = denomination,
+                        assetId = assetId,
+                        asset = asset
+                    )
                 }
             }
         }
@@ -108,7 +130,14 @@ data class UserInput(
             assetId: String? = null,
             locale: String? = null
         ): UserInput {
-            return parse(session = session, input = input?.trim() ?: "", denomination = denomination ?: Denomination.default(session), assetId = assetId, throws = true, locale = locale)
+            return parse(
+                session = session,
+                input = input?.trim() ?: "",
+                denomination = denomination ?: Denomination.default(session),
+                assetId = assetId,
+                throws = true,
+                locale = locale
+            )
         }
 
         fun parseUserInputSafe(
@@ -118,7 +147,14 @@ data class UserInput(
             assetId: String? = null,
             locale: String? = null
         ): UserInput {
-            return parse(session = session, input = input?.trim() ?: "", denomination = denomination ?: Denomination.default(session), assetId = assetId, throws = false, locale = locale)
+            return parse(
+                session = session,
+                input = input?.trim() ?: "",
+                denomination = denomination ?: Denomination.default(session),
+                assetId = assetId,
+                throws = false,
+                locale = locale
+            )
         }
     }
 }

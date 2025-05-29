@@ -12,7 +12,6 @@ import com.blockstream.common.data.ExceptionWithSupportData
 import com.blockstream.common.data.FeePriority
 import com.blockstream.common.data.GreenWallet
 import com.blockstream.common.data.SupportData
-import com.blockstream.ui.events.Event
 import com.blockstream.common.extensions.ifConnected
 import com.blockstream.common.extensions.isNotBlank
 import com.blockstream.common.extensions.launchIn
@@ -36,6 +35,7 @@ import com.blockstream.common.utils.StringHolder
 import com.blockstream.common.utils.ifNotNull
 import com.blockstream.common.utils.toAmountLook
 import com.blockstream.green.utils.Loggable
+import com.blockstream.ui.events.Event
 import com.blockstream.ui.sideeffects.SideEffect
 import com.rickclephas.kmp.nativecoroutines.NativeCoroutinesState
 import com.rickclephas.kmp.observableviewmodel.stateIn
@@ -55,7 +55,6 @@ import kotlinx.serialization.json.JsonPrimitive
 import kotlinx.serialization.json.jsonObject
 import org.jetbrains.compose.resources.getString
 
-
 abstract class CreateTransactionViewModelAbstract(
     greenWallet: GreenWallet,
     accountAssetOrNull: AccountAsset? = null,
@@ -68,6 +67,7 @@ abstract class CreateTransactionViewModelAbstract(
     internal val _network: MutableStateFlow<Network?> = MutableStateFlow(null)
 
     internal val _feePriority: MutableStateFlow<FeePriority> = MutableStateFlow(FeePriority.Low())
+
     @NativeCoroutinesState
     val feePriority: StateFlow<FeePriority> = _feePriority.asStateFlow()
 
@@ -80,6 +80,7 @@ abstract class CreateTransactionViewModelAbstract(
     internal var _addressInputType: AddressInputType? = null
 
     internal val _showFeeSelector: MutableStateFlow<Boolean> = MutableStateFlow(false)
+
     @NativeCoroutinesState
     val showFeeSelector: StateFlow<Boolean> = _showFeeSelector.asStateFlow()
 
@@ -97,7 +98,7 @@ abstract class CreateTransactionViewModelAbstract(
             } ?: flowOf(null)
         }) { accountAsset, denomination, assets ->
             assets
-        }.map { assets,  ->
+        }.map { assets ->
             assets?.let {
                 accountAsset.value?.let {
                     AccountAssetBalance.create(
@@ -128,13 +129,13 @@ abstract class CreateTransactionViewModelAbstract(
 
     open suspend fun createTransactionParams(): CreateTransactionParams? = null
 
-    open fun createTransaction(params: CreateTransactionParams?, finalCheckBeforeContinue: Boolean = false) { }
+    open fun createTransaction(params: CreateTransactionParams?, finalCheckBeforeContinue: Boolean = false) {}
 
     class LocalEvents {
         data class ClickFeePriority(val showCustomFeeRateDialog: Boolean = false) : Event
         data class SetFeeRate(val feePriority: FeePriority) : Event
         data class SetCustomFeeRate(val amount: String) : Event
-        data class SetAddressInputType(val inputType: AddressInputType): Event
+        data class SetAddressInputType(val inputType: AddressInputType) : Event
         data class SignTransaction(val broadcastTransaction: Boolean = true, val createPsbt: Boolean = false) : Event
         data class BroadcastTransaction(val broadcastTransaction: Boolean = true, val psbt: String) : Event
     }
@@ -150,7 +151,7 @@ abstract class CreateTransactionViewModelAbstract(
                     _feeEstimation.value = null
                 } else {
                     _feeEstimation.value = session.getFeeEstimates(it).fees
-                    _customFeeRate.value =  ((_feeEstimation.value?.firstOrNull()
+                    _customFeeRate.value = ((_feeEstimation.value?.firstOrNull()
                         ?: it.defaultFee) / 1000.0)
                 }
             }.launchIn(this)
@@ -158,7 +159,10 @@ abstract class CreateTransactionViewModelAbstract(
             combine(
                 createTransactionParams,
                 denomination,
-                merge(flowOf(Unit), session.accountsAndBalanceUpdated), // there is a case where params are equal (lightning), so we need to re-create the transaction
+                merge(
+                    flowOf(Unit),
+                    session.accountsAndBalanceUpdated
+                ), // there is a case where params are equal (lightning), so we need to re-create the transaction
             ) { createTransactionParams, _, _ ->
                 createTransaction(params = createTransactionParams, finalCheckBeforeContinue = false)
             }.launchIn(this)
@@ -175,7 +179,7 @@ abstract class CreateTransactionViewModelAbstract(
 
                 // Prevent replacing if rate is the same as it will clear the fee estimation data
                 FeePriority.Custom(_customFeeRate.value ?: minFee()).also {
-                    if(_feePriorityPrimitive.value != it.primitive()){
+                    if (_feePriorityPrimitive.value != it.primitive()) {
                         _feePriority.value = it
                     }
                 }
@@ -185,9 +189,9 @@ abstract class CreateTransactionViewModelAbstract(
             }
         } else if (event is LocalEvents.ClickFeePriority) {
             ifNotNull(accountAsset.value, createTransactionParams.value) { acc, params ->
-                if(event.showCustomFeeRateDialog && feePriority.value is FeePriority.Custom){
+                if (event.showCustomFeeRateDialog && feePriority.value is FeePriority.Custom) {
                     showCustomFeeRateDialog()
-                }else{
+                } else {
                     postSideEffect(
                         SideEffects.OpenFeeBottomSheet(
                             greenWallet = greenWallet,
@@ -225,7 +229,7 @@ abstract class CreateTransactionViewModelAbstract(
 
         // Prevent replacing if rate is the same as it will clear the fee estimation data
         FeePriority.Custom(_customFeeRate.value ?: minFee).also {
-            if(_feePriorityPrimitive.value != it.primitive()){
+            if (_feePriorityPrimitive.value != it.primitive()) {
                 _feePriority.value = it
             }
         }
@@ -346,13 +350,13 @@ abstract class CreateTransactionViewModelAbstract(
         createPsbt: Boolean = false
     ) {
         doAsync({
-            if(params == null || originalTransaction == null){
+            if (params == null || originalTransaction == null) {
                 throw Exception("No params/transaction is provided")
             }
 
-            onProgressDescription.value = getString(if(broadcast) Res.string.id_sending else Res.string.id_signing)
+            onProgressDescription.value = getString(if (broadcast) Res.string.id_sending else Res.string.id_signing)
 
-            if(broadcast) {
+            if (broadcast) {
                 countly.startSendTransaction()
                 countly.startFailedTransaction()
             }
@@ -375,7 +379,7 @@ abstract class CreateTransactionViewModelAbstract(
             val isSwap = transaction.isSwap()
 
             // If liquid, blind the transaction before signing
-            if(network.isLiquid && !transaction.isBump() && !transaction.isSweep()){
+            if (network.isLiquid && !transaction.isBump() && !transaction.isSweep()) {
                 transaction = session.blindTransaction(network, transaction)
             }
 
@@ -395,7 +399,7 @@ abstract class CreateTransactionViewModelAbstract(
                     )
                 }
 
-                if(!isSwap) {
+                if (!isSwap) {
                     // Sign transaction
                     transaction = session.signTransaction(account.network, transaction)
                 }
@@ -416,8 +420,9 @@ abstract class CreateTransactionViewModelAbstract(
                         val signedTransaction =
                             JsonObject(transaction.jsonElement!!.jsonObject.toMutableMap().apply {
                                 this["memo"] =
-                                    JsonPrimitive(note.value.takeIf { it.isNotBlank() }?.trim()
-                                        ?: ""
+                                    JsonPrimitive(
+                                        note.value.takeIf { it.isNotBlank() }?.trim()
+                                            ?: ""
                                     )
                             })
 
@@ -434,7 +439,7 @@ abstract class CreateTransactionViewModelAbstract(
                 }
             }
 
-        },  preAction = {
+        }, preAction = {
             onProgress.value = true
             _onProgressSending.value = true
         }, postAction = {

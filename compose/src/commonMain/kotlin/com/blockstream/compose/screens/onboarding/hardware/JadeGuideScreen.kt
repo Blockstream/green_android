@@ -52,7 +52,6 @@ import org.jetbrains.compose.resources.stringResource
 import kotlin.time.DurationUnit
 import kotlin.time.toDuration
 
-
 @Composable
 fun JadeGuideScreen(
     viewModel: JadeGuideViewModelAbstract
@@ -65,7 +64,7 @@ fun JadeGuideScreen(
         delay(5.toDuration(DurationUnit.SECONDS))
         step = (step + 1).takeIf { it < 3 } ?: 0
     }
-    
+
     SetupScreen(viewModel = viewModel, withPadding = false) {
         Column(horizontalAlignment = Alignment.CenterHorizontally) {
             Box(

@@ -10,7 +10,6 @@ import com.blockstream.common.utils.StringHolder
 import com.blockstream.compose.managers.PlatformManager
 import org.jetbrains.compose.resources.getString
 
-
 suspend fun openBrowser(
     platformManager: PlatformManager,
     dialogState: DialogState,

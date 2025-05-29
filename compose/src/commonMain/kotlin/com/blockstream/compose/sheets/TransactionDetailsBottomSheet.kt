@@ -17,7 +17,6 @@ import com.blockstream.compose.views.DataListItem
 import com.blockstream.ui.components.GreenColumn
 import org.jetbrains.compose.resources.stringResource
 
-
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun TransactionDetailsBottomSheet(

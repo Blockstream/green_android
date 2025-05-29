@@ -16,7 +16,6 @@ import com.adamglin.phosphoricons.regular.Warning
 import com.blockstream.common.models.MainViewModel
 import org.jetbrains.compose.resources.stringResource
 
-
 @Composable
 fun TorWarningDialog(
     viewModel: MainViewModel,

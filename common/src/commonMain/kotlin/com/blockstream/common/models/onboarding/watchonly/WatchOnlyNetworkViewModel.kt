@@ -1,15 +1,15 @@
 package com.blockstream.common.models.onboarding.watchonly
 
 import com.blockstream.common.data.SetupArgs
-import com.blockstream.ui.events.Event
 import com.blockstream.common.extensions.previewNetwork
 import com.blockstream.common.extensions.previewWallet
 import com.blockstream.common.gdk.data.Network
 import com.blockstream.common.models.GreenViewModel
 import com.blockstream.common.navigation.NavigateDestinations
 import com.blockstream.common.sideeffects.SideEffects
-import com.rickclephas.kmp.observableviewmodel.coroutineScope
+import com.blockstream.ui.events.Event
 import com.rickclephas.kmp.nativecoroutines.NativeCoroutinesState
+import com.rickclephas.kmp.observableviewmodel.coroutineScope
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow

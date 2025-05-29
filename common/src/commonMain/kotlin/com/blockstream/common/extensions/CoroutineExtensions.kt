@@ -20,11 +20,11 @@ import org.koin.mp.KoinPlatformTools
 import kotlin.coroutines.CoroutineContext
 import kotlin.coroutines.EmptyCoroutineContext
 
-
 // Log and handle the exception. Prevent unhanded exception crash
-suspend fun <T> tryCatch(context: CoroutineContext = EmptyCoroutineContext, block: suspend () -> T): T? = withContext(context = context + logException()) {
-    block()
-}
+suspend fun <T> tryCatch(context: CoroutineContext = EmptyCoroutineContext, block: suspend () -> T): T? =
+    withContext(context = context + logException()) {
+        block()
+    }
 
 fun <T> tryCatchNull(block: () -> T): T? = try {
     block()

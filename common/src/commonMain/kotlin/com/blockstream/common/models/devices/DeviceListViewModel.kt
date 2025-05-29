@@ -2,14 +2,14 @@ package com.blockstream.common.models.devices
 
 import blockstream_green.common.generated.resources.Res
 import blockstream_green.common.generated.resources.id_setup_guide
-import com.blockstream.ui.navigation.NavAction
-import com.blockstream.ui.navigation.NavData
 import com.blockstream.common.devices.DeviceModel
 import com.blockstream.common.devices.GreenDevice
-import com.blockstream.ui.events.Event
 import com.blockstream.common.events.Events
 import com.blockstream.common.navigation.NavigateDestinations
 import com.blockstream.common.sideeffects.SideEffects
+import com.blockstream.ui.events.Event
+import com.blockstream.ui.navigation.NavAction
+import com.blockstream.ui.navigation.NavData
 import com.rickclephas.kmp.nativecoroutines.NativeCoroutinesState
 import com.rickclephas.kmp.observableviewmodel.launch
 import com.rickclephas.kmp.observableviewmodel.stateIn
@@ -29,12 +29,12 @@ abstract class DeviceListViewModelAbstract(val isJade: Boolean) : AbstractDevice
 
 class DeviceListViewModel(isJade: Boolean = true) :
     DeviceListViewModelAbstract(isJade = isJade) {
-        
+
     class LocalEvents {
-        data class SelectDevice(val device: GreenDevice): Event
-        object ConnectViaQR: Event
-        object ConnectViaQRPinUnlock: Events.NavigateTo(NavigateDestinations.JadePinUnlock)
-        object ConnectViaQRUnlocked: Events.NavigateTo(NavigateDestinations.ImportPubKey(deviceModel = DeviceModel.BlockstreamGeneric))
+        data class SelectDevice(val device: GreenDevice) : Event
+        object ConnectViaQR : Event
+        object ConnectViaQRPinUnlock : Events.NavigateTo(NavigateDestinations.JadePinUnlock)
+        object ConnectViaQRUnlocked : Events.NavigateTo(NavigateDestinations.ImportPubKey(deviceModel = DeviceModel.BlockstreamGeneric))
     }
 
     override val devices: StateFlow<List<GreenDevice>> = deviceManager.devices.map { devices ->
@@ -44,11 +44,12 @@ class DeviceListViewModel(isJade: Boolean = true) :
     init {
         viewModelScope.launch {
             _navData.value =
-                NavData(title = if (isJade) "Blockstream Jade" else "", actions = listOfNotNull(
-                    NavAction(title = getString(Res.string.id_setup_guide), onClick = {
-                        postEvent(NavigateDestinations.JadeGuide)
-                    }).takeIf { isJade }
-                ))
+                NavData(
+                    title = if (isJade) "Blockstream Jade" else "", actions = listOfNotNull(
+                        NavAction(title = getString(Res.string.id_setup_guide), onClick = {
+                            postEvent(NavigateDestinations.JadeGuide)
+                        }).takeIf { isJade }
+                    ))
         }
 
         bootstrap()
@@ -57,8 +58,8 @@ class DeviceListViewModel(isJade: Boolean = true) :
     override suspend fun handleEvent(event: Event) {
         super.handleEvent(event)
 
-        if(event is LocalEvents.ConnectViaQR){
-            if(isJade) {
+        if (event is LocalEvents.ConnectViaQR) {
+            if (isJade) {
                 postSideEffect(
                     SideEffects.NavigateTo(
                         NavigateDestinations.AskJadeUnlock(
@@ -66,10 +67,10 @@ class DeviceListViewModel(isJade: Boolean = true) :
                         )
                     )
                 )
-            }else{
+            } else {
                 postSideEffect(SideEffects.NavigateTo(NavigateDestinations.ImportPubKey(deviceModel = DeviceModel.Generic)))
             }
-        }else if (event is LocalEvents.SelectDevice) {
+        } else if (event is LocalEvents.SelectDevice) {
             val navigateTo =
                 SideEffects.NavigateTo(NavigateDestinations.DeviceInfo(deviceId = event.device.connectionIdentifier))
             if (event.device.hasPermissions()) {
@@ -80,7 +81,6 @@ class DeviceListViewModel(isJade: Boolean = true) :
         }
     }
 }
-
 
 class DeviceListViewModelPreview : DeviceListViewModelAbstract(isJade = true) {
     override val devices: MutableStateFlow<List<GreenDevice>> = MutableStateFlow(listOf())

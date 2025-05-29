@@ -6,7 +6,8 @@ import kotlinx.serialization.Serializable
 
 @Serializable
 data class FeeEstimation(
-    @SerialName("fees") val fees: List<Long>
+    @SerialName("fees")
+    val fees: List<Long>
 ) : GreenJson<FeeEstimation>() {
     override fun kSerializer() = serializer()
 }

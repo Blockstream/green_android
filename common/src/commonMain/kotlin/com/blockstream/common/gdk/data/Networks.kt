@@ -15,10 +15,10 @@ import kotlinx.serialization.json.jsonPrimitive
 import kotlinx.serialization.json.put
 import kotlinx.serialization.json.putJsonObject
 
-
 @Serializable
 data class Networks(
-    @SerialName("networks") val networks: Map<String, Network>
+    @SerialName("networks")
+    val networks: Map<String, Network>
 ) : GreenJson<Networks>() {
     override fun kSerializer(): KSerializer<Networks> = serializer()
 
@@ -51,8 +51,8 @@ data class Networks(
     val customNetwork: Network?
         get() = getNetworkByIdOrNull(CustomNetworkId)
 
-    fun bitcoinElectrum(isTestnet: Boolean) = if(isTestnet) testnetBitcoinElectrum else bitcoinElectrum
-    fun liquidElectrum(isTestnet: Boolean) = if(isTestnet) testnetLiquidElectrum else liquidElectrum
+    fun bitcoinElectrum(isTestnet: Boolean) = if (isTestnet) testnetBitcoinElectrum else bitcoinElectrum
+    fun liquidElectrum(isTestnet: Boolean) = if (isTestnet) testnetLiquidElectrum else liquidElectrum
 
     fun getNetworkById(id: String): Network {
         return getNetworkByIdOrNull(id) ?: throw Exception("Network '$id' is not available in the current build of GDK")
@@ -65,7 +65,7 @@ data class Networks(
     fun getNetworkAsJsonElement(id: String): JsonElement? = jsonElement?.jsonObject?.get("networks")?.jsonObject?.get(id)
 
     fun getNetworkByType(networkTypeOrId: String, isElectrum: Boolean): Network {
-        if(networkTypeOrId == CustomNetworkId){
+        if (networkTypeOrId == CustomNetworkId) {
             return customNetwork!!
         }
 
@@ -73,12 +73,15 @@ data class Networks(
             Network.GreenMainnet, Network.ElectrumMainnet -> {
                 if (isElectrum) bitcoinElectrum else bitcoinGreen
             }
+
             Network.GreenLiquid, Network.ElectrumLiquid -> {
                 if (isElectrum) liquidElectrum else liquidGreen
             }
+
             Network.GreenTestnetLiquid, Network.ElectrumTestnetLiquid -> {
                 if (isElectrum) testnetLiquidElectrum else testnetLiquidGreen
             }
+
             else -> { // Network.GreenTestnet, Network.ElectrumTestnet
                 if (isElectrum) testnetBitcoinElectrum else testnetBitcoinGreen
             }
@@ -86,24 +89,26 @@ data class Networks(
     }
 
     fun getNetworkByAccountType(networkTypeOrId: String, accountType: AccountType): Network {
-        if(networkTypeOrId == CustomNetworkId){
+        if (networkTypeOrId == CustomNetworkId) {
             return customNetwork!!
         }
 
-        return when(accountType){
+        return when (accountType) {
             // Multisig
             AccountType.STANDARD, AccountType.AMP_ACCOUNT, AccountType.TWO_OF_THREE -> {
-                if(Network.isBitcoin(networkTypeOrId)){
-                    if(Network.isBitcoinMainnet(networkTypeOrId)) bitcoinGreen else testnetBitcoinGreen
-                }else{
-                    if(Network.isLiquidMainnet(networkTypeOrId)) liquidGreen else testnetLiquidGreen
+                if (Network.isBitcoin(networkTypeOrId)) {
+                    if (Network.isBitcoinMainnet(networkTypeOrId)) bitcoinGreen else testnetBitcoinGreen
+                } else {
+                    if (Network.isLiquidMainnet(networkTypeOrId)) liquidGreen else testnetLiquidGreen
                 }
-            }else -> {
+            }
+
+            else -> {
                 // Singlesig
-                if(Network.isBitcoin(networkTypeOrId)){
-                    if(Network.isBitcoinMainnet(networkTypeOrId)) bitcoinElectrum else testnetBitcoinElectrum
-                }else{
-                    if(Network.isLiquidMainnet(networkTypeOrId)) liquidElectrum else testnetLiquidElectrum
+                if (Network.isBitcoin(networkTypeOrId)) {
+                    if (Network.isBitcoinMainnet(networkTypeOrId)) bitcoinElectrum else testnetBitcoinElectrum
+                } else {
+                    if (Network.isLiquidMainnet(networkTypeOrId)) liquidElectrum else testnetLiquidElectrum
                 }
             }
         }
@@ -115,6 +120,7 @@ data class Networks(
         fun fromJsonString(jsonString: String): Networks {
             return fromJsonElement(json.parseToJsonElement(jsonString))
         }
+
         /**
         Transform the gdk json to a more appropriate format
          */
@@ -122,14 +128,14 @@ data class Networks(
 
             val networks: MutableMap<String, JsonObject> = mutableMapOf()
 
-            element.jsonObject["all_networks"]?.jsonArray?.let{
-                for (key in it){
+            element.jsonObject["all_networks"]?.jsonArray?.let {
+                for (key in it) {
                     @Suppress("NAME_SHADOWING")
                     val key = key.jsonPrimitive.content
-                    element.jsonObject[key]?.jsonObject?.let{ obj ->
+                    element.jsonObject[key]?.jsonObject?.let { obj ->
                         networks[key] = buildJsonObject {
                             put("id", key)
-                            for(k in obj){
+                            for (k in obj) {
                                 put(k.key, k.value)
                             }
                         }
@@ -139,13 +145,13 @@ data class Networks(
 
             return buildJsonObject {
                 putJsonObject("networks") {
-                    for(k in networks){
+                    for (k in networks) {
                         put(k.key, k.value)
                     }
                 }
             }.let { jsonObject ->
                 json.decodeFromJsonElement<Networks>(jsonObject).apply {
-                    if(keepJsonElement()) {
+                    if (keepJsonElement()) {
                         jsonElement = jsonObject
                     }
                 }

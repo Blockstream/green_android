@@ -9,7 +9,6 @@ import androidx.compose.ui.focus.FocusRequester
 import androidx.compose.ui.platform.LocalSoftwareKeyboardController
 import kotlinx.coroutines.delay
 
-
 @Composable
 fun OpenKeyboard(focusRequester: FocusRequester) {
     val showKeyboard by remember { mutableStateOf(true) }

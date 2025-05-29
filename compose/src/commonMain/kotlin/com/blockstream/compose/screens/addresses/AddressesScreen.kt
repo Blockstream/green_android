@@ -64,7 +64,6 @@ import com.blockstream.ui.utils.reachedBottom
 import org.jetbrains.compose.resources.painterResource
 import org.jetbrains.compose.resources.stringResource
 
-
 @Composable
 fun AddressesScreen(
     viewModel: AddressesViewModelAbstract
@@ -83,7 +82,7 @@ fun AddressesScreen(
         }
     }
 
-    SetupScreen(viewModel = viewModel, withPadding = false){
+    SetupScreen(viewModel = viewModel, withPadding = false) {
         GreenColumn {
             GreenSearchField(
                 value = query,
@@ -141,25 +140,26 @@ fun AddressesScreen(
                     Box {
                         HorizontalDivider(modifier = Modifier.align(Alignment.BottomCenter))
 
-                        AddressListItem(look = address, onCopyClick = {
-                            platformManager.copyToClipboard(content = address.address)
-                        }, onExplorerClick = {
-                            viewModel.postEvent(
-                                AddressesViewModel.LocalEvents.AddressBlockExplorer(
-                                    address = address.address
-                                )
-                            )
-                        }, onSignatureClick = if (viewModel.canSign) {
-                            {
+                        AddressListItem(
+                            look = address, onCopyClick = {
+                                platformManager.copyToClipboard(content = address.address)
+                            }, onExplorerClick = {
                                 viewModel.postEvent(
-                                    NavigateDestinations.SignMessage(
-                                        greenWallet = viewModel.greenWallet,
-                                        accountAsset = viewModel.accountAsset.value!!,
+                                    AddressesViewModel.LocalEvents.AddressBlockExplorer(
                                         address = address.address
                                     )
                                 )
-                            }
-                        } else null)
+                            }, onSignatureClick = if (viewModel.canSign) {
+                                {
+                                    viewModel.postEvent(
+                                        NavigateDestinations.SignMessage(
+                                            greenWallet = viewModel.greenWallet,
+                                            accountAsset = viewModel.accountAsset.value!!,
+                                            address = address.address
+                                        )
+                                    )
+                                }
+                            } else null)
                     }
                 }
 

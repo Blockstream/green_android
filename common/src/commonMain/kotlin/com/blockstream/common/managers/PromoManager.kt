@@ -69,7 +69,7 @@ class PromoManager constructor(
 
             // Delete all unused resources
             FileSystem.SYSTEM.listOrNull(cacheDir.toPath())?.forEach { file ->
-                if(allResources.find { it.file == file.name } == null){
+                if (allResources.find { it.file == file.name } == null) {
                     logger.d { "Delete $file" }
                     FileSystem.SYSTEM.delete(file)
                 }

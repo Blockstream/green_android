@@ -134,5 +134,5 @@ class NetworkAssetManager constructor() {
         }
     }
 
-    companion object: Loggable()
+    companion object : Loggable()
 }

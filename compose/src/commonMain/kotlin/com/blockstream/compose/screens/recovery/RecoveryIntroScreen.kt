@@ -63,7 +63,7 @@ fun RecoveryIntroScreen(
         viewModel = viewModel, sideEffectsHandler = {
             if (it is RecoveryIntroViewModel.LocalSideEffects.LaunchUserPresence) {
                 biometricsState?.launchUserPresencePrompt(getString(Res.string.id_authenticate_to_view_the)) {
-                    if(it != false){
+                    if (it != false) {
                         viewModel.postEvent(RecoveryIntroViewModel.LocalEvents.Authenticated(it == true))
                     }
                 }

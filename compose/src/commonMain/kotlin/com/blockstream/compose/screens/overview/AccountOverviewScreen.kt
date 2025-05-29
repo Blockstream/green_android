@@ -83,7 +83,13 @@ fun AccountOverviewScreen(
             }
 
             MainMenuEntry.REDEPOSIT -> {
-                viewModel.postEvent(NavigateDestinations.Redeposit(greenWallet = viewModel.greenWallet, accountAsset = viewModel.accountAsset.value!!, isRedeposit2FA = false))
+                viewModel.postEvent(
+                    NavigateDestinations.Redeposit(
+                        greenWallet = viewModel.greenWallet,
+                        accountAsset = viewModel.accountAsset.value!!,
+                        isRedeposit2FA = false
+                    )
+                )
             }
 
             MainMenuEntry.BUY_SELL -> {
@@ -137,8 +143,10 @@ fun AccountOverviewScreen(
                 }
             }
 
-            LazyColumn(contentPadding = innerPadding
-                .bottom(), state = listState) {
+            LazyColumn(
+                contentPadding = innerPadding
+                    .bottom(), state = listState
+            ) {
 
                 items(alerts) {
                     GreenAlert(

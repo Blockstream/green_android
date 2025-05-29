@@ -124,7 +124,8 @@ fun BuyScreen(
                     GreenAmountField(
                         value = amount,
                         onValueChange = viewModel.amount.onValueChange(),
-                        secondaryValue = if (onProgressQuote) null else (quote?.destinationAmount?.let { "$it ${quote?.destinationCurrencyCode}".trim() } ?: ""),
+                        secondaryValue = if (onProgressQuote) null else (quote?.destinationAmount?.let { "$it ${quote?.destinationCurrencyCode}".trim() }
+                            ?: ""),
                         assetId = accountAsset?.assetId,
                         session = viewModel.sessionOrNull,
                         denomination = denomination,

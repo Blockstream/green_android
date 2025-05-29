@@ -6,7 +6,6 @@ import androidx.compose.runtime.derivedStateOf
 import androidx.compose.runtime.mutableStateMapOf
 import androidx.compose.runtime.remember
 import co.touchlab.kermit.Logger
-import kotlin.collections.set
 import kotlin.reflect.KClass
 
 val results = mutableStateMapOf<String, Any?>()
@@ -17,7 +16,6 @@ fun setNavigationResultForKey(key: String, result: Any?) {
     Logger.d { "setResult for key $key" }
     results[key] = result
 }
-
 
 @Composable
 inline fun <reified T> getNavigationResult(screenKey: String): State<T?> {

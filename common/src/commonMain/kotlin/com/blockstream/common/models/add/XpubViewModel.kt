@@ -2,15 +2,15 @@ package com.blockstream.common.models.add
 
 import blockstream_green.common.generated.resources.Res
 import blockstream_green.common.generated.resources.id_invalid_xpub
-import com.blockstream.ui.navigation.NavData
 import com.blockstream.common.data.SetupArgs
-import com.blockstream.ui.events.Event
 import com.blockstream.common.events.Events
 import com.blockstream.common.extensions.isBlank
 import com.blockstream.common.extensions.previewWallet
 import com.blockstream.common.gdk.Wally
 import com.blockstream.common.navigation.NavigateDestinations
 import com.blockstream.common.sideeffects.SideEffects
+import com.blockstream.ui.events.Event
+import com.blockstream.ui.navigation.NavData
 import com.rickclephas.kmp.nativecoroutines.NativeCoroutinesState
 import com.rickclephas.kmp.observableviewmodel.coroutineScope
 import com.rickclephas.kmp.observableviewmodel.launch

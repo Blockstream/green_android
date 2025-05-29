@@ -5,7 +5,6 @@ import androidx.compose.ui.tooling.preview.Preview
 import com.blockstream.common.models.onboarding.phone.PinViewModelPreview
 import com.blockstream.compose.GreenAndroidPreview
 
-
 @Composable
 @Preview
 fun PinScreenPreview(
@@ -21,7 +20,7 @@ fun PinScreenProgressPreview(
 ) {
     GreenAndroidPreview {
         PinScreen(viewModel = PinViewModelPreview.preview().also {
-             it.onProgress.value = true
+            it.onProgress.value = true
         })
     }
 }

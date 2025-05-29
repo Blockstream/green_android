@@ -10,5 +10,5 @@ fun String?.cleanup(): String? = if (isNullOrBlank()) null else trim().replace("
 
 fun String.isDigitsOnly() = all(Char::isDigit) && isNotEmpty()
 
-fun List<String>?.startsWith(other: String?): Boolean = if(this == null) false else
+fun List<String>?.startsWith(other: String?): Boolean = if (this == null) false else
     other.takeIf { it.isNotBlank() }?.let { o -> any { o.startsWith(it) } } ?: false

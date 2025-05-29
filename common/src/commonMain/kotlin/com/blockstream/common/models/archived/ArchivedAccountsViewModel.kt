@@ -20,7 +20,6 @@ import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.flow.onEach
 import org.jetbrains.compose.resources.getString
 
-
 abstract class ArchivedAccountsViewModelAbstract(
     greenWallet: GreenWallet,
     val navigateToRoot: Boolean = false

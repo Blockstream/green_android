@@ -1,6 +1,5 @@
 package com.blockstream.compose.theme
 
-
 import androidx.compose.material3.LocalContentColor
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Typography
@@ -36,7 +35,12 @@ fun MonospaceFont() = FontFamily(
 )
 
 @Composable
-fun copyTextStyle(textStyle: TextStyle, fontSize: TextUnit = textStyle.fontSize, fontWeight: FontWeight? = textStyle.fontWeight, lineHeight: TextUnit = textStyle.lineHeight ): TextStyle = textStyle.copy(
+fun copyTextStyle(
+    textStyle: TextStyle,
+    fontSize: TextUnit = textStyle.fontSize,
+    fontWeight: FontWeight? = textStyle.fontWeight,
+    lineHeight: TextUnit = textStyle.lineHeight
+): TextStyle = textStyle.copy(
     fontFamily = InterFont(),
     fontSize = fontSize,
     fontWeight = fontWeight,

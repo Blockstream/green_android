@@ -4,7 +4,6 @@ import blockstream_green.common.generated.resources.Res
 import blockstream_green.common.generated.resources.id_network_fee
 import com.blockstream.common.data.FeePriority
 import com.blockstream.common.data.GreenWallet
-import com.blockstream.ui.navigation.NavData
 import com.blockstream.common.extensions.ifConnected
 import com.blockstream.common.extensions.launchIn
 import com.blockstream.common.extensions.previewAccountAsset
@@ -12,8 +11,9 @@ import com.blockstream.common.extensions.previewWallet
 import com.blockstream.common.gdk.data.AccountAsset
 import com.blockstream.common.gdk.params.CreateTransactionParams
 import com.blockstream.common.lightning.fee
-import com.blockstream.green.utils.Loggable
 import com.blockstream.common.utils.feeRateWithUnit
+import com.blockstream.green.utils.Loggable
+import com.blockstream.ui.navigation.NavData
 import com.rickclephas.kmp.nativecoroutines.NativeCoroutinesState
 import com.rickclephas.kmp.observableviewmodel.launch
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -71,10 +71,9 @@ class FeeViewModel(
                 }
             }.launchIn(this)
 
-            if(useBreezFees){
+            if (useBreezFees) {
                 calculateBreezFees()
             }
-
 
         }
 
@@ -117,7 +116,7 @@ class FeeViewModel(
 
         doAsync({
             listOf(FeePriority.High(), FeePriority.Medium(), FeePriority.Low()).map {
-                try{
+                try {
                     val feeRate = getFeeRate(priority = it)
 
                     val tx = if (params.isRedeposit) session.createRedepositTransaction(
@@ -136,7 +135,7 @@ class FeeViewModel(
                         error = tx.error?.takeIf { it.isNotBlank() }
                     )
 
-                }catch (e: Exception){
+                } catch (e: Exception) {
                     e.message
 
                     calculateFeePriority(
@@ -159,7 +158,6 @@ class FeeViewModelPreview(greenWallet: GreenWallet) :
 
     override val feePriorities: StateFlow<List<FeePriority>> =
         MutableStateFlow(listOf(FeePriority.High(error = "id_insufficient_funds"), FeePriority.Medium(), FeePriority.Low()))
-
 
     companion object {
         fun preview() = FeeViewModelPreview(previewWallet())

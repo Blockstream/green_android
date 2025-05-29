@@ -2,15 +2,15 @@ package com.blockstream.common.models.login
 
 import com.blockstream.common.Urls
 import com.blockstream.common.data.GreenWallet
-import com.blockstream.ui.events.Event
 import com.blockstream.common.events.Events
 import com.blockstream.common.extensions.logException
 import com.blockstream.common.extensions.previewWallet
 import com.blockstream.common.models.GreenViewModel
-import com.blockstream.ui.sideeffects.SideEffect
 import com.blockstream.common.sideeffects.SideEffects
-import com.rickclephas.kmp.observableviewmodel.coroutineScope
+import com.blockstream.ui.events.Event
+import com.blockstream.ui.sideeffects.SideEffect
 import com.rickclephas.kmp.nativecoroutines.NativeCoroutinesState
+import com.rickclephas.kmp.observableviewmodel.coroutineScope
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.launch
 

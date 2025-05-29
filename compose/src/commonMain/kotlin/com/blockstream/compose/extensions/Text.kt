@@ -35,7 +35,7 @@ fun colorText(
     color: Color = md_theme_primary
 ): AnnotatedString {
     return buildAnnotatedString {
-        withStyle(style = SpanStyle(color = baseColor)){
+        withStyle(style = SpanStyle(color = baseColor)) {
             append(text)
         }
 
@@ -58,7 +58,7 @@ fun colorText(
 @Composable
 fun colorTextEdges(text: String, numberOfSections: Int = 1, color: Color = md_theme_primary): AnnotatedString {
     return buildAnnotatedString {
-        withStyle(style = SpanStyle(color = textHigh)){
+        withStyle(style = SpanStyle(color = textHigh)) {
             append(text)
         }
 

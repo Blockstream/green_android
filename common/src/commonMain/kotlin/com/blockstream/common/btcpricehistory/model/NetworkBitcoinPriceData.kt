@@ -5,8 +5,10 @@ import kotlinx.serialization.Serializable
 
 @Serializable
 data class NetworkBitcoinPriceData(
-    @SerialName("currency") val currency: String,
-    @SerialName("last_refresh") val lastRefresh: String = "",
+    @SerialName("currency")
+    val currency: String,
+    @SerialName("last_refresh")
+    val lastRefresh: String = "",
 ) {
 
     @SerialName("prices_day")

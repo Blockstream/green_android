@@ -31,7 +31,6 @@ import com.blockstream.compose.utils.HandleSideEffectDialog
 import com.blockstream.ui.components.GreenColumn
 import org.jetbrains.compose.resources.stringResource
 
-
 @Composable
 fun ArchivedAccountsDialog(
     viewModel: ArchivedAccountsViewModelAbstract,

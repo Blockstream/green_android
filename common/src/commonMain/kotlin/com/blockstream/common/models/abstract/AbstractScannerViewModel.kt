@@ -2,7 +2,6 @@ package com.blockstream.common.models.abstract
 
 import com.blockstream.common.data.GreenWallet
 import com.blockstream.common.data.ScanResult
-import com.blockstream.ui.events.Event
 import com.blockstream.common.events.Events
 import com.blockstream.common.extensions.logException
 import com.blockstream.common.gdk.BcurResolver
@@ -10,13 +9,15 @@ import com.blockstream.common.gdk.params.BcurDecodeParams
 import com.blockstream.common.models.GreenViewModel
 import com.blockstream.common.sideeffects.SideEffects
 import com.blockstream.green.utils.Loggable
+import com.blockstream.ui.events.Event
 import com.rickclephas.kmp.observableviewmodel.coroutineScope
 import kotlinx.coroutines.CancellationException
 import kotlinx.coroutines.CompletableDeferred
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.launch
 
-abstract class AbstractScannerViewModel(val isDecodeContinuous: Boolean = false, greenWalletOrNull: GreenWallet? = null): GreenViewModel(greenWalletOrNull = greenWalletOrNull) {
+abstract class AbstractScannerViewModel(val isDecodeContinuous: Boolean = false, greenWalletOrNull: GreenWallet? = null) :
+    GreenViewModel(greenWalletOrNull = greenWalletOrNull) {
 
     private var isScanComplete = false
 
@@ -27,7 +28,7 @@ abstract class AbstractScannerViewModel(val isDecodeContinuous: Boolean = false,
     internal val _progress = MutableStateFlow<Int?>(null)
     val progress: StateFlow<Int?> = _progress
 
-    private fun barcodeScannerResult(scanResult: ScanResult){
+    private fun barcodeScannerResult(scanResult: ScanResult) {
         if (appInfo.isDevelopmentOrDebug) {
             logger.d { "QR (DevelopmentOrDebug): $scanResult" }
         }
@@ -36,17 +37,17 @@ abstract class AbstractScannerViewModel(val isDecodeContinuous: Boolean = false,
         setScanResult(scanResult)
     }
 
-    internal fun resetScanner(){
+    internal fun resetScanner() {
         isScanComplete = false
     }
 
     override suspend fun handleEvent(event: Event) {
         super.handleEvent(event)
 
-        if(event is Events.SetBarcodeScannerResult) {
+        if (event is Events.SetBarcodeScannerResult) {
             val scannedText = event.scannedText
 
-            if(!isScanComplete) {
+            if (!isScanComplete) {
                 if ((isDecodeContinuous && scannedText.startsWith(prefix = "ur:", ignoreCase = true)) || bcurPartEmitter != null) {
 
                     if (bcurPartEmitter == null) {
@@ -69,9 +70,9 @@ abstract class AbstractScannerViewModel(val isDecodeContinuous: Boolean = false,
                                 )
 
                                 barcodeScannerResult(ScanResult.from(bcurDecodedData))
-                            } catch (e: CancellationException){
+                            } catch (e: CancellationException) {
                                 e.printStackTrace()
-                            }  catch (e: Exception) {
+                            } catch (e: Exception) {
                                 e.printStackTrace()
                                 postSideEffect(SideEffects.ErrorDialog(e))
                             } finally {
@@ -100,5 +101,5 @@ abstract class AbstractScannerViewModel(val isDecodeContinuous: Boolean = false,
         }
     }
 
-    companion object: Loggable()
+    companion object : Loggable()
 }

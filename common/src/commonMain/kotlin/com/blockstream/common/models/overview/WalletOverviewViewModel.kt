@@ -277,7 +277,6 @@ class WalletOverviewViewModel(
         refreshBitcoinPriceState.value++
     }
 
-
     class LocalEvents {
         object Refresh : Event
         object Send : Event
@@ -478,7 +477,6 @@ class WalletOverviewViewModelPreview(val isEmpty: Boolean = false, val isHardwar
     override fun refetchBitcoinPriceHistory() {
         // No-op
     }
-
 
     companion object : Loggable() {
         fun create(isEmpty: Boolean = false) = WalletOverviewViewModelPreview(isEmpty = isEmpty)

@@ -1,4 +1,3 @@
-
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.uikit.ComposeUIViewControllerDelegate
@@ -11,7 +10,6 @@ import com.blockstream.compose.theme.GreenChrome
 import com.blockstream.compose.theme.GreenTheme
 import com.blockstream.compose.utils.compatTestTagsAsResourceId
 import org.koin.mp.KoinPlatformTools
-
 
 fun MainViewController() = ComposeUIViewController(configure = {
 

@@ -3,7 +3,6 @@ package com.blockstream.compose.utils
 import androidx.compose.ui.text.TextRange
 import androidx.compose.ui.text.input.TextFieldValue
 
-
 class DecimalFormatter(
     val decimalSeparator: Char,
     val groupingSeparator: Char

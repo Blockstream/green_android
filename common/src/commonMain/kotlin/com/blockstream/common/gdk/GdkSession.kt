@@ -186,7 +186,8 @@ class GdkSession constructor(
     private val wally: Wally,
     private val countly: CountlyBase
 ) : HttpRequestHandler, AssetsProvider {
-    private fun createScope(dispatcher: CoroutineDispatcher = Dispatchers.Default) = CoroutineScope(SupervisorJob() + dispatcher + logException(countly))
+    private fun createScope(dispatcher: CoroutineDispatcher = Dispatchers.Default) =
+        CoroutineScope(SupervisorJob() + dispatcher + logException(countly))
 
     private val scope = createScope(Dispatchers.Default)
     private val parentJob = SupervisorJob()
@@ -229,12 +230,12 @@ class GdkSession constructor(
 
     private var _walletTotalBalanceSharedFlow = MutableStateFlow(-1L)
     private var _activeAccountStateFlow: MutableStateFlow<Account?> = MutableStateFlow(null)
-    private var _walletAssetsFlow : MutableStateFlow<DataState<Assets>> = MutableStateFlow(DataState.Loading)
-    private var _enrichedAssetsFlow : MutableStateFlow<List<CountlyAsset>> = MutableStateFlow(listOf())
+    private var _walletAssetsFlow: MutableStateFlow<DataState<Assets>> = MutableStateFlow(DataState.Loading)
+    private var _enrichedAssetsFlow: MutableStateFlow<List<CountlyAsset>> = MutableStateFlow(listOf())
     private var _walletHasHistorySharedFlow = MutableStateFlow(false)
     private var _accountAssetsFlow = mutableMapOf<AccountId, MutableStateFlow<Assets>>()
     private val _accountsAndBalanceUpdatedSharedFlow = MutableSharedFlow<Unit>(replay = 0)
-    private var _walletTransactionsStateFlow : MutableStateFlow<DataState<List<Transaction>>> = MutableStateFlow(DataState.Loading)
+    private var _walletTransactionsStateFlow: MutableStateFlow<DataState<List<Transaction>>> = MutableStateFlow(DataState.Loading)
     private var _accountTransactionsStateFlow = mutableMapOf<AccountId, MutableStateFlow<DataState<List<Transaction>>>>()
     private var _accountTransactionsPagerStateFlow = mutableMapOf<AccountId, MutableStateFlow<Boolean>>()
     private var _blockStateFlow = mutableMapOf<Network, MutableStateFlow<Block>>()
@@ -244,7 +245,7 @@ class GdkSession constructor(
     private var _networkEventsStateFlow = mutableMapOf<Network, MutableStateFlow<NetworkEvent?>>()
     private val _networkErrors: Channel<Pair<Network, NetworkEvent>> = Channel()
     private var _failedNetworksStateFlow: MutableStateFlow<List<Network>> = MutableStateFlow(listOf())
-    private var _systemMessageStateFlow : MutableStateFlow<List<Pair<Network, String>>> = MutableStateFlow(listOf())
+    private var _systemMessageStateFlow: MutableStateFlow<List<Pair<Network, String>>> = MutableStateFlow(listOf())
     private var _allAccountsStateFlow = MutableStateFlow<List<Account>>(listOf())
     private var _accountsStateFlow = MutableStateFlow<List<Account>>(listOf())
     private var _expired2FAStateFlow = MutableStateFlow<List<Account>>(listOf())
@@ -269,7 +270,7 @@ class GdkSession constructor(
 
     private fun blockStateFlow(network: Network) = _blockStateFlow.getOrPut(network) { MutableStateFlow(Block(height = 0)) }
 
-    private fun accountTransactionsPagerStateFlow(account: Account): MutableStateFlow<Boolean>{
+    private fun accountTransactionsPagerStateFlow(account: Account): MutableStateFlow<Boolean> {
         return _accountTransactionsPagerStateFlow.getOrPut(account.id) {
             MutableStateFlow(false)
         }
@@ -281,7 +282,7 @@ class GdkSession constructor(
         }
     }
 
-    private fun accountTransactionsStateFlow(account: Account): MutableStateFlow<DataState<List<Transaction>>>{
+    private fun accountTransactionsStateFlow(account: Account): MutableStateFlow<DataState<List<Transaction>>> {
         return _accountTransactionsStateFlow.getOrPut(account.id) {
             MutableStateFlow(DataState.Loading)
         }
@@ -308,15 +309,15 @@ class GdkSession constructor(
 
     val systemMessage get() = _systemMessageStateFlow.asStateFlow()
 
-    val allAccounts : StateFlow<List<Account>> get() = _allAccountsStateFlow.asStateFlow()
+    val allAccounts: StateFlow<List<Account>> get() = _allAccountsStateFlow.asStateFlow()
 
-    val accounts : StateFlow<List<Account>> get() = _accountsStateFlow.asStateFlow()
+    val accounts: StateFlow<List<Account>> get() = _accountsStateFlow.asStateFlow()
 
-    val expired2FA : StateFlow<List<Account>> get() = _expired2FAStateFlow.asStateFlow()
+    val expired2FA: StateFlow<List<Account>> get() = _expired2FAStateFlow.asStateFlow()
 
     val lastInvoicePaid = _lastInvoicePaid.asStateFlow()
 
-    val accountAsset : StateFlow<List<AccountAsset>> get() = _accountAssetStateFlow.asStateFlow()
+    val accountAsset: StateFlow<List<AccountAsset>> get() = _accountAssetStateFlow.asStateFlow()
 
     val torStatusFlow = _torStatusSharedFlow.asStateFlow()
 
@@ -336,7 +337,8 @@ class GdkSession constructor(
 
     fun block(network: Network): StateFlow<Block> = blockStateFlow(network).asStateFlow()
 
-    fun settings(network: Network? = null) = (network ?: defaultNetworkOrNull)?.let { settingsStateFlow(it).asStateFlow() } ?: MutableStateFlow(null)
+    fun settings(network: Network? = null) =
+        (network ?: defaultNetworkOrNull)?.let { settingsStateFlow(it).asStateFlow() } ?: MutableStateFlow(null)
 
     fun twoFactorConfig(network: Network = defaultNetwork) = twoFactorConfigStateFlow(network).asStateFlow()
 
@@ -344,7 +346,7 @@ class GdkSession constructor(
 
     fun networkEvents(network: Network) = networkEventsStateFlow(network).asStateFlow()
 
-    val hasLiquidAccount : Boolean get() = accounts.value.any { it.isLiquid }
+    val hasLiquidAccount: Boolean get() = accounts.value.any { it.isLiquid }
 
     var defaultNetworkOrNull: Network? = null
         private set
@@ -361,7 +363,7 @@ class GdkSession constructor(
         get() = bitcoinSinglesig ?: bitcoinMultisig
 
     val bitcoinSinglesig
-        get() =  gdkSessions.firstNotNullOfOrNull { it.key.takeIf { network -> network.isElectrum && network.isBitcoin } }
+        get() = gdkSessions.firstNotNullOfOrNull { it.key.takeIf { network -> network.isElectrum && network.isBitcoin } }
 
     val bitcoinMultisig
         get() = gdkSessions.firstNotNullOfOrNull { it.key.takeIf { network -> network.isMultisig && network.isBitcoin } }
@@ -394,14 +396,14 @@ class GdkSession constructor(
     private val activeGdkSessions: Map<Network, GASession>
         get() = gdkSessions.filter { activeSessions.contains(it.key) }
 
-    private fun gdkSession(network: Network) = gdkSessions.getOrPut(network){
+    private fun gdkSession(network: Network) = gdkSessions.getOrPut(network) {
         gdk.createSession()
     }
 
-    var hasLightning : Boolean = false
+    var hasLightning: Boolean = false
         private set
 
-    var isLightningShortcut : Boolean = false
+    var isLightningShortcut: Boolean = false
         private set
 
     val hasAmpAccount: Boolean
@@ -409,7 +411,7 @@ class GdkSession constructor(
 
     private var _lightningAccount: Account? = null
 
-    val lightningAccount : Account
+    val lightningAccount: Account
         get() {
             if (_lightningAccount == null) {
                 _lightningAccount = Account(
@@ -449,18 +451,20 @@ class GdkSession constructor(
         get() = gdk.networks()
 
     private val _isConnectedState = MutableStateFlow(false)
+
     @NativeCoroutinesIgnore
     val isConnectedState = _isConnectedState.asStateFlow()
     val isConnected
         get() = isConnectedState.value
 
-    var xPubHashId : String? = null
+    var xPubHashId: String? = null
         private set
 
     var pendingTransactionParams: CreateTransactionParams? = null
     var pendingTransaction: PendingTransaction? = null
 
-    val networkAssetManager: NetworkAssetManager get() = assetManager.getNetworkAssetManager(defaultNetworkOrNull?.let { isMainnet } ?: true)
+    val networkAssetManager: NetworkAssetManager
+        get() = assetManager.getNetworkAssetManager(defaultNetworkOrNull?.let { isMainnet } ?: true)
 
     val hideAmounts: Boolean get() = settingsManager.appSettings.hideAmounts
 
@@ -516,7 +520,7 @@ class GdkSession constructor(
         }
     }
 
-    fun reportLightningError(paymentHash: String){
+    fun reportLightningError(paymentHash: String) {
         lightningSdkOrNull?.also {
             it.reportIssue(paymentHash)
         }
@@ -539,10 +543,10 @@ class GdkSession constructor(
         }
     }
 
-    fun updateSettings(network: Network? = null): Settings?{
+    fun updateSettings(network: Network? = null): Settings? {
         activeSessions.filter { network == null || it.network == network.id }.forEach {
             settingsStateFlow(it).value = gdk.getSettings(gdkSession(it))
-            if(it.isMultisig){
+            if (it.isMultisig) {
                 updateTwoFactorConfig(network = it)
             }
         }
@@ -562,11 +566,11 @@ class GdkSession constructor(
     }
 
     private fun updateTwoFactorConfig(network: Network, useCache: Boolean = false): TwoFactorConfig? {
-        if(!network.isMultisig) return null
+        if (!network.isMultisig) return null
 
-        var config = if(useCache) twoFactorConfigStateFlow(network).value else null
+        var config = if (useCache) twoFactorConfigStateFlow(network).value else null
 
-        if(config == null){
+        if (config == null) {
             try {
                 gdk.getTwoFactorConfig(gdkSession(network)).also {
                     twoFactorConfigStateFlow(network).value = it
@@ -585,12 +589,12 @@ class GdkSession constructor(
     suspend fun changeSettings(network: Network, settings: Settings) =
         authHandler(network, gdk.changeSettings(gdkSession(network), settings)).resolve()
 
-    suspend fun changeGlobalSettings(settings: Settings){
+    suspend fun changeGlobalSettings(settings: Settings) {
         val exceptions = mutableListOf<Exception>()
         activeSessions.forEach { network ->
             getSettings(network)?.also { networkSettings ->
 
-                if(walletExistsAndIsUnlocked(network)) {
+                if (walletExistsAndIsUnlocked(network)) {
                     try {
                         changeSettings(
                             network,
@@ -609,20 +613,20 @@ class GdkSession constructor(
 
         updateSettings()
 
-        if(exceptions.isNotEmpty()){
+        if (exceptions.isNotEmpty()) {
             throw Exception(exceptions.first().message)
         }
     }
 
-    private suspend fun syncSettings(){
+    private suspend fun syncSettings() {
         // Prefer Multisig for initial sync as those networks are synced across devices
         // In case of Lightning Shorcut get settings from parent wallet
         val syncNetwork = activeBitcoinMultisig ?: activeLiquidMultisig ?: defaultNetwork
         val prominentSettings = ephemeralWallet?.extras?.settings?.takeIf { isLightningShortcut } ?: getSettings(network = syncNetwork)
         prominentSettings?.also {
-            try{
+            try {
                 changeGlobalSettings(it)
-            }catch (e: Exception){
+            } catch (e: Exception) {
                 e.printStackTrace()
             }
         }
@@ -631,7 +635,7 @@ class GdkSession constructor(
     @Throws(Exception::class)
     fun availableCurrencies() = gdk.getAvailableCurrencies(gdkSession(defaultNetwork))
 
-    fun prominentNetwork(isTestnet: Boolean) = if(isTestnet) networks.testnetBitcoinElectrum else networks.bitcoinElectrum
+    fun prominentNetwork(isTestnet: Boolean) = if (isTestnet) networks.testnetBitcoinElectrum else networks.bitcoinElectrum
     fun prominentNetwork(wallet: GreenWallet, loginCredentials: LoginCredentials? = null) =
         if (loginCredentials != null && loginCredentials.network.isNotBlank()) networkBy(
             loginCredentials.network
@@ -688,8 +692,8 @@ class GdkSession constructor(
             proxy = applicationSettings.proxyUrl ?: "",
             spvEnabled = spvEnabled,
             spvMulti = spvMulti,
-            gapLimit = if(network.isSinglesig) applicationSettings.electrumServerGapLimit?.coerceAtLeast(1) else null,
-            electrumTls = if(electrumUrl.isNotBlank()) applicationSettings.personalElectrumServerTls else true,
+            gapLimit = if (network.isSinglesig) applicationSettings.electrumServerGapLimit?.coerceAtLeast(1) else null,
+            electrumTls = if (electrumUrl.isNotBlank()) applicationSettings.personalElectrumServerTls else true,
             electrumUrl = electrumUrl,
             electrumOnionUrl = electrumUrl.takeIf { useTor },
             // blobServerUrl = "wss://green-blobserver.staging.blockstream.com/ws".takeIf { appInfo.isDevelopment && network.isSinglesig && network.isTestnet },
@@ -703,7 +707,7 @@ class GdkSession constructor(
     // Use it only for connected sessions
     fun supportsLightning() = supportsLightning(isWatchOnly = isWatchOnlyValue, device = device)
 
-    private fun supportsLightning(isWatchOnly: Boolean, device: GreenDevice?) :Boolean {
+    private fun supportsLightning(isWatchOnly: Boolean, device: GreenDevice?): Boolean {
         return !isWatchOnly && (device == null || device.isJade)
     }
 
@@ -729,13 +733,13 @@ class GdkSession constructor(
     private fun initGdkSessions(initNetworks: List<Network>?) {
         (if (initNetworks.isNullOrEmpty()) {
             networks(isTestnet = isTestnet, isWatchOnly = isWatchOnlyValue, device = device)
-        }else{
+        } else {
             // init the provided networks
             initNetworks
         }).forEach {
-            if(it.isLightning){
+            if (it.isLightning) {
                 lightning = it
-            }else{
+            } else {
                 gdkSession(it)
             }
         }
@@ -851,7 +855,7 @@ class GdkSession constructor(
         }
     }
 
-    private fun resetNetwork(network: Network){
+    private fun resetNetwork(network: Network) {
         // Remove as active network
         activeSessions.remove(network)
 
@@ -860,16 +864,16 @@ class GdkSession constructor(
         }
 
         // Init a new Session and connect
-        try{
+        try {
             gdk.connect(gdkSession(network), createConnectionParams(network))
-        }catch (e: Exception){
+        } catch (e: Exception) {
             e.printStackTrace()
         }
     }
 
     fun disconnectAsync(reason: LogoutReason = LogoutReason.USER_ACTION): Boolean {
         // Disconnect only if needed
-        if(isConnected) {
+        if (isConnected) {
             logoutReason = reason
             _isConnectedState.value = false
 
@@ -883,7 +887,9 @@ class GdkSession constructor(
 
                 // Disconnect last device connection
                 device?.also { device ->
-                    if(sessionManager.getConnectedHardwareWalletSessions().none { it.device?.connectionIdentifier == device.connectionIdentifier }){
+                    if (sessionManager.getConnectedHardwareWalletSessions()
+                            .none { it.device?.connectionIdentifier == device.connectionIdentifier }
+                    ) {
                         device.disconnect()
                     }
                 }
@@ -919,7 +925,7 @@ class GdkSession constructor(
         val details = buildJsonObject {
             put("method", method)
 
-            if(urls != null){
+            if (urls != null) {
 
                 putJsonArray("urls") {
                     urls.forEach {
@@ -936,7 +942,7 @@ class GdkSession constructor(
                 put("accept", accept)
             }
 
-            if (certs != null){
+            if (certs != null) {
                 putJsonArray("root_certificates") {
                     certs.forEach {
                         add(it)
@@ -950,7 +956,7 @@ class GdkSession constructor(
     }
 
     override suspend fun httpRequest(details: JsonElement): JsonElement {
-        if(!isNetworkInitialized){
+        if (!isNetworkInitialized) {
             prepareHttpRequest()
         }
 
@@ -976,7 +982,7 @@ class GdkSession constructor(
                 }
             }
 
-            if(!isUrlSafe && !(settingsManager.isAllowCustomPinServer(urls) || _tempAllowedServers.containsAll(servers))){
+            if (!isUrlSafe && !(settingsManager.isAllowCustomPinServer(urls) || _tempAllowedServers.containsAll(servers))) {
                 if (urlValidator.unsafeUrlWarning(urls)) {
                     _tempAllowedServers.addAll(servers)
                 } else {
@@ -993,14 +999,14 @@ class GdkSession constructor(
         }
 
         return gdk.httpRequest(gdkSession(defaultNetwork), details).also {
-            if(urls.find { it.contains("/set_pin") } != null){
+            if (urls.find { it.contains("/set_pin") } != null) {
                 countly.jadeInitialize()
             }
         }
     }
 
     private suspend fun initLightningSdk(lightningMnemonic: String?) {
-        if(isHardwareWallet){
+        if (isHardwareWallet) {
             _derivedHwLightningMnemonic = lightningMnemonic
         }
 
@@ -1017,7 +1023,7 @@ class GdkSession constructor(
     suspend fun initLightningIfNeeded(mnemonic: String?) {
 
         if (lightning != null) {
-            if(lightningSdkOrNull == null && supportsLightning()){
+            if (lightningSdkOrNull == null && supportsLightning()) {
                 // Init SDK
                 initLightningSdk(mnemonic)
             }
@@ -1025,7 +1031,7 @@ class GdkSession constructor(
             if (!hasLightning) {
                 connectToGreenlight(mnemonic = mnemonic ?: deriveLightningMnemonic(), restoreOnly = false)
 
-                if(!hasLightning){
+                if (!hasLightning) {
                     throw Exception("Something went wrong while initiating your Lightning account")
                 }
 
@@ -1039,8 +1045,12 @@ class GdkSession constructor(
         }
     }
 
-    suspend fun <T> initNetworkIfNeeded(network: Network, hardwareWalletResolver: HardwareWalletResolver? = null, action: suspend () -> T) : T{
-        if(!activeSessions.contains(network)){
+    suspend fun <T> initNetworkIfNeeded(
+        network: Network,
+        hardwareWalletResolver: HardwareWalletResolver? = null,
+        action: suspend () -> T
+    ): T {
+        if (!activeSessions.contains(network)) {
 
             try {
                 gdk.connect(gdkSession(network), createConnectionParams(network))
@@ -1080,7 +1090,14 @@ class GdkSession constructor(
 
             // Sync settings, use multisig if exists to sync PGP also
             (getSettings(network = previousMultisig) ?: getSettings())?.also {
-                changeSettings(network, Settings.normalizeFromProminent(networkSettings = getSettings(network) ?: it, prominentSettings = it, pgpFromProminent = true))
+                changeSettings(
+                    network,
+                    Settings.normalizeFromProminent(
+                        networkSettings = getSettings(network) ?: it,
+                        prominentSettings = it,
+                        pgpFromProminent = true
+                    )
+                )
             }
 
             if (network.isMultisig) {
@@ -1094,7 +1111,7 @@ class GdkSession constructor(
             // Archive default account if it is unfunded
             val defaultAccount = networkAccounts.first()
 
-            if(!defaultAccount.hasHistory(this)){
+            if (!defaultAccount.hasHistory(this)) {
                 updateAccount(
                     account = defaultAccount,
                     isHidden = true,
@@ -1113,12 +1130,12 @@ class GdkSession constructor(
         return action.invoke()
     }
 
-    fun tryFailedNetworks(hardwareWalletResolver: HardwareWalletResolver? = null){
-        scope.launch(context = logException(countly)){
+    fun tryFailedNetworks(hardwareWalletResolver: HardwareWalletResolver? = null) {
+        scope.launch(context = logException(countly)) {
 
-            val loginCredentialsParams = if(isHardwareWallet){
+            val loginCredentialsParams = if (isHardwareWallet) {
                 LoginCredentialsParams.empty
-            }else{
+            } else {
                 LoginCredentialsParams.fromCredentials(getCredentials())
             }
 
@@ -1129,7 +1146,7 @@ class GdkSession constructor(
 
             // Network with failed logins
             networks.forEach { network ->
-                try{
+                try {
                     logger.i { "Login into ${network.id}" }
 
                     if (network.isLightning) {
@@ -1155,10 +1172,10 @@ class GdkSession constructor(
                     }
 
                     activeSessions.add(network)
-                }catch (e: Exception){
+                } catch (e: Exception) {
                     e.printStackTrace()
 
-                    if(e.message != "id_login_failed"){
+                    if (e.message != "id_login_failed") {
                         failedNetworkLogins.add(network)
                     }
                 }
@@ -1193,7 +1210,7 @@ class GdkSession constructor(
         loginCredentials: LoginCredentials,
         appGreenlightCredentials: AppGreenlightCredentials?,
         isRestore: Boolean = false,
-        initializeSession : Boolean = true,
+        initializeSession: Boolean = true,
     ): LoginData {
         val initNetworks = if (wallet.isLightning) {
             listOf(
@@ -1261,8 +1278,11 @@ class GdkSession constructor(
         )
     }
 
-
-    suspend fun loginWatchOnly(wallet: GreenWallet, loginCredentials: LoginCredentials? = null, watchOnlyCredentials: HwWatchOnlyCredentials) {
+    suspend fun loginWatchOnly(
+        wallet: GreenWallet,
+        loginCredentials: LoginCredentials? = null,
+        watchOnlyCredentials: HwWatchOnlyCredentials
+    ) {
         loginWatchOnly(network = prominentNetwork(wallet, loginCredentials), wallet = wallet, watchOnlyCredentials = watchOnlyCredentials)
     }
 
@@ -1365,19 +1385,21 @@ class GdkSession constructor(
 
         isNoBlobWatchOnly = isWatchOnlyValue && richWatchOnly == null
         isRichWatchOnly = isWatchOnlyValue && richWatchOnly != null
-        isCoreDescriptorWatchOnly = isWatchOnlyValue && (walletLoginCredentialsParams.coreDescriptors != null || walletLoginCredentialsParams.hwWatchOnlyCredentials != null)
+        isCoreDescriptorWatchOnly =
+            isWatchOnlyValue && (walletLoginCredentialsParams.coreDescriptors != null || walletLoginCredentialsParams.hwWatchOnlyCredentials != null)
         isAirgapped = isWatchOnlyValue && wallet?.isHardware ?: false
 
         setupDeviceToSession(device)
 
-        this.deviceModel = device?.deviceModel ?: wallet?.deviceIdentifiers?.firstOrNull()?.model ?: wallet?.deviceIdentifiers?.firstOrNull()?.brand?.let {
-            when(it){
-                DeviceBrand.Blockstream -> DeviceModel.BlockstreamGeneric
-                DeviceBrand.Ledger -> DeviceModel.LedgerGeneric
-                DeviceBrand.Trezor -> DeviceModel.TrezorGeneric
-                DeviceBrand.Generic -> DeviceModel.Generic
+        this.deviceModel =
+            device?.deviceModel ?: wallet?.deviceIdentifiers?.firstOrNull()?.model ?: wallet?.deviceIdentifiers?.firstOrNull()?.brand?.let {
+                when (it) {
+                    DeviceBrand.Blockstream -> DeviceModel.BlockstreamGeneric
+                    DeviceBrand.Ledger -> DeviceModel.LedgerGeneric
+                    DeviceBrand.Trezor -> DeviceModel.TrezorGeneric
+                    DeviceBrand.Generic -> DeviceModel.Generic
+                }
             }
-        }
 
         _disableNotificationHandling = true
         _walletActiveEventInvalidated = true
@@ -1398,17 +1420,17 @@ class GdkSession constructor(
 
         // Get enabled singlesig networks (multisig can be identified by login_user)
         val enabledGdkSessions = gdkSessions.toSortedLinkedHashMap { n1, n2 -> // Sort prominent first
-            if(n1 == prominentNetwork) {
+            if (n1 == prominentNetwork) {
                 -1
-            }else if(n2 == prominentNetwork) {
+            } else if (n2 == prominentNetwork) {
                 1
-            }else{
+            } else {
                 n1.id.compareTo(n2.id)
             }
         }
 
         // If it's a pin login, check if the prominent network is connected
-        if(walletLoginCredentialsParams.pin.isNotBlank() && !connectedNetworks.contains(prominentNetwork)){
+        if (walletLoginCredentialsParams.pin.isNotBlank() && !connectedNetworks.contains(prominentNetwork)) {
             throw Exception("id_connection_failed")
         }
 
@@ -1443,7 +1465,7 @@ class GdkSession constructor(
                         ?: loginCredentialsParams
 
                 try {
-                    val hasGdkCache = if(isHardwareWallet || networkLoginCredentialsParams.mnemonic.isNotBlank()){
+                    val hasGdkCache = if (isHardwareWallet || networkLoginCredentialsParams.mnemonic.isNotBlank()) {
                         try {
                             gdk.hasGdkCache(
                                 getWalletIdentifier(
@@ -1452,7 +1474,7 @@ class GdkSession constructor(
                                     hwInteraction = hwInteraction
                                 )
                             )
-                        } catch (e: Exception){
+                        } catch (e: Exception) {
                             e.printStackTrace()
                             false
                         }
@@ -1460,13 +1482,13 @@ class GdkSession constructor(
                         false
                     }
 
-                    if (gdkSession.key.isSinglesig && !isProminent && !isRestore && !isSmartDiscovery && !hasGdkCache && !isHwWatchOnly){
+                    if (gdkSession.key.isSinglesig && !isProminent && !isRestore && !isSmartDiscovery && !hasGdkCache && !isHwWatchOnly) {
                         logger.i { "Skip login in ${network.id}" }
                         return@async null
                     }
 
                     // On Create just login into Bitcoin network
-                    if(isCreate && (gdkSession.key.isMultisig || gdkSession.key.isLiquid)){
+                    if (isCreate && (gdkSession.key.isMultisig || gdkSession.key.isLiquid)) {
                         logger.i { "Skip login in ${network.id}" }
                         return@async null
                     }
@@ -1492,39 +1514,39 @@ class GdkSession constructor(
                                 val networkAccounts = getAccounts(network = network, refresh = true)
                                 val walletIsFunded = networkAccounts.find { account -> account.bip44Discovered == true } != null
 
-                                 if (walletIsFunded) {
-                                     // Archive no-history default account
-                                     networkAccounts.first().also {
-                                         if (it.pointer == 0L && !it.hasHistory(this@GdkSession)) {
-                                             updateAccount(
-                                                 account = it,
-                                                 isHidden = true,
-                                                 resetAccountName = it.type.title()
-                                             )
-                                         }
-                                     }
-                                 } else if(!hasGdkCache){ // Newly discovered Wallet
+                                if (walletIsFunded) {
+                                    // Archive no-history default account
+                                    networkAccounts.first().also {
+                                        if (it.pointer == 0L && !it.hasHistory(this@GdkSession)) {
+                                            updateAccount(
+                                                account = it,
+                                                isHidden = true,
+                                                resetAccountName = it.type.title()
+                                            )
+                                        }
+                                    }
+                                } else if (!hasGdkCache) { // Newly discovered Wallet
 
-                                     // Archive GDK default account
-                                     networkAccounts.first().also { defaultAccount ->
-                                         updateAccount(
-                                             account = defaultAccount,
-                                             isHidden = true,
-                                             resetAccountName = defaultAccount.type.title()
-                                         )
-                                     }
+                                    // Archive GDK default account
+                                    networkAccounts.first().also { defaultAccount ->
+                                        updateAccount(
+                                            account = defaultAccount,
+                                            isHidden = true,
+                                            resetAccountName = defaultAccount.type.title()
+                                        )
+                                    }
 
-                                     // Create Singlesig account
-                                     val accountType = AccountType.BIP84_SEGWIT
+                                    // Create Singlesig account
+                                    val accountType = AccountType.BIP84_SEGWIT
 
-                                     createAccount(
-                                         network = network,
-                                         params = SubAccountParams(
-                                             name = accountType.toString(),
-                                             type = accountType,
-                                         )
-                                     )
-                                 }
+                                    createAccount(
+                                        network = network,
+                                        params = SubAccountParams(
+                                            name = accountType.toString(),
+                                            type = accountType,
+                                        )
+                                    )
+                                }
                             }
                         }
                     }
@@ -1552,7 +1574,8 @@ class GdkSession constructor(
                     return@async null
                 }
 
-                val lightningMnemonic = derivedLightningMnemonic ?: deriveLightningMnemonic(Credentials.fromLoginCredentialsParam(loginCredentialsParams))
+                val lightningMnemonic =
+                    derivedLightningMnemonic ?: deriveLightningMnemonic(Credentials.fromLoginCredentialsParam(loginCredentialsParams))
 
                 // Init SDK
                 initLightningSdk(lightningMnemonic)
@@ -1562,16 +1585,21 @@ class GdkSession constructor(
                     // Make it async to speed up login process
                     val job = scope.async {
                         try {
-                            val xPubHashId = if(isLightningShortcut) wallet?.xPubHashId else getWalletIdentifier(
+                            val xPubHashId = if (isLightningShortcut) wallet?.xPubHashId else getWalletIdentifier(
                                 network = prominentNetwork,
                                 loginCredentialsParams = loginCredentialsParams,
                                 hwInteraction = hwInteraction
                             ).xpubHashId
 
                             // Connect SDK
-                            connectToGreenlight(mnemonic = lightningMnemonic, parentXpubHashId = xPubHashId, restoreOnly = isRestore || isSmartDiscovery, quickResponse = isRestore)
+                            connectToGreenlight(
+                                mnemonic = lightningMnemonic,
+                                parentXpubHashId = xPubHashId,
+                                restoreOnly = isRestore || isSmartDiscovery,
+                                quickResponse = isRestore
+                            )
 
-                            if(isRestore) {
+                            if (isRestore) {
                                 hasLightning = lightningSdk.isConnected
                             }
 
@@ -1589,27 +1617,27 @@ class GdkSession constructor(
                     }
                 }
 
-            null
-        })).let { list ->
+                null
+            })).let { list ->
             list.let { deferred ->
-                if(isHardwareWallet){ // On hardware connection in series to avoid any race condition with the hw api
+                if (isHardwareWallet) { // On hardware connection in series to avoid any race condition with the hw api
                     deferred.map { it.await() }
-                }else{
+                } else {
                     deferred.awaitAll()
                 }
             }
-            .filterNotNull()
-            .let {
-                it.firstOrNull() ?: throw exceptions.first() // Throw if all networks failed
-            }.also {
-                _failedNetworksStateFlow.value += failedNetworkLogins
-                onLoginSuccess(
-                    loginData = it,
-                    initAccount = initAccount,
-                    initNetwork = initNetwork,
-                    initializeSession = initializeSession
-                )
-            }
+                .filterNotNull()
+                .let {
+                    it.firstOrNull() ?: throw exceptions.first() // Throw if all networks failed
+                }.also {
+                    _failedNetworksStateFlow.value += failedNetworkLogins
+                    onLoginSuccess(
+                        loginData = it,
+                        initAccount = initAccount,
+                        initNetwork = initNetwork,
+                        initializeSession = initializeSession
+                    )
+                }
         }
     }
 
@@ -1648,7 +1676,7 @@ class GdkSession constructor(
 
         device?.deviceState?.onEach {
             // Device went offline
-            if(it == DeviceState.DISCONNECTED){
+            if (it == DeviceState.DISCONNECTED) {
                 disconnectAsync(reason = LogoutReason.DEVICE_DISCONNECTED)
             }
         }?.launchIn(scope)
@@ -1683,7 +1711,7 @@ class GdkSession constructor(
         }.launchIn(scope = scope + parentJob)
     }
 
-     private suspend fun reLogin(network: Network): LoginData {
+    private suspend fun reLogin(network: Network): LoginData {
         return authHandler(
             network,
             gdk.loginUser(
@@ -1698,7 +1726,7 @@ class GdkSession constructor(
                 getTransactions(account = it, isReset = false, isLoadMore = false)
             }
 
-            updateAccountsAndBalances(updateBalancesForNetwork =  network)
+            updateAccountsAndBalances(updateBalancesForNetwork = network)
             updateWalletTransactions(updateForNetwork = network)
         }
     }
@@ -1710,9 +1738,9 @@ class GdkSession constructor(
         initializeSession: Boolean
     ) {
         _isConnectedState.value = true
-        xPubHashId = if(isNoBlobWatchOnly && !isHwWatchOnly) loginData.networkHashId else loginData.xpubHashId
+        xPubHashId = if (isNoBlobWatchOnly && !isHwWatchOnly) loginData.networkHashId else loginData.xpubHashId
 
-        if(initializeSession) {
+        if (initializeSession) {
             countly.activeWalletStart()
             initializeSessionData(initNetwork, initAccount)
         }
@@ -1736,7 +1764,7 @@ class GdkSession constructor(
         // Update the enriched assets
         updateEnrichedAssets()
 
-        if(!isWatchOnlyValue && !isLightningShortcut) {
+        if (!isWatchOnlyValue && !isLightningShortcut) {
             // Sync settings from prominent network to the rest
             syncSettings()
 
@@ -1753,7 +1781,7 @@ class GdkSession constructor(
                     updateTwoFactorConfig(network = it, useCache = false)
                     updateWatchOnlyUsername(network = it)
                 }
-            }catch (e: Exception){
+            } catch (e: Exception) {
                 countly.recordException(e)
             }
         }
@@ -1775,7 +1803,7 @@ class GdkSession constructor(
         }
     }
 
-    fun updateSystemMessage(){
+    fun updateSystemMessage() {
         scope.launch(logException(countly)) {
             _systemMessageStateFlow.value = gdkSessions.map {
                 it.key to (gdk.getSystemMessage(it.value) ?: "")
@@ -1804,7 +1832,11 @@ class GdkSession constructor(
     ) = gdk.getWalletIdentifier(
         connectionParams = createConnectionParams(network),
         loginCredentialsParams = loginCredentialsParams?.takeIf { !it.mnemonic.isNullOrBlank() }
-            ?: getDeviceMasterXpub(network = network, gdkHwWallet = gdkHwWallet, hwInteraction = hwInteraction)?.let { LoginCredentialsParams(masterXpub = it) }
+            ?: getDeviceMasterXpub(
+                network = network,
+                gdkHwWallet = gdkHwWallet,
+                hwInteraction = hwInteraction
+            )?.let { LoginCredentialsParams(masterXpub = it) }
             ?: loginCredentialsParams
             ?: getCredentials().let { LoginCredentialsParams.fromCredentials(it) }
     )
@@ -1860,7 +1892,7 @@ class GdkSession constructor(
             return _derivedHwLightningMnemonic ?: throw Exception("HWW can't derive lightning mnemonic")
         }
 
-        return (credentials ?: getCredentials()).let{
+        return (credentials ?: getCredentials()).let {
             if (isLightningShortcut || isHardwareWallet) {
                 it.mnemonic!! // Already derived
             } else {
@@ -1896,7 +1928,8 @@ class GdkSession constructor(
 
     suspend fun getPreviousAddresses(account: Account, lastPointer: Int?) = authHandler(
         account.network,
-        gdk.getPreviousAddress(gdkSession(account.network),
+        gdk.getPreviousAddress(
+            gdkSession(account.network),
             PreviousAddressParams(account.pointer, lastPointer = lastPointer)
         )
     ).result<PreviousAddresses>()
@@ -1904,12 +1937,17 @@ class GdkSession constructor(
     override fun refreshAssets(params: AssetsParams) {
         (activeLiquid ?: liquid)?.also { gdk.refreshAssets(gdkSession(it), params) }
     }
+
     override fun getAssets(params: GetAssetsParams) = (activeLiquid ?: liquid)?.let { gdk.getAssets(gdkSession(it), params) }
 
     fun setupDefaultAccounts(): Job {
         return scope.launch {
             // Archive default gdk accounts with no history
-            accounts.value.filter { (it.type == AccountType.BIP44_LEGACY || it.type == AccountType.BIP49_SEGWIT_WRAPPED) && !it.hasHistory(this@GdkSession)}.forEach { account ->
+            accounts.value.filter {
+                (it.type == AccountType.BIP44_LEGACY || it.type == AccountType.BIP49_SEGWIT_WRAPPED) && !it.hasHistory(
+                    this@GdkSession
+                )
+            }.forEach { account ->
                 logger.d { "Archive ${account.name}" }
                 updateAccount(
                     account = account, isHidden = true, resetAccountName = account.type.title()
@@ -1921,7 +1959,7 @@ class GdkSession constructor(
 
             // Create Bitcoin & Liquid accounts if do not exists
             listOfNotNull(bitcoinSinglesig, liquidSinglesig).forEach { network ->
-                if(accounts.value.find { it.type == accountType && it.network.id == network.id} == null) {
+                if (accounts.value.find { it.type == accountType && it.network.id == network.id } == null) {
                     logger.d { "Creating ${network.name} account" }
                     createAccount(
                         network = network,
@@ -1937,8 +1975,8 @@ class GdkSession constructor(
             updateAccountsAndBalances().join()
 
             // Set active account as the first funded account or the first with history
-            (accounts.value.find { !it.isLightning && it.isFunded(this@GdkSession) } ?:
-            accounts.value.find { !it.isLightning && it.hasHistory(this@GdkSession) })?.also {
+            (accounts.value.find { !it.isLightning && it.isFunded(this@GdkSession) }
+                ?: accounts.value.find { !it.isLightning && it.hasHistory(this@GdkSession) })?.also {
                 setActiveAccount(it)
             }
         }
@@ -1971,23 +2009,23 @@ class GdkSession constructor(
     }
 
     private fun getAccounts(refresh: Boolean = false): List<Account> = runBlocking {
-        (if(isLightningShortcut){
+        (if (isLightningShortcut) {
             listOf()
-        }else{
+        } else {
             activeGdkSessions.map {
                 scope.async {
                     getAccounts(it.key, refresh)
                 }
             }.awaitAll().flatten()
         }).let {
-            if(hasLightning) it + lightningAccount else it
+            if (hasLightning) it + lightningAccount else it
         }.sorted()
     }
 
     suspend private fun getAccounts(network: Network, refresh: Boolean = false): List<Account> = initNetworkIfNeeded(network) {
         gdkSession(network).let {
             // Watch-only can't discover new accounts
-            authHandler(network, gdk.getSubAccounts(it, SubAccountsParams(refresh = if(isNoBlobWatchOnly) false else refresh)))
+            authHandler(network, gdk.getSubAccounts(it, SubAccountsParams(refresh = if (isNoBlobWatchOnly) false else refresh)))
                 .result<Accounts>().accounts.onEach { account ->
                     account.setup(this, network)
                 }
@@ -2000,18 +2038,18 @@ class GdkSession constructor(
         it.setup(this, account.network)
 
         // Update active account if needed
-        if(_activeAccountStateFlow.value?.id == it.id){
+        if (_activeAccountStateFlow.value?.id == it.id) {
             _activeAccountStateFlow.value = it
         }
     }
 
-    fun setActiveAccount(account: Account){
+    fun setActiveAccount(account: Account) {
         // Get the account from the list of accounts just to be sure we have the latest account data
         _activeAccountStateFlow.value = accounts.value.find { it.id == account.id } ?: account
     }
 
-    fun removeAccount(account: Account){
-        if(account.isLightning){
+    fun removeAccount(account: Account) {
+        if (account.isLightning) {
             hasLightning = false
 
             lightningSdk.stop()
@@ -2031,7 +2069,7 @@ class GdkSession constructor(
         resetAccountName: String? = null
     ): Account {
         // Disable account editing for lightning accounts
-        if(account.isLightning) return account
+        if (account.isLightning) return account
 
         authHandler(
             account.network,
@@ -2053,7 +2091,7 @@ class GdkSession constructor(
         // Update account list
         updateAccounts()
 
-        if(userInitiated && isHidden){
+        if (userInitiated && isHidden) {
             _eventsSharedFlow.emit(WalletEvents.ARCHIVED_ACCOUNT)
         }
 
@@ -2069,7 +2107,8 @@ class GdkSession constructor(
     }
 
     suspend fun updateAccount(account: Account, name: String): Account {
-        authHandler(account.network,
+        authHandler(
+            account.network,
             gdk.updateSubAccount(
                 gdkSession(account.network), UpdateSubAccountParams(
                     name = name,
@@ -2091,12 +2130,12 @@ class GdkSession constructor(
             lightningSdk.recommendedFees()?.let { fees ->
                 (
                         listOf(fees.minimumFee) +
-                        List(FeeBlockTarget[0] - 0) { fees.fastestFee } +
-                        List(FeeBlockTarget[1] - FeeBlockTarget[0]) { fees.halfHourFee } +
-                        List(FeeBlockTarget[2] - FeeBlockTarget[1]) { fees.hourFee }
+                                List(FeeBlockTarget[0] - 0) { fees.fastestFee } +
+                                List(FeeBlockTarget[1] - FeeBlockTarget[0]) { fees.halfHourFee } +
+                                List(FeeBlockTarget[2] - FeeBlockTarget[1]) { fees.hourFee }
                         ).map { it.toLong() }.let {
-                    FeeEstimation(it)
-                }
+                        FeeEstimation(it)
+                    }
             }
         } else {
             gdk.getFeeEstimates(gdkSession(network)).let {
@@ -2112,25 +2151,26 @@ class GdkSession constructor(
                 logger.d { "FeeEstimation: ${network.id} $it" }
             }
         }
-    }  ?: FeeEstimation(fees = mutableListOf(network.defaultFee))
+    } ?: FeeEstimation(fees = mutableListOf(network.defaultFee))
 
-    suspend fun getTransactions(account: Account, params: TransactionParams = TransactionParams(subaccount = 0)) = (if (account.network.isLightning) {
-        getLightningTransactions()
-    } else {
-        authHandler(account.network, gdk.getTransactions(gdkSession(account.network), params))
-            .result<Transactions>()
-    }).also {
-        it.transactions.onEach { tx ->
-            tx.accountInjected = account
-            tx.confirmationsMaxInjected = tx.getConfirmationsMax(session = this)
+    suspend fun getTransactions(account: Account, params: TransactionParams = TransactionParams(subaccount = 0)) =
+        (if (account.network.isLightning) {
+            getLightningTransactions()
+        } else {
+            authHandler(account.network, gdk.getTransactions(gdkSession(account.network), params))
+                .result<Transactions>()
+        }).also {
+            it.transactions.onEach { tx ->
+                tx.accountInjected = account
+                tx.confirmationsMaxInjected = tx.getConfirmationsMax(session = this)
+            }
         }
-    }
 
     private val refreshMutex = Mutex()
     fun refresh(account: Account? = null) {
         scope.launch(context = logException(countly)) {
             refreshMutex.withLock {
-                if(account == null || account.isLightning){
+                if (account == null || account.isLightning) {
                     syncLightning()
                 }
 
@@ -2167,14 +2207,14 @@ class GdkSession constructor(
 
         return scope.launch(context = logException(countly)) {
 
-            try{
+            try {
                 accountsAndBalancesMutex.withLock {
 
                     // Update accounts
                     updateAccounts(refresh = refresh)
 
                     for (account in this@GdkSession.allAccounts.value) {
-                        if((updateBalancesForAccounts == null && updateBalancesForNetwork == null) || updateBalancesForAccounts?.find { account.id == it.id } != null || account.network == updateBalancesForNetwork) {
+                        if ((updateBalancesForAccounts == null && updateBalancesForNetwork == null) || updateBalancesForAccounts?.find { account.id == it.id } != null || account.network == updateBalancesForNetwork) {
                             getBalance(account = account, cacheAssets = isInitialize).also {
                                 accountAssetsStateFlow(account).value = it
                             }
@@ -2190,7 +2230,7 @@ class GdkSession constructor(
                         }
                     }
 
-                    if(isInitialize) {
+                    if (isInitialize) {
                         // Cache wallet assets (again) + Enriched assets + liquid asset if network exists
                         (walletAssets.keys +
                                 (enrichedAssets.value.takeIf { liquid != null }?.map { it.assetId } ?: emptyList()) +
@@ -2201,8 +2241,8 @@ class GdkSession constructor(
                     }
 
                     // Mark it if necessary
-                    if(!walletHasHistory){
-                        if(walletAssets.size > 2 || walletAssets.values.sum() > 0L) {
+                    if (!walletHasHistory) {
+                        if (walletAssets.size > 2 || walletAssets.values.sum() > 0L) {
                             _walletHasHistorySharedFlow.value = true
                         }
                     }
@@ -2230,7 +2270,7 @@ class GdkSession constructor(
     }
 
     private val transactionsMutex = Mutex()
-    fun getTransactions(account: Account, isReset : Boolean, isLoadMore: Boolean) {
+    fun getTransactions(account: Account, isReset: Boolean, isLoadMore: Boolean) {
         scope.launch(context = logException(countly)) {
             val transactionsPagerStateFlow = accountTransactionsPagerStateFlow(account)
             val transactionsStateFlow = accountTransactionsStateFlow(account)
@@ -2254,7 +2294,10 @@ class GdkSession constructor(
 
                     val limit = if (isReset || isLoadMore) TRANSACTIONS_PER_PAGE else (txSize + TRANSACTIONS_PER_PAGE)
 
-                    val transactions = getTransactions(account, TransactionParams(subaccount = account.pointer, offset = offset, limit = limit)).transactions
+                    val transactions = getTransactions(
+                        account,
+                        TransactionParams(subaccount = account.pointer, offset = offset, limit = limit)
+                    ).transactions
 
                     // Update transactions
                     transactionsStateFlow.value = DataState.Success(
@@ -2266,8 +2309,8 @@ class GdkSession constructor(
                     )
 
                     // Update pager
-                    if(isReset || isLoadMore){
-                        transactionsPagerStateFlow.value = if(account.isLightning) false else transactions.size == TRANSACTIONS_PER_PAGE
+                    if (isReset || isLoadMore) {
+                        transactionsPagerStateFlow.value = if (account.isLightning) false else transactions.size == TRANSACTIONS_PER_PAGE
                     }
                 }
             } catch (e: Exception) {
@@ -2295,10 +2338,10 @@ class GdkSession constructor(
                             ((updateForNetwork == null && updateForAccounts == null) || updateForAccounts?.find { account.id == it.id } != null || account.network == updateForNetwork)
                         }
                         .onEach { account ->
-                            if(account.hidden){
+                            if (account.hidden) {
                                 // Clear transactions
                                 _walletTransactions.remove(account.id)
-                            }else {
+                            } else {
                                 _walletTransactions[account.id] = getTransactions(
                                     account,
                                     TransactionParams(subaccount = account.pointer, limit = WALLET_OVERVIEW_TRANSACTIONS)
@@ -2313,7 +2356,7 @@ class GdkSession constructor(
                     }
 
                     // Add Swap transactions
-                    if(hasLightning){
+                    if (hasLightning) {
                         walletTransactions = lightningSdk.swapInfoStateFlow.value.map {
                             Transaction.fromSwapInfo(lightningAccount, it.first, it.second)
                         } + lightningSdk.reverseSwapInfoStateFlow.value.map {
@@ -2321,7 +2364,7 @@ class GdkSession constructor(
                         } + walletTransactions
                     }
 
-                    if(walletTransactions.isNotEmpty()){
+                    if (walletTransactions.isNotEmpty()) {
                         _walletHasHistorySharedFlow.value = true
                     }
                     _walletTransactionsStateFlow.value = DataState.Success(walletTransactions)
@@ -2332,7 +2375,6 @@ class GdkSession constructor(
             }
         }
     }
-
 
     private fun sortTransactions(t1: Transaction, t2: Transaction): Int =
         when {
@@ -2347,6 +2389,7 @@ class GdkSession constructor(
                     t2.createdAtTs.compareTo(t1.createdAtTs)
                 }
             }
+
             else -> t2.createdAtTs.compareTo(t1.createdAtTs)
         }
 
@@ -2393,7 +2436,7 @@ class GdkSession constructor(
         val w1 = a1.sortWeight(this)
         val w2 = a2.sortWeight(this)
 
-        if(w1 != w2){
+        if (w1 != w2) {
             return w2.compareTo(w1)
         }
 
@@ -2410,7 +2453,7 @@ class GdkSession constructor(
     }
 
     suspend fun getBalance(account: Account, confirmations: Int = 0, cacheAssets: Boolean = false): Assets {
-        val assets: LinkedHashMap<String, Long>? = if(account.isLightning) {
+        val assets: LinkedHashMap<String, Long>? = if (account.isLightning) {
             lightningSdkOrNull?.balance()?.let { linkedMapOf(LN_BTC_POLICY_ASSET to it) }
         } else {
             authHandler(
@@ -2423,7 +2466,7 @@ class GdkSession constructor(
             ).result()
         }
 
-        if(cacheAssets) {
+        if (cacheAssets) {
             // Cache assets before sorting them, as the sort function uses the asset metadata
             assets?.also { cacheAssets(it.keys) }
         }
@@ -2603,8 +2646,14 @@ class GdkSession constructor(
     // asset_info in Convert object can be null for liquid assets that don't have asset metadata
     // if no asset is given, no conversion is needed (conversion will be identified as a btc value in gdk)
     // onlyInAcceptableRange return MIN, MAX values so that the error pop in different gdk call
-    suspend fun convert(assetId: String? = null, asString: String? = null, asLong: Long? = null, denomination: String? = null, onlyInAcceptableRange: Boolean = true): Balance? = withContext(context = Dispatchers.Default) {
-        
+    suspend fun convert(
+        assetId: String? = null,
+        asString: String? = null,
+        asLong: Long? = null,
+        denomination: String? = null,
+        onlyInAcceptableRange: Boolean = true
+    ): Balance? = withContext(context = Dispatchers.Default) {
+
         val network = assetId.networkForAsset(this@GdkSession)?.takeIf { !it.isLightning } ?: defaultNetwork
         val isPolicyAsset = assetId.isPolicyAsset(this@GdkSession)
         val asset = assetId?.let { getAsset(it) }
@@ -2690,9 +2739,11 @@ class GdkSession constructor(
     }
 
     suspend fun getUnspentOutputs(network: Network, privateKey: String): UnspentOutputs {
-        return getUnspentOutputsForPrivateKey(network, UnspentOutputsPrivateKeyParams(
-            privateKey = privateKey
-        ))
+        return getUnspentOutputsForPrivateKey(
+            network, UnspentOutputsPrivateKeyParams(
+                privateKey = privateKey
+            )
+        )
     }
 
     @NativeCoroutinesIgnore
@@ -2733,6 +2784,7 @@ class GdkSession constructor(
             null
         }
     }
+
     private suspend fun createLightningTransaction(network: Network, params: CreateTransactionParams): CreateTransaction {
         logger.d { "createLightningTransaction $params" }
 
@@ -2754,7 +2806,7 @@ class GdkSession constructor(
                     error = "id_invoice_expired"
                 }
 
-                if(sendableSatoshi == null || sendableSatoshi == 0L){
+                if (sendableSatoshi == null || sendableSatoshi == 0L) {
                     error = "id_invalid_amount"
                 }
 
@@ -2815,7 +2867,7 @@ class GdkSession constructor(
 
     suspend fun rsaVerify(params: RsaVerifyParams): RsaVerify {
         // TODO clean it
-        if(!isNetworkInitialized){
+        if (!isNetworkInitialized) {
             prepareHttpRequest()
         }
 
@@ -2825,7 +2877,11 @@ class GdkSession constructor(
         ).result<RsaVerify>()
     }
 
-    suspend fun signMessage(network: Network, params: SignMessageParams, hardwareWalletResolver: HardwareWalletResolver? = null): SignMessage = authHandler(
+    suspend fun signMessage(
+        network: Network,
+        params: SignMessageParams,
+        hardwareWalletResolver: HardwareWalletResolver? = null
+    ): SignMessage = authHandler(
         network,
         gdk.signMessage(gdkSession(network), params = params)
     ).result(hardwareWalletResolver = hardwareWalletResolver)
@@ -2836,9 +2892,9 @@ class GdkSession constructor(
             gdk.blindTransaction(gdkSession(network), createTransaction = createTransaction.jsonElement!!)
         ).result<CreateTransaction>()
 
-    suspend fun signTransaction(network: Network, createTransaction: CreateTransaction): CreateTransaction = if(network.isLightning){
+    suspend fun signTransaction(network: Network, createTransaction: CreateTransaction): CreateTransaction = if (network.isLightning) {
         createTransaction // no need to sign on gdk side
-    }else{
+    } else {
         authHandler(
             network,
             gdk.signTransaction(gdkSession(network), createTransaction = createTransaction.jsonElement!!)
@@ -2864,7 +2920,7 @@ class GdkSession constructor(
             _walletActiveEventInvalidated = true
         }
 
-    fun sendLightningTransaction(params: CreateTransaction, comment: String?): ProcessedTransactionDetails{
+    fun sendLightningTransaction(params: CreateTransaction, comment: String?): ProcessedTransactionDetails {
         val invoiceOrLnUrl = params.addressees.first().address
         val satoshi = params.addressees.first().satoshi?.absoluteValue ?: 0L
 
@@ -2873,7 +2929,7 @@ class GdkSession constructor(
         return when (val inputType = lightningSdk.parseBoltOrLNUrlAndCache(invoiceOrLnUrl)) {
             is InputType.Bolt11 -> {
                 // Check for expiration
-                if(inputType.invoice.isExpired()){
+                if (inputType.invoice.isExpired()) {
                     throw Exception("id_invoice_expired")
                 }
 
@@ -2886,7 +2942,7 @@ class GdkSession constructor(
                     )
 
                     ProcessedTransactionDetails(paymentId = response.payment.id)
-                } catch (e: Exception){
+                } catch (e: Exception) {
                     throw ExceptionWithSupportData(
                         throwable = e,
                         supportData = SupportData.create(
@@ -2909,9 +2965,11 @@ class GdkSession constructor(
                         is LnUrlPayResult.EndpointSuccess -> {
                             ProcessedTransactionDetails.create(it.data)
                         }
+
                         is LnUrlPayResult.EndpointError -> {
                             throw Exception(it.data.reason)
                         }
+
                         is LnUrlPayResult.PayError -> {
                             val exception = Exception(it.data.reason)
                             throw ExceptionWithSupportData(
@@ -2947,13 +3005,13 @@ class GdkSession constructor(
             account.network,
             gdk.sendTransaction(gdkSession(account.network), transaction = signedTransaction)
         ).result<ProcessedTransactionDetails>(twoFactorResolver = twoFactorResolver).also {
-            if(isSendAll){
+            if (isSendAll) {
                 _accountEmptiedEvent = account
             }
         }
     }).also {
         // no Send All or Bump transaction
-        if(!isSendAll && !isBump) {
+        if (!isSendAll && !isBump) {
             _eventsSharedFlow.emit(WalletEvents.APP_REVIEW)
         }
     }
@@ -2972,12 +3030,12 @@ class GdkSession constructor(
         }
     }
 
-    fun emptyLightningAccount(){
+    fun emptyLightningAccount() {
         _accountEmptiedEvent = _lightningAccount
     }
 
-    private fun walletActiveEventIfNeeded(){
-        if(_walletActiveEventInvalidated) {
+    private fun walletActiveEventIfNeeded() {
+        if (_walletActiveEventInvalidated) {
             countly.activeWalletEnd(
                 session = this,
                 walletHasFunds = walletAssets.value.data()?.hasFunds == true,
@@ -2995,16 +3053,18 @@ class GdkSession constructor(
                 updateAccountsAndBalances(updateBalancesForAccounts = listOf(lightningAccount))
                 updateWalletTransactions(updateForAccounts = listOf(lightningAccount))
             }
+
             is BreezEvent.NewBlock -> {
                 lightning?.also { blockStateFlow(it).value = Block(height = event.block.toLong()) }
             }
+
             is BreezEvent.InvoicePaid -> {
                 _lastInvoicePaid.value = event.details
             }
-            else -> { }
+
+            else -> {}
         }
     }
-
 
     private fun scanExpired2FA() {
         scope.launch(context = logException(countly)) {
@@ -3020,7 +3080,7 @@ class GdkSession constructor(
 
     fun onNewNotification(gaSession: GASession, notification: Notification) {
 
-        val network = gdkSessions.firstNotNullOfOrNull { if(it.value == gaSession) it.key else null } ?: return
+        val network = gdkSessions.firstNotNullOfOrNull { if (it.value == gaSession) it.key else null } ?: return
 
         logger.d { "onNewNotification ${network.id} \t $notification" }
 
@@ -3029,10 +3089,10 @@ class GdkSession constructor(
                 notification.block?.let {
                     // SingleSig after connect immediately sends a block with height 0
                     // it's not safe to call getTransactions so early
-                    if(it.height > 0) {
+                    if (it.height > 0) {
                         blockStateFlow(network).value = it
 
-                        if(!_disableNotificationHandling) {
+                        if (!_disableNotificationHandling) {
                             // Update transactions
                             accounts.value.filter { it.network == network }.also { accounts ->
                                 accounts.forEach {
@@ -3050,39 +3110,43 @@ class GdkSession constructor(
                                 updateWalletTransactions(updateForAccounts = accounts)
                             }
 
-                            if(network.isMultisig && !network.needs2faActivation(this)){
+                            if (network.isMultisig && !network.needs2faActivation(this)) {
                                 scanExpired2FA()
                             }
                         }
                     }
                 }
             }
+
             "settings" -> {
                 notification.settings?.let {
                     settingsStateFlow(network).value = it
                 }
             }
+
             "twofactor_reset" -> {
                 notification.twoFactorReset?.let {
                     twoFactorResetStateFlow(network).value = it
                 }
             }
+
             "tor" -> {
                 // Get TOR notification only from the default network
-                if(network == defaultNetwork) {
+                if (network == defaultNetwork) {
                     notification.tor?.let {
                         _torStatusSharedFlow.value = it
                     }
                 }
             }
+
             "network" -> {
                 notification.network?.let { event ->
-                    if(isConnected){
-                        if(event.isConnected && authenticationRequired[network] == true){
-                            scope.launch(context = logException(countly)){
+                    if (isConnected) {
+                        if (event.isConnected && authenticationRequired[network] == true) {
+                            scope.launch(context = logException(countly)) {
                                 reLogin(network)
                             }
-                        }else if(!event.isConnected){
+                        } else if (!event.isConnected) {
                             // mark re-authentication is required
                             authenticationRequired[network] = true
                         }
@@ -3091,23 +3155,28 @@ class GdkSession constructor(
                     networkEventsStateFlow(network).value = event
 
                     // Personal Electrum Server Error
-                    if(network.isSinglesig && !event.isConnected && settingsManager.appSettings.getPersonalElectrumServer(network).isNotBlank()){
+                    if (network.isSinglesig && !event.isConnected && settingsManager.appSettings.getPersonalElectrumServer(network)
+                            .isNotBlank()
+                    ) {
                         scope.launch {
                             _networkErrors.send(network to event)
                         }
                     }
                 }
             }
+
             "ticker" -> {
                 // Update UI maybe
                 _tickerSharedFlow.tryEmit(Unit)
             }
+
             "subaccount" -> {
-                if(!_disableNotificationHandling && notification.subaccount?.isSynced == true) {
+                if (!_disableNotificationHandling && notification.subaccount?.isSynced == true) {
                     updateAccountsAndBalances()
                     updateWalletTransactions()
                 }
             }
+
             "transaction" -> {
                 if (!_disableNotificationHandling) {
                     notification.transaction?.let { event ->
@@ -3127,7 +3196,7 @@ class GdkSession constructor(
                             updateWalletTransactions(updateForAccounts = accounts)
                         }
 
-                        if(network.isMultisig && !network.needs2faActivation(this)){
+                        if (network.isMultisig && !network.needs2faActivation(this)) {
                             scanExpired2FA()
                         }
                     }
@@ -3143,8 +3212,8 @@ class GdkSession constructor(
         }
     }
 
-    fun hasAssetIcon(assetId : String) = networkAssetManager.hasAssetIcon(assetId)
-    fun getAsset(assetId : String): Asset? = networkAssetManager.getAsset(assetId, this)
+    fun hasAssetIcon(assetId: String) = networkAssetManager.hasAssetIcon(assetId)
+    fun getAsset(assetId: String): Asset? = networkAssetManager.getAsset(assetId, this)
 
     private suspend fun validateAddress(network: Network, params: ValidateAddresseesParams) = authHandler(
         network,
@@ -3204,7 +3273,7 @@ class GdkSession constructor(
     suspend fun bcurEncode(params: BcurEncodeParams): BcurEncodedData {
         val network = defaultNetworkOrNull ?: networks.bitcoinElectrum
 
-        if(!isConnected) {
+        if (!isConnected) {
             connect(network = network, initNetworks = listOf(network))
         }
 
@@ -3214,7 +3283,7 @@ class GdkSession constructor(
     suspend fun bcurDecode(params: BcurDecodeParams, bcurResolver: BcurResolver): BcurDecodedData {
         val network = defaultNetworkOrNull ?: networks.bitcoinElectrum
 
-        if(!isConnected) {
+        if (!isConnected) {
             connect(network = network, initNetworks = listOf(network))
         }
 
@@ -3234,7 +3303,6 @@ class GdkSession constructor(
             }
         }
 
-
     fun supportId() = allAccounts.value.filter {
         it.isMultisig && it.pointer == 0L || it.isLightning
     }.joinToString(",") { "${it.network.bip21Prefix}:${if (it.isLightning) lightningSdk.nodeInfoStateFlow.value.id else it.receivingId}" }
@@ -3246,7 +3314,7 @@ class GdkSession constructor(
         scope.cancel("Destroy")
     }
 
-    companion object: Loggable() {
+    companion object : Loggable() {
         const val WALLET_OVERVIEW_TRANSACTIONS = 50
 
         const val LIQUID_ASSETS_KEY = "liquid_assets"

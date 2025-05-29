@@ -34,7 +34,6 @@ import com.blockstream.compose.extensions.onTextFieldValueChange
 import com.blockstream.compose.utils.OpenKeyboard
 import org.jetbrains.compose.resources.stringResource
 
-
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun WalletRenameBottomSheet(
@@ -47,7 +46,8 @@ fun WalletRenameBottomSheet(
         subtitle = stringResource(Res.string.id_choose_a_name_for_your_wallet),
         viewModel = viewModel,
         sheetState = sheetState,
-        onDismissRequest = onDismissRequest) {
+        onDismissRequest = onDismissRequest
+    ) {
 
         val focusRequester = remember { FocusRequester() }
         OpenKeyboard(focusRequester)

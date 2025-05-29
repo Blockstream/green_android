@@ -32,7 +32,6 @@ import com.blockstream.ui.components.GreenRow
 import com.blockstream.ui.navigation.getResult
 import org.jetbrains.compose.resources.stringResource
 
-
 @Composable
 fun JadePinUnlockScreen(
     viewModel: GreenViewModel

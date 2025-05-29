@@ -6,7 +6,6 @@ import androidx.compose.ui.tooling.preview.PreviewScreenSizes
 import com.blockstream.common.models.onboarding.phone.AddWalletViewModelPreview
 import com.blockstream.compose.GreenAndroidPreview
 
-
 @Composable
 @PreviewScreenSizes
 @Preview

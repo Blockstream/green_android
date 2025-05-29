@@ -13,13 +13,13 @@ import kotlin.io.encoding.Base64
 import kotlin.io.encoding.ExperimentalEncodingApi
 import kotlin.reflect.KClass
 
-class CustomNavType<T: Any> @PublishedApi internal constructor(
+class CustomNavType<T : Any> @PublishedApi internal constructor(
     private val kClass: KClass<T>,
-    isNullableAllowed : Boolean = true
+    isNullableAllowed: Boolean = true
 ) : NavType<T?>(isNullableAllowed = isNullableAllowed) {
 
     companion object {
-        inline fun <reified T: Any> create(isNullableAllowed : Boolean = true) = CustomNavType(T::class, isNullableAllowed)
+        inline fun <reified T : Any> create(isNullableAllowed: Boolean = true) = CustomNavType(T::class, isNullableAllowed)
     }
 
     override fun parseValue(value: String): T {

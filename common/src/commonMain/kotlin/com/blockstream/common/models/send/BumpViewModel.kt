@@ -7,8 +7,6 @@ import com.blockstream.common.TransactionType
 import com.blockstream.common.data.Denomination
 import com.blockstream.common.data.FeePriority
 import com.blockstream.common.data.GreenWallet
-import com.blockstream.ui.navigation.NavData
-import com.blockstream.ui.events.Event
 import com.blockstream.common.extensions.ifConnected
 import com.blockstream.common.extensions.isNotBlank
 import com.blockstream.common.extensions.launchIn
@@ -19,9 +17,11 @@ import com.blockstream.common.gdk.data.AccountAsset
 import com.blockstream.common.gdk.data.PendingTransaction
 import com.blockstream.common.gdk.data.Transaction
 import com.blockstream.common.gdk.params.CreateTransactionParams
-import com.blockstream.green.utils.Loggable
 import com.blockstream.common.utils.feeRateWithUnit
 import com.blockstream.common.utils.toAmountLook
+import com.blockstream.green.utils.Loggable
+import com.blockstream.ui.events.Event
+import com.blockstream.ui.navigation.NavData
 import com.rickclephas.kmp.nativecoroutines.NativeCoroutinesState
 import com.rickclephas.kmp.observableviewmodel.launch
 import kotlinx.coroutines.Dispatchers
@@ -140,7 +140,7 @@ class BumpViewModel(
                 ),
                 broadcast = event.broadcastTransaction
             )
-        } else if (event is LocalEvents.BroadcastTransaction){
+        } else if (event is LocalEvents.BroadcastTransaction) {
             signAndSendTransaction(
                 params = createTransactionParams.value,
                 originalTransaction = createTransaction.value,
@@ -245,7 +245,7 @@ class BumpViewModel(
 
         }, onSuccess = {
 
-            if(params != null && it != null) {
+            if (params != null && it != null) {
                 session.pendingTransaction = PendingTransaction(
                     params = params,
                     transaction = it,

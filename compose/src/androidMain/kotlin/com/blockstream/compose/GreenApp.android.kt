@@ -77,7 +77,6 @@ fun GreenAndroidPreview(content: @Composable () -> Unit) {
         })
     }
 
-
     val dialogState = remember { DialogState() }
     val platformManager = rememberPlatformManager()
     val bottomSheetNavigator = rememberBottomSheetNavigator()

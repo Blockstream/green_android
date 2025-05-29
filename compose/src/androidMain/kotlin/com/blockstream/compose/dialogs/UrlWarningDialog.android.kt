@@ -5,7 +5,6 @@ import androidx.compose.ui.tooling.preview.Preview
 import com.blockstream.common.models.SimpleGreenViewModelPreview
 import com.blockstream.compose.GreenPreview
 
-
 @Composable
 @Preview
 fun UrlWarningDialogPreview() {

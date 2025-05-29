@@ -94,7 +94,6 @@ class AndroidGdk(printGdkMessages: Boolean, config: InitConfig) : GdkBinding {
         loginCredentialsParams: LoginCredentialsParams
     ): GAAuthHandler = GDK.register_user(session, deviceParams, loginCredentialsParams)
 
-
     override fun loginUser(
         session: GASession,
         deviceParams: DeviceParams,
@@ -107,9 +106,10 @@ class AndroidGdk(printGdkMessages: Boolean, config: InitConfig) : GdkBinding {
     ): LoginData {
         return JsonDeserializer.decodeFromJsonElement(
             GDK.get_wallet_identifier(
-            connectionParams,
-            loginCredentialsParams
-        ) as JsonElement)
+                connectionParams,
+                loginCredentialsParams
+            ) as JsonElement
+        )
     }
 
     override fun validate(session: GASession, params: JsonElement): GAAuthHandler {
@@ -154,13 +154,13 @@ class AndroidGdk(printGdkMessages: Boolean, config: InitConfig) : GdkBinding {
 
     override fun refreshAssets(session: GASession, params: AssetsParams) = GDK.refresh_assets(session, params)
 
-
     override fun getAssets(session: GASession, params: GetAssetsParams): LiquidAssets {
         return JsonDeserializer.decodeFromJsonElement(
             GDK.get_assets(
                 session,
                 params
-            ) as JsonElement)
+            ) as JsonElement
+        )
     }
 
     override fun getTransactions(session: GASession, details: TransactionParams): GAAuthHandler {
@@ -217,8 +217,9 @@ class AndroidGdk(printGdkMessages: Boolean, config: InitConfig) : GdkBinding {
         email: String,
         isDispute: Boolean
     ): GAAuthHandler {
-        return GDK.twofactor_reset(session, email,
-            (if(isDispute) GDK.GA_TRUE else GDK.GA_FALSE).toLong()
+        return GDK.twofactor_reset(
+            session, email,
+            (if (isDispute) GDK.GA_TRUE else GDK.GA_FALSE).toLong()
         )
     }
 
@@ -243,7 +244,6 @@ class AndroidGdk(printGdkMessages: Boolean, config: InitConfig) : GdkBinding {
     }
 
     override fun sendNlocktimes(session: GASession) = GDK.send_nlocktimes(session)
-
 
     override fun getFeeEstimates(session: GASession): FeeEstimation {
         return JsonDeserializer.decodeFromJsonElement(GDK.get_fee_estimates(session) as JsonElement)
@@ -359,8 +359,6 @@ class AndroidGdk(printGdkMessages: Boolean, config: InitConfig) : GdkBinding {
         return GDK.get_random_bytes(size.toLong())
     }
 }
-
-
 
 actual fun getGdkBinding(printGdkMessages: Boolean, config: InitConfig): GdkBinding = AndroidGdk(printGdkMessages, config)
 

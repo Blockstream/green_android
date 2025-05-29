@@ -12,18 +12,27 @@ import kotlinx.serialization.json.jsonPrimitive
 
 @Serializable
 data class AuthHandlerStatus constructor(
-    @SerialName("action") val action: String,
-    @SerialName("methods") val methods: List<String> = listOf(),
-    @SerialName("method") val method: String? = null,
-    @SerialName("status") val status: String,
-    @SerialName("result") val result: JsonElement? = null,
-    @SerialName("error") val error: String? = null,
+    @SerialName("action")
+    val action: String,
+    @SerialName("methods")
+    val methods: List<String> = listOf(),
+    @SerialName("method")
+    val method: String? = null,
+    @SerialName("status")
+    val status: String,
+    @SerialName("result")
+    val result: JsonElement? = null,
+    @SerialName("error")
+    val error: String? = null,
 
-    @SerialName("attempts_remaining") val attemptsRemaining: Int? = null,
-    @SerialName("required_data") val requiredData: DeviceRequiredData? = null,
+    @SerialName("attempts_remaining")
+    val attemptsRemaining: Int? = null,
+    @SerialName("required_data")
+    val requiredData: DeviceRequiredData? = null,
 
     // Wait for a fix #535
-    @SerialName("auth_data") val authData: JsonElement? = null,
+    @SerialName("auth_data")
+    val authData: JsonElement? = null,
 ) : GreenJson<AuthHandlerStatus>() {
     override fun keepJsonElement() = true
 

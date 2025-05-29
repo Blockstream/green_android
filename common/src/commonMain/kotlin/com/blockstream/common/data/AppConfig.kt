@@ -17,7 +17,7 @@ data class AppConfig(
     val lightningFeatureEnabled: Boolean = true,
     val storeRateEnabled: Boolean = false
 ) {
-    companion object: Loggable() {
+    companion object : Loggable() {
         fun default(
             isDebug: Boolean,
             filesDir: String,

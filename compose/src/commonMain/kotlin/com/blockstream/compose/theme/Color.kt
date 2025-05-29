@@ -61,11 +61,14 @@ val blueOutline = Color(0xFF034a71)
 
 val md_theme_surfaceCircle = Color(0xFF363636)
 
-val whiteHigh @Composable
+val whiteHigh
+    @Composable
     get() = MaterialTheme.colorScheme.onSurface
-val whiteMedium @Composable
+val whiteMedium
+    @Composable
     get() = MaterialTheme.colorScheme.onSurface.copy(alpha = 0.8f)
-val whiteLow @Composable
+val whiteLow
+    @Composable
     get() = MaterialTheme.colorScheme.onSurface.copy(alpha = 0.6f)
 
 val bitcoin = Color(0xFFfe8e02)

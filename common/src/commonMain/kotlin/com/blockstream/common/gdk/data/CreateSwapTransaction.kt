@@ -6,7 +6,8 @@ import kotlinx.serialization.Serializable
 
 @Serializable
 data class CreateSwapTransaction constructor(
-    @SerialName("liquidex_v0") val liquiDexV0: LiquiDexV0,
+    @SerialName("liquidex_v0")
+    val liquiDexV0: LiquiDexV0,
 ) : GreenJson<CreateSwapTransaction>() {
     override fun kSerializer() = serializer()
 }

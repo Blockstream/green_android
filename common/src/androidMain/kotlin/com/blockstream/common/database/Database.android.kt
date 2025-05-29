@@ -1,7 +1,6 @@
 package com.blockstream.common.database
 
 import android.content.Context
-import android.util.Log
 import androidx.sqlite.db.SupportSQLiteDatabase
 import app.cash.sqldelight.db.SqlDriver
 import app.cash.sqldelight.driver.android.AndroidSqliteDriver
@@ -23,7 +22,7 @@ actual class DriverFactory(private val context: Context) {
     }
 
     actual fun createLocalDriver(): SqlDriver {
-        val driver =  AndroidSqliteDriver(
+        val driver = AndroidSqliteDriver(
             schema = LocalDB.Schema,
             context = context,
             name = DATABASE_NAME_LOCAL,

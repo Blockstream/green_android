@@ -82,13 +82,13 @@ data class GreenWallet constructor(
 
     var id
         get() = wallet.id
-        set(value)  {
+        set(value) {
             wallet = wallet.copy(id = value)
         }
 
     var name
         get() = wallet.name
-        set(value)  {
+        set(value) {
             wallet = wallet.copy(name = value)
         }
 
@@ -177,7 +177,7 @@ data class GreenWallet constructor(
         get() = "BIP39 #${ephemeralId}"
 
     val icon
-        get() = when{
+        get() = when {
             isWatchOnly && deviceIdentifiers?.firstOrNull()?.connectionType == ConnectionType.QR -> WalletIcon.QR
             isWatchOnly -> WalletIcon.WATCH_ONLY
             isTestnet -> WalletIcon.TESTNET
@@ -187,7 +187,7 @@ data class GreenWallet constructor(
             else -> WalletIcon.REGULAR
         }
 
-    fun lightningShortcutWallet(): GreenWallet{
+    fun lightningShortcutWallet(): GreenWallet {
         return copy(wallet = wallet.copy(id = "${wallet.id}-lightning-shortcut", is_lightning = true), ephemeralIdOrNull = 0)
     }
 

@@ -31,7 +31,6 @@ import com.blockstream.ui.components.GreenColumn
 import com.blockstream.ui.navigation.getResult
 import org.jetbrains.compose.resources.stringResource
 
-
 @Composable
 fun XpubScreen(
     viewModel: XpubViewModelAbstract
@@ -78,7 +77,6 @@ fun XpubScreen(
                     }
                 )
             }
-
 
             val buttonEnabled by viewModel.buttonEnabled.collectAsStateWithLifecycle()
             GreenButton(

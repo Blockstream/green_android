@@ -6,15 +6,19 @@ import com.blockstream.common.gdk.GreenJson
 import kotlinx.serialization.SerialName
 import kotlinx.serialization.Serializable
 
-
 @Serializable
 data class CountlyAsset constructor(
-    @SerialName("id") val assetId: String,
-    @SerialName("amp") val isAmp: Boolean = false,
-    @SerialName("weight") val weight: Int = 0,
+    @SerialName("id")
+    val assetId: String,
+    @SerialName("amp")
+    val isAmp: Boolean = false,
+    @SerialName("weight")
+    val weight: Int = 0,
 //    @SerialName("isSendable") val isSendable: Boolean = true, // Display "Any Liquid Asset" UI element/**/
-    @SerialName("isAnyLiquid") val isAnyLiquidAsset: Boolean = false, // Display "Any Liquid Asset" UI element
-    @SerialName("isAnyAmp") val isAnyAmpAsset: Boolean = false // Display "Any AMP Asset" UI element
+    @SerialName("isAnyLiquid")
+    val isAnyLiquidAsset: Boolean = false, // Display "Any Liquid Asset" UI element
+    @SerialName("isAnyAmp")
+    val isAnyAmpAsset: Boolean = false // Display "Any AMP Asset" UI element
 ) : GreenJson<CountlyAsset>() {
     override fun kSerializer() = serializer()
 

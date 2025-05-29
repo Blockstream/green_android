@@ -12,7 +12,6 @@ import com.blockstream.ui.components.GreenColumn
 import org.jetbrains.compose.resources.painterResource
 import org.jetbrains.compose.resources.stringResource
 
-
 @Composable
 @Preview
 fun GreenAlertPreview() {

@@ -18,16 +18,18 @@ import com.blockstream.jade.data.JadeState
 import com.blockstream.jade.firmware.JadeFirmwareManager
 import kotlinx.coroutines.CoroutineScope
 
-
-
 open class DeviceConnectionManager(
     val gdk: Gdk,
     val wally: Wally,
     val scope: CoroutineScope
-): DeviceConnectionInterface {
+) : DeviceConnectionInterface {
 
     @Throws(Exception::class)
-    override suspend fun connectDevice(device: GreenDevice, httpRequestHandler: HttpRequestHandler, interaction: HardwareConnectInteraction): ConnectionResult {
+    override suspend fun connectDevice(
+        device: GreenDevice,
+        httpRequestHandler: HttpRequestHandler,
+        interaction: HardwareConnectInteraction
+    ): ConnectionResult {
         device.frozeHeartbeat()
 
         try {
@@ -42,14 +44,13 @@ open class DeviceConnectionManager(
         }
     }
 
-    internal open suspend fun disconnectDevice(device: GreenDevice){
+    internal open suspend fun disconnectDevice(device: GreenDevice) {
         device.updateHeartbeat()
 
         (device as? JadeDevice)?.also {
             disconnectJadeDevice(it)
         }
     }
-
 
     private suspend fun disconnectJadeDevice(device: JadeDevice) {
         try {
@@ -59,7 +60,7 @@ open class DeviceConnectionManager(
         }
     }
 
-    private suspend fun connectJadeDevice(device: JadeDevice, httpRequestHandler: HttpRequestHandler) : ConnectionResult {
+    private suspend fun connectJadeDevice(device: JadeDevice, httpRequestHandler: HttpRequestHandler): ConnectionResult {
         return createJadeApi(device = device, httpRequestHandler = httpRequestHandler)?.let { jadeApi ->
             device.jadeApi = jadeApi
 
@@ -137,9 +138,9 @@ open class DeviceConnectionManager(
                     throw Exception("id_please_reconnect_your_hardware")
                 }
             }
-        } else if(gdkHardwareWallet is JadeHWWallet) {
+        } else if (gdkHardwareWallet is JadeHWWallet) {
             // force update if needed
-            if(!firmwareManager.checkFirmware(jade = gdkHardwareWallet.jade)){
+            if (!firmwareManager.checkFirmware(jade = gdkHardwareWallet.jade)) {
                 throw JadeError(
                     JadeError.UNSUPPORTED_FIRMWARE_VERSION,
                     "Insufficient/invalid firmware version", null

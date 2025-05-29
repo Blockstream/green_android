@@ -18,7 +18,6 @@ import kotlinx.coroutines.flow.StateFlow
 import org.jetbrains.compose.resources.DrawableResource
 import org.jetbrains.compose.resources.StringResource
 
-
 data class NavData(
     val title: String? = null,
     val titleRes: StringResource? = null,
@@ -78,7 +77,7 @@ fun AppBarState(viewModel: INavData) {
     val key = navData.hashCode() + (currentBackStackEntry?.id?.hashCode() ?: 0)
 
     LaunchedEffect(key) {
-        if(currentBackStackEntry?.id == selfBackStackEntry?.id){
+        if (currentBackStackEntry?.id == selfBackStackEntry?.id) {
             navDataState.update(navData)
         }
     }

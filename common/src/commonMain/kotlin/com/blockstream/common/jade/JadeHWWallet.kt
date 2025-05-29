@@ -32,7 +32,6 @@ import okio.Buffer
 import kotlin.io.encoding.Base64
 import kotlin.io.encoding.ExperimentalEncodingApi
 
-
 @OptIn(ExperimentalStdlibApi::class, ExperimentalEncodingApi::class)
 class JadeHWWallet constructor(
     val gdk: Gdk,
@@ -47,7 +46,7 @@ class JadeHWWallet constructor(
         get() = getVersionInfo(useCache = true).jadeVersion
 
     override val model: DeviceModel
-        get() = when(getVersionInfo(useCache = true).isBoardV2){
+        get() = when (getVersionInfo(useCache = true).isBoardV2) {
             false -> DeviceModel.BlockstreamJade
             true -> DeviceModel.BlockstreamJadePlus
         }
@@ -63,8 +62,10 @@ class JadeHWWallet constructor(
     }
 
     // Authenticate Jade with pinserver and check firmware version with fw-server
-    suspend fun authenticate(hwWalletLogin: HwWalletLogin,
-                             jadeFirmwareManager: JadeFirmwareManager): Boolean {
+    suspend fun authenticate(
+        hwWalletLogin: HwWalletLogin,
+        jadeFirmwareManager: JadeFirmwareManager
+    ): Boolean {
         /*
          * 1. check firmware (and maybe OTA) any completely uninitialised device (ie no keys/pin set - no unlocking needed)
          * 2. authenticate the user (see above)
@@ -132,7 +133,7 @@ class JadeHWWallet constructor(
             // JADE_STATE => TEMP no need for PIN entry
             if (hwLoginBridge != null && state != JadeState.TEMP) {
                 if (state != JadeState.UNINIT) {
-                    hwLoginBridge.interactionRequest(this,"id_enter_pin_on_jade", false, completable)
+                    hwLoginBridge.interactionRequest(this, "id_enter_pin_on_jade", false, completable)
                 }
             }
 
@@ -194,7 +195,7 @@ class JadeHWWallet constructor(
             try {
 
                 hwInteraction?.takeIf { !isSilent }?.also {
-                    it.interactionRequest(this@JadeHWWallet,  "id_check_your_device", false, completable)
+                    it.interactionRequest(this@JadeHWWallet, "id_check_your_device", false, completable)
                 }
 
                 val result = jade.signMessage(
@@ -362,7 +363,7 @@ class JadeHWWallet constructor(
                 if (e.code == JadeError.CBOR_RPC_USER_CANCELLED) {
                     // User cancelled on the device - return as empty string (rather than error)
                     ""
-                }else{
+                } else {
                     throw RuntimeException(e.message)
                 }
             } catch (e: Exception) {
@@ -372,7 +373,6 @@ class JadeHWWallet constructor(
             }
         }
     }
-
 
     override fun getBlindingKey(
         scriptHex: String,
@@ -402,14 +402,13 @@ class JadeHWWallet constructor(
             try {
                 jade.getSharedNonce(scriptHex.hexToByteArray(), pubKey.hexToByteArray())
                     .toHexString().also {
-                    logger.d { "getBlindingNonce() returning $it" }
-                }
+                        logger.d { "getBlindingNonce() returning $it" }
+                    }
             } catch (e: Exception) {
                 throw RuntimeException(e.message)
             }
         }
     }
-
 
     override fun getBlindingFactors(
         inputs: List<InputOutput>,
@@ -475,7 +474,6 @@ class JadeHWWallet constructor(
         }
     }
 
-
     @Throws(Exception::class)
     override fun getGreenAddress(
         network: Network,
@@ -529,7 +527,7 @@ class JadeHWWallet constructor(
                 if (e.code == JadeError.CBOR_RPC_USER_CANCELLED) {
                     // User cancelled on the device - treat as mismatch (rather than error)
                     ""
-                }else{
+                } else {
                     throw RuntimeException(e.message)
                 }
             } catch (e: Exception) {
@@ -541,7 +539,7 @@ class JadeHWWallet constructor(
     override val disconnectEvent: StateFlow<Boolean>?
         get() = jade.disconnectEvent
 
-    companion object : Loggable(){
+    companion object : Loggable() {
 
         // Helper to map a [single-sig] address type into a jade descriptor variant string
         private fun mapAddressType(addrType: String?): String? {

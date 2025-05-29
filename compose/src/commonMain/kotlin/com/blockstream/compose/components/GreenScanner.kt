@@ -57,7 +57,7 @@ fun GreenScanner(
                 .fillMaxWidth()
                 .clip(RoundedCornerShape(8.dp))
                 .align(Alignment.BottomCenter),
-        ){
+        ) {
             CameraView(
                 modifier = Modifier.fillMaxSize(),
                 isFlashOn = isFlashOn,
@@ -79,7 +79,7 @@ fun GreenScanner(
             platformManager.hasFlash()
         }
 
-        if(hasFlash) {
+        if (hasFlash) {
             Image(
                 modifier = Modifier
                     .align(Alignment.TopEnd)

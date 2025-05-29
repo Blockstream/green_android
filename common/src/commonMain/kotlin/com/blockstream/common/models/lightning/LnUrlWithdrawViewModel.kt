@@ -16,9 +16,7 @@ import com.blockstream.common.BTC_POLICY_ASSET
 import com.blockstream.common.data.DenominatedValue
 import com.blockstream.common.data.Denomination
 import com.blockstream.common.data.GreenWallet
-import com.blockstream.ui.navigation.NavData
 import com.blockstream.common.data.SupportData
-import com.blockstream.ui.events.Event
 import com.blockstream.common.events.Events
 import com.blockstream.common.extensions.logException
 import com.blockstream.common.extensions.previewWallet
@@ -29,10 +27,12 @@ import com.blockstream.common.lightning.maxWithdrawableSatoshi
 import com.blockstream.common.lightning.minWithdrawableSatoshi
 import com.blockstream.common.models.GreenViewModel
 import com.blockstream.common.sideeffects.SideEffects
-import com.blockstream.green.utils.Loggable
 import com.blockstream.common.utils.StringHolder
 import com.blockstream.common.utils.UserInput
 import com.blockstream.common.utils.toAmountLook
+import com.blockstream.green.utils.Loggable
+import com.blockstream.ui.events.Event
+import com.blockstream.ui.navigation.NavData
 import com.rickclephas.kmp.nativecoroutines.NativeCoroutinesState
 import com.rickclephas.kmp.observableviewmodel.coroutineScope
 import com.rickclephas.kmp.observableviewmodel.launch
@@ -46,7 +46,6 @@ import kotlinx.coroutines.flow.onEach
 import kotlinx.coroutines.launch
 import org.jetbrains.compose.resources.getString
 import kotlin.math.min
-
 
 abstract class LnUrlWithdrawViewModelAbstract(greenWallet: GreenWallet) :
     GreenViewModel(greenWalletOrNull = greenWallet) {
@@ -211,17 +210,21 @@ class LnUrlWithdrawViewModel(greenWallet: GreenWallet, val requestData: LnUrlWit
             _error.value = if (satoshi <= 0L) {
                 getString(Res.string.id_invalid_amount)
             } else if (satoshi < minWithdraw) {
-                getString(Res.string.id_amount_must_be_at_least_s, minWithdraw.toAmountLook(
-                    session = session,
-                    denomination = denomination.value
-                ) ?: "")
+                getString(
+                    Res.string.id_amount_must_be_at_least_s, minWithdraw.toAmountLook(
+                        session = session,
+                        denomination = denomination.value
+                    ) ?: ""
+                )
             } else if (satoshi > balance) {
                 getString(Res.string.id_insufficient_funds)
             } else if (satoshi > maxWithdraw) {
-                getString(Res.string.id_amount_must_be_at_most_s, maxWithdraw.toAmountLook(
-                    session = session,
-                    denomination = denomination.value
-                ) ?: "")
+                getString(
+                    Res.string.id_amount_must_be_at_most_s, maxWithdraw.toAmountLook(
+                        session = session,
+                        denomination = denomination.value
+                    ) ?: ""
+                )
             } else {
                 null
             }
@@ -284,7 +287,6 @@ class LnUrlWithdrawViewModel(greenWallet: GreenWallet, val requestData: LnUrlWit
 
 class LnUrlWithdrawViewModelPreview(greenWallet: GreenWallet) :
     LnUrlWithdrawViewModelAbstract(greenWallet = greenWallet) {
-
 
     override val withdrawalLimits: StateFlow<String> = MutableStateFlow("1 - 2 sats")
     override val amount: MutableStateFlow<String> = MutableStateFlow("")

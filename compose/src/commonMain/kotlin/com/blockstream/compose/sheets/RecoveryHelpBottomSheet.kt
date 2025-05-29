@@ -19,7 +19,6 @@ import com.blockstream.compose.theme.labelLarge
 import com.blockstream.compose.utils.HandleSideEffect
 import org.jetbrains.compose.resources.stringResource
 
-
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun RecoveryHelpBottomSheet(

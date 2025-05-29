@@ -12,7 +12,7 @@ interface Wally {
     fun ecSigToDer(signature: ByteArray): String
 
     fun bip39GetWord(index: Int): String
-    fun bip39MnemonicValidate(mnemonic: String) : Boolean
+    fun bip39MnemonicValidate(mnemonic: String): Boolean
 
     fun isXpubValid(xpub: String): Boolean
     fun bip32Fingerprint(bip32xPub: String): String?
@@ -41,7 +41,6 @@ interface Wally {
         const val BIP39_WORD_LIST_LANG = "en"
     }
 }
-
 
 private var _bip39WordList: List<String>? = null
 fun Wally.getBip39WordList(): List<String> {

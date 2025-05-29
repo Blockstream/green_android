@@ -22,7 +22,6 @@ import com.blockstream.green.data.config.AppInfo
 import com.blockstream.green.data.notifications.models.NotificationData
 import com.russhwolf.settings.NSUserDefaultsSettings
 import com.russhwolf.settings.ObservableSettings
-import com.russhwolf.settings.Settings
 import kotlinx.cinterop.ExperimentalForeignApi
 import org.koin.core.Koin
 import org.koin.core.component.KoinComponent

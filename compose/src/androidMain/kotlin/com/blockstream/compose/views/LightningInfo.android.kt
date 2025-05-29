@@ -7,7 +7,6 @@ import com.blockstream.common.looks.account.LightningInfoLook
 import com.blockstream.compose.GreenPreview
 import com.blockstream.ui.components.GreenColumn
 
-
 @Preview(showBackground = true, uiMode = Configuration.UI_MODE_NIGHT_YES)
 @Composable
 fun LightningInfoPreview() {

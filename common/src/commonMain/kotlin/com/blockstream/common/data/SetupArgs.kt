@@ -46,7 +46,7 @@ data class SetupArgs constructor(
     fun isAddAccount() = greenWallet != null && network != null && assetId != null
 
     companion object {
-        fun restoreMnemonic(greenWallet: GreenWallet): SetupArgs{
+        fun restoreMnemonic(greenWallet: GreenWallet): SetupArgs {
             return SetupArgs(
                 isRestoreFlow = true,
                 isWatchOnly = false,

@@ -15,9 +15,7 @@ import com.adamglin.PhosphorIcons
 import com.adamglin.phosphoricons.Regular
 import com.adamglin.phosphoricons.regular.Copy
 import com.blockstream.common.utils.StringHolder
-import com.blockstream.ui.components.GreenColumn
 import com.blockstream.compose.components.GreenDataLayout
-import com.blockstream.ui.components.GreenRow
 import com.blockstream.compose.managers.LocalPlatformManager
 import com.blockstream.compose.theme.bodyLarge
 import com.blockstream.compose.theme.labelLarge
@@ -25,6 +23,8 @@ import com.blockstream.compose.theme.whiteHigh
 import com.blockstream.compose.theme.whiteLow
 import com.blockstream.compose.theme.whiteMedium
 import com.blockstream.compose.utils.noRippleClickable
+import com.blockstream.ui.components.GreenColumn
+import com.blockstream.ui.components.GreenRow
 import kotlinx.coroutines.launch
 
 @Composable
@@ -79,7 +79,7 @@ fun DataListItem(
                 tint = whiteLow,
                 modifier = Modifier.noRippleClickable {
                     scope.launch {
-                        platformManager.copyToClipboard( content = data.getString())
+                        platformManager.copyToClipboard(content = data.getString())
                     }
                 }
             )

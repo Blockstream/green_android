@@ -93,9 +93,9 @@ fun GreenCard(
                         .padding(horizontal = 8.dp)
                         .padding(top = 6.dp, bottom = 8.dp),
                 ) {
-                    if(contentError != null){
+                    if (contentError != null) {
                         contentError(it)
-                    }else{
+                    } else {
                         Text(text = stringResourceFromId(it), style = bodyMedium)
                     }
                 }

@@ -17,7 +17,6 @@ import saschpe.kase64.base64UrlEncoded
 import kotlin.random.Random
 import kotlin.random.nextLong
 
-
 class SettingsManager constructor(
     private val settings: ObservableSettings,
     val analyticsFeatureEnabled: Boolean,
@@ -50,20 +49,23 @@ class SettingsManager constructor(
             "${KEY_ALLOW_CUSTOM_PIN_SERVER}_$it"
         }
     }
+
     fun isAllowCustomPinServer(url: List<String>) = settings[keyForCustomPinServer(url), false]
 
-    fun setAllowCustomPinServer(url: List<String>){
+    fun setAllowCustomPinServer(url: List<String>) {
         settings[keyForCustomPinServer(url)] = true
     }
 
     private fun keyForPromo(id: String): String {
         return "${KEY_PROMO_DISMISSED}_$id"
     }
+
     fun isPromoDismissed(id: String) = settings[keyForPromo(id), false]
-    fun dismissPromo(id: String){
+    fun dismissPromo(id: String) {
         settings[keyForPromo(id)] = true
     }
-    fun resetPromoDismissals(){
+
+    fun resetPromoDismissals() {
         settings.keys.filter { it.startsWith(KEY_PROMO_DISMISSED) }.forEach {
             settings.remove(it)
         }
@@ -103,10 +105,9 @@ class SettingsManager constructor(
     }
 
     fun getCountlyOffset(end: Long): Long {
-        return settings[KEY_COUNTLY_OFFSET, -1L].takeIf { it >= 0 } ?:
-            Random.nextLong(0L.. end).also {
-                settings.putLong(KEY_COUNTLY_OFFSET, it)
-            }
+        return settings[KEY_COUNTLY_OFFSET, -1L].takeIf { it >= 0 } ?: Random.nextLong(0L..end).also {
+            settings.putLong(KEY_COUNTLY_OFFSET, it)
+        }
     }
 
     fun resetCountlyOffset() {
@@ -125,7 +126,7 @@ class SettingsManager constructor(
         return settings[KEY_WALLET_COUNTER, 0]
     }
 
-    fun increaseWalletCounter(force: Int? = null){
+    fun increaseWalletCounter(force: Int? = null) {
         settings[KEY_WALLET_COUNTER] = force ?: (walletCounter() + 1)
     }
 

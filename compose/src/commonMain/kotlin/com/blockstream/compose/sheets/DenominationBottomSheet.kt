@@ -70,11 +70,12 @@ fun DenominatedValueItem(
     isChecked: Boolean = false,
     onClick: () -> Unit = {}
 ) {
-    Box(modifier = Modifier
-        .fillMaxWidth()
-        .clickable {
-            onClick()
-        }
+    Box(
+        modifier = Modifier
+            .fillMaxWidth()
+            .clickable {
+                onClick()
+            }
     ) {
         GreenRow(verticalAlignment = Alignment.CenterVertically) {
             Column(modifier = Modifier.weight(1f)) {

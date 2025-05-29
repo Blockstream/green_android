@@ -106,7 +106,7 @@ class AccountOverviewViewModel(greenWallet: GreenWallet, accountAsset: AccountAs
     }.filter { session.isConnected }.stateIn(viewModelScope, SharingStarted.WhileSubscribed(), null)
 
     override val assets: StateFlow<DataState<List<AssetBalance>>> = session.accountAssets(account).map { assets ->
-        session.takeIf { account.isLiquid && assets.size > 1}?.ifConnected {
+        session.takeIf { account.isLiquid && assets.size > 1 }?.ifConnected {
             DataState.Success(assets.assets.map {
                 AssetBalance.create(
                     assetId = it.key,
@@ -115,11 +115,12 @@ class AccountOverviewViewModel(greenWallet: GreenWallet, accountAsset: AccountAs
                 )
             })
         } ?: DataState.Empty
-    }.stateIn(viewModelScope, SharingStarted.WhileSubscribed(), if(account.isLiquid) DataState.Loading else DataState.Empty)
+    }.stateIn(viewModelScope, SharingStarted.WhileSubscribed(), if (account.isLiquid) DataState.Loading else DataState.Empty)
 
-    override val accountBalance: StateFlow<AccountBalance> = combine(this.accountAsset
-        .filterNotNull()
-        .filter { session.isConnected }, session.expired2FA
+    override val accountBalance: StateFlow<AccountBalance> = combine(
+        this.accountAsset
+            .filterNotNull()
+            .filter { session.isConnected }, session.expired2FA
     ) { accountAsset, _ ->
         AccountBalance.create(account = accountAsset.account, session = session)
     }.stateIn(
@@ -203,7 +204,8 @@ class AccountOverviewViewModel(greenWallet: GreenWallet, accountAsset: AccountAs
                     actions = listOfNotNull(
                         NavAction(
                             title = getString(
-                                Res.string.id_help),
+                                Res.string.id_help
+                            ),
                             icon = Res.drawable.question,
                             isMenuEntry = true,
                             onClick = {
@@ -307,7 +309,13 @@ class AccountOverviewViewModel(greenWallet: GreenWallet, accountAsset: AccountAs
             }
 
             is LocalEvents.CopyAccountId -> {
-                postSideEffect(SideEffects.CopyToClipboard(value = account.receivingId, message = getString(Res.string.id_copied_to_clipboard), label = "Account ID"))
+                postSideEffect(
+                    SideEffects.CopyToClipboard(
+                        value = account.receivingId,
+                        message = getString(Res.string.id_copied_to_clipboard),
+                        label = "Account ID"
+                    )
+                )
             }
 
             is LocalEvents.ClickLightningSweep -> {
@@ -348,10 +356,14 @@ class AccountOverviewViewModelPreview() : AccountOverviewViewModelAbstract(
     override val hasLightningShortcut = MutableStateFlow(false)
     override val alerts: StateFlow<List<AlertType>> = MutableStateFlow(listOf())
 
-    override val assets: StateFlow<DataState<List<AssetBalance>>> = MutableStateFlow(DataState.Success(listOf(
-        AssetBalance(EnrichedAsset.PreviewBTC, "1 BTC", "1000USD"),
-        AssetBalance(EnrichedAsset.PreviewLBTC, "1 LBTC", "1000USD")
-    )))
+    override val assets: StateFlow<DataState<List<AssetBalance>>> = MutableStateFlow(
+        DataState.Success(
+            listOf(
+                AssetBalance(EnrichedAsset.PreviewBTC, "1 BTC", "1000USD"),
+                AssetBalance(EnrichedAsset.PreviewLBTC, "1 LBTC", "1000USD")
+            )
+        )
+    )
 
     override val showAmpInfo: StateFlow<Boolean> = MutableStateFlow(true)
 

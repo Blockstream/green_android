@@ -16,11 +16,8 @@ import blockstream_green.common.generated.resources.id_validate_pin_and_unlock
 import blockstream_green.common.generated.resources.id_validate_the_transaction_details
 import com.blockstream.common.Urls
 import com.blockstream.common.data.GreenWallet
-import com.blockstream.ui.navigation.NavAction
-import com.blockstream.ui.navigation.NavData
 import com.blockstream.common.data.ScanResult
 import com.blockstream.common.devices.DeviceModel
-import com.blockstream.ui.events.Event
 import com.blockstream.common.events.Events
 import com.blockstream.common.extensions.launchIn
 import com.blockstream.common.extensions.logException
@@ -42,6 +39,9 @@ import com.blockstream.common.models.jade.JadeQRViewModel.Companion.PsbtScenario
 import com.blockstream.common.navigation.NavigateDestinations
 import com.blockstream.common.sideeffects.SideEffects
 import com.blockstream.green.utils.Loggable
+import com.blockstream.ui.events.Event
+import com.blockstream.ui.navigation.NavAction
+import com.blockstream.ui.navigation.NavData
 import com.rickclephas.kmp.nativecoroutines.NativeCoroutinesState
 import com.rickclephas.kmp.observableviewmodel.coroutineScope
 import com.rickclephas.kmp.observableviewmodel.launch
@@ -180,13 +180,13 @@ class JadeQRViewModel(
                 title = getString(if (deviceModel.isJade) (if (scenario.isPinUnlock) Res.string.id_qr_pin_unlock else Res.string.id_scan_qr_with_jade) else Res.string.id_scan_qr_with_device),
                 actions = listOfNotNull(
                     NavAction(
-                    title = getString(Res.string.id_reset),
-                    icon = Res.drawable.arrows_counter_clockwise,
-                    isMenuEntry = false,
-                    onClick = {
-                        restart()
-                    }
-                ).takeIf { scenario.allowReset && step > 0 })
+                        title = getString(Res.string.id_reset),
+                        icon = Res.drawable.arrows_counter_clockwise,
+                        isMenuEntry = false,
+                        onClick = {
+                            restart()
+                        }
+                    ).takeIf { scenario.allowReset && step > 0 })
             )
         }.launchIn(this)
 

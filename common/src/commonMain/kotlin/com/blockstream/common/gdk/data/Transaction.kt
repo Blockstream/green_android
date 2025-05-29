@@ -1,6 +1,5 @@
 package com.blockstream.common.gdk.data
 
-
 import blockstream_green.common.generated.resources.Res
 import blockstream_green.common.generated.resources.id_address
 import blockstream_green.common.generated.resources.id_amount
@@ -58,7 +57,7 @@ data class Transaction constructor(
     @SerialName("isRefundableSwap")
     val isRefundableSwap: Boolean = false,
     @SerialName("extras")
-    val extras: List<Pair<String,String>>? = null
+    val extras: List<Pair<String, String>>? = null
 ) : GreenJson<Transaction>() {
     val account
         get() = accountInjected!!
@@ -255,7 +254,8 @@ data class Transaction constructor(
         return getConfirmations(session.block(network).value.height).coerceAtMost((if (network.isLiquid) 3 else 7))
     }
 
-    fun getUnblindedString() = (inputs.mapNotNull { it.getUnblindedString() } + outputs.mapNotNull { it.getUnblindedString() }).joinToString(",")
+    fun getUnblindedString() =
+        (inputs.mapNotNull { it.getUnblindedString() } + outputs.mapNotNull { it.getUnblindedString() }).joinToString(",")
 
     fun getUnblindedData(): TransactionUnblindedData {
         val unblindedInputs = inputs.filter {
@@ -295,17 +295,24 @@ data class Transaction constructor(
         StringHolder.create(it.first) to StringHolder.create(it.second)
     } ?: run {
 //        listOf("id_transaction_id" to txHash) +
-                buildList<Pair<StringHolder, StringHolder>> {
+        buildList<Pair<StringHolder, StringHolder>> {
             utxoViews.takeIf { it.size > 1 }?.forEach { utxo ->
                 utxo.address?.also {
-                    add(StringHolder.create(
-                        Res.string.id_address) to StringHolder.create(it))
-                    add(StringHolder.create(Res.string.id_amount) to StringHolder.create(utxo.satoshi.toAmountLookOrNa(
-                        session = session,
-                        assetId = utxo.assetId,
-                        withUnit = true,
-                        withDirection = true
-                    )))
+                    add(
+                        StringHolder.create(
+                            Res.string.id_address
+                        ) to StringHolder.create(it)
+                    )
+                    add(
+                        StringHolder.create(Res.string.id_amount) to StringHolder.create(
+                            utxo.satoshi.toAmountLookOrNa(
+                                session = session,
+                                assetId = utxo.assetId,
+                                withUnit = true,
+                                withDirection = true
+                            )
+                        )
+                    )
                 }
             }
         }

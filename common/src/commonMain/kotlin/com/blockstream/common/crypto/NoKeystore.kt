@@ -3,7 +3,7 @@ package com.blockstream.common.crypto
 import com.blockstream.common.data.EncryptedData
 
 // TODO encrypt with Key
-class NoKeystore: GreenKeystore {
+class NoKeystore : GreenKeystore {
     override fun encryptData(dataToEncrypt: ByteArray): EncryptedData {
         return EncryptedData.fromByteArray(dataToEncrypt, byteArrayOf())
     }
@@ -20,5 +20,5 @@ class NoKeystore: GreenKeystore {
         TODO("Not yet implemented")
     }
 
-    override fun canUseBiometrics(): Boolean  = false
+    override fun canUseBiometrics(): Boolean = false
 }

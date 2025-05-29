@@ -1,15 +1,15 @@
 package com.blockstream.common.models.wallet
 
 import com.blockstream.common.data.GreenWallet
-import com.blockstream.ui.events.Event
 import com.blockstream.common.events.Events
 import com.blockstream.common.extensions.cleanup
 import com.blockstream.common.extensions.isNotBlank
 import com.blockstream.common.extensions.previewWallet
 import com.blockstream.common.models.GreenViewModel
 import com.blockstream.common.sideeffects.SideEffects
-import com.rickclephas.kmp.observableviewmodel.coroutineScope
+import com.blockstream.ui.events.Event
 import com.rickclephas.kmp.nativecoroutines.NativeCoroutinesState
+import com.rickclephas.kmp.observableviewmodel.coroutineScope
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.launchIn
 import kotlinx.coroutines.flow.onEach
@@ -42,7 +42,7 @@ class WalletNameViewModel(greenWallet: GreenWallet) : WalletNameViewModelAbstrac
         }
     }
 
-    private fun renameWallet(){
+    private fun renameWallet() {
         doAsync({
             name.value.cleanup().takeIf { it.isNotBlank() }?.also { name ->
                 greenWallet.name = name

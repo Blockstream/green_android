@@ -2,7 +2,6 @@ package com.blockstream.common.models.receive
 
 import com.blockstream.common.data.Denomination
 import com.blockstream.common.data.GreenWallet
-import com.blockstream.ui.events.Event
 import com.blockstream.common.events.Events
 import com.blockstream.common.extensions.isNotBlank
 import com.blockstream.common.extensions.isPolicyAsset
@@ -13,15 +12,15 @@ import com.blockstream.common.utils.UserInput
 import com.blockstream.common.utils.getBitcoinOrLiquidUnit
 import com.blockstream.common.utils.getFiatCurrency
 import com.blockstream.common.utils.toAmountLook
-import com.rickclephas.kmp.observableviewmodel.coroutineScope
+import com.blockstream.ui.events.Event
 import com.rickclephas.kmp.nativecoroutines.NativeCoroutinesState
+import com.rickclephas.kmp.observableviewmodel.coroutineScope
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.flow.debounce
 import kotlinx.coroutines.flow.launchIn
 import kotlinx.coroutines.flow.onEach
 import kotlinx.coroutines.launch
-
 
 abstract class RequestAmountViewModelAbstract(
     greenWallet: GreenWallet,
@@ -89,7 +88,7 @@ class RequestAmountViewModel(
         }
 
         if (isPolicyAsset) {
-            combine(denomination, amount.debounce(10)){ _, _ ->
+            combine(denomination, amount.debounce(10)) { _, _ ->
                 updateExchange()
             }.launchIn(viewModelScope.coroutineScope)
         }

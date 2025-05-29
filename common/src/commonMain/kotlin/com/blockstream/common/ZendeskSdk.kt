@@ -4,7 +4,7 @@ import com.blockstream.common.data.SupportData
 import kotlinx.serialization.Serializable
 
 @Serializable
-enum class SupportType(val zendeskValue: String){
+enum class SupportType(val zendeskValue: String) {
     INCIDENT("incident"), FEEDBACK("feedback"),
 }
 
@@ -20,5 +20,7 @@ open class ZendeskSdk {
         message: String,
         supportData: SupportData,
         autoRetry: Boolean = true
-    ) : Boolean { return false}
+    ): Boolean {
+        return false
+    }
 }

@@ -25,7 +25,6 @@ abstract class DeviceScanViewModelAbstract(greenWallet: GreenWallet) :
     AbstractDeviceViewModel(greenWalletOrNull = greenWallet) {
     override fun screenName(): String = "DeviceScan"
 
-
     @NativeCoroutinesState
     abstract val deviceFlow: StateFlow<GreenDevice?>
 }
@@ -228,7 +227,6 @@ class DeviceScanViewModel(greenWallet: GreenWallet, private val isWatchOnlyUpgra
 
     companion object : Loggable()
 }
-
 
 class DeviceScanViewModelPreview() : DeviceScanViewModelAbstract(greenWallet = previewWallet()) {
 

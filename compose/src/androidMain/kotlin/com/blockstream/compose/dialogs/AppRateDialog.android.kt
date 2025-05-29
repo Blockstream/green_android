@@ -39,17 +39,16 @@ import com.blockstream.compose.GreenPreview
 import com.blockstream.compose.LocalActivity
 import com.blockstream.compose.R
 import com.blockstream.compose.components.GreenCard
-import com.blockstream.ui.components.GreenColumn
 import com.blockstream.compose.components.Rive
 import com.blockstream.compose.components.RiveAnimation
 import com.blockstream.compose.theme.bodyLarge
 import com.blockstream.compose.theme.titleLarge
 import com.blockstream.compose.utils.HandleSideEffectDialog
+import com.blockstream.ui.components.GreenColumn
 import org.jetbrains.compose.resources.ExperimentalResourceApi
 import org.jetbrains.compose.resources.painterResource
 import org.jetbrains.compose.resources.stringResource
 import org.koin.compose.koinInject
-
 
 @OptIn(ExperimentalResourceApi::class)
 @Composable
@@ -118,81 +117,82 @@ actual fun AppRateDialog(
                             mutableStateOf(null)
                         }
 
-                        AndroidView(factory = {
-                            LayoutInflater.from(it)
-                                .inflate(R.layout.rive, null)
-                                .apply {
-                                    val animationView: RiveAnimationView =
-                                        findViewById(R.id.rive)
-                                    animationView.setRiveResource(
-                                        R.raw.rive_empty,
-                                        stateMachineName = "State Machine 1",
-                                        autoplay = true
-                                    )
+                        AndroidView(
+                            factory = {
+                                LayoutInflater.from(it)
+                                    .inflate(R.layout.rive, null)
+                                    .apply {
+                                        val animationView: RiveAnimationView =
+                                            findViewById(R.id.rive)
+                                        animationView.setRiveResource(
+                                            R.raw.rive_empty,
+                                            stateMachineName = "State Machine 1",
+                                            autoplay = true
+                                        )
 
-                                    var lastStateName = ""
-                                    var handled = false
+                                        var lastStateName = ""
+                                        var handled = false
 
-                                    animationView.registerListener(object :
-                                        RiveFileController.Listener {
-                                        override fun notifyLoop(animation: PlayableInstance) {
-                                        }
-
-                                        override fun notifyPause(animation: PlayableInstance) {
-                                            val rate = when (lastStateName) {
-                                                "1_star" -> 1
-                                                "2_stars" -> 2
-                                                "3_stars" -> 3
-                                                "4_stars" -> 4
-                                                "5_stars" -> 5
-                                                else -> 0
+                                        animationView.registerListener(object :
+                                            RiveFileController.Listener {
+                                            override fun notifyLoop(animation: PlayableInstance) {
                                             }
 
-                                            if (rate > 0 && !handled) {
-                                                handled = true
-                                                ContextCompat.getMainExecutor(it).execute {
-                                                    activity.also {
-                                                        googlePlay.showInAppReviewDialog(it) {
-                                                            viewModel.postEvent(
-                                                                Events.OpenBrowser(
-                                                                    Urls.BLOCKSTREAM_GOOGLE_PLAY
+                                            override fun notifyPause(animation: PlayableInstance) {
+                                                val rate = when (lastStateName) {
+                                                    "1_star" -> 1
+                                                    "2_stars" -> 2
+                                                    "3_stars" -> 3
+                                                    "4_stars" -> 4
+                                                    "5_stars" -> 5
+                                                    else -> 0
+                                                }
+
+                                                if (rate > 0 && !handled) {
+                                                    handled = true
+                                                    ContextCompat.getMainExecutor(it).execute {
+                                                        activity.also {
+                                                            googlePlay.showInAppReviewDialog(it) {
+                                                                viewModel.postEvent(
+                                                                    Events.OpenBrowser(
+                                                                        Urls.BLOCKSTREAM_GOOGLE_PLAY
+                                                                    )
                                                                 )
-                                                            )
+                                                            }
                                                         }
+                                                        viewModel.settingsManager.setAskedAboutAppReview()
+                                                        onDismissRequest()
                                                     }
-                                                    viewModel.settingsManager.setAskedAboutAppReview()
-                                                    onDismissRequest()
                                                 }
                                             }
-                                        }
 
-                                        override fun notifyPlay(animation: PlayableInstance) {
+                                            override fun notifyPlay(animation: PlayableInstance) {
 
-                                        }
+                                            }
 
-                                        override fun notifyStateChanged(
-                                            stateMachineName: String,
-                                            stateName: String
-                                        ) {
-                                            lastStateName = stateName
-                                        }
+                                            override fun notifyStateChanged(
+                                                stateMachineName: String,
+                                                stateName: String
+                                            ) {
+                                                lastStateName = stateName
+                                            }
 
-                                        override fun notifyStop(animation: PlayableInstance) {
+                                            override fun notifyStop(animation: PlayableInstance) {
 
-                                        }
-                                    })
+                                            }
+                                        })
 
+                                    }
+                            }, update = {
+                                bytes?.also { bytes ->
+                                    val animationView: RiveAnimationView =
+                                        it.findViewById(R.id.rive)
+                                    animationView.setRiveBytes(bytes = bytes, autoplay = true)
                                 }
-                        }, update = {
-                            bytes?.also { bytes ->
-                                val animationView: RiveAnimationView =
-                                    it.findViewById(R.id.rive)
-                                animationView.setRiveBytes(bytes = bytes, autoplay = true)
-                            }
-                        }, modifier = Modifier
-                            .fillMaxWidth()
-                            .height(100.dp)
-                            .padding(start = 16.dp, bottom = 16.dp)
+                            }, modifier = Modifier
+                                .fillMaxWidth()
+                                .height(100.dp)
+                                .padding(start = 16.dp, bottom = 16.dp)
                         )
 
                         LaunchedEffect(riveFile) {

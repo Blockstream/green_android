@@ -30,7 +30,7 @@ data class TransactionDetailsLook(
         suspend fun create(session: GdkSession, transaction: Transaction): TransactionDetailsLook {
             return TransactionDetailsLook(
                 transaction = transaction,
-                transactionUtxos =  TransactionUtxo.create(session = session, transaction = transaction),
+                transactionUtxos = TransactionUtxo.create(session = session, transaction = transaction),
                 networkFeeLook = NetworkFeeLook.create(session = session, transaction = transaction),
                 transactionStatusLook = TransactionStatusLook.create(session = session, transaction = transaction),
             )

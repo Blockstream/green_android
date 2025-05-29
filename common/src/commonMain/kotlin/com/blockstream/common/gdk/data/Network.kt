@@ -7,18 +7,30 @@ import kotlinx.serialization.Serializable
 
 @Serializable
 data class Network(
-    @SerialName("network") val network: String,
-    @SerialName("name") val name: String,
-    @SerialName("mainnet") val isMainnet: Boolean,
-    @SerialName("liquid") val isLiquid: Boolean,
-    @SerialName("development") val isDevelopment: Boolean,
-    @SerialName("default_peers") val defaultPeers: List<String> = listOf(),
-    @SerialName("bip21_prefix") val bip21Prefix: String = "network",
-    @SerialName("tx_explorer_url") val explorerUrl: String? = null,
-    @SerialName("policy_asset") val policyAsset: String = BTC_POLICY_ASSET,
-    @SerialName("server_type") val serverType: String? = null,
-    @SerialName("csv_buckets") val csvBuckets: List<Int> = listOf(),
-    @SerialName("lightning") val isLightning: Boolean = false, // synthetic
+    @SerialName("network")
+    val network: String,
+    @SerialName("name")
+    val name: String,
+    @SerialName("mainnet")
+    val isMainnet: Boolean,
+    @SerialName("liquid")
+    val isLiquid: Boolean,
+    @SerialName("development")
+    val isDevelopment: Boolean,
+    @SerialName("default_peers")
+    val defaultPeers: List<String> = listOf(),
+    @SerialName("bip21_prefix")
+    val bip21Prefix: String = "network",
+    @SerialName("tx_explorer_url")
+    val explorerUrl: String? = null,
+    @SerialName("policy_asset")
+    val policyAsset: String = BTC_POLICY_ASSET,
+    @SerialName("server_type")
+    val serverType: String? = null,
+    @SerialName("csv_buckets")
+    val csvBuckets: List<Int> = listOf(),
+    @SerialName("lightning")
+    val isLightning: Boolean = false, // synthetic
 ) : GreenJson<Network>() {
     val id
         get() = network
@@ -54,13 +66,13 @@ data class Network(
         get() = isLiquidTestnet(id)
 
     val canonicalName: String
-        get() = when(network){
-                GreenMainnet, ElectrumMainnet -> "Bitcoin"
-                GreenTestnet, ElectrumTestnet -> "Testnet"
-                GreenLiquid, ElectrumLiquid -> "Liquid"
-                GreenTestnetLiquid, ElectrumTestnetLiquid -> "Testnet Liquid"
-                else -> name
-            }
+        get() = when (network) {
+            GreenMainnet, ElectrumMainnet -> "Bitcoin"
+            GreenTestnet, ElectrumTestnet -> "Testnet"
+            GreenLiquid, ElectrumLiquid -> "Liquid"
+            GreenTestnetLiquid, ElectrumTestnetLiquid -> "Testnet Liquid"
+            else -> name
+        }
 
     val canonicalNetworkId: String
         get() = canonicalNetworkId(network)
@@ -73,7 +85,7 @@ data class Network(
         }
 
     val policyAssetOrNull
-        get() = if(isLiquid) policyAsset else null
+        get() = if (isLiquid) policyAsset else null
 
     val countlyId: String
         get() = if (isMultisig) {
@@ -93,14 +105,14 @@ data class Network(
         get() = if (isLiquid) 60 else 6
 
     val confirmationsRequired: Long
-        get() = when{
+        get() = when {
             isLightning -> 1L
             isLiquid -> 2L
             else -> 6L
         }
 
     val zendeskValue: String
-        get() = when  {
+        get() = when {
             isSinglesig -> "singlesig__green_"
             isMultisig -> "multisig_shield__green_"
             isLightning -> "lightning__green_"
@@ -116,7 +128,7 @@ data class Network(
 
     override fun kSerializer() = serializer()
 
-    companion object{
+    companion object {
         const val GreenMainnet = "mainnet"
         const val GreenLiquid = "liquid"
         const val GreenTestnet = "testnet"

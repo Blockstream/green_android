@@ -75,7 +75,7 @@ fun ChooseAssetAccountBottomSheet(
         }
 
         // Expand Bitcoin Asset if wallet is BTC only
-        if(!viewModel.session.hasLiquidAccount){
+        if (!viewModel.session.hasLiquidAccount) {
             expanded = enrichedAssets.firstOrNull()?.first
         }
     }

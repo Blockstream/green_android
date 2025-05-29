@@ -6,9 +6,11 @@ import kotlinx.serialization.Serializable
 
 @Serializable
 data class BlindedScripts(
-    @SerialName("script") val script: String? = null,
-    @SerialName("pubkey") val pubkey: String? = null,
-): GreenJson<BlindedScripts>() {
+    @SerialName("script")
+    val script: String? = null,
+    @SerialName("pubkey")
+    val pubkey: String? = null,
+) : GreenJson<BlindedScripts>() {
 
     override fun kSerializer() = serializer()
 }

@@ -145,7 +145,7 @@ fun LoginScreen(
 
             is LoginViewModel.LocalSideEffects.LaunchUserPresence -> {
                 biometricsState?.launchUserPresencePrompt(title = getString(Res.string.id_authenticate)) {
-                    if(it != false){
+                    if (it != false) {
                         viewModel.postEvent(LoginViewModel.LocalEvents.Authenticated(it == true))
                     }
                 }
@@ -161,139 +161,419 @@ fun LoginScreen(
         }
     }, withPadding = false, onProgressStyle = OnProgressStyle.Disabled) {
 
-    Box(
-        modifier = Modifier
-            .fillMaxWidth()
-            .fillMaxHeight(),
-        contentAlignment = Alignment.Center
-    ) {
-
-        if (onProgress) {
-            Column(
-                modifier = Modifier.align(Alignment.Center),
-                horizontalAlignment = Alignment.CenterHorizontally
-            ) {
-                val applicationSettings by viewModel.applicationSettings.collectAsStateWithLifecycle()
-                val tor by viewModel.tor.collectAsStateWithLifecycle()
-
-                val isLogging = tor.progress == 100 || !applicationSettings.tor
-                Box {
-                    if (isLogging) {
-                        CircularProgressIndicator(
-                            modifier = Modifier
-                                .size(120.dp),
-                            color = MaterialTheme.colorScheme.secondary,
-                            trackColor = MaterialTheme.colorScheme.surfaceVariant,
-                        )
-                    } else {
-                        CircularProgressIndicator(
-                            progress = {
-                                tor.progress.toFloat()
-                            },
-                            modifier = Modifier
-                                .size(120.dp),
-                            color = MaterialTheme.colorScheme.secondary,
-                            trackColor = MaterialTheme.colorScheme.surfaceVariant,
-                        )
-                    }
-
-                    viewModel.deviceOrNull?.also {
-                        Image(
-                            painter = painterResource(it.icon()),
-                            contentDescription = it.deviceBrand.toString(),
-                            modifier = Modifier
-                                .align(Alignment.Center)
-                                .size(72.dp)
-                        )
-                    }
-                }
-
-                GreenSpacer(32)
-
-                Text(
-                    text = stringResource(if (isLogging) Res.string.id_logging_in else Res.string.id_connecting_through_tor),
-                    style = titleLarge,
-                )
-
-                if (applicationSettings.tor) {
-                    GreenSpacer(16)
-                    AlphaPulse {
-                        Image(
-                            painter = painterResource(Res.drawable.tor),
-                            contentDescription = "Tor"
-                        )
-                    }
-                }
-
-                applicationSettings.proxyUrl.takeIf { it.isNotBlank() }?.also {
-                    GreenSpacer(4)
-                    Text(
-                        text = applicationSettings.proxyUrl ?: "proxy Url",
-                        style = bodyMedium,
-                        color = whiteMedium
-                    )
-                }
-            }
-        }
-
-        val showRestoreWithRecovery by viewModel.showRestoreWithRecovery.collectAsStateWithLifecycle()
-        if (showRestoreWithRecovery) {
-            GreenColumn(horizontalAlignment = Alignment.CenterHorizontally) {
-                Text(text = stringResource(Res.string.id_too_many_pin_attempts), style = titleSmall)
-
-                Image(
-                    painter = painterResource(Res.drawable.shield_warning),
-                    contentDescription = null,
-                    modifier = Modifier
-                        .size(200.dp)
-                        .aspectRatio(1f)
-                )
-
-                GreenSpacer()
-
-                Text(
-                    text = stringResource(Res.string.id_youve_entered_an_invalid_pin),
-                    style = labelMedium
-                )
-
-                GreenButton(text = stringResource(Res.string.id_restore_with_recovery_phrase)) {
-                    viewModel.postEvent(LoginViewModel.LocalEvents.ClickRestoreWithRecovery)
-                }
-            }
-        }
-
-        Column(
+        Box(
             modifier = Modifier
                 .fillMaxWidth()
-                .fillMaxHeight()
-                .padding(horizontal = 16.dp),
-            verticalArrangement = Arrangement.SpaceBetween
+                .fillMaxHeight(),
+            contentAlignment = Alignment.Center
         ) {
 
-            if (!onProgress) {
-                Banner(viewModel)
+            if (onProgress) {
+                Column(
+                    modifier = Modifier.align(Alignment.Center),
+                    horizontalAlignment = Alignment.CenterHorizontally
+                ) {
+                    val applicationSettings by viewModel.applicationSettings.collectAsStateWithLifecycle()
+                    val tor by viewModel.tor.collectAsStateWithLifecycle()
+
+                    val isLogging = tor.progress == 100 || !applicationSettings.tor
+                    Box {
+                        if (isLogging) {
+                            CircularProgressIndicator(
+                                modifier = Modifier
+                                    .size(120.dp),
+                                color = MaterialTheme.colorScheme.secondary,
+                                trackColor = MaterialTheme.colorScheme.surfaceVariant,
+                            )
+                        } else {
+                            CircularProgressIndicator(
+                                progress = {
+                                    tor.progress.toFloat()
+                                },
+                                modifier = Modifier
+                                    .size(120.dp),
+                                color = MaterialTheme.colorScheme.secondary,
+                                trackColor = MaterialTheme.colorScheme.surfaceVariant,
+                            )
+                        }
+
+                        viewModel.deviceOrNull?.also {
+                            Image(
+                                painter = painterResource(it.icon()),
+                                contentDescription = it.deviceBrand.toString(),
+                                modifier = Modifier
+                                    .align(Alignment.Center)
+                                    .size(72.dp)
+                            )
+                        }
+                    }
+
+                    GreenSpacer(32)
+
+                    Text(
+                        text = stringResource(if (isLogging) Res.string.id_logging_in else Res.string.id_connecting_through_tor),
+                        style = titleLarge,
+                    )
+
+                    if (applicationSettings.tor) {
+                        GreenSpacer(16)
+                        AlphaPulse {
+                            Image(
+                                painter = painterResource(Res.drawable.tor),
+                                contentDescription = "Tor"
+                            )
+                        }
+                    }
+
+                    applicationSettings.proxyUrl.takeIf { it.isNotBlank() }?.also {
+                        GreenSpacer(4)
+                        Text(
+                            text = applicationSettings.proxyUrl ?: "proxy Url",
+                            style = bodyMedium,
+                            color = whiteMedium
+                        )
+                    }
+                }
             }
 
-            if (viewModel.greenWallet.isWatchOnly || hwWatchOnlyCredentials.isSuccess()) {
-                if (!onProgress) {
-                    Box(
-                        contentAlignment = Alignment.BottomCenter,
-                        modifier = Modifier
-                            .fillMaxWidth()
-                            .weight(1f)
-                    ) {
+            val showRestoreWithRecovery by viewModel.showRestoreWithRecovery.collectAsStateWithLifecycle()
+            if (showRestoreWithRecovery) {
+                GreenColumn(horizontalAlignment = Alignment.CenterHorizontally) {
+                    Text(text = stringResource(Res.string.id_too_many_pin_attempts), style = titleSmall)
 
-                        GreenColumn(
-                            verticalArrangement = Arrangement.spacedBy(16.dp, Alignment.Bottom),
-                            horizontalAlignment = Alignment.End
+                    Image(
+                        painter = painterResource(Res.drawable.shield_warning),
+                        contentDescription = null,
+                        modifier = Modifier
+                            .size(200.dp)
+                            .aspectRatio(1f)
+                    )
+
+                    GreenSpacer()
+
+                    Text(
+                        text = stringResource(Res.string.id_youve_entered_an_invalid_pin),
+                        style = labelMedium
+                    )
+
+                    GreenButton(text = stringResource(Res.string.id_restore_with_recovery_phrase)) {
+                        viewModel.postEvent(LoginViewModel.LocalEvents.ClickRestoreWithRecovery)
+                    }
+                }
+            }
+
+            Column(
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .fillMaxHeight()
+                    .padding(horizontal = 16.dp),
+                verticalArrangement = Arrangement.SpaceBetween
+            ) {
+
+                if (!onProgress) {
+                    Banner(viewModel)
+                }
+
+                if (viewModel.greenWallet.isWatchOnly || hwWatchOnlyCredentials.isSuccess()) {
+                    if (!onProgress) {
+                        Box(
+                            contentAlignment = Alignment.BottomCenter,
+                            modifier = Modifier
+                                .fillMaxWidth()
+                                .weight(1f)
                         ) {
 
-                            Box(
-                                contentAlignment = Alignment.Center,
-                                modifier = Modifier
-                                    .weight(1f)
-                                    .align(Alignment.CenterHorizontally)
+                            GreenColumn(
+                                verticalArrangement = Arrangement.spacedBy(16.dp, Alignment.Bottom),
+                                horizontalAlignment = Alignment.End
                             ) {
+
+                                Box(
+                                    contentAlignment = Alignment.Center,
+                                    modifier = Modifier
+                                        .weight(1f)
+                                        .align(Alignment.CenterHorizontally)
+                                ) {
+                                    Image(
+                                        painter = painterResource(if (viewModel.greenWallet.isWatchOnlyQr) Res.drawable.qr_code else Res.drawable.eye),
+                                        contentDescription = "Watch Only",
+                                        // colorFilter = ColorFilter.tint(green),
+                                        alpha = 0.25f,
+                                        modifier = Modifier
+                                            .size(128.dp)
+                                    )
+                                }
+
+                                Text(
+                                    text = stringResource(Res.string.id_log_in_via_watchonly_to_receive),
+                                    style = titleLarge
+                                )
+
+                                val showWatchOnlyUsername by viewModel.showWatchOnlyUsername.collectAsStateWithLifecycle()
+                                if (showWatchOnlyUsername) {
+                                    val watchOnlyUsername by viewModel.watchOnlyUsername.collectAsStateWithLifecycle()
+                                    TextField(
+                                        value = watchOnlyUsername,
+                                        onValueChange = viewModel.watchOnlyUsername.onValueChange(),
+                                        enabled = false,
+                                        label = { Text(stringResource(Res.string.id_username)) },
+                                        modifier = Modifier
+                                            .fillMaxWidth(),
+                                        singleLine = true,
+                                    )
+                                }
+
+                                val showWatchOnlyPassword by viewModel.showWatchOnlyPassword.collectAsStateWithLifecycle()
+                                val focusManager = LocalFocusManager.current
+                                if (showWatchOnlyPassword) {
+                                    val watchOnlyPassword by viewModel.watchOnlyPassword.collectAsStateWithLifecycle()
+                                    var passwordVisibility: Boolean by remember { mutableStateOf(false) }
+                                    TextField(
+                                        value = watchOnlyPassword,
+                                        onValueChange = viewModel.watchOnlyPassword.onValueChange(),
+                                        visualTransformation = if (passwordVisibility) VisualTransformation.None else PasswordVisualTransformation(),
+                                        label = { Text(stringResource(Res.string.id_password)) },
+                                        modifier = Modifier
+                                            .fillMaxWidth(),
+                                        singleLine = true,
+                                        keyboardOptions = KeyboardOptions.Default.copy(
+                                            autoCorrectEnabled = false,
+                                            keyboardType = KeyboardType.Password,
+                                            imeAction = ImeAction.Done
+                                        ),
+                                        keyboardActions = KeyboardActions(
+                                            onDone = {
+                                                focusManager.clearFocus()
+                                            }
+                                        ),
+                                        trailingIcon = {
+                                            IconButton(onClick = {
+                                                passwordVisibility = !passwordVisibility
+                                            }) {
+                                                Icon(
+                                                    painter = painterResource(if (passwordVisibility) Res.drawable.eye_slash else Res.drawable.eye),
+                                                    contentDescription = "password visibility",
+                                                )
+                                            }
+                                        }
+                                    )
+                                }
+
+                                val isWatchOnlyLoginEnabled by viewModel.isWatchOnlyLoginEnabled.collectAsStateWithLifecycle()
+                                GreenButton(
+                                    text = stringResource(Res.string.id_log_in),
+                                    modifier = Modifier.fillMaxWidth(),
+                                    enabled = isWatchOnlyLoginEnabled
+                                ) {
+                                    viewModel.postEvent(LoginViewModel.LocalEvents.LoginWatchOnly)
+                                }
+
+                                if (hwWatchOnlyCredentials.isSuccess()) {
+                                    GreenButton(
+                                        text = stringResource(Res.string.id_connect_hardware_wallet),
+                                        type = GreenButtonType.TEXT,
+                                        modifier = Modifier.fillMaxWidth()
+                                    ) {
+                                        viewModel.postEvent(
+                                            NavigateDestinations.DeviceScan(
+                                                greenWallet = viewModel.greenWallet
+                                            )
+                                        )
+                                    }
+                                }
+                            }
+                        }
+                    }
+                } else {
+
+                    Box(
+                        modifier = Modifier
+                            .weight(1f)
+                            .align(Alignment.CenterHorizontally),
+                        contentAlignment = Alignment.Center
+                    ) {
+
+                        if ((pinCredentials.isNotEmpty() || passwordCredentials.isNotEmpty()) && !onProgress) {
+                            ConstraintLayout(
+                                modifier = Modifier
+                                    .fillMaxWidth()
+                            ) {
+
+                                val (titleRef, containerRef) = createRefs()
+
+                                Text(
+                                    text = stringResource(Res.string.id_enter_your_pin),
+                                    style = headlineMedium,
+                                    modifier = Modifier.constrainAs(titleRef) {
+                                        start.linkTo(parent.start)
+                                        end.linkTo(parent.end)
+                                        top.linkTo(parent.top)
+                                        bottom.linkTo(parent.bottom)
+                                    }
+                                )
+
+                                GreenColumn(
+                                    padding = 0,
+                                    space = 8,
+                                    horizontalAlignment = Alignment.CenterHorizontally,
+                                    modifier = Modifier.constrainAs(containerRef) {
+                                        top.linkTo(titleRef.bottom)
+                                        start.linkTo(parent.start)
+                                        end.linkTo(parent.end)
+                                    }) {
+
+                                    val isEmergencyRecoveryPhrase by viewModel.isEmergencyRecoveryPhrase.collectAsStateWithLifecycle()
+
+                                    if (isEmergencyRecoveryPhrase) {
+                                        OutlinedButton(onClick = {
+                                            viewModel.postEvent(
+                                                LoginViewModel.LocalEvents.EmergencyRecovery(
+                                                    false
+                                                )
+                                            )
+                                        }) {
+                                            GreenRow(padding = 0, space = 6) {
+                                                Text(
+                                                    text = stringResource(Res.string.id_emergency_recovery_phrase),
+                                                    style = labelLarge,
+                                                    color = whiteMedium
+                                                )
+
+                                                Icon(
+                                                    painter = painterResource(Res.drawable.x),
+                                                    contentDescription = null,
+                                                    tint = whiteMedium,
+                                                    modifier = Modifier.size(16.dp)
+                                                )
+                                            }
+                                        }
+                                    }
+
+                                    val bip39Passphrase by viewModel.bip39Passphrase.collectAsStateWithLifecycle()
+
+                                    if (bip39Passphrase.isNotBlank()) {
+                                        TextButton(onClick = {
+                                            viewModel.postEvent(
+                                                NavigateDestinations.Bip39Passphrase(
+                                                    greenWallet = viewModel.greenWallet,
+                                                    passphrase = viewModel.bip39Passphrase.value
+                                                )
+                                            )
+                                        }) {
+                                            GreenRow(padding = 0, space = 6) {
+                                                Icon(
+                                                    painter = painterResource(Res.drawable.bip39_passphrase),
+                                                    contentDescription = null,
+                                                    tint = whiteMedium,
+                                                    modifier = Modifier.size(16.dp)
+                                                )
+
+                                                Text(
+                                                    text = stringResource(Res.string.id_bip39_passphrase_login),
+                                                    style = labelLarge,
+                                                    color = whiteMedium
+                                                )
+                                            }
+                                        }
+                                    }
+                                }
+
+                            }
+                        }
+
+                    }
+
+                    Box(
+                        modifier = Modifier
+                            .align(Alignment.CenterHorizontally)
+                            .weight(4f),
+                        contentAlignment = Alignment.Center
+                    ) {
+
+                        val error by viewModel.error.collectAsStateWithLifecycle()
+                        if (!onProgress) {
+                            if (pinCredentials.isNotEmpty()) {
+                                PinView(
+                                    modifier = Modifier
+                                        .fillMaxHeight()
+                                        .align(Alignment.BottomCenter),
+                                    error = error,
+                                    onPin = {
+                                        if (it.isNotBlank()) {
+                                            viewModel.postEvent(
+                                                LoginViewModel.LocalEvents.LoginWithPin(
+                                                    it
+                                                )
+                                            )
+                                        }
+                                    }
+                                )
+                            } else if (passwordCredentials.isNotEmpty()) {
+                                val focusManager = LocalFocusManager.current
+                                var password by remember {
+                                    mutableStateOf("")
+                                }
+                                val passwordVisibility = remember { mutableStateOf(false) }
+
+                                GreenColumn(modifier = Modifier.align(Alignment.TopCenter)) {
+                                    TextField(
+                                        value = password,
+                                        visualTransformation = if (passwordVisibility.value) VisualTransformation.None else PasswordVisualTransformation(),
+                                        onValueChange = {
+                                            password = it
+                                        },
+                                        modifier = Modifier.fillMaxWidth(),
+                                        singleLine = true,
+                                        keyboardOptions = KeyboardOptions.Default.copy(
+                                            autoCorrectEnabled = false,
+                                            keyboardType = KeyboardType.Password,
+                                            imeAction = ImeAction.Done
+                                        ),
+                                        keyboardActions = KeyboardActions(
+                                            onDone = {
+                                                focusManager.clearFocus()
+                                            }
+                                        ),
+                                        label = { Text(stringResource(Res.string.id_pin)) },
+                                        trailingIcon = {
+                                            TextInputPassword(passwordVisibility)
+                                        }
+                                    )
+
+                                    AnimatedNullableVisibility(value = error) {
+                                        Text(
+                                            modifier = Modifier.fillMaxWidth(),
+                                            text = it,
+                                            style = labelMedium,
+                                            color = red
+                                        )
+                                    }
+
+                                    GreenButton(
+                                        text = stringResource(Res.string.id_log_in),
+                                        modifier = Modifier.fillMaxWidth()
+                                    ) {
+                                        viewModel.postEvent(
+                                            LoginViewModel.LocalEvents.LoginWithPin(password)
+                                        )
+                                    }
+                                }
+                            } else if (biometricsCredentials.isNotEmpty()) {
+
+                                Box(modifier = Modifier.fillMaxSize()) {
+                                    Icon(
+                                        imageVector = PhosphorIcons.Regular.Fingerprint,
+                                        contentDescription = "Fingerprint",
+                                        modifier = Modifier
+                                            .size(128.dp)
+                                            .align(Alignment.Center)
+                                            .noRippleClickable {
+                                                viewModel.postEvent(LoginViewModel.LocalEvents.ClickBiometrics)
+                                            }
+                                    )
+                                }
+                            } else if (mnemonicCredentials.isNotEmpty()) {
+
                                 Image(
                                     painter = painterResource(if (viewModel.greenWallet.isWatchOnlyQr) Res.drawable.qr_code else Res.drawable.eye),
                                     contentDescription = "Watch Only",
@@ -302,328 +582,48 @@ fun LoginScreen(
                                     modifier = Modifier
                                         .size(128.dp)
                                 )
-                            }
 
-                            Text(
-                                text = stringResource(Res.string.id_log_in_via_watchonly_to_receive),
-                                style = titleLarge
-                            )
-
-                            val showWatchOnlyUsername by viewModel.showWatchOnlyUsername.collectAsStateWithLifecycle()
-                            if (showWatchOnlyUsername) {
-                                val watchOnlyUsername by viewModel.watchOnlyUsername.collectAsStateWithLifecycle()
-                                TextField(
-                                    value = watchOnlyUsername,
-                                    onValueChange = viewModel.watchOnlyUsername.onValueChange(),
-                                    enabled = false,
-                                    label = { Text(stringResource(Res.string.id_username)) },
-                                    modifier = Modifier
-                                        .fillMaxWidth(),
-                                    singleLine = true,
-                                )
-                            }
-
-                            val showWatchOnlyPassword by viewModel.showWatchOnlyPassword.collectAsStateWithLifecycle()
-                            val focusManager = LocalFocusManager.current
-                            if (showWatchOnlyPassword) {
-                                val watchOnlyPassword by viewModel.watchOnlyPassword.collectAsStateWithLifecycle()
-                                var passwordVisibility: Boolean by remember { mutableStateOf(false) }
-                                TextField(
-                                    value = watchOnlyPassword,
-                                    onValueChange = viewModel.watchOnlyPassword.onValueChange(),
-                                    visualTransformation = if (passwordVisibility) VisualTransformation.None else PasswordVisualTransformation(),
-                                    label = { Text(stringResource(Res.string.id_password)) },
-                                    modifier = Modifier
-                                        .fillMaxWidth(),
-                                    singleLine = true,
-                                    keyboardOptions = KeyboardOptions.Default.copy(
-                                        autoCorrectEnabled = false,
-                                        keyboardType = KeyboardType.Password,
-                                        imeAction = ImeAction.Done
-                                    ),
-                                    keyboardActions = KeyboardActions(
-                                        onDone = {
-                                            focusManager.clearFocus()
-                                        }
-                                    ),
-                                    trailingIcon = {
-                                        IconButton(onClick = {
-                                            passwordVisibility = !passwordVisibility
-                                        }) {
-                                            Icon(
-                                                painter = painterResource(if (passwordVisibility) Res.drawable.eye_slash else Res.drawable.eye),
-                                                contentDescription = "password visibility",
-                                            )
-                                        }
-                                    }
-                                )
-                            }
-
-                            val isWatchOnlyLoginEnabled by viewModel.isWatchOnlyLoginEnabled.collectAsStateWithLifecycle()
-                            GreenButton(
-                                text = stringResource(Res.string.id_log_in),
-                                modifier = Modifier.fillMaxWidth(),
-                                enabled = isWatchOnlyLoginEnabled
-                            ) {
-                                viewModel.postEvent(LoginViewModel.LocalEvents.LoginWatchOnly)
-                            }
-
-                            if(hwWatchOnlyCredentials.isSuccess()){
-                                GreenButton(
-                                    text = stringResource(Res.string.id_connect_hardware_wallet),
-                                    type = GreenButtonType.TEXT,
-                                    modifier = Modifier.fillMaxWidth()
-                                ) {
-                                    viewModel.postEvent(
-                                        NavigateDestinations.DeviceScan(
-                                            greenWallet = viewModel.greenWallet
+                                GreenColumn(modifier = Modifier.align(Alignment.BottomCenter)) {
+                                    GreenButton(
+                                        text = stringResource(Res.string.id_log_in),
+                                        modifier = Modifier.fillMaxWidth()
+                                    ) {
+                                        viewModel.postEvent(
+                                            LoginViewModel.LocalEvents.Login
                                         )
-                                    )
+                                    }
                                 }
                             }
                         }
                     }
                 }
-            } else {
 
                 Box(
                     modifier = Modifier
-                        .weight(1f)
-                        .align(Alignment.CenterHorizontally),
-                    contentAlignment = Alignment.Center
+                        .fillMaxWidth()
                 ) {
 
-                    if ((pinCredentials.isNotEmpty() || passwordCredentials.isNotEmpty()) && !onProgress) {
-                        ConstraintLayout(
-                            modifier = Modifier
-                                .fillMaxWidth()
-                        ) {
-
-                            val (titleRef, containerRef) = createRefs()
-
-                            Text(
-                                text = stringResource(Res.string.id_enter_your_pin),
-                                style = headlineMedium,
-                                modifier = Modifier.constrainAs(titleRef) {
-                                    start.linkTo(parent.start)
-                                    end.linkTo(parent.end)
-                                    top.linkTo(parent.top)
-                                    bottom.linkTo(parent.bottom)
-                                }
-                            )
-
-                            GreenColumn(
-                                padding = 0,
-                                space = 8,
-                                horizontalAlignment = Alignment.CenterHorizontally,
-                                modifier = Modifier.constrainAs(containerRef) {
-                                    top.linkTo(titleRef.bottom)
-                                    start.linkTo(parent.start)
-                                    end.linkTo(parent.end)
-                                }) {
-
-                                val isEmergencyRecoveryPhrase by viewModel.isEmergencyRecoveryPhrase.collectAsStateWithLifecycle()
-
-                                if (isEmergencyRecoveryPhrase) {
-                                    OutlinedButton(onClick = {
-                                        viewModel.postEvent(
-                                            LoginViewModel.LocalEvents.EmergencyRecovery(
-                                                false
-                                            )
-                                        )
-                                    }) {
-                                        GreenRow(padding = 0, space = 6) {
-                                            Text(
-                                                text = stringResource(Res.string.id_emergency_recovery_phrase),
-                                                style = labelLarge,
-                                                color = whiteMedium
-                                            )
-
-                                            Icon(
-                                                painter = painterResource(Res.drawable.x),
-                                                contentDescription = null,
-                                                tint = whiteMedium,
-                                                modifier = Modifier.size(16.dp)
-                                            )
-                                        }
-                                    }
-                                }
-
-                                val bip39Passphrase by viewModel.bip39Passphrase.collectAsStateWithLifecycle()
-
-                                if (bip39Passphrase.isNotBlank()) {
-                                    TextButton(onClick = {
-                                        viewModel.postEvent(
-                                            NavigateDestinations.Bip39Passphrase(
-                                                greenWallet = viewModel.greenWallet,
-                                                passphrase = viewModel.bip39Passphrase.value
-                                            )
-                                        )
-                                    }) {
-                                        GreenRow(padding = 0, space = 6) {
-                                            Icon(
-                                                painter = painterResource(Res.drawable.bip39_passphrase),
-                                                contentDescription = null,
-                                                tint = whiteMedium,
-                                                modifier = Modifier.size(16.dp)
-                                            )
-
-                                            Text(
-                                                text = stringResource(Res.string.id_bip39_passphrase_login),
-                                                style = labelLarge,
-                                                color = whiteMedium
-                                            )
-                                        }
-                                    }
-                                }
-                            }
-
+                    if (biometricsCredentials.isNotEmpty() && !onProgress) {
+                        BiometricsButton(modifier = Modifier.align(Alignment.CenterStart)) {
+                            viewModel.postEvent(LoginViewModel.LocalEvents.ClickBiometrics)
                         }
                     }
 
-                }
+                    val richWatchOnlyCredentials by viewModel.richWatchOnlyCredentials.collectAsStateWithLifecycle()
 
-                Box(
-                    modifier = Modifier
-                        .align(Alignment.CenterHorizontally)
-                        .weight(4f),
-                    contentAlignment = Alignment.Center
-                ) {
+                    if (!onProgress && richWatchOnlyCredentials.isNotEmpty()) {
+                        RichWatchOnlyButton(modifier = Modifier.align(Alignment.Center)) {
+                            viewModel.postEvent(LoginViewModel.LocalEvents.LoginWatchOnly)
+                        }
+                    }
 
-                    val error by viewModel.error.collectAsStateWithLifecycle()
                     if (!onProgress) {
-                        if (pinCredentials.isNotEmpty()) {
-                            PinView(
-                                modifier = Modifier
-                                    .fillMaxHeight()
-                                    .align(Alignment.BottomCenter),
-                                error = error,
-                                onPin = {
-                                    if (it.isNotBlank()) {
-                                        viewModel.postEvent(
-                                            LoginViewModel.LocalEvents.LoginWithPin(
-                                                it
-                                            )
-                                        )
-                                    }
-                                }
-                            )
-                        } else if (passwordCredentials.isNotEmpty()) {
-                            val focusManager = LocalFocusManager.current
-                            var password by remember {
-                                mutableStateOf("")
-                            }
-                            val passwordVisibility = remember { mutableStateOf(false) }
-
-                            GreenColumn(modifier = Modifier.align(Alignment.TopCenter)) {
-                                TextField(
-                                    value = password,
-                                    visualTransformation = if (passwordVisibility.value) VisualTransformation.None else PasswordVisualTransformation(),
-                                    onValueChange = {
-                                        password = it
-                                    },
-                                    modifier = Modifier.fillMaxWidth(),
-                                    singleLine = true,
-                                    keyboardOptions = KeyboardOptions.Default.copy(
-                                        autoCorrectEnabled = false,
-                                        keyboardType = KeyboardType.Password,
-                                        imeAction = ImeAction.Done
-                                    ),
-                                    keyboardActions = KeyboardActions(
-                                        onDone = {
-                                            focusManager.clearFocus()
-                                        }
-                                    ),
-                                    label = { Text(stringResource(Res.string.id_pin)) },
-                                    trailingIcon = {
-                                        TextInputPassword(passwordVisibility)
-                                    }
-                                )
-
-                                AnimatedNullableVisibility(value = error) {
-                                    Text(
-                                        modifier = Modifier.fillMaxWidth(),
-                                        text = it,
-                                        style = labelMedium,
-                                        color = red
-                                    )
-                                }
-
-                                GreenButton(
-                                    text = stringResource(Res.string.id_log_in),
-                                    modifier = Modifier.fillMaxWidth()
-                                ) {
-                                    viewModel.postEvent(
-                                        LoginViewModel.LocalEvents.LoginWithPin(password)
-                                    )
-                                }
-                            }
-                        } else if (biometricsCredentials.isNotEmpty()) {
-
-                            Box(modifier = Modifier.fillMaxSize()) {
-                                Icon(
-                                    imageVector = PhosphorIcons.Regular.Fingerprint,
-                                    contentDescription = "Fingerprint",
-                                    modifier = Modifier
-                                        .size(128.dp)
-                                        .align(Alignment.Center)
-                                        .noRippleClickable {
-                                            viewModel.postEvent(LoginViewModel.LocalEvents.ClickBiometrics)
-                                        }
-                                )
-                            }
-                        } else if (mnemonicCredentials.isNotEmpty()) {
-
-                            Image(
-                                painter = painterResource(if (viewModel.greenWallet.isWatchOnlyQr) Res.drawable.qr_code else Res.drawable.eye),
-                                contentDescription = "Watch Only",
-                                // colorFilter = ColorFilter.tint(green),
-                                alpha = 0.25f,
-                                modifier = Modifier
-                                    .size(128.dp)
-                            )
-
-                            GreenColumn(modifier = Modifier.align(Alignment.BottomCenter)) {
-                                GreenButton(
-                                    text = stringResource(Res.string.id_log_in),
-                                    modifier = Modifier.fillMaxWidth()
-                                ) {
-                                    viewModel.postEvent(
-                                        LoginViewModel.LocalEvents.Login
-                                    )
-                                }
-                            }
+                        AppSettingsButton(modifier = Modifier.align(Alignment.CenterEnd)) {
+                            viewModel.postEvent(NavigateDestinations.AppSettings)
                         }
-                    }
-                }
-            }
-
-            Box(
-                modifier = Modifier
-                    .fillMaxWidth()
-            ) {
-
-                if (biometricsCredentials.isNotEmpty() && !onProgress) {
-                    BiometricsButton(modifier = Modifier.align(Alignment.CenterStart)) {
-                        viewModel.postEvent(LoginViewModel.LocalEvents.ClickBiometrics)
-                    }
-                }
-
-                val richWatchOnlyCredentials by viewModel.richWatchOnlyCredentials.collectAsStateWithLifecycle()
-
-                if (!onProgress && richWatchOnlyCredentials.isNotEmpty()) {
-                    RichWatchOnlyButton(modifier = Modifier.align(Alignment.Center)) {
-                        viewModel.postEvent(LoginViewModel.LocalEvents.LoginWatchOnly)
-                    }
-                }
-
-                if (!onProgress) {
-                    AppSettingsButton(modifier = Modifier.align(Alignment.CenterEnd)) {
-                        viewModel.postEvent(NavigateDestinations.AppSettings)
                     }
                 }
             }
         }
-    }
     }
 }

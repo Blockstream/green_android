@@ -1,11 +1,11 @@
 package com.blockstream.common.models
 
 import com.blockstream.common.CountlyBase
-import com.blockstream.green.data.config.AppInfo
 import com.blockstream.common.database.Database
 import com.blockstream.common.managers.PromoManager
 import com.blockstream.common.managers.SessionManager
 import com.blockstream.common.managers.SettingsManager
+import com.blockstream.green.data.config.AppInfo
 import io.mockk.coEvery
 import io.mockk.every
 import io.mockk.mockkClass
@@ -26,8 +26,8 @@ import org.koin.test.mock.MockProvider
 import org.koin.test.mock.declareMock
 
 @OptIn(ExperimentalCoroutinesApi::class)
-abstract class TestViewModel<VM : GreenViewModel>: KoinTest {
-    internal lateinit var viewModel : VM
+abstract class TestViewModel<VM : GreenViewModel> : KoinTest {
+    internal lateinit var viewModel: VM
 
     private val testDispatcher = UnconfinedTestDispatcher()
 
@@ -37,7 +37,7 @@ abstract class TestViewModel<VM : GreenViewModel>: KoinTest {
 
         MockProvider.register {
             // Your way to build a Mock here
-             mockkClass(it)
+            mockkClass(it)
         }
 
         startKoin {
@@ -45,7 +45,7 @@ abstract class TestViewModel<VM : GreenViewModel>: KoinTest {
                 module {
                     single { AppInfo(userAgent = "green_test", version = "1.0.0-test", isDebug = true, isDevelopment = true) }
 
-                    declareMock<CountlyBase>{
+                    declareMock<CountlyBase> {
                         every { viewModel(any()) } returns Unit
                         every { remoteConfigUpdateEvent } returns MutableSharedFlow<Unit>()
                     }

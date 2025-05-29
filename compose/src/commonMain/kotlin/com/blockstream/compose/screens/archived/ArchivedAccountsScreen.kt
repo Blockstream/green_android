@@ -36,7 +36,6 @@ import com.blockstream.compose.theme.bodyMedium
 import com.blockstream.compose.utils.SetupScreen
 import org.jetbrains.compose.resources.stringResource
 
-
 @Composable
 fun ArchivedAccountsScreen(
     viewModel: ArchivedAccountsViewModelAbstract
@@ -90,32 +89,32 @@ fun ArchivedAccountsScreen(
                         PopupMenu(
                             state = popupState,
                             entries =
-                            listOf(
-                                MenuEntry(
-                                    title = stringResource(Res.string.id_rename_account),
-                                    iconRes = Res.drawable.text_aa,
-                                    onClick = {
-                                        viewModel.postEvent(
-                                            NavigateDestinations.RenameAccount(
-                                                greenWallet = viewModel.greenWallet,
-                                                account = account.account
+                                listOf(
+                                    MenuEntry(
+                                        title = stringResource(Res.string.id_rename_account),
+                                        iconRes = Res.drawable.text_aa,
+                                        onClick = {
+                                            viewModel.postEvent(
+                                                NavigateDestinations.RenameAccount(
+                                                    greenWallet = viewModel.greenWallet,
+                                                    account = account.account
+                                                )
                                             )
-                                        )
-                                    }
-                                ),
-                                MenuEntry(
-                                    title = stringResource(Res.string.id_unarchive_account),
-                                    iconRes = Res.drawable.box_arrow_up,
-                                    onClick = {
-                                        viewModel.postEvent(
-                                            Events.UnArchiveAccount(
-                                                account = account.account,
-                                                navigateToRoot = viewModel.navigateToRoot
+                                        }
+                                    ),
+                                    MenuEntry(
+                                        title = stringResource(Res.string.id_unarchive_account),
+                                        iconRes = Res.drawable.box_arrow_up,
+                                        onClick = {
+                                            viewModel.postEvent(
+                                                Events.UnArchiveAccount(
+                                                    account = account.account,
+                                                    navigateToRoot = viewModel.navigateToRoot
+                                                )
                                             )
-                                        )
-                                    }
+                                        }
+                                    )
                                 )
-                            )
                         )
                     }
                 }

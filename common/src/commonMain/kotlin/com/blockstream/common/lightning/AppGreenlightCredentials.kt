@@ -3,7 +3,6 @@ package com.blockstream.common.lightning
 import com.blockstream.common.serializers.ListUByteSerializer
 import kotlinx.serialization.SerialName
 import kotlinx.serialization.Serializable
-import kotlinx.serialization.encodeToString
 import kotlinx.serialization.json.Json
 
 @Serializable

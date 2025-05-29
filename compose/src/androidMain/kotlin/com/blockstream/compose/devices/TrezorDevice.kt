@@ -13,7 +13,6 @@ import com.blockstream.common.gdk.device.HardwareConnectInteraction
 import com.blockstream.green.utils.Loggable
 import com.juul.kable.Peripheral
 
-
 class TrezorDevice constructor(
     context: Context,
     deviceManager: DeviceManagerAndroid,

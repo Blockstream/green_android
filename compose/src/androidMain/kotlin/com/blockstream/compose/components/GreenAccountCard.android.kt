@@ -10,8 +10,8 @@ import androidx.compose.ui.tooling.preview.Preview
 import com.blockstream.common.BTC_POLICY_ASSET
 import com.blockstream.common.LBTC_POLICY_ASSET
 import com.blockstream.common.extensions.previewAccountBalance
-import com.blockstream.ui.components.GreenColumn
 import com.blockstream.compose.theme.GreenChromePreview
+import com.blockstream.ui.components.GreenColumn
 
 @Composable
 @Preview
@@ -33,7 +33,6 @@ fun AccountAssetsPreview() {
     }
 }
 
-
 @Composable
 @Preview
 fun GreenAccountCardPreview() {
@@ -45,7 +44,7 @@ fun GreenAccountCardPreview() {
             GreenAccountCard(
                 account = previewAccountBalance().let {
                     it.copy(
-                        balance =  null,
+                        balance = null,
                         assets = listOf(
                             BTC_POLICY_ASSET,
                             LBTC_POLICY_ASSET,

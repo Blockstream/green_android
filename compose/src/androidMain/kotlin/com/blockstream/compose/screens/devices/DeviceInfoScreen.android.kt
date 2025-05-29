@@ -5,7 +5,6 @@ import androidx.compose.ui.tooling.preview.Preview
 import com.blockstream.common.models.devices.DeviceInfoViewModelPreview
 import com.blockstream.compose.GreenAndroidPreview
 
-
 @Composable
 @Preview
 fun DeviceInfoScreenPreview() {

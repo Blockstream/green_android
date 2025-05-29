@@ -69,7 +69,6 @@ import org.koin.core.context.startKoin
 import org.koin.dsl.module
 import org.koin.mp.KoinPlatformTools
 
-
 val LocalAppInfo: ProvidableCompositionLocal<AppInfo> =
     staticCompositionLocalOf { error("LocalAppInfo not initialized") }
 val LocalSnackbar = staticCompositionLocalOf { SnackbarHostState() }

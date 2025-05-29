@@ -5,7 +5,6 @@ import androidx.compose.ui.tooling.preview.Preview
 import com.blockstream.common.models.onboarding.watchonly.WatchOnlyPolicyViewModelPreview
 import com.blockstream.compose.GreenAndroidPreview
 
-
 @Composable
 @Preview
 fun WatchOnlyPolicyScreenPreview() {

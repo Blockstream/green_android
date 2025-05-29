@@ -29,16 +29,15 @@ import com.blockstream.common.extensions.twoFactorMethodsLocalized
 import com.blockstream.common.gdk.data.AuthHandlerStatus
 import com.blockstream.compose.components.GreenButton
 import com.blockstream.compose.components.GreenButtonType
-import com.blockstream.ui.components.GreenColumn
 import com.blockstream.compose.extensions.colorText
 import com.blockstream.compose.extensions.getIcon
 import com.blockstream.compose.theme.bodyMedium
 import com.blockstream.compose.theme.titleMedium
 import com.blockstream.compose.theme.whiteMedium
 import com.blockstream.compose.views.PinView
+import com.blockstream.ui.components.GreenColumn
 import org.jetbrains.compose.resources.painterResource
 import org.jetbrains.compose.resources.stringResource
-
 
 @Composable
 fun TwoFactorCodeDialog(
@@ -77,18 +76,18 @@ fun TwoFactorCodeDialog(
                     }
 
                     authHandlerStatus.method?.twoFactorMethodsLocalized()?.let {
-                            colorText(
-                                stringResource(Res.string.id_please_provide_your_1s_code, stringResource(it)),
-                                listOf(stringResource(it))
-                            )
-                        }?.also {
-                            Text(
-                                text = it,
-                                style = titleMedium,
-                                textAlign = TextAlign.Center,
-                                modifier = Modifier.fillMaxWidth()
-                            )
-                        }
+                        colorText(
+                            stringResource(Res.string.id_please_provide_your_1s_code, stringResource(it)),
+                            listOf(stringResource(it))
+                        )
+                    }?.also {
+                        Text(
+                            text = it,
+                            style = titleMedium,
+                            textAlign = TextAlign.Center,
+                            modifier = Modifier.fillMaxWidth()
+                        )
+                    }
 
                     authHandlerStatus.attemptsRemaining?.also {
                         Text(
@@ -113,7 +112,6 @@ fun TwoFactorCodeDialog(
                         }
                     }
                 )
-
 
                 val isSms = authHandlerStatus.isSms()
                 Row(

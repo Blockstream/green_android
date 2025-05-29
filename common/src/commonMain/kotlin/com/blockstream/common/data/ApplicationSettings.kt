@@ -57,30 +57,36 @@ data class ApplicationSettings constructor(
 ) {
 
     fun getPersonalElectrumServer(network: Network) = when {
-            Network.isBitcoinMainnet(network.id) -> {
-                personalBitcoinElectrumServer
-            }
-            Network.isLiquidMainnet(network.id) -> {
-                personalLiquidElectrumServer
-            }
-            Network.isLiquidTestnet(network.id) -> {
-                personalTestnetLiquidElectrumServer
-            }
-            else -> {
-                personalTestnetElectrumServer
-            }
+        Network.isBitcoinMainnet(network.id) -> {
+            personalBitcoinElectrumServer
         }
+
+        Network.isLiquidMainnet(network.id) -> {
+            personalLiquidElectrumServer
+        }
+
+        Network.isLiquidTestnet(network.id) -> {
+            personalTestnetLiquidElectrumServer
+        }
+
+        else -> {
+            personalTestnetElectrumServer
+        }
+    }
 
     fun getSpvElectrumServer(network: Network) = when {
         Network.isBitcoinMainnet(network.id) -> {
             spvBitcoinElectrumServer
         }
+
         Network.isLiquidMainnet(network.id) -> {
             spvLiquidElectrumServer
         }
+
         Network.isLiquidTestnet(network.id) -> {
             spvTestnetLiquidElectrumServer
         }
+
         else -> {
             spvTestnetElectrumServer
         }
@@ -115,7 +121,7 @@ data class ApplicationSettings constructor(
         private const val SPV_TESTNET_LIQUID_ELECTRUM_SERVER = "spvTestnetLiquidElectrumServer"
 
         fun fromSettings(settings: Settings): ApplicationSettings {
-            try{
+            try {
                 return ApplicationSettings(
                     enhancedPrivacy = settings.getBoolean(ENHANCED_PRIVACY, false),
                     screenLockInSeconds = settings.getInt(SCREEN_LOCK_IN_SECONDS, 0),
@@ -156,7 +162,7 @@ data class ApplicationSettings constructor(
                         SPV_TESTNET_LIQUID_ELECTRUM_SERVER
                     ),
                 )
-            }catch (e: Exception){
+            } catch (e: Exception) {
                 return ApplicationSettings()
             }
         }
@@ -195,22 +201,22 @@ data class ApplicationSettings constructor(
     }
 }
 
-enum class ScreenLockSetting constructor(val seconds: Int){
+enum class ScreenLockSetting constructor(val seconds: Int) {
     // Keep same order with getStringList
     LOCK_IMMEDIATELY(0),
     LOCK_AFTER_60(60);
 
     companion object {
-        fun bySeconds(seconds: Int) = when(seconds){
+        fun bySeconds(seconds: Int) = when (seconds) {
             60 -> LOCK_AFTER_60
             else -> LOCK_IMMEDIATELY
         }
 
-        fun byPosition(position: Int): ScreenLockSetting{
+        fun byPosition(position: Int): ScreenLockSetting {
             return entries[position]
         }
 
-        fun getStringList(): List<StringResource>{
+        fun getStringList(): List<StringResource> {
             return listOf(Res.string.id_lock_immediately, Res.string.id_lock_after_1_minute)
         }
     }

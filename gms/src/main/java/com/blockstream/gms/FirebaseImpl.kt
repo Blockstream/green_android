@@ -1,6 +1,5 @@
 package com.blockstream.gms
 
-
 import com.blockstream.common.fcm.FcmCommon
 import com.blockstream.common.fcm.Firebase
 import com.blockstream.green.utils.Loggable

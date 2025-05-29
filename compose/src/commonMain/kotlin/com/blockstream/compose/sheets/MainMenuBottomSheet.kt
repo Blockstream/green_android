@@ -81,7 +81,7 @@ fun MainMenuBottomSheet(
         val countly = koinInject<CountlyBase>()
 
         GreenColumn {
-            if(countly.getRemoteConfigForOnOffRamps() != false && !isTestnet) {
+            if (countly.getRemoteConfigForOnOffRamps() != false && !isTestnet) {
                 MainMenuItem(
                     title = stringResource(Res.string.id_buy),
                     subtitle = "BTC",
@@ -94,27 +94,27 @@ fun MainMenuBottomSheet(
                 )
             }
 
-             if(appInfo.isDevelopment) {
-                 MainMenuItem(
-                     title = stringResource(Res.string.id_account_transfer),
-                     subtitle = stringResource(
-                         Res.string.id_move_across_accounts
-                     ),
-                     icon = PhosphorIcons.Regular.ArrowsDownUp,
-                     onClick = {
-                         NavigateDestinations.MainMenu.setResult(MainMenuEntry.ACCOUNT_TRANSFER)
-                         onDismissRequest()
-                     }
-                 )
-                 MainMenuItem(
-                     title = stringResource(Res.string.id_redeposit),
-                     subtitle = stringResource(Res.string.id_redeposit_expired_2fa_coins),
-                     icon = PhosphorIcons.Regular.ArrowULeftDown, onClick = {
-                         NavigateDestinations.MainMenu.setResult(MainMenuEntry.REDEPOSIT)
-                         onDismissRequest()
-                     }
-                 )
-             }
+            if (appInfo.isDevelopment) {
+                MainMenuItem(
+                    title = stringResource(Res.string.id_account_transfer),
+                    subtitle = stringResource(
+                        Res.string.id_move_across_accounts
+                    ),
+                    icon = PhosphorIcons.Regular.ArrowsDownUp,
+                    onClick = {
+                        NavigateDestinations.MainMenu.setResult(MainMenuEntry.ACCOUNT_TRANSFER)
+                        onDismissRequest()
+                    }
+                )
+                MainMenuItem(
+                    title = stringResource(Res.string.id_redeposit),
+                    subtitle = stringResource(Res.string.id_redeposit_expired_2fa_coins),
+                    icon = PhosphorIcons.Regular.ArrowULeftDown, onClick = {
+                        NavigateDestinations.MainMenu.setResult(MainMenuEntry.REDEPOSIT)
+                        onDismissRequest()
+                    }
+                )
+            }
 
             MainMenuItem(
                 title = stringResource(Res.string.id_qr_scanner),

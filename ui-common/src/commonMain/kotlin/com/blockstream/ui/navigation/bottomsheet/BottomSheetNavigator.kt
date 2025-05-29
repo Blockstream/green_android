@@ -1,6 +1,5 @@
 package com.blockstream.ui.navigation.bottomsheet
 
-
 import androidx.compose.material3.SheetState
 import androidx.compose.material3.SheetValue
 import androidx.compose.runtime.Composable
@@ -11,7 +10,6 @@ import androidx.navigation.NavController
 import androidx.navigation.NavDestination
 import androidx.navigation.Navigator
 import androidx.navigation.get
-
 
 /**
  * The state of a [ModalBottomSheetLayout] that the [BottomSheetNavigator] drives
@@ -63,8 +61,8 @@ fun NavController.onDismissRequest(onDismiss: () -> Unit = {}): () -> Unit {
     }
 }
 
-expect class BottomSheetNavigator(): Navigator<Destination> {
-    internal var sheetEnabled:  Boolean
+expect class BottomSheetNavigator() : Navigator<Destination> {
+    internal var sheetEnabled: Boolean
         private set
     internal val sheetInitializer: @Composable () -> Unit
     internal var sheetContent: @Composable () -> Unit

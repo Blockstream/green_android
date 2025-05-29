@@ -12,8 +12,8 @@ import androidx.work.workDataOf
 import com.blockstream.common.extensions.logException
 import com.blockstream.common.fcm.FcmCommon
 import com.blockstream.common.lightning.BreezNotification
-import com.blockstream.green.utils.Loggable
 import com.blockstream.green.managers.NotificationManagerAndroid
+import com.blockstream.green.utils.Loggable
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
 import org.koin.core.component.KoinComponent

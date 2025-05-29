@@ -307,11 +307,12 @@ actual class BiometricsState(
                     scope.launch {
                         (if (errorCode == BiometricPrompt.ERROR_USER_CANCELED || errorCode == BiometricPrompt.ERROR_NEGATIVE_BUTTON || errorCode == BiometricPrompt.ERROR_CANCELED) {
                             Exception("id_action_canceled")
-                        } else if(errorCode == BiometricPrompt.ERROR_NO_BIOMETRICS) {
+                        } else if (errorCode == BiometricPrompt.ERROR_NO_BIOMETRICS) {
                             BiometricsException(errString.toString())
                         } else {
                             BiometricsException(
-                                getString(Res.string.id_authentication_error_s,
+                                getString(
+                                    Res.string.id_authentication_error_s,
                                     "$errorCode $errString"
                                 )
                             )
@@ -343,7 +344,7 @@ actual class BiometricsState(
         }
     }
 
-    actual suspend  fun launchUserPresencePrompt(
+    actual suspend fun launchUserPresencePrompt(
         title: String,
         authenticated: (authenticated: Boolean?) -> Unit
     ) {

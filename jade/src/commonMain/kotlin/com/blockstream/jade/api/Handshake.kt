@@ -4,11 +4,12 @@ import kotlinx.serialization.KSerializer
 import kotlinx.serialization.SerialName
 import kotlinx.serialization.Serializable
 
-
 @Serializable
 data class HandshakeInitRequestParams(
-    @SerialName("sig") val sig: String,
-    @SerialName("ske") val ske: String,
+    @SerialName("sig")
+    val sig: String,
+    @SerialName("ske")
+    val ske: String,
 ) : JadeSerializer<HandshakeInitRequestParams>() {
     override fun kSerializer(): KSerializer<HandshakeInitRequestParams> = kotlinx.serialization.serializer()
 }
@@ -24,8 +25,10 @@ data class HandshakeInitRequest(
 
 @Serializable
 data class HandshakeCompleteRequestParams(
-    @SerialName("encrypted_key") val encryptedKey: String,
-    @SerialName("hmac") val hmac: String,
+    @SerialName("encrypted_key")
+    val encryptedKey: String,
+    @SerialName("hmac")
+    val hmac: String,
 ) : JadeSerializer<HandshakeCompleteRequestParams>() {
     override fun kSerializer(): KSerializer<HandshakeCompleteRequestParams> = kotlinx.serialization.serializer()
 }

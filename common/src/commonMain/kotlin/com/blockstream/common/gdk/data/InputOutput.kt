@@ -1,6 +1,5 @@
 package com.blockstream.common.gdk.data
 
-
 import com.blockstream.common.gdk.GreenJson
 import com.blockstream.common.utils.hexToByteArray
 import com.blockstream.common.utils.hexToByteArrayReversed
@@ -15,50 +14,86 @@ import kotlinx.serialization.Serializable
 @Serializable
 data class InputOutput constructor(
     // Bitcoin & Liquid
-    @SerialName("address") val address: String? = null,
-    @SerialName("addressee") val addressee: String? = null,
-    @SerialName("address_type") val addressType: String? = null,
-    @SerialName("is_internal") val isInternal: Boolean? = null,
-    @SerialName("is_output") val isOutput: Boolean? = null,
-    @SerialName("is_relevant") val isRelevant: Boolean? = null,
-    @SerialName("is_spent") val isSpent: Boolean? = null,
-    @SerialName("pointer") val pointer: Int? = null,
-    @SerialName("pt_idx") val ptIdx: Long? = null, // this is UInt until Parcelize is supported
-    @SerialName("satoshi") val satoshi: Long? = null,
-    @SerialName("subaccount") val subaccount: Int? = null,
-    @SerialName("subtype") val subtype: Int? = null,
+    @SerialName("address")
+    val address: String? = null,
+    @SerialName("addressee")
+    val addressee: String? = null,
+    @SerialName("address_type")
+    val addressType: String? = null,
+    @SerialName("is_internal")
+    val isInternal: Boolean? = null,
+    @SerialName("is_output")
+    val isOutput: Boolean? = null,
+    @SerialName("is_relevant")
+    val isRelevant: Boolean? = null,
+    @SerialName("is_spent")
+    val isSpent: Boolean? = null,
+    @SerialName("pointer")
+    val pointer: Int? = null,
+    @SerialName("pt_idx")
+    val ptIdx: Long? = null, // this is UInt until Parcelize is supported
+    @SerialName("satoshi")
+    val satoshi: Long? = null,
+    @SerialName("subaccount")
+    val subaccount: Int? = null,
+    @SerialName("subtype")
+    val subtype: Int? = null,
 
     // Liquid Input & Output
-    @SerialName("amountblinder") val amountblinder: String? = null, // value blinding factor
-    @SerialName("asset_id") val assetId: String? = null, // asset id for Liquid txs
-    @SerialName("asset_tag") val assetTag: String? = null,
-    @SerialName("assetblinder") val assetblinder: String? = null, // asset blinding factor
-    @SerialName("commitment") val commitment: String? = null,
-    @SerialName("is_blinded") val isBlinded: Boolean? = null,
-    @SerialName("nonce_commitment") val nonceCommitment: String? = null,
-    @SerialName("previdx") val previdx: Long? = null,
-    @SerialName("prevtxhash") val prevtxhash: String? = null,
-    @SerialName("script") val script: String? = null,
+    @SerialName("amountblinder")
+    val amountblinder: String? = null, // value blinding factor
+    @SerialName("asset_id")
+    val assetId: String? = null, // asset id for Liquid txs
+    @SerialName("asset_tag")
+    val assetTag: String? = null,
+    @SerialName("assetblinder")
+    val assetblinder: String? = null, // asset blinding factor
+    @SerialName("commitment")
+    val commitment: String? = null,
+    @SerialName("is_blinded")
+    val isBlinded: Boolean? = null,
+    @SerialName("nonce_commitment")
+    val nonceCommitment: String? = null,
+    @SerialName("previdx")
+    val previdx: Long? = null,
+    @SerialName("prevtxhash")
+    val prevtxhash: String? = null,
+    @SerialName("script")
+    val script: String? = null,
 
     // Liquid Output
-    @SerialName("blinding_key") val blindingKey: String? = null, // the blinding public key embedded into the blinded address we are sending to
-    @SerialName("is_confidential") val isConfidential: Boolean? = null,
-    @SerialName("unconfidential_address") val unconfidentialAddress: String? = null,
-
+    @SerialName("blinding_key")
+    val blindingKey: String? = null, // the blinding public key embedded into the blinded address we are sending to
+    @SerialName("is_confidential")
+    val isConfidential: Boolean? = null,
+    @SerialName("unconfidential_address")
+    val unconfidentialAddress: String? = null,
 
     // TODO review
-    @SerialName("unblinded_address") val unblindedAddress: String? = null,
-    @SerialName("is_change") val isChange: Boolean? = null,
-    @SerialName("prevout_script") val prevoutScript: String? = null,
-    @SerialName("recovery_xpub") val recoveryXpub: String? = null,
-    @SerialName("scriptpubkey") val scriptPubkey: String? = null,
-    @SerialName("sequence") val sequence: Long? = null, // this is UInt until Parcelize is supported
-    @SerialName("txhash") val txHash: String? = null,
-    @SerialName("service_xpub") val serviceXpub: String? = null,
-    @SerialName("user_path") val userPath: List<Long>? = null,
-    @SerialName("ae_host_commitment") val aeHostCommitment: String? = null,
-    @SerialName("ae_host_entropy") val aeHostEntropy: String? = null,
-    @SerialName("eph_public_key") val ephPublicKey: String? = null, // our ephemeral public key for [un]blinding
+    @SerialName("unblinded_address")
+    val unblindedAddress: String? = null,
+    @SerialName("is_change")
+    val isChange: Boolean? = null,
+    @SerialName("prevout_script")
+    val prevoutScript: String? = null,
+    @SerialName("recovery_xpub")
+    val recoveryXpub: String? = null,
+    @SerialName("scriptpubkey")
+    val scriptPubkey: String? = null,
+    @SerialName("sequence")
+    val sequence: Long? = null, // this is UInt until Parcelize is supported
+    @SerialName("txhash")
+    val txHash: String? = null,
+    @SerialName("service_xpub")
+    val serviceXpub: String? = null,
+    @SerialName("user_path")
+    val userPath: List<Long>? = null,
+    @SerialName("ae_host_commitment")
+    val aeHostCommitment: String? = null,
+    @SerialName("ae_host_entropy")
+    val aeHostEntropy: String? = null,
+    @SerialName("eph_public_key")
+    val ephPublicKey: String? = null, // our ephemeral public key for [un]blinding
 ) : GreenJson<InputOutput>() {
     override fun kSerializer() = serializer()
 
@@ -70,7 +105,7 @@ data class InputOutput constructor(
         // <value_in_satoshi>,<asset_id_hex>,<amount_blinder_hex>,<asset_blinder_hex>
         "$satoshi,$assetId,$amountblinder,$assetblinder"
     } else null
-  
+
     fun hasUnblindingData(): Boolean {
         return assetId != null && satoshi != null && assetblinder != null && amountblinder != null && assetId.isNotEmpty() && amountblinder.isNotEmpty() && assetblinder.isNotEmpty()
     }

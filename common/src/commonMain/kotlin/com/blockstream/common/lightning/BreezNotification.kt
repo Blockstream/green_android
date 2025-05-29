@@ -6,8 +6,10 @@ import kotlinx.serialization.Serializable
 
 @Serializable
 data class BreezNotification(
-    @SerialName("payment_hash") val paymentHash: String? = null,
-    @SerialName("tx_id") val txId: String? = null,
+    @SerialName("payment_hash")
+    val paymentHash: String? = null,
+    @SerialName("tx_id")
+    val txId: String? = null,
 ) : GreenJson<BreezNotification>() {
     override fun kSerializer() = serializer()
 

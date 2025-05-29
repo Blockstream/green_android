@@ -10,7 +10,6 @@ import com.blockstream.common.extensions.tryCatchNull
 import com.blockstream.green.utils.Loggable
 import java.util.Locale
 
-
 actual class LocaleManager constructor(
     private val context: Context
 ) {
@@ -18,8 +17,8 @@ actual class LocaleManager constructor(
     actual fun getLocale(): String? {
         return LocaleManagerCompat.getApplicationLocales(context).toLanguageTags()
             .takeIf { it.isNotBlank() }.also {
-            logger.d { "Current locale is $it" }
-        }
+                logger.d { "Current locale is $it" }
+            }
     }
 
     actual fun setLocale(locale: String?) {

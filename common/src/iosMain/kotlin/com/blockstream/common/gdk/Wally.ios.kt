@@ -319,7 +319,7 @@ class IOSWally : Wally {
                                     out.get().size.convert(),
                                     written.ptr
                                 ).also {
-                                    if(it != WALLY_OK){
+                                    if (it != WALLY_OK) {
                                         return null
                                     }
                                 }
@@ -333,7 +333,7 @@ class IOSWally : Wally {
                                         written.value.convert(),
                                         bip85Mnemonic.ptr
                                     ).also {
-                                        if(it != WALLY_OK){
+                                        if (it != WALLY_OK) {
                                             return null
                                         }
                                     }

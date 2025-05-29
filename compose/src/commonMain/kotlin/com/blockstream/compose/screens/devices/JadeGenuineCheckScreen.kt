@@ -50,7 +50,6 @@ import com.blockstream.ui.navigation.setResult
 import org.jetbrains.compose.resources.painterResource
 import org.jetbrains.compose.resources.stringResource
 
-
 @Composable
 fun JadeGenuineCheckScreen(
     viewModel: JadeGenuineCheckViewModelAbstract,

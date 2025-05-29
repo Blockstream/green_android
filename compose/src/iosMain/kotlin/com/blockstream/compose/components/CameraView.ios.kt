@@ -116,7 +116,6 @@ private val deviceTypes =
         AVCaptureDeviceTypeBuiltInDuoCamera,
     )
 
-
 @Stable
 class PeekabooCameraState(
     internal var onQrCode: ((code: String) -> Unit),
@@ -220,9 +219,9 @@ private fun AuthorizedCamera(
     if (!state.isCameraReady) {
         Box(
             modifier =
-            Modifier
-                .fillMaxSize()
-                .background(Color.Black),
+                Modifier
+                    .fillMaxSize()
+                    .background(Color.Black),
         )
     }
 }
@@ -239,21 +238,21 @@ private fun RealDeviceCamera(
     val metadataDelegate = remember { CameraMetadataDelegate(state.onQrCode) }
 
     val captureSession: AVCaptureSession = remember {
-            AVCaptureSession().also { captureSession ->
-                captureSession.sessionPreset = AVCaptureSessionPresetPhoto
-                val captureDeviceInput: AVCaptureDeviceInput = deviceInputWithDevice(device = camera, error = null)!!
-                captureSession.addInput(captureDeviceInput)
+        AVCaptureSession().also { captureSession ->
+            captureSession.sessionPreset = AVCaptureSessionPresetPhoto
+            val captureDeviceInput: AVCaptureDeviceInput = deviceInputWithDevice(device = camera, error = null)!!
+            captureSession.addInput(captureDeviceInput)
 
-                if (captureSession.canAddOutput(metadataOutput)) {
-                    captureSession.addOutput(metadataOutput)
+            if (captureSession.canAddOutput(metadataOutput)) {
+                captureSession.addOutput(metadataOutput)
 
-                    val metadataQueue = dispatch_queue_create("metadataQueue", attr = null)
+                val metadataQueue = dispatch_queue_create("metadataQueue", attr = null)
 
-                    metadataOutput.setMetadataObjectsDelegate(metadataDelegate, metadataQueue)
-                    metadataOutput.metadataObjectTypes = listOf(AVMetadataObjectTypeQRCode)
-                }
+                metadataOutput.setMetadataObjectsDelegate(metadataDelegate, metadataQueue)
+                metadataOutput.metadataObjectTypes = listOf(AVMetadataObjectTypeQRCode)
             }
         }
+    }
 
     val cameraPreviewLayer = remember { AVCaptureVideoPreviewLayer(session = captureSession) }
 
@@ -297,9 +296,9 @@ private fun RealDeviceCamera(
         NSNotificationCenter.defaultCenter.addObserver(
             observer = listener,
             selector =
-            NSSelectorFromString(
-                OrientationListener::orientationDidChange.name + ":",
-            ),
+                NSSelectorFromString(
+                    OrientationListener::orientationDidChange.name + ":",
+                ),
             name = notificationName,
             `object` = null,
         )
@@ -369,7 +368,6 @@ class OrientationListener(
         }
     }
 }
-
 
 class CameraMetadataDelegate(
     private val onQrCode: ((String) -> Unit),

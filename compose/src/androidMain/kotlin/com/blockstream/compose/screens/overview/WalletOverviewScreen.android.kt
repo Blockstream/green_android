@@ -6,7 +6,6 @@ import com.blockstream.common.models.overview.WalletOverviewViewModelPreview
 import com.blockstream.compose.GreenAndroidPreview
 import com.blockstream.compose.components.WalletBalance
 
-
 @Composable
 @Preview
 fun WalletBalancePreview() {

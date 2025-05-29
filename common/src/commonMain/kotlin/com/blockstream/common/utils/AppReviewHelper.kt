@@ -6,14 +6,13 @@ import kotlinx.datetime.Clock
 import kotlinx.datetime.TimeZone
 import kotlinx.datetime.monthsUntil
 
-
 object AppReviewHelper {
     fun shouldAskForReview(
         settingsManager: SettingsManager,
         countly: CountlyBase
     ): Boolean {
         // Feature is not enabled
-        if(!settingsManager.storeRateEnabled){
+        if (!settingsManager.storeRateEnabled) {
             return false
         }
 
@@ -21,12 +20,12 @@ object AppReviewHelper {
         val askEveryMonths = countly.getRemoteConfigValueAsNumber("app_review") ?: 0
 
         // Feature is not enabled in Countly
-        if(askEveryMonths == 0L){
+        if (askEveryMonths == 0L) {
             return false
         }
 
         // Not an exception free session
-        if(countly.exceptionCounter > 0L){
+        if (countly.exceptionCounter > 0L) {
             return false
         }
 

@@ -6,8 +6,10 @@ import kotlinx.serialization.Serializable
 
 @Serializable
 data class ReconnectHintParams constructor(
-    @SerialName("hint") val hint: String? = null,
-    @SerialName("tor_hint") val torHint: String? = null,
+    @SerialName("hint")
+    val hint: String? = null,
+    @SerialName("tor_hint")
+    val torHint: String? = null,
 ) : GreenJson<ReconnectHintParams>() {
 
     override fun kSerializer() = serializer()

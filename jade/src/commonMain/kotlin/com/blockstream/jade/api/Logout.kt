@@ -3,7 +3,6 @@ package com.blockstream.jade.api
 import kotlinx.serialization.KSerializer
 import kotlinx.serialization.Serializable
 
-
 @Serializable
 data class LogoutRequest(
     override val id: String = jadeId(),

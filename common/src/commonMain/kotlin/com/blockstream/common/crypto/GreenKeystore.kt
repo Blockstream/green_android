@@ -2,7 +2,7 @@ package com.blockstream.common.crypto
 
 import com.blockstream.common.data.EncryptedData
 
-typealias PlatformCipher =  Any
+typealias PlatformCipher = Any
 
 class KeystoreInvalidatedException constructor(message: String) : Exception(message)
 

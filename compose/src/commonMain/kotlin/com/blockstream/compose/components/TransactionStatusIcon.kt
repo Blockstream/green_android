@@ -123,7 +123,7 @@ fun TransactionStatusIcon(
         } else {
             icons.reversed().forEachIndexed { index, painter ->
                 val reversedIndex = icons.size - 1 - index
-                 val endPadding = ((18 / (1 + (0.2 * (max(reversedIndex - 1, 0))))) * reversedIndex)
+                val endPadding = ((18 / (1 + (0.2 * (max(reversedIndex - 1, 0))))) * reversedIndex)
 
                 Image(
                     painter = painter,

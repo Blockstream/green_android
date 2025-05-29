@@ -1,6 +1,5 @@
 package com.blockstream.common.gdk
 
-
 import kotlinx.serialization.ExperimentalSerializationApi
 import kotlinx.serialization.KSerializer
 import kotlinx.serialization.Transient
@@ -52,7 +51,7 @@ abstract class GreenJson<T> {
         return json.encodeToJsonElement(kSerializer(), this as T)
     }
 
-    open fun processJsonElement() { }
+    open fun processJsonElement() {}
 
     companion object {
         val json = Json {

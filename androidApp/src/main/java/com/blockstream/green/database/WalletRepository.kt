@@ -3,7 +3,7 @@ package com.blockstream.green.database
 import com.blockstream.common.data.GreenWallet
 import com.blockstream.common.extensions.objectId
 
-fun roomToDelight(wallet: Wallet) : com.blockstream.common.database.wallet.Wallet{
+fun roomToDelight(wallet: Wallet): com.blockstream.common.database.wallet.Wallet {
     return com.blockstream.common.database.wallet.Wallet(
         id = objectId(wallet.id).toString(),
         name = wallet.name,
@@ -22,7 +22,7 @@ fun roomToDelight(wallet: Wallet) : com.blockstream.common.database.wallet.Walle
     )
 }
 
-fun roomToDelight(wallet: GreenWallet, loginCredentials: LoginCredentials): com.blockstream.common.database.wallet.LoginCredentials{
+fun roomToDelight(wallet: GreenWallet, loginCredentials: LoginCredentials): com.blockstream.common.database.wallet.LoginCredentials {
     return com.blockstream.common.database.wallet.LoginCredentials(
         wallet_id = wallet.id,
         credential_type = loginCredentials.credentialType,

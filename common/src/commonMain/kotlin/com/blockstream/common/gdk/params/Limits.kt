@@ -11,14 +11,21 @@ import kotlinx.serialization.Serializable
 
 @Serializable
 data class Limits(
-    @SerialName("is_fiat") val isFiat: Boolean,
+    @SerialName("is_fiat")
+    val isFiat: Boolean,
 
-    @SerialName("btc") val btc: String? = null,
-    @SerialName("mbtc") val mbtc: String? = null,
-    @SerialName("ubtc") val ubtc: String? = null,
-    @SerialName("bits") val bits: String? = null,
-    @SerialName("sats") val sats: String? = null,
-    @SerialName("fiat") val fiat: String? = null,
+    @SerialName("btc")
+    val btc: String? = null,
+    @SerialName("mbtc")
+    val mbtc: String? = null,
+    @SerialName("ubtc")
+    val ubtc: String? = null,
+    @SerialName("bits")
+    val bits: String? = null,
+    @SerialName("sats")
+    val sats: String? = null,
+    @SerialName("fiat")
+    val fiat: String? = null,
 ) : GreenJson<Limits>() {
     override fun encodeDefaultsValues() = false
 

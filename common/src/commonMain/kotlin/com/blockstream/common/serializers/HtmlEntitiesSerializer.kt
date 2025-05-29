@@ -1,6 +1,5 @@
 package com.blockstream.common.serializers
 
-
 import com.mohamedrejeb.ksoup.entities.KsoupEntities
 import kotlinx.serialization.KSerializer
 import kotlinx.serialization.descriptors.PrimitiveKind

@@ -10,7 +10,7 @@ import org.kotlincrypto.hash.md.MD5
 @Serializable
 data class PromoFile(val url: String, val file: String, val filePath: String) : GreenJson<PromoFile>() {
 
-    companion object{
+    companion object {
         @OptIn(ExperimentalStdlibApi::class)
         fun create(id: String, url: String?, type: String, dir: String): PromoFile? {
             return url?.let {
@@ -82,11 +82,11 @@ data class Promo(
     override fun kSerializer() = serializer()
 
     val imageSmallFile by lazy {
-       PromoFile.create(id, imageSmall, "imageSmall", CacheDir)
+        PromoFile.create(id, imageSmall, "imageSmall", CacheDir)
     }
 
     val imageLargeFile by lazy {
-         PromoFile.create(id, imageLarge, "imageLarge", CacheDir)
+        PromoFile.create(id, imageLarge, "imageLarge", CacheDir)
     }
 
     val videoLargeFile by lazy {
@@ -95,7 +95,7 @@ data class Promo(
 
     companion object {
 
-        var CacheDir :String = ""
+        var CacheDir: String = ""
 
         val preview1 = Promo(
             id = "jade_upsell_10",

@@ -32,7 +32,6 @@ import org.jetbrains.compose.resources.painterResource
 import org.jetbrains.compose.resources.stringResource
 import kotlin.coroutines.resume
 
-
 data class OpenDialogData constructor(
     val title: StringHolder? = null,
     val message: StringHolder? = null,
@@ -130,6 +129,7 @@ fun DialogHost(state: DialogState) {
                     }
                 )
             }
+
             else -> {
                 AlertDialog(
                     title = data.title?.let {
@@ -169,7 +169,8 @@ fun DialogHost(state: DialogState) {
                             Text(
                                 data.primaryText ?: stringResource(
                                     Res.string.id_ok
-                                ))
+                                )
+                            )
                         }
                     },
                     dismissButton = {

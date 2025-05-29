@@ -13,7 +13,6 @@ import com.blockstream.compose.components.GreenBottomSheet
 import com.blockstream.compose.extensions.toDrawableResource
 import org.jetbrains.compose.resources.painterResource
 
-
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun MenuBottomSheetView(

@@ -5,10 +5,10 @@ import android.os.Build
 import com.blockstream.common.CountlyBase
 import com.blockstream.common.SupportType
 import com.blockstream.common.ZendeskSdk
-import com.blockstream.green.data.config.AppInfo
 import com.blockstream.common.data.SupportData
 import com.blockstream.common.di.ApplicationScope
 import com.blockstream.common.extensions.logException
+import com.blockstream.green.data.config.AppInfo
 import com.blockstream.green.utils.Loggable
 import com.zendesk.service.ErrorResponse
 import com.zendesk.service.ZendeskCallback
@@ -46,7 +46,6 @@ class ZendeskSdkAndroid constructor(
 
     override val appVersion: String
         get() = appInfo.version
-
 
     override suspend fun submitNewTicket(
         type: SupportType,

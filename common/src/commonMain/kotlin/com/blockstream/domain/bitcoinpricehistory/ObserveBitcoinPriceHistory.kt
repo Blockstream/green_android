@@ -18,7 +18,7 @@ class ObserveBitcoinPriceHistory(
         val response = bitcoinPriceHistoryRepository.getPriceHistory(params.currency)
         if (response is NetworkResponse.Success) {
             set(DataState.successOrEmpty(response.data.asChartData()))
-        }else{
+        } else {
             set(DataState.Error(response.exception()))
         }
     }
@@ -29,7 +29,7 @@ class ObserveBitcoinPriceHistory(
 
     data class Params(val currency: String) {
         companion object {
-            fun create(currency: String,) = Params(currency = currency)
+            fun create(currency: String) = Params(currency = currency)
         }
     }
 }

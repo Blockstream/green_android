@@ -40,11 +40,13 @@ fun NoteBottomSheet(
 ) {
 
     GreenBottomSheet(
-        title = stringResource(when(viewModel.noteType){
-            NoteType.Note -> Res.string.id_add_note
-            NoteType.Description -> Res.string.id_description
-            NoteType.Comment -> Res.string.id_comment
-        }),
+        title = stringResource(
+            when (viewModel.noteType) {
+                NoteType.Note -> Res.string.id_add_note
+                NoteType.Description -> Res.string.id_description
+                NoteType.Comment -> Res.string.id_comment
+            }
+        ),
         viewModel = viewModel,
         sideEffectHandler = {
             if (it is SideEffects.Success) {
@@ -53,7 +55,8 @@ fun NoteBottomSheet(
                 }
             }
         },
-        onDismissRequest = onDismissRequest) {
+        onDismissRequest = onDismissRequest
+    ) {
 
         val focusRequester = remember { FocusRequester() }
         OpenKeyboard(focusRequester)
@@ -89,7 +92,8 @@ fun NoteBottomSheet(
                             viewModel.note.value = ""
                         }
                 )
-            }, supportingText = {
+            },
+            supportingText = {
                 Text(
                     text = "${note.length} / 200",
                     modifier = Modifier.fillMaxWidth(),

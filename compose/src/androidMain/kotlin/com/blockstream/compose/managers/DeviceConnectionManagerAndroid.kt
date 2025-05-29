@@ -1,7 +1,6 @@
 package com.blockstream.compose.managers
 
 import android.bluetooth.BluetoothAdapter
-import com.blockstream.green.data.config.AppInfo
 import com.blockstream.common.devices.AndroidDevice
 import com.blockstream.common.devices.DeviceBrand
 import com.blockstream.common.devices.GreenDevice
@@ -15,6 +14,7 @@ import com.blockstream.common.gdk.device.HardwareConnectInteraction
 import com.blockstream.common.interfaces.ConnectionResult
 import com.blockstream.compose.devices.LedgerDevice
 import com.blockstream.compose.devices.TrezorDevice
+import com.blockstream.green.data.config.AppInfo
 import com.blockstream.jade.HttpRequestHandler
 import com.blockstream.jade.JadeAPI
 import com.blockstream.jade.Loggable
@@ -159,7 +159,8 @@ class DeviceConnectionManagerAndroid constructor(
                 // Ledger (Nano X)
                 // Ledger BLE adapter will call the 'onLedger' function when the BLE connection is established
                 // LedgerBLEAdapter.connectLedgerBLE(this, btDevice, this::onLedger, this::onLedgerError);
-                LedgerBLEAdapter.connectLedgerBLE(device.context, bluetoothDevice,
+                LedgerBLEAdapter.connectLedgerBLE(
+                    device.context, bluetoothDevice,
                     { transport: BTChipTransport, hasScreen: Boolean, disconnectEvent: MutableStateFlow<Boolean> ->
                         scope.launch(context = Dispatchers.IO) {
                             onLedger(
@@ -218,11 +219,11 @@ class DeviceConnectionManagerAndroid constructor(
                 throw Exception("id_ledger_dashboard_detected")
             }
 
-            if(!isBitcoin && !isLiquid){
+            if (!isBitcoin && !isLiquid) {
                 throw Exception("id_ledger_dashboard_detected")
             }
 
-            if(isBitcoin && !isLegacy){
+            if (isBitcoin && !isLegacy) {
                 throw Exception("id_ledger_bitcoin_app_detected")
             }
 
@@ -320,5 +321,5 @@ class DeviceConnectionManagerAndroid constructor(
         return ConnectionResult()
     }
 
-    companion object: Loggable()
+    companion object : Loggable()
 }

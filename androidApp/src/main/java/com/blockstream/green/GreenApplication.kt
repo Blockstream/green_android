@@ -37,7 +37,7 @@ class GreenApplication : Application() {
         val lifecycleManager: LifecycleManager = get()
 
         // Listen to foreground / background events
-        ProcessLifecycleOwner.get().lifecycle.addObserver(object: DefaultLifecycleObserver{
+        ProcessLifecycleOwner.get().lifecycle.addObserver(object : DefaultLifecycleObserver {
             override fun onResume(owner: LifecycleOwner) {
                 lifecycleManager.updateState(true)
             }
@@ -61,10 +61,10 @@ class GreenApplication : Application() {
     }
 
     @RequiresApi(Build.VERSION_CODES.N_MR1)
-    suspend fun initShortcuts(){
+    suspend fun initShortcuts() {
         val shortcutManager = getSystemService(ShortcutManager::class.java)
 
-        val hideAmountsShortcut : ShortcutInfo? = null
+        val hideAmountsShortcut: ShortcutInfo? = null
 //            ShortcutInfo.Builder(this, GreenActivity.HIDE_AMOUNTS)
 //            .setShortLabel(org.jetbrains.compose.resources.getString(Res.string.id_hide_amounts))
 //            .setLongLabel(org.jetbrains.compose.resources.getString(Res.string.id_hide_amounts))
@@ -74,5 +74,5 @@ class GreenApplication : Application() {
         shortcutManager!!.dynamicShortcuts = listOfNotNull(hideAmountsShortcut)
     }
 
-    companion object: Loggable()
+    companion object : Loggable()
 }

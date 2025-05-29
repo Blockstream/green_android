@@ -2,7 +2,7 @@ package com.blockstream.jade.firmware;
 
 import kotlinx.coroutines.Deferred
 
-interface FirmwareInteraction: HardwareQATester {
+interface FirmwareInteraction : HardwareQATester {
     fun askForFirmwareUpgrade(firmwareUpgradeRequest: FirmwareUpgradeRequest): Deferred<Int?>
     fun firmwareUpdateState(state: FirmwareUpdateState)
 }

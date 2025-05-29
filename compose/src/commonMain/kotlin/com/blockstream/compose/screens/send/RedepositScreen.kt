@@ -56,7 +56,6 @@ import com.blockstream.ui.components.GreenColumn
 import com.blockstream.ui.navigation.getResult
 import org.jetbrains.compose.resources.stringResource
 
-
 @Composable
 fun RedepositScreen(
     viewModel: RedepositViewModelAbstract

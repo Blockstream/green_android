@@ -60,9 +60,9 @@ class NewWalletUseCase(
         if (cipher != null) {
             insertWalletToDatabase()
             setBiometricsUseCase.invoke(session = session, cipher = cipher, wallet = wallet)
-        } else if(pin != null){
+        } else if (pin != null) {
             setPinUseCase.invoke(session = session, pin = pin, wallet = wallet, onPinData = insertWalletToDatabase)
-        } else{
+        } else {
             throw Exception("Neither Cipher nor Pin provided for wallet security")
         }
 
@@ -73,5 +73,5 @@ class NewWalletUseCase(
         return wallet
     }
 
-    companion object: Loggable()
+    companion object : Loggable()
 }

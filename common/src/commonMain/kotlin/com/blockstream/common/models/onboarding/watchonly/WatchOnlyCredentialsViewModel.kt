@@ -204,9 +204,9 @@ class WatchOnlyCredentialsViewModel(setupArgs: SetupArgs) :
     }
 }
 
-class WatchOnlyCredentialsViewModelPreview(setupArgs: SetupArgs, isLiquid : Boolean = false) :
+class WatchOnlyCredentialsViewModelPreview(setupArgs: SetupArgs, isLiquid: Boolean = false) :
     WatchOnlyCredentialsViewModelAbstract(setupArgs = setupArgs) {
-        
+
     override val isSinglesig: StateFlow<Boolean> = MutableStateFlow(true)
     override val isLiquid: StateFlow<Boolean> = MutableStateFlow(isLiquid)
     override val isLoginEnabled: StateFlow<Boolean> = MutableStateFlow(false)
@@ -218,6 +218,9 @@ class WatchOnlyCredentialsViewModelPreview(setupArgs: SetupArgs, isLiquid : Bool
 
     companion object {
         fun preview(isSinglesig: Boolean = true, isLiquid: Boolean = false) =
-            WatchOnlyCredentialsViewModelPreview(SetupArgs(mnemonic = "neutral inherit learn", isSinglesig = isSinglesig), isLiquid = isLiquid)
+            WatchOnlyCredentialsViewModelPreview(
+                SetupArgs(mnemonic = "neutral inherit learn", isSinglesig = isSinglesig),
+                isLiquid = isLiquid
+            )
     }
 }

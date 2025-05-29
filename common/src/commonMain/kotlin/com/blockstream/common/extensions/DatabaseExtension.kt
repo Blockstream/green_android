@@ -11,7 +11,6 @@ import com.blockstream.common.gdk.data.PinData
 import com.blockstream.common.utils.getSecureRandom
 import kotlinx.datetime.Clock
 
-
 fun createLoginCredentials(
     walletId: String,
     network: String,
@@ -72,7 +71,7 @@ fun LoginCredentials.lightningMnemonic(
     onError: ((exception: Exception) -> Unit) = {}
 ): String? {
     return try {
-        if(credential_type != CredentialType.LIGHTNING_MNEMONIC) throw Exception("credential_type is not LIGHTNING_MNEMONIC")
+        if (credential_type != CredentialType.LIGHTNING_MNEMONIC) throw Exception("credential_type is not LIGHTNING_MNEMONIC")
         greenKeystore.decryptData(encrypted_data!!).decodeToString()
     } catch (e: Exception) {
         e.printStackTrace()
@@ -86,7 +85,7 @@ fun LoginCredentials.mnemonic(
     onError: ((exception: Exception) -> Unit) = {}
 ): String? {
     return try {
-        if(credential_type != CredentialType.KEYSTORE_MNEMONIC) throw Exception("credential_type is not KEYSTORE_MNEMONIC")
+        if (credential_type != CredentialType.KEYSTORE_MNEMONIC) throw Exception("credential_type is not KEYSTORE_MNEMONIC")
         greenKeystore.decryptData(encrypted_data!!).decodeToString()
     } catch (e: Exception) {
         e.printStackTrace()
@@ -94,7 +93,6 @@ fun LoginCredentials.mnemonic(
         null
     }
 }
-
 
 fun LoginCredentials.richWatchOnly(
     greenKeystore: GreenKeystore,
@@ -108,7 +106,6 @@ fun LoginCredentials.richWatchOnly(
         null
     }
 }
-
 
 // Time-based UUID similar to MongoDB ObjectId
 // https://github.com/benasher44/uuid/issues/75

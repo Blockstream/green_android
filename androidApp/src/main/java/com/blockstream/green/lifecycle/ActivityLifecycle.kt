@@ -5,10 +5,9 @@ import android.app.Application
 import android.os.Bundle
 import androidx.lifecycle.LifecycleObserver
 import com.blockstream.common.managers.SessionManager
-import com.blockstream.green.utils.Loggable
 import com.blockstream.green.GreenActivity
 import com.blockstream.green.managers.NotificationManagerAndroid
-
+import com.blockstream.green.utils.Loggable
 
 class ActivityLifecycle(
     private val sessionManager: SessionManager,

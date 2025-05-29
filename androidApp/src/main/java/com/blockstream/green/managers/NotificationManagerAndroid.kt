@@ -51,7 +51,6 @@ import kotlinx.coroutines.flow.onEach
 import kotlinx.coroutines.launch
 import org.jetbrains.compose.resources.getString
 
-
 class NotificationManagerAndroid constructor(
     private val context: Context,
     private val applicationScope: ApplicationScope,

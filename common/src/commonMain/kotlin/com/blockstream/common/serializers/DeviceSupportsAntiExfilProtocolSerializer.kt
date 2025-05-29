@@ -11,6 +11,7 @@ import kotlinx.serialization.encoding.Encoder
 object DeviceSupportsAntiExfilProtocolSerializer : KSerializer<DeviceSupportsAntiExfilProtocol> {
     override val descriptor: SerialDescriptor = PrimitiveSerialDescriptor("DeviceSupportsAntiExfilProtocol", PrimitiveKind.INT)
     override fun serialize(encoder: Encoder, value: DeviceSupportsAntiExfilProtocol) = encoder.encodeInt(value.ordinal)
-    override fun deserialize(decoder: Decoder): DeviceSupportsAntiExfilProtocol = DeviceSupportsAntiExfilProtocol.values()[decoder.decodeInt()]
+    override fun deserialize(decoder: Decoder): DeviceSupportsAntiExfilProtocol =
+        DeviceSupportsAntiExfilProtocol.values()[decoder.decodeInt()]
 }
 

@@ -7,11 +7,10 @@ import blockstream_green.common.generated.resources.bitcoin
 import blockstream_green.common.generated.resources.bitcoin_testnet
 import blockstream_green.common.generated.resources.id_import_a_wallet_created_with
 import blockstream_green.common.generated.resources.key_singlesig
-import com.blockstream.ui.components.GreenColumn
 import com.blockstream.compose.theme.GreenChromePreview
+import com.blockstream.ui.components.GreenColumn
 import org.jetbrains.compose.resources.painterResource
 import org.jetbrains.compose.resources.stringResource
-
 
 @Composable
 @Preview

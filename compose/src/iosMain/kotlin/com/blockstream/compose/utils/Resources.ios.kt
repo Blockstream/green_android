@@ -6,7 +6,7 @@ import androidx.compose.ui.graphics.toComposeImageBitmap
 import org.jetbrains.skia.Image
 
 actual fun ByteArray?.toPainter(): Painter? {
-    if(this != null) {
+    if (this != null) {
         return BitmapPainter(Image.makeFromEncoded(this).toComposeImageBitmap())
     }
     return null

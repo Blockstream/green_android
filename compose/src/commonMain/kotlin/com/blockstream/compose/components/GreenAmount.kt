@@ -13,10 +13,10 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.unit.dp
 import com.blockstream.common.gdk.GdkSession
-import com.blockstream.ui.components.GreenColumn
 import com.blockstream.compose.extensions.assetIcon
 import com.blockstream.compose.theme.bodyLarge
 import com.blockstream.compose.theme.titleMedium
+import com.blockstream.ui.components.GreenColumn
 
 @Composable
 fun GreenAmount(
@@ -34,7 +34,7 @@ fun GreenAmount(
             address?.also { GreenAddress(address = it) }
 
             Box {
-                if(showIcon) {
+                if (showIcon) {
                     Image(
                         painter = assetId.assetIcon(session = session),
                         contentDescription = null,

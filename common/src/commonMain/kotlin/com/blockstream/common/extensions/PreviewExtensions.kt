@@ -88,13 +88,13 @@ fun previewWalletListView(
 fun previewLoginCredentials() =
     LoginCredentials("", CredentialType.BIOMETRICS_PINDATA, "", null, null, null, 0)
 
-fun previewEnrichedAsset(isLiquid: Boolean = false) = if(isLiquid) EnrichedAsset.PreviewLBTC else EnrichedAsset.PreviewBTC
+fun previewEnrichedAsset(isLiquid: Boolean = false) = if (isLiquid) EnrichedAsset.PreviewLBTC else EnrichedAsset.PreviewBTC
 
 var _accountId = 0L
-fun previewAccount(isLightning:Boolean = false) = Account(
+fun previewAccount(isLightning: Boolean = false) = Account(
     gdkName = "Account #$_accountId",
     pointer = _accountId++,
-    type = if(isLightning) AccountType.LIGHTNING else AccountType.BIP84_SEGWIT,
+    type = if (isLightning) AccountType.LIGHTNING else AccountType.BIP84_SEGWIT,
     networkInjected = previewNetwork(),
     policyAsset = previewEnrichedAsset()
 )
@@ -102,14 +102,14 @@ fun previewAccount(isLightning:Boolean = false) = Account(
 fun previewAccountBalance() =
     AccountBalance(previewAccount(), Denomination.BTC, "1 BTC", "150.000 USD")
 
-fun previewAccountAsset(isLightning : Boolean = false) = AccountAsset(
+fun previewAccountAsset(isLightning: Boolean = false) = AccountAsset(
     account = previewAccount(isLightning = isLightning),
     asset = EnrichedAsset.PreviewBTC
 )
 
 fun previewAssetBalance(isLiquid: Boolean = false) = AssetBalance(
-    asset = if(isLiquid) EnrichedAsset.PreviewLBTC else EnrichedAsset.PreviewBTC,
-    if(isLiquid) "1 LBTC" else "1 BTC", "150.000 USD"
+    asset = if (isLiquid) EnrichedAsset.PreviewLBTC else EnrichedAsset.PreviewBTC,
+    if (isLiquid) "1 LBTC" else "1 BTC", "150.000 USD"
 )
 
 fun previewAccountAssetBalance() = AccountAssetBalance(
@@ -135,13 +135,15 @@ fun previewTransaction() = Transaction(
     it.accountInjected = previewAccount()
 }
 
-fun previewTransactionLook(status: TransactionStatus = Completed()) = TransactionLook(status, previewTransaction(), listOf("12311.123 BTC"), "1311.123 USD")
+fun previewTransactionLook(status: TransactionStatus = Completed()) =
+    TransactionLook(status, previewTransaction(), listOf("12311.123 BTC"), "1311.123 USD")
 
-fun previewGreenDevice(isJade: Boolean = true) = object: GreenDeviceImpl(deviceBrand = if(isJade) DeviceBrand.Blockstream else DeviceBrand.Trezor, type = ConnectionType.USB, isBonded = true) {
+fun previewGreenDevice(isJade: Boolean = true) = object :
+    GreenDeviceImpl(deviceBrand = if (isJade) DeviceBrand.Blockstream else DeviceBrand.Trezor, type = ConnectionType.USB, isBonded = true) {
     override val connectionIdentifier: String = ""
     override val uniqueIdentifier: String = ""
-    override val name: String = if(isJade) "Jade" else "Trezor T"
-    override val manufacturer: String = if(isJade) "Blockstream" else "Trezor"
+    override val name: String = if (isJade) "Jade" else "Trezor T"
+    override val manufacturer: String = if (isJade) "Blockstream" else "Trezor"
     override val isOffline: Boolean = false
     override fun disconnect() {}
     override suspend fun getOperatingNetworkForEnviroment(

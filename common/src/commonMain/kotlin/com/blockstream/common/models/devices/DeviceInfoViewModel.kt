@@ -5,21 +5,21 @@ import blockstream_green.common.generated.resources.id_setup_guide
 import blockstream_green.common.generated.resources.id_your_device_was_disconnected
 import com.blockstream.common.data.DeviceIdentifier
 import com.blockstream.common.data.GreenWallet
-import com.blockstream.ui.navigation.NavAction
-import com.blockstream.ui.navigation.NavData
 import com.blockstream.common.devices.DeviceState
 import com.blockstream.common.devices.jadeDevice
-import com.blockstream.ui.events.Event
 import com.blockstream.common.extensions.getWallet
 import com.blockstream.common.extensions.launchIn
 import com.blockstream.common.extensions.previewGreenDevice
 import com.blockstream.common.gdk.events.JadeGenuineCheck
 import com.blockstream.common.navigation.NavigateDestinations
-import com.blockstream.ui.sideeffects.SideEffect
 import com.blockstream.common.sideeffects.SideEffects
-import com.blockstream.green.utils.Loggable
 import com.blockstream.common.utils.StringHolder
+import com.blockstream.green.utils.Loggable
 import com.blockstream.jade.firmware.JadeFirmwareManager
+import com.blockstream.ui.events.Event
+import com.blockstream.ui.navigation.NavAction
+import com.blockstream.ui.navigation.NavData
+import com.blockstream.ui.sideeffects.SideEffect
 import com.juul.kable.ConnectionLostException
 import com.rickclephas.kmp.nativecoroutines.NativeCoroutinesState
 import com.rickclephas.kmp.observableviewmodel.launch
@@ -40,13 +40,12 @@ class DeviceInfoViewModel constructor(deviceId: String) : DeviceInfoViewModelAbs
     private val _jadeIsUninitialized = MutableStateFlow(false)
     override val jadeIsUninitialized: StateFlow<Boolean> = _jadeIsUninitialized
 
-
     private val deviceIsConnected = MutableStateFlow(false)
 
     class LocalEvents {
         data class AuthenticateAndContinue(val updateFirmwareFromChannel: String? = null) : Event
-        data class SelectEnviroment(val isTestnet: Boolean?): Event
-        data object GenuineCheckSuccess: Event
+        data class SelectEnviroment(val isTestnet: Boolean?) : Event
+        data object GenuineCheckSuccess : Event
     }
 
     class LocalSideEffects {
@@ -62,9 +61,9 @@ class DeviceInfoViewModel constructor(deviceId: String) : DeviceInfoViewModelAbs
     init {
         deviceOrNull = deviceManager.getDevice(deviceId)
 
-        if(deviceOrNull == null){
+        if (deviceOrNull == null) {
             postSideEffect(SideEffects.NavigateBack())
-        }else {
+        } else {
 
             if (device.gdkHardwareWallet == null) {
                 connectDevice()
@@ -91,7 +90,14 @@ class DeviceInfoViewModel constructor(deviceId: String) : DeviceInfoViewModelAbs
                         postSideEffect(LocalSideEffects.SelectFirmwareChannel())
                     }).takeIf { appInfo.isDevelopmentOrDebug && deviceOrNull?.isJade == true },
                     NavAction(title = "Genuine Check", isMenuEntry = true, onClick = {
-                        postSideEffect(SideEffects.NavigateTo(NavigateDestinations.JadeGenuineCheck(greenWalletOrNull = greenWalletOrNull, deviceId = deviceId)))
+                        postSideEffect(
+                            SideEffects.NavigateTo(
+                                NavigateDestinations.JadeGenuineCheck(
+                                    greenWalletOrNull = greenWalletOrNull,
+                                    deviceId = deviceId
+                                )
+                            )
+                        )
                     }).takeIf { appInfo.isDevelopmentOrDebug && deviceOrNull?.isJade == true }
 
                 )
@@ -138,7 +144,7 @@ class DeviceInfoViewModel constructor(deviceId: String) : DeviceInfoViewModelAbs
                     database.eventExist(JadeGenuineCheck(jadeId = efuseMac).sha256())
                 } == false
 
-                if(jadeDevice.supportsGenuineCheck() && noEvent){
+                if (jadeDevice.supportsGenuineCheck() && noEvent) {
                     postSideEffect(SideEffects.NavigateTo(NavigateDestinations.NewJadeConnected))
                 }
             }
@@ -285,7 +291,7 @@ class DeviceInfoViewModel constructor(deviceId: String) : DeviceInfoViewModelAbs
         })
     }
 
-    companion object: Loggable()
+    companion object : Loggable()
 }
 
 class DeviceInfoViewModelPreview : DeviceInfoViewModelAbstract(deviceId = "") {

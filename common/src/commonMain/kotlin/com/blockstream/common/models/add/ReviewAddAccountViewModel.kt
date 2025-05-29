@@ -1,12 +1,12 @@
 package com.blockstream.common.models.add
 
-import com.blockstream.ui.navigation.NavData
 import com.blockstream.common.data.SetupArgs
-import com.blockstream.ui.events.Event
 import com.blockstream.common.events.Events
 import com.blockstream.common.extensions.previewNetwork
 import com.blockstream.common.extensions.previewWallet
 import com.blockstream.common.gdk.data.AccountType
+import com.blockstream.ui.events.Event
+import com.blockstream.ui.navigation.NavData
 import com.rickclephas.kmp.observableviewmodel.launch
 
 abstract class ReviewAddAccountViewModelAbstract(
@@ -32,7 +32,7 @@ class ReviewAddAccountViewModel(setupArgs: SetupArgs) : ReviewAddAccountViewMode
 
     override suspend fun handleEvent(event: Event) {
         super.handleEvent(event)
-        if(event is Events.Continue){
+        if (event is Events.Continue) {
             createAccount(
                 accountType = setupArgs.accountType!!,
                 accountName = setupArgs.accountType.toString(),

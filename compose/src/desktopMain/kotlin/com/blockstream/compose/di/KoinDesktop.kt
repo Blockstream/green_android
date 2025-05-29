@@ -107,7 +107,8 @@ fun initKoinDesktop(appConfig: AppConfig, appInfo: AppInfo, doOnStartup: () -> U
 
                     }
 
-                    override fun showBuyTransactionNotification(        notificationData: NotificationData
+                    override fun showBuyTransactionNotification(
+                        notificationData: NotificationData
                     ) {
                         //no-op
                     }

@@ -19,18 +19,25 @@ import com.blockstream.common.utils.StringHolder
 import kotlinx.serialization.SerialName
 import kotlinx.serialization.Serializable
 
-
 @Serializable
 data class EnrichedAsset constructor(
-    @SerialName("asset_id") val assetId: String,
-    @SerialName("name") val name: String? = null,
-    @SerialName("precision") val precision: Int = 0,
-    @SerialName("ticker") val ticker: String? = null,
-    @SerialName("entity") val entity: Entity? = null,
-    @SerialName("amp") val isAmp: Boolean = false,
-    @SerialName("weight") val weight: Int = 0,
+    @SerialName("asset_id")
+    val assetId: String,
+    @SerialName("name")
+    val name: String? = null,
+    @SerialName("precision")
+    val precision: Int = 0,
+    @SerialName("ticker")
+    val ticker: String? = null,
+    @SerialName("entity")
+    val entity: Entity? = null,
+    @SerialName("amp")
+    val isAmp: Boolean = false,
+    @SerialName("weight")
+    val weight: Int = 0,
     // @SerialName("isSendable") val isSendable: Boolean = true, // Display "Any Liquid Asset" UI element
-    @SerialName("isAnyAsset") val isAnyAsset: Boolean = false, // Display "Any Liquid/Amp Asset" UI element
+    @SerialName("isAnyAsset")
+    val isAnyAsset: Boolean = false, // Display "Any Liquid/Amp Asset" UI element
 ) : GreenJson<EnrichedAsset>() {
 
     fun nameOrNull(session: GdkSession?): StringHolder? {
@@ -112,7 +119,7 @@ data class EnrichedAsset constructor(
         fun create(session: GdkSession, network: Network): EnrichedAsset = create(session = session, assetId = network.policyAsset)
 
         fun create(session: GdkSession, assetId: String): EnrichedAsset {
-            if(assetId == LN_BTC_POLICY_ASSET) {
+            if (assetId == LN_BTC_POLICY_ASSET) {
                 return (create(
                     session = session,
                     assetId = BTC_POLICY_ASSET
@@ -145,7 +152,7 @@ data class EnrichedAsset constructor(
                 ticker = asset?.ticker,
                 entity = asset?.entity,
 
-                weight = if(isAmp) -20 else -10,
+                weight = if (isAmp) -20 else -10,
                 isAmp = isAmp,
                 isAnyAsset = true
             )

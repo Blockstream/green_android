@@ -179,18 +179,18 @@ class Database(driverFactory: DriverFactory, val settingsManager: SettingsManage
         }
     }
 
-    suspend fun getWallets(isHardware: Boolean) : List<GreenWallet> = io {
+    suspend fun getWallets(isHardware: Boolean): List<GreenWallet> = io {
         walletDB.walletQueries.getWallets(is_hardware = isHardware).executeAsList().map { it.toGreenWallet() }
     }
 
-    fun getWalletsFlow(isHardware: Boolean) : Flow<List<GreenWallet>> =
+    fun getWalletsFlow(isHardware: Boolean): Flow<List<GreenWallet>> =
         walletDB.walletQueries.getWallets(is_hardware = isHardware).asFlow().map {
             io {
                 it.executeAsList().map { it.toGreenWallet() }
             }
         }
 
-    fun getWalletsFlow(credentialType: CredentialType, isHardware: Boolean) : Flow<List<GreenWallet>> =
+    fun getWalletsFlow(credentialType: CredentialType, isHardware: Boolean): Flow<List<GreenWallet>> =
         walletDB.walletQueries.getWalletsWithCredentialType(credentialType, isHardware).asFlow().map {
             io {
                 it.executeAsList().map { it.toGreenWallet() }
@@ -263,7 +263,7 @@ class Database(driverFactory: DriverFactory, val settingsManager: SettingsManage
     }
 
     suspend fun insertEvent(eventId: String, randomInsert: Boolean = false) = io {
-        if(randomInsert && getSecureRandom().unsecureRandomInt(0, 100) > 90) {
+        if (randomInsert && getSecureRandom().unsecureRandomInt(0, 100) > 90) {
             return@io
         }
 
@@ -281,7 +281,6 @@ class Database(driverFactory: DriverFactory, val settingsManager: SettingsManage
     suspend fun deleteEvents() = io {
         localDB.eventsQueries.deleteEvents()
     }
-
 
     companion object : Loggable()
 }

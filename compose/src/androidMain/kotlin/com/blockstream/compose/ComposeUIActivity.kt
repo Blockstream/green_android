@@ -16,10 +16,10 @@ import com.blockstream.common.looks.wallet.WalletListLook
 import com.blockstream.compose.components.GreenButton
 import com.blockstream.compose.components.GreenButtonColor
 import com.blockstream.compose.components.GreenButtonType
-import com.blockstream.ui.components.GreenColumn
 import com.blockstream.compose.theme.GreenChrome
 import com.blockstream.compose.theme.GreenTheme
 import com.blockstream.compose.views.WalletListItem
+import com.blockstream.ui.components.GreenColumn
 
 class ComposeUIActivity : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {

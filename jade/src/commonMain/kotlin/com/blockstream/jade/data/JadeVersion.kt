@@ -1,6 +1,5 @@
 package com.blockstream.jade.data;
 
-
 // A Jade version is three dotted (unsigned) integers, followed by an optional
 // string pre-release label.  Number parts are numeric compared, pre-release label is lex-compared.
 // The pre-release label may be separated by a dot (legacy/deprecated) or a dash (new, more semver-like).

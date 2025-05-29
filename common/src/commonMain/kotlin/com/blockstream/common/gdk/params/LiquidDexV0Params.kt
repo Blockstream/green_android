@@ -7,8 +7,10 @@ import kotlinx.serialization.json.JsonElement
 
 @Serializable
 data class LiquidDexV0Params constructor(
-    @SerialName("receive") val receive: List<LiquidDexV0AssetParams>,
-    @SerialName("send") val send: List<JsonElement>,
+    @SerialName("receive")
+    val receive: List<LiquidDexV0AssetParams>,
+    @SerialName("send")
+    val send: List<JsonElement>,
 ) : GreenJson<LiquidDexV0Params>() {
 
     override fun kSerializer() = serializer()
@@ -16,8 +18,10 @@ data class LiquidDexV0Params constructor(
 
 @Serializable
 data class LiquidDexV0AssetParams constructor(
-    @SerialName("asset_id") val assetId: String,
-    @SerialName("satoshi") val satoshi: Long,
+    @SerialName("asset_id")
+    val assetId: String,
+    @SerialName("satoshi")
+    val satoshi: Long,
 ) : GreenJson<LiquidDexV0AssetParams>() {
 
     override fun kSerializer() = serializer()

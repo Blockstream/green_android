@@ -28,13 +28,13 @@ import com.blockstream.common.extensions.isNotBlank
 import com.blockstream.common.gdk.GdkSession
 import com.blockstream.common.looks.AmountAssetLook
 import com.blockstream.common.utils.DecimalFormat
-import com.blockstream.ui.components.GreenColumn
-import com.blockstream.ui.components.GreenRow
 import com.blockstream.compose.extensions.assetIcon
 import com.blockstream.compose.theme.bodyLarge
 import com.blockstream.compose.theme.green
 import com.blockstream.compose.theme.whiteMedium
 import com.blockstream.compose.utils.noRippleClickable
+import com.blockstream.ui.components.GreenColumn
+import com.blockstream.ui.components.GreenRow
 import org.jetbrains.compose.resources.painterResource
 
 @Composable
@@ -42,7 +42,7 @@ fun GreenAmounts(
     modifier: Modifier = Modifier,
     amounts: List<AmountAssetLook>,
     session: GdkSession? = null,
-    onAssetClick : ((assetId : String) -> Unit) = { _ -> }
+    onAssetClick: ((assetId: String) -> Unit) = { _ -> }
 ) {
     if (amounts.size == 1) {
         val look = amounts.first()

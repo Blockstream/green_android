@@ -2,7 +2,6 @@ package com.blockstream.common.lightning
 
 import breez_sdk.GreenlightCredentials
 
-
 data class GreenlightKeys(
     val breezApiKey: String,
     val deviceKey: List<UByte>?,

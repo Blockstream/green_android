@@ -15,7 +15,6 @@ inline fun <T, R> T.bip32KeyFree(use: (T) -> R): R {
     }
 }
 
-
 class AndroidWally : Wally {
     override val aesBlockLen: Int = WallyJava.AES_BLOCK_LEN
     override val hmacSha256Len: Int = WallyJava.HMAC_SHA256_LEN

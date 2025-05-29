@@ -3,11 +3,11 @@ package com.blockstream.common.data
 import com.blockstream.common.gdk.data.Network
 import com.blockstream.ui.events.Event
 
-sealed class WalletSetting{
+sealed class WalletSetting {
     data object Logout : WalletSetting()
     data class Text(val title: String? = null, val message: String? = null) : WalletSetting()
-    data class LearnMore(val event: Event): WalletSetting()
-    data class ButtonEvent(val title: String, val event: Event): WalletSetting()
+    data class LearnMore(val event: Event) : WalletSetting()
+    data class ButtonEvent(val title: String, val event: Event) : WalletSetting()
     data class DenominationExchangeRate(val unit: String, val currency: String, val exchange: String) : WalletSetting()
     data object ArchivedAccounts : WalletSetting()
     data object WatchOnly : WalletSetting()
@@ -26,13 +26,13 @@ sealed class WalletSetting{
     data class Version(val version: String) : WalletSetting()
     data class TwoFactorMethod(
         val method: com.blockstream.common.data.TwoFactorMethod,
-        val data : String?,
+        val data: String?,
         val enabled: Boolean
     ) : WalletSetting()
 
     data class TwoFactorBucket(
         val title: String,
-        val subtitle : String,
+        val subtitle: String,
         val enabled: Boolean,
         val bucket: Int
     ) : WalletSetting()
@@ -41,7 +41,7 @@ sealed class WalletSetting{
         val subtitle: String
     ) : WalletSetting()
 
-    data object CopyAmpId: WalletSetting()
+    data object CopyAmpId : WalletSetting()
 
     data object CreateAmpAccount : WalletSetting()
 

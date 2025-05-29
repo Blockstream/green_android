@@ -98,13 +98,13 @@ actual class BluetoothManager constructor(val context: Context, val bluetoothAda
             _bluetoothState,
         ) { locationEnabled, _, bluetoothState ->
             when (locationEnabled) {
-                true -> if(hasPermissions) bluetoothState else BluetoothState.PERMISSIONS_NOT_GRANTED
+                true -> if (hasPermissions) bluetoothState else BluetoothState.PERMISSIONS_NOT_GRANTED
                 false -> BluetoothState.LOCATION_SERVICES_DISABLED
                 null -> BluetoothState.UNAVAILABLE
             }
         }).stateIn(scope, SharingStarted.Eagerly, BluetoothState.UNAVAILABLE)
 
-    companion object: Loggable() {
+    companion object : Loggable() {
 
         // NOTE: BLE_LOCATION_PERMISSION should be set to FINE for Android 10 and above, or COARSE for 9 and below
         // See: https://developer.android.com/about/versions/10/privacy/changes#location-telephony-bluetooth-wifi

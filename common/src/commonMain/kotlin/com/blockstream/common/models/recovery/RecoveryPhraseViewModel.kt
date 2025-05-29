@@ -5,13 +5,13 @@ import blockstream_green.common.generated.resources.id_backup_recovery_phrase
 import blockstream_green.common.generated.resources.id_lightning
 import com.blockstream.common.Urls
 import com.blockstream.common.data.GreenWallet
-import com.blockstream.ui.navigation.NavData
-import com.blockstream.ui.events.Event
 import com.blockstream.common.events.Events
 import com.blockstream.common.extensions.ifConnectedSuspend
 import com.blockstream.common.extensions.previewWallet
 import com.blockstream.common.gdk.data.Credentials
 import com.blockstream.common.models.GreenViewModel
+import com.blockstream.ui.events.Event
+import com.blockstream.ui.navigation.NavData
 import com.rickclephas.kmp.nativecoroutines.NativeCoroutinesState
 import com.rickclephas.kmp.observableviewmodel.MutableStateFlow
 import com.rickclephas.kmp.observableviewmodel.launch
@@ -69,7 +69,8 @@ class RecoveryPhraseViewModel(
                 subtitle = if (isLightning) getString(Res.string.id_lightning) else null
             )
 
-            (providedCredentials ?: session.ifConnectedSuspend { (if (isLightning) Credentials(mnemonic = session.deriveLightningMnemonic()) else session.getCredentials()) })?.also { credentials ->
+            (providedCredentials
+                ?: session.ifConnectedSuspend { (if (isLightning) Credentials(mnemonic = session.deriveLightningMnemonic()) else session.getCredentials()) })?.also { credentials ->
                 _mnemonic.value = credentials.mnemonic ?: ""
                 _mnemonicWords.value = credentials.mnemonic?.split(" ") ?: listOf()
                 _passphrase.value = credentials.bip39Passphrase
@@ -88,9 +89,8 @@ class RecoveryPhraseViewModel(
     }
 }
 
-class RecoveryPhraseViewModelPreview(isLightning: Boolean, providedCredentials: Credentials? = null,greenWallet: GreenWallet?) :
+class RecoveryPhraseViewModelPreview(isLightning: Boolean, providedCredentials: Credentials? = null, greenWallet: GreenWallet?) :
     RecoveryPhraseViewModelAbstract(isLightning = isLightning, greenWallet = greenWallet) {
-
 
     override val mnemonic: MutableStateFlow<String> = MutableStateFlow(DummyMnemonic)
     override val mnemonicWords: MutableStateFlow<List<String>> = MutableStateFlow(DummyMnemonic.split(" "))
@@ -100,6 +100,7 @@ class RecoveryPhraseViewModelPreview(isLightning: Boolean, providedCredentials: 
     companion object {
         val DummyMnemonic =
             "chalk verb patch cube sell west penalty fish park worry tribe tourist"
+
         fun preview() = RecoveryPhraseViewModelPreview(
             isLightning = false,
             greenWallet = previewWallet(isHardware = false)

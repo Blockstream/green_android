@@ -15,5 +15,5 @@ actual class LocaleManager {
         // TODO
     }
 
-    actual fun getCountry() : String? = Locale.current.region
+    actual fun getCountry(): String? = Locale.current.region
 }

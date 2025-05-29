@@ -16,7 +16,6 @@ data class StringHolder(
     @Composable
     fun string(): String = stringOrNull() ?: ""
 
-
     suspend fun getStringOrNull(): String? = stringResource?.let { org.jetbrains.compose.resources.getString(stringResource) }
         ?: id?.let { getStringFromId(id) } ?: string
 

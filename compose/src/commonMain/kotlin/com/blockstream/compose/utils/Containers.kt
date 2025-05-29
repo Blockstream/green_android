@@ -7,7 +7,6 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import com.blockstream.compose.managers.LocalPlatformManager
 
-
 @Composable
 fun CopyContainer(
     modifier: Modifier = Modifier,

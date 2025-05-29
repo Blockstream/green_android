@@ -1,6 +1,5 @@
 package com.blockstream.green.data.notifications.models
 
-import kotlinx.serialization.SerialName
 import kotlinx.serialization.Serializable
 
 @Serializable

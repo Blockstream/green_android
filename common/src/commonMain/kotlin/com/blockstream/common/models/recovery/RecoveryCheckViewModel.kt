@@ -2,18 +2,18 @@ package com.blockstream.common.models.recovery
 
 import blockstream_green.common.generated.resources.Res
 import blockstream_green.common.generated.resources.id_wrong_choice_check_your
-import com.blockstream.green.data.config.AppInfo
-import com.blockstream.ui.navigation.NavData
 import com.blockstream.common.data.SetupArgs
-import com.blockstream.ui.events.Event
 import com.blockstream.common.gdk.Wally
 import com.blockstream.common.gdk.getBip39WordList
 import com.blockstream.common.models.GreenViewModel
 import com.blockstream.common.navigation.NavigateDestinations
 import com.blockstream.common.sideeffects.SideEffects
-import com.blockstream.green.utils.Loggable
 import com.blockstream.common.utils.StringHolder
 import com.blockstream.common.utils.getSecureRandom
+import com.blockstream.green.data.config.AppInfo
+import com.blockstream.green.utils.Loggable
+import com.blockstream.ui.events.Event
+import com.blockstream.ui.navigation.NavData
 import com.rickclephas.kmp.observableviewmodel.launch
 import org.koin.core.component.get
 import org.koin.core.component.inject
@@ -41,7 +41,8 @@ class RecoveryCheckViewModel(setupArgs: SetupArgs) : RecoveryCheckViewModelAbstr
     val mnemonicTotalPages: Int = (mnemonicWords.size / WORDS_PER_PAGE)
     private val totalPages: Int = mnemonicTotalPages + RecoveryPhraseChecks
 
-    override val progress: Int = ((((setupArgs.page.takeIf { setupArgs.page in 1.. totalPages } ?: 1) + mnemonicTotalPages).toFloat() / totalPages) * 100).toInt()
+    override val progress: Int =
+        ((((setupArgs.page.takeIf { setupArgs.page in 1..totalPages } ?: 1) + mnemonicTotalPages).toFloat() / totalPages) * 100).toInt()
     override val hightlightCorrectWord = get<AppInfo>().isDevelopment
 
     private val isLastPage = setupArgs.page == RecoveryPhraseChecks
@@ -54,8 +55,8 @@ class RecoveryCheckViewModel(setupArgs: SetupArgs) : RecoveryCheckViewModelAbstr
 
     private var correctWord: String
 
-    class LocalEvents{
-        class SelectWord(val word: String): Event
+    class LocalEvents {
+        class SelectWord(val word: String) : Event
     }
 
     init {
@@ -64,7 +65,7 @@ class RecoveryCheckViewModel(setupArgs: SetupArgs) : RecoveryCheckViewModelAbstr
 
         val offset = 0 + (wordsPerPage * (setupArgs.page - 1))
 
-        val wordIndex = getSecureRandom().unsecureRandomInt(if(isLastOrFirstPage) 1 else 0 , wordsPerPage - if(isLastOrFirstPage) 1 else 0)
+        val wordIndex = getSecureRandom().unsecureRandomInt(if (isLastOrFirstPage) 1 else 0, wordsPerPage - if (isLastOrFirstPage) 1 else 0)
         correctWord = mnemonicWords[offset + wordIndex]
 
         val wordList = wally.getBip39WordList().shuffled()
@@ -77,7 +78,8 @@ class RecoveryCheckViewModel(setupArgs: SetupArgs) : RecoveryCheckViewModelAbstr
         checkWordIndex = offset + wordIndex + 1
 
         viewModelScope.launch {
-            _navData.value = NavData(title = setupArgs.accountType?.toString(), subtitle = setupArgs.accountType?.let { greenWalletOrNull?.name })
+            _navData.value =
+                NavData(title = setupArgs.accountType?.toString(), subtitle = setupArgs.accountType?.let { greenWalletOrNull?.name })
         }
 
         bootstrap()
@@ -85,7 +87,7 @@ class RecoveryCheckViewModel(setupArgs: SetupArgs) : RecoveryCheckViewModelAbstr
 
     override suspend fun handleEvent(event: Event) {
         super.handleEvent(event)
-        if(event is LocalEvents.SelectWord){
+        if (event is LocalEvents.SelectWord) {
             if (correctWord == event.word) {
                 if (isLastPage) {
                     if (setupArgs.greenWallet == null) {
@@ -127,7 +129,7 @@ class RecoveryCheckViewModel(setupArgs: SetupArgs) : RecoveryCheckViewModelAbstr
         })
     }
 
-    companion object: Loggable() {
+    companion object : Loggable() {
         const val RecoveryPhraseChecks = 4
         const val WORDS_PER_PAGE = 6
     }

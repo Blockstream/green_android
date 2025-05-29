@@ -29,7 +29,7 @@ interface DeviceOperatingNetwork {
     suspend fun getOperatingNetwork(greenDevice: GreenDevice, gdk: Gdk, interaction: HardwareConnectInteraction): Network?
 }
 
-interface GreenDevice: DeviceOperatingNetwork {
+interface GreenDevice : DeviceOperatingNetwork {
     val connectionIdentifier: String
     val uniqueIdentifier: String
     val peripheral: Peripheral?
@@ -57,7 +57,7 @@ interface GreenDevice: DeviceOperatingNetwork {
     fun disconnect()
     fun hasPermissions(): Boolean
     fun updateFromScan(newPeripheral: Peripheral)
-    fun updateFirmwareState(status : FirmwareUpdateState)
+    fun updateFirmwareState(status: FirmwareUpdateState)
     fun needsUsbPermissionsToIdentify(): Boolean
     fun askForUsbPermission(onSuccess: (() -> Unit), onError: ((throwable: Throwable?) -> Unit)? = null)
     fun canVerifyAddressOnDevice(account: Account): Boolean
@@ -143,7 +143,7 @@ abstract class GreenDeviceImpl constructor(
         heartbeat = Clock.System.now().toEpochMilliseconds()
     }
 
-    override fun askForUsbPermission(onSuccess: (() -> Unit), onError: ((throwable: Throwable?) -> Unit)?) { }
+    override fun askForUsbPermission(onSuccess: (() -> Unit), onError: ((throwable: Throwable?) -> Unit)?) {}
 
     override fun needsUsbPermissionsToIdentify(): Boolean {
         return isUsb && !hasPermissions()
@@ -177,7 +177,7 @@ abstract class GreenDeviceImpl constructor(
         _deviceState.compareAndSet(DeviceState.CONNECTED, DeviceState.DISCONNECTED)
     }
 
-    override fun updateFirmwareState(status : FirmwareUpdateState) {
+    override fun updateFirmwareState(status: FirmwareUpdateState) {
         _firmwareState.value = status
     }
 

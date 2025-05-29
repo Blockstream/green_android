@@ -6,9 +6,12 @@ import kotlinx.serialization.Serializable
 
 @Serializable
 data class TwoFactorReset constructor(
-    @SerialName("is_active") val isActive: Boolean? = null,
-    @SerialName("days_remaining") val daysRemaining: Int = 0,
-    @SerialName("is_disputed") val isDisputed: Boolean? = null
-) : GreenJson<TwoFactorReset>(){
+    @SerialName("is_active")
+    val isActive: Boolean? = null,
+    @SerialName("days_remaining")
+    val daysRemaining: Int = 0,
+    @SerialName("is_disputed")
+    val isDisputed: Boolean? = null
+) : GreenJson<TwoFactorReset>() {
     override fun kSerializer() = serializer()
 }

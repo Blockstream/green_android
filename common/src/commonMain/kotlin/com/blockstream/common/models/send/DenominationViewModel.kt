@@ -5,13 +5,13 @@ import blockstream_green.common.generated.resources.id_enter_amount_in
 import com.blockstream.common.data.DenominatedValue
 import com.blockstream.common.data.Denomination
 import com.blockstream.common.data.GreenWallet
-import com.blockstream.ui.navigation.NavData
 import com.blockstream.common.extensions.ifConnected
 import com.blockstream.common.extensions.previewWallet
 import com.blockstream.common.models.GreenViewModel
 import com.blockstream.green.utils.Loggable
-import com.rickclephas.kmp.observableviewmodel.coroutineScope
+import com.blockstream.ui.navigation.NavData
 import com.rickclephas.kmp.nativecoroutines.NativeCoroutinesState
+import com.rickclephas.kmp.observableviewmodel.coroutineScope
 import com.rickclephas.kmp.observableviewmodel.launch
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
@@ -42,7 +42,6 @@ class DenominationViewModel(
         MutableStateFlow(listOf())
     override val denominations: StateFlow<List<DenominatedValue>> = _denominations.asStateFlow()
 
-
     init {
 
         viewModelScope.launch {
@@ -56,11 +55,31 @@ class DenominationViewModel(
         session.ifConnected {
             viewModelScope.coroutineScope.launch {
                 _denominations.value = listOfNotNull(
-                    DenominatedValue.toDenomination(denominatedValue = denominatedValue, denomination = Denomination.BTC, session = session),
-                    DenominatedValue.toDenomination(denominatedValue = denominatedValue, denomination = Denomination.MBTC, session = session),
-                    DenominatedValue.toDenomination(denominatedValue = denominatedValue, denomination = Denomination.UBTC, session = session),
-                    DenominatedValue.toDenomination(denominatedValue = denominatedValue, denomination = Denomination.BITS, session = session),
-                    DenominatedValue.toDenomination(denominatedValue = denominatedValue, denomination = Denomination.SATOSHI, session = session),
+                    DenominatedValue.toDenomination(
+                        denominatedValue = denominatedValue,
+                        denomination = Denomination.BTC,
+                        session = session
+                    ),
+                    DenominatedValue.toDenomination(
+                        denominatedValue = denominatedValue,
+                        denomination = Denomination.MBTC,
+                        session = session
+                    ),
+                    DenominatedValue.toDenomination(
+                        denominatedValue = denominatedValue,
+                        denomination = Denomination.UBTC,
+                        session = session
+                    ),
+                    DenominatedValue.toDenomination(
+                        denominatedValue = denominatedValue,
+                        denomination = Denomination.BITS,
+                        session = session
+                    ),
+                    DenominatedValue.toDenomination(
+                        denominatedValue = denominatedValue,
+                        denomination = Denomination.SATOSHI,
+                        session = session
+                    ),
 
                     session.getSettings()?.pricing?.currency?.let {
                         DenominatedValue.toDenomination(
@@ -92,7 +111,6 @@ class DenominationViewModelPreview(greenWallet: GreenWallet) :
                 DenominatedValue(denomination = Denomination.SATOSHI, asLook = "1 sats")
             )
         )
-
 
     companion object {
         fun preview() = DenominationViewModelPreview(previewWallet())

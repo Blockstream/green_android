@@ -5,7 +5,6 @@ import androidx.compose.ui.tooling.preview.Preview
 import com.blockstream.common.models.settings.DenominationExchangeRateViewModelPreview
 import com.blockstream.compose.theme.GreenChromePreview
 
-
 @Composable
 @Preview
 fun DenominationExchangeDialogPreview() {

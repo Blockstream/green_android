@@ -101,7 +101,7 @@ fun EnterRecoveryPhraseScreen(
     var showPassphraseEncryptionDialog by remember { mutableStateOf(false) }
 
     HandleSideEffect(viewModel = viewModel) {
-        if (it is EnterRecoveryPhraseViewModel.LocalSideEffects.RequestMnemonicPassword){
+        if (it is EnterRecoveryPhraseViewModel.LocalSideEffects.RequestMnemonicPassword) {
             showPassphraseEncryptionDialog = true
         }
     }
@@ -173,7 +173,6 @@ fun EnterRecoveryPhraseScreen(
             }
         }
 
-
         val options = listOf(12, 24, 27)
         val recoveryPhraseSize by viewModel.recoveryPhraseSize.collectAsStateWithLifecycle()
         SingleChoiceSegmentedButtonRow(modifier = Modifier.align(Alignment.End)) {
@@ -232,7 +231,6 @@ fun EnterRecoveryPhraseScreen(
                         )
                     }
                 }
-
 
                 val gap = 6.dp
 
@@ -327,7 +325,6 @@ fun EnterRecoveryPhraseScreen(
                             ) { }
                         }
                     }
-
 
                 }
             }
@@ -473,7 +470,6 @@ fun PhraseWord(
     }
 
 }
-
 
 @Composable
 fun Key(

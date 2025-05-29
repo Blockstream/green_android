@@ -6,7 +6,8 @@ import kotlinx.serialization.Serializable
 
 @Serializable
 data class CsvParams(
-    @SerialName("value") val value: Int,
+    @SerialName("value")
+    val value: Int,
 ) : GreenJson<CsvParams>() {
 
     override fun kSerializer() = serializer()

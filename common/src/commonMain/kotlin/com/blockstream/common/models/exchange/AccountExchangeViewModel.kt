@@ -321,7 +321,6 @@ class AccountExchangeViewModel(
         bootstrap()
     }
 
-
     override suspend fun handleEvent(event: Event) {
         super.handleEvent(event)
 
@@ -332,8 +331,10 @@ class AccountExchangeViewModel(
                     SideEffects.NavigateTo(
                         NavigateDestinations.Accounts(
                             greenWallet = greenWallet,
-                            accounts = AccountAssetBalanceList((if (event.isFrom) fromAccounts.value else toAccounts.value)
-                                ?: listOf()),
+                            accounts = AccountAssetBalanceList(
+                                (if (event.isFrom) fromAccounts.value else toAccounts.value)
+                                    ?: listOf()
+                            ),
                             withAsset = event.isFrom,
                             withArrow = false
                         )
@@ -670,7 +671,6 @@ class AccountExchangeViewModelPreview(greenWallet: GreenWallet) :
         _showFeeSelector.value = true
         banner.value = Banner.preview3
     }
-
 
     companion object {
         fun preview() = AccountExchangeViewModelPreview(previewWallet())

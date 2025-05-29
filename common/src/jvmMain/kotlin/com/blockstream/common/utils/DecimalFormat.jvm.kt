@@ -21,7 +21,7 @@ actual class DecimalFormat actual constructor(private val locale: String?) {
         df.isDecimalSeparatorAlwaysShown = isDecimalSeparatorAlwaysShown
         df.isGroupingUsed = isGroupingUsed
 
-        if(decimalSeparator != null && groupingSeparator != null){
+        if (decimalSeparator != null && groupingSeparator != null) {
             df.decimalFormatSymbols = DecimalFormatSymbols(locale).also {
                 it.decimalSeparator = decimalSeparator ?: '.'
                 it.groupingSeparator = groupingSeparator ?: ','
@@ -30,28 +30,29 @@ actual class DecimalFormat actual constructor(private val locale: String?) {
 
         return df
     }
-    actual fun format(double: Double) : String? {
-        return try{
+
+    actual fun format(double: Double): String? {
+        return try {
             decimalFormat().format(double)
-        }catch (e: Exception){
+        } catch (e: Exception) {
             e.printStackTrace()
             null
         }
     }
 
     actual fun format(int: Int): String? {
-        return try{
+        return try {
             decimalFormat().format(int)
-        }catch (e: Exception){
+        } catch (e: Exception) {
             e.printStackTrace()
             null
         }
     }
 
     actual fun format(any: Any): String? {
-        return try{
+        return try {
             decimalFormat().format(any)
-        }catch (e: Exception){
+        } catch (e: Exception) {
             e.printStackTrace()
             null
         }

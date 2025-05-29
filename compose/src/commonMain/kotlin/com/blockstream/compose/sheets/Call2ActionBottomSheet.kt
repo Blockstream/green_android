@@ -18,7 +18,6 @@ import com.blockstream.compose.components.GreenButton
 import com.blockstream.compose.utils.HandleSideEffect
 import org.jetbrains.compose.resources.stringResource
 
-
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun Call2ActionBottomSheet(

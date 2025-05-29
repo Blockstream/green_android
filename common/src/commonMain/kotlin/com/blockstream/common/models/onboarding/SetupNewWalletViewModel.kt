@@ -31,7 +31,7 @@ abstract class SetupNewWalletViewModelAbstract(greenWalletOrNull: GreenWallet? =
     GreenViewModel(greenWalletOrNull = greenWalletOrNull) {
     override fun screenName(): String = "SetupNewWallet"
 
-    fun onSetupNewWallet(){
+    fun onSetupNewWallet() {
         postEvent(SetupNewWalletViewModel.LocalEvents.SetupMobileWallet)
         countly.setupSww()
     }
@@ -55,7 +55,6 @@ class SetupNewWalletViewModel(greenWalletOrNull: GreenWallet? = null) :
         object SetupHardwareWallet : Event
         object BuyJade : Events.OpenBrowser(Urls.JADE_STORE)
     }
-
 
     init {
         viewModelScope.launch {
@@ -119,7 +118,6 @@ class SetupNewWalletViewModel(greenWalletOrNull: GreenWallet? = null) :
             }
         }
     }
-
 
     private fun handleActions(event: Event) {
         _activeEvent = event

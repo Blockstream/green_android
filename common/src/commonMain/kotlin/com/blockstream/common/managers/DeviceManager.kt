@@ -39,7 +39,6 @@ import kotlinx.coroutines.isActive
 import kotlinx.coroutines.launch
 import kotlinx.datetime.Clock
 
-
 sealed class ScanStatus {
     data object Started : ScanStatus()
     data object Stopped : ScanStatus()
@@ -89,7 +88,7 @@ open class DeviceManager constructor(
             }
 
             // Clear all devices
-            if(it != BluetoothState.ON){
+            if (it != BluetoothState.ON) {
                 cleanupBleDevices(cleanAll = true)
             }
         }.launchIn(scope)
@@ -102,28 +101,27 @@ open class DeviceManager constructor(
             }
         }.launchIn(scope)
 
-
     }
 
     fun getDevice(deviceId: String?): GreenDevice? {
         return devices.value.find { it.connectionIdentifier == deviceId }
-            // Check if device is already in a session
+        // Check if device is already in a session
             ?: sessionManager.getConnectedHardwareWalletSessions()
                 .find { it.device?.connectionIdentifier == deviceId }?.device
             ?: savedDevice?.takeIf { it.connectionIdentifier == deviceId }
     }
 
-    private fun cleanupBleDevices(cleanAll : Boolean = false) {
+    private fun cleanupBleDevices(cleanAll: Boolean = false) {
         val cleanupTs = Clock.System.now().toEpochMilliseconds() - 3_000
-        bleDevices.value = if(cleanAll) listOf() else bleDevices.value.filter {
+        bleDevices.value = if (cleanAll) listOf() else bleDevices.value.filter {
             it.isConnected && (it.heartbeat == 0L || it.heartbeat > cleanupTs)
         }
     }
 
     private fun startBluetoothScanning() {
-        if(!deviceDiscovery.value) return // Device Discovery is off
+        if (!deviceDiscovery.value) return // Device Discovery is off
 
-        if(bluetoothManager.bluetoothState.value != BluetoothState.ON) return // Bluetooth is not enabled
+        if (bluetoothManager.bluetoothState.value != BluetoothState.ON) return // Bluetooth is not enabled
 
         if (_status.value == ScanStatus.Started) return // Scan already in progress.
 
@@ -199,10 +197,10 @@ open class DeviceManager constructor(
 
     protected fun addBluetoothDevice(newDevice: GreenDevice) {
         bleDevices.value.find { it.connectionIdentifier == newDevice.connectionIdentifier }?.also { oldDevice ->
-                newDevice.peripheral?.also {
-                    oldDevice.updateFromScan(it)
-                }
-            } ?: run {
+            newDevice.peripheral?.also {
+                oldDevice.updateFromScan(it)
+            }
+        } ?: run {
             // Add it if new
             bleDevices.value += newDevice
         }
@@ -221,7 +219,7 @@ open class DeviceManager constructor(
         }
     }
 
-    open fun refreshDevices(){
+    open fun refreshDevices() {
         logger.i { "Refresh device list" }
         cleanupBleDevices(cleanAll = true)
     }

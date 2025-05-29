@@ -52,7 +52,6 @@ import org.jetbrains.compose.resources.painterResource
 import org.jetbrains.compose.resources.stringResource
 import kotlin.math.ceil
 
-
 @Composable
 fun RecoveryPhraseScreen(
     viewModel: RecoveryPhraseViewModelAbstract
@@ -177,7 +176,8 @@ internal fun WordItem(index: Int, word: String) {
                 }
         )
 
-        Text(word, style = titleMedium,
+        Text(
+            word, style = titleMedium,
             overflow = TextOverflow.Clip,
             maxLines = 1,
             textAlign = TextAlign.Start,

@@ -9,8 +9,10 @@ import kotlinx.serialization.json.jsonObject
 
 @Serializable
 data class JadeResponse constructor(
-    @SerialName("id") val id: String,
-    @SerialName("result") val result: JsonElement?,
+    @SerialName("id")
+    val id: String,
+    @SerialName("result")
+    val result: JsonElement?,
 ) : GreenJson<JadeResponse>() {
     override fun kSerializer() = serializer()
 
@@ -26,8 +28,10 @@ data class JadeResponse constructor(
 
 @Serializable
 data class JadeHttpRequest constructor(
-    @SerialName("on-reply") val onReply: String,
-    @SerialName("params") val params: JsonElement,
+    @SerialName("on-reply")
+    val onReply: String,
+    @SerialName("params")
+    val params: JsonElement,
 ) : GreenJson<JadeHttpRequest>() {
     override fun kSerializer() = serializer()
 

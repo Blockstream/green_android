@@ -15,7 +15,6 @@ import com.blockstream.common.utils.toAmountLookOrNa
 import kotlinx.serialization.Serializable
 import kotlin.math.absoluteValue
 
-
 @Serializable
 data class TransactionConfirmLook(
     val from: AccountAsset? = null,
@@ -107,7 +106,7 @@ data class TransactionConfirmLook(
             val totalPolicy = (transaction.satoshi[account.network.policyAsset]
                 ?: 0).absoluteValue + (transaction.fee ?: 0)
 
-            val total = if(isRedeposit) fee else totalPolicy.toAmountLookOrNa(
+            val total = if (isRedeposit) fee else totalPolicy.toAmountLookOrNa(
                 session = session,
                 assetId = account.network.policyAsset,
                 withUnit = true,
@@ -116,7 +115,7 @@ data class TransactionConfirmLook(
                 denomination = if (isAddressVerificationOnDevice) Denomination.BTC else denomination
             )
 
-            val totalFiat = if(isRedeposit) feeFiat else totalPolicy.toAmountLookOrNa(
+            val totalFiat = if (isRedeposit) feeFiat else totalPolicy.toAmountLookOrNa(
                 session = session,
                 assetId = account.network.policyAsset,
                 withUnit = true,

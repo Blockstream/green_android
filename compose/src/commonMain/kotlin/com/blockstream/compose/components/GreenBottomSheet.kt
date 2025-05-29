@@ -38,7 +38,6 @@ import com.blockstream.ui.sideeffects.SideEffect
 import com.blockstream.ui.utils.ifTrue
 import kotlinx.coroutines.CoroutineScope
 
-
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun GreenBottomSheet(
@@ -58,7 +57,7 @@ fun GreenBottomSheet(
         bottomSheetNavigator.setSheetState(sheetState)
     }
 
-    if(viewModel != null) {
+    if (viewModel != null) {
         HandleSideEffect(viewModel) {
             if (it is SideEffects.Dismiss) {
                 onDismissRequest()
@@ -77,10 +76,10 @@ fun GreenBottomSheet(
             padding = 0,
             modifier = Modifier
                 .fillMaxWidth()
-                .ifTrue(withBottomPadding){
+                .ifTrue(withBottomPadding) {
                     it.padding(bottom = 48.dp)
                 }
-                .ifTrue(withHorizontalPadding){
+                .ifTrue(withHorizontalPadding) {
                     it.padding(horizontal = 16.dp)
                 }
 

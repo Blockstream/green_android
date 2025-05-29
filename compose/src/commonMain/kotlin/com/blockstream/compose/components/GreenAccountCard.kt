@@ -68,7 +68,7 @@ fun GreenAccountCard(
     onArrowClick: ((AccountBalance) -> Unit)? = null,
     onWarningClick: ((AccountBalance) -> Unit)? = null,
     onClick: (AccountBalance) -> Unit = {},
-    onLongClick: (AccountBalance, offset: Offset) -> Unit = { _ , _ -> },
+    onLongClick: (AccountBalance, offset: Offset) -> Unit = { _, _ -> },
 ) {
     Box(
         modifier = Modifier
@@ -84,7 +84,7 @@ fun GreenAccountCard(
             modifier = Modifier
                 .padding(horizontal = 16.dp)
                 .fillMaxWidth()
-                .pointerInput(Unit){
+                .pointerInput(Unit) {
                     detectTapGestures(
                         onTap = {
                             onClick(account)
@@ -169,13 +169,14 @@ fun GreenAccountCard(
                             .align(Alignment.BottomCenter)
                     ) {
 
-                        Box(modifier = Modifier
-                            .weight(1f)
-                            .ifTrue(
-                                account.balance == null
-                            ) {
-                                it.align(Alignment.Bottom)
-                            }) {
+                        Box(
+                            modifier = Modifier
+                                .weight(1f)
+                                .ifTrue(
+                                    account.balance == null
+                                ) {
+                                    it.align(Alignment.Bottom)
+                                }) {
                             if (account.balance == null) {
                                 CircularProgressIndicator(
                                     strokeWidth = 1.dp,
@@ -238,7 +239,7 @@ fun GreenAccountCard(
             }
         }
 
-        if(onWarningClick != null) {
+        if (onWarningClick != null) {
             Box(
                 modifier = Modifier
                     .align(Alignment.TopStart)

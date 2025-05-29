@@ -1,6 +1,5 @@
 package com.blockstream.common.data
 
-
 data class Country(val code: String, val name: String, val dialCode: Int, val flag: String) {
     val dialCodeString by lazy {
         "+$dialCode"

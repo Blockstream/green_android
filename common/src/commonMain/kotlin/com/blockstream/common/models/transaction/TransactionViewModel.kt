@@ -122,7 +122,7 @@ class TransactionViewModel(transaction: Transaction, greenWallet: GreenWallet) :
     }
 
     class LocalSideEffects {
-         object SelectLiquidShareTransaction: SideEffect
+        object SelectLiquidShareTransaction : SideEffect
     }
 
     enum class LiquidShareType {
@@ -181,17 +181,19 @@ class TransactionViewModel(transaction: Transaction, greenWallet: GreenWallet) :
 
         viewModelScope.launch {
             _navData.value = NavData(
-                title = getString(when (transaction.txType) {
-                    Transaction.Type.OUT -> Res.string.id_sent
-                    Transaction.Type.REDEPOSIT -> Res.string.id_redeposited
-                    Transaction.Type.MIXED -> Res.string.id_swap
-                    else -> Res.string.id_received
-                }),
+                title = getString(
+                    when (transaction.txType) {
+                        Transaction.Type.OUT -> Res.string.id_sent
+                        Transaction.Type.REDEPOSIT -> Res.string.id_redeposited
+                        Transaction.Type.MIXED -> Res.string.id_swap
+                        else -> Res.string.id_received
+                    }
+                ),
                 subtitle = account.name
             )
         }
 
-        if(session.isConnected) {
+        if (session.isConnected) {
             combine(
                 session.walletTransactions,
                 session.accountTransactions(transaction.account),
@@ -218,7 +220,7 @@ class TransactionViewModel(transaction: Transaction, greenWallet: GreenWallet) :
         if (event is LocalEvents.SetNote) {
             setNote(event.note)
         } else if (event is LocalEvents.ViewInBlockExplorer) {
-            val blinder = if(account.isLiquid) "#blinded=${_transaction.value.getUnblindedString()}" else ""
+            val blinder = if (account.isLiquid) "#blinded=${_transaction.value.getUnblindedString()}" else ""
             postSideEffect(SideEffects.OpenBrowser("${account.network.explorerUrl}${_transaction.value.txHash}$blinder"))
         } else if (event is LocalEvents.ShareTransaction) {
             if (event.liquidShareType == LiquidShareType.UNBLINDING_DATA) {
@@ -251,7 +253,7 @@ class TransactionViewModel(transaction: Transaction, greenWallet: GreenWallet) :
         }
     }
 
-    private suspend fun updateData(){
+    private suspend fun updateData() {
         val transaction = _transaction.value
         logger.d { "UpdateData with tx: $transaction" }
 
@@ -285,23 +287,29 @@ class TransactionViewModel(transaction: Transaction, greenWallet: GreenWallet) :
         _fee.value = when {
             transaction.txType == Transaction.Type.IN && confirmations > 0L -> null
             else -> {
-                "${transaction.fee.toAmountLook(
-                    session = session,
-                    assetId = transaction.account.network.policyAssetOrNull,
-                    withUnit = true,
-                    denomination = Denomination.byUnit(SATOSHI_UNIT)
-                )} ${(if(transaction.fee > 0) "≈ ${transaction.fee.toAmountLook(
-                    session = session,
-                    assetId = transaction.account.network.policyAssetOrNull,
-                    withUnit = true,
-                    denomination = Denomination.fiat(session)
-                )}" else "")}"
+                "${
+                    transaction.fee.toAmountLook(
+                        session = session,
+                        assetId = transaction.account.network.policyAssetOrNull,
+                        withUnit = true,
+                        denomination = Denomination.byUnit(SATOSHI_UNIT)
+                    )
+                } ${
+                    (if (transaction.fee > 0) "≈ ${
+                        transaction.fee.toAmountLook(
+                            session = session,
+                            assetId = transaction.account.network.policyAssetOrNull,
+                            withUnit = true,
+                            denomination = Denomination.fiat(session)
+                        )
+                    }" else "")
+                }"
             }
         }
 
-        _feeRate.value = transaction.feeRate.takeIf { _fee.value != null && !transaction.account.isLightning && it > 0}?.feeRateWithUnit()
+        _feeRate.value = transaction.feeRate.takeIf { _fee.value != null && !transaction.account.isLightning && it > 0 }?.feeRateWithUnit()
 
-        transaction.satoshiPolicyAsset.takeIf { transaction.satoshi.size == 1 && transaction.isOut && transaction.fee > 0}?.also {
+        transaction.satoshiPolicyAsset.takeIf { transaction.satoshi.size == 1 && transaction.isOut && transaction.fee > 0 }?.also {
             _total.value = it.toAmountLook(
                 session = session,
                 assetId = transaction.account.network.policyAssetOrNull,
@@ -316,23 +324,23 @@ class TransactionViewModel(transaction: Transaction, greenWallet: GreenWallet) :
             )
         }
 
-
         val utxoViews = transaction.utxoViews
         _address.value = when {
             utxoViews.size == 1 && (transaction.txType == Transaction.Type.IN || transaction.txType == Transaction.Type.OUT) -> {
                 utxoViews.firstOrNull()?.address
             }
+
             else -> null
         }
 
         _canReplaceByFee.value = transaction.canRBF && !transaction.isIn && session.canSendTransaction
 
-        _note.value = transaction.memo.takeIf { it.isNotBlank()}
+        _note.value = transaction.memo.takeIf { it.isNotBlank() }
 
         _hasMoreDetails.value = transaction.details(session).isNotEmpty()
     }
 
-    private fun setNote(note: String){
+    private fun setNote(note: String) {
         doAsync({
             session.setTransactionMemo(transaction = _transaction.value, memo = note)
         }, onSuccess = {
@@ -340,7 +348,7 @@ class TransactionViewModel(transaction: Transaction, greenWallet: GreenWallet) :
         })
     }
 
-    private fun bumpFee(){
+    private fun bumpFee() {
         doAsync({
             val transactions = session.getTransactions(
                 transaction.value.account,
@@ -373,10 +381,10 @@ class TransactionViewModel(transaction: Transaction, greenWallet: GreenWallet) :
         })
     }
 
-    companion object: Loggable()
+    companion object : Loggable()
 }
 
-class TransactionViewModelPreview(status : TransactionStatus) : TransactionViewModelAbstract(
+class TransactionViewModelPreview(status: TransactionStatus) : TransactionViewModelAbstract(
     accountAssetOrNull = previewAccountAsset(),
     greenWallet = previewWallet(isHardware = false)
 ) {
@@ -387,7 +395,7 @@ class TransactionViewModelPreview(status : TransactionStatus) : TransactionViewM
     override val createdAt: StateFlow<String?> = MutableStateFlow(Clock.System.now().formatFullWithTime())
     override val spv: StateFlow<Transaction.SPVResult> = MutableStateFlow(Transaction.SPVResult.Disabled)
     override val amounts: StateFlow<List<AmountAssetLook>> =
-        MutableStateFlow(listOf(AmountAssetLook("121.91080032", assetId = BTC_POLICY_ASSET ,ticker = "BTC", fiat = "32.1231 EUR")))
+        MutableStateFlow(listOf(AmountAssetLook("121.91080032", assetId = BTC_POLICY_ASSET, ticker = "BTC", fiat = "32.1231 EUR")))
     override val transactionId: StateFlow<String> = MutableStateFlow("tx_id")
     override val fee: StateFlow<String> = MutableStateFlow("56.960 sats")
     override val feeRate: StateFlow<String> = MutableStateFlow("8.34 sats / vbyte")

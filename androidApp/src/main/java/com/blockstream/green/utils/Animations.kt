@@ -5,9 +5,8 @@ import android.animation.ObjectAnimator
 import android.animation.ValueAnimator
 import android.view.View
 
-
 fun View.fadeIn(duration: Long = 1000, skipIfAnimated: Boolean = true) {
-    if(skipIfAnimated && this.alpha == 1.0f) return
+    if (skipIfAnimated && this.alpha == 1.0f) return
 
     ObjectAnimator.ofFloat(
         this,
@@ -21,7 +20,7 @@ fun View.fadeIn(duration: Long = 1000, skipIfAnimated: Boolean = true) {
 }
 
 fun View.fadeOut(duration: Long = 1000, skipIfAnimated: Boolean = true) {
-    if(skipIfAnimated && this.alpha == 0.0f) return
+    if (skipIfAnimated && this.alpha == 0.0f) return
 
     ObjectAnimator.ofFloat(
         this,
@@ -37,9 +36,11 @@ fun View.fadeOut(duration: Long = 1000, skipIfAnimated: Boolean = true) {
 fun View.pulse(repeat: Boolean = false) {
     AnimatorSet().also {
         it.playTogether(
-            listOf(ObjectAnimator.ofFloat(this, "scaleY", 1f, 1.05f, 1f),
-            ObjectAnimator.ofFloat(this, "scaleX", 1f, 1.05f, 1f)).onEach { obj ->
-                if(repeat){
+            listOf(
+                ObjectAnimator.ofFloat(this, "scaleY", 1f, 1.05f, 1f),
+                ObjectAnimator.ofFloat(this, "scaleX", 1f, 1.05f, 1f)
+            ).onEach { obj ->
+                if (repeat) {
                     obj.repeatMode = ValueAnimator.RESTART
                     obj.repeatCount = ValueAnimator.INFINITE
                 }

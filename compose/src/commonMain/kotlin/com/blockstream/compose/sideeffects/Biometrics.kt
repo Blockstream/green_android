@@ -1,4 +1,3 @@
-
 package com.blockstream.compose.sideeffects
 
 import androidx.compose.runtime.Composable

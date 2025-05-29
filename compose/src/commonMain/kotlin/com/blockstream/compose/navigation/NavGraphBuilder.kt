@@ -1,10 +1,6 @@
 package com.blockstream.compose.navigation
 
 import androidx.compose.animation.AnimatedContentScope
-import androidx.compose.animation.fadeIn
-import androidx.compose.animation.fadeOut
-import androidx.compose.animation.slideInHorizontally
-import androidx.compose.animation.slideOutHorizontally
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.CompositionLocalProvider
 import androidx.compose.ui.window.DialogProperties

@@ -102,7 +102,7 @@ fun FeeItem(feePriority: FeePriority, onProgress: Boolean = false, onClick: () -
 
 
             GreenRow(padding = 0, space = 12) {
-                if(onProgress) {
+                if (onProgress) {
                     CircularProgressIndicator(
                         modifier = Modifier
                             .size(24.dp),

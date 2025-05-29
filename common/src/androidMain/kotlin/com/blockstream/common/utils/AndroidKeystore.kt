@@ -109,7 +109,7 @@ class AndroidKeystore(val context: Context) : GreenKeystore {
                 @Suppress("DEPRECATION")
                 builder.setUserAuthenticationValidityDurationSeconds(-1)
             }
-            
+
             builder.setInvalidatedByBiometricEnrollment(false)
         }
 
@@ -203,7 +203,7 @@ class AndroidKeystore(val context: Context) : GreenKeystore {
     override fun decryptData(cipher: PlatformCipher, encryptedData: EncryptedData): ByteArray {
         try {
             return (cipher as Cipher).doFinal(encryptedData.getEncryptedData())
-        } catch (e: BadPaddingException){
+        } catch (e: BadPaddingException) {
             throw KeystoreInvalidatedException("Keystore is invalided.")
         }
     }

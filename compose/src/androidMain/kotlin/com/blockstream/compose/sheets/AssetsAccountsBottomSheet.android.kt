@@ -9,7 +9,6 @@ import com.blockstream.common.gdk.data.AccountAssetBalanceList
 import com.blockstream.common.models.SimpleGreenViewModelPreview
 import com.blockstream.compose.GreenAndroidPreview
 
-
 @Composable
 @Preview
 fun AssetsAccountBottomSheetPreview() {

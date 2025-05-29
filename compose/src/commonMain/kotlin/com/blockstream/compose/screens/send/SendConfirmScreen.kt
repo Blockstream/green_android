@@ -136,7 +136,7 @@ fun SendConfirmScreen(
 
                 look?.utxos?.forEach {
                     GreenAmount(
-                        title = stringResource(if(look?.isRedeposit == true) Res.string.id_your_redeposit_address else Res.string.id_sent_to),
+                        title = stringResource(if (look?.isRedeposit == true) Res.string.id_your_redeposit_address else Res.string.id_sent_to),
                         amount = it.amount ?: "",
                         amountFiat = it.amountExchange,
                         assetId = it.assetId,

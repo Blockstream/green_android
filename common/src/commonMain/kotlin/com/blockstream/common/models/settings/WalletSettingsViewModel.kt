@@ -109,7 +109,7 @@ abstract class WalletSettingsViewModelAbstract(
     val section: WalletSettingsSection,
 ) : GreenViewModel(greenWalletOrNull = greenWallet) {
 
-    override fun screenName(): String = when(section) {
+    override fun screenName(): String = when (section) {
         WalletSettingsSection.ChangePin -> "WalletSettingsChangePIN"
         WalletSettingsSection.RecoveryTransactions -> "WalletSettingsRecoveryTransactions"
         WalletSettingsSection.TwoFactor -> "WalletSettings2FA"
@@ -152,16 +152,16 @@ class WalletSettingsViewModel(
         data class SetTwoFactorThreshold(val value: String) : Event
         data class SetPgp(val key: String?) : Event
         data class SetPin(val pin: String) : Event, Redact
-        data class SetCsvTime(val csvTime: Int): Event
-        data class Toggle2FA(val method: TwoFactorMethod): Event
-        data class Enable2FA(val method: TwoFactorMethod): Event
-        data class Disable2FA(val method: TwoFactorMethod, val authenticateMethod: TwoFactorMethod): Event
+        data class SetCsvTime(val csvTime: Int) : Event
+        data class Toggle2FA(val method: TwoFactorMethod) : Event
+        data class Enable2FA(val method: TwoFactorMethod) : Event
+        data class Disable2FA(val method: TwoFactorMethod, val authenticateMethod: TwoFactorMethod) : Event
         object RecoveryPhrase : Event
         object SupportId : Event
 
         data class CopyAmpId(val account: Account? = null) : Event
         data class ChooseAccountType(val accountType: AccountType) : Event
-        data object DisableLightning: Event
+        data object DisableLightning : Event
         data class CreateAccount(val accountType: AccountType, val asset: EnrichedAsset? = null) : Event
         data class CreateLightningAccount(val lightningMnemonic: String) : Event, Redact
     }
@@ -170,7 +170,14 @@ class WalletSettingsViewModel(
         data class OpenAutoLogoutTimeout(val minutes: Int) : SideEffect
         data class OpenPgpKey(val pgp: String) : SideEffect
         data class OpenTwoFactorThershold(val threshold: String) : SideEffect
-        data class Disable2FA(val title: String, val message: String, val method: TwoFactorMethod, val availableMethods: List<TwoFactorMethod>, val network: Network): SideEffect
+        data class Disable2FA(
+            val title: String,
+            val message: String,
+            val method: TwoFactorMethod,
+            val availableMethods: List<TwoFactorMethod>,
+            val network: Network
+        ) : SideEffect
+
         object LaunchBiometrics : SideEffect
         data class CopyAmpId(val accounts: List<Account>) : SideEffect
 
@@ -216,8 +223,8 @@ class WalletSettingsViewModel(
         bootstrap()
     }
 
-    private suspend fun updateNavData(greenWallet: GreenWallet, isVisible: Boolean){
-        when(section) {
+    private suspend fun updateNavData(greenWallet: GreenWallet, isVisible: Boolean) {
+        when (section) {
             WalletSettingsSection.RecoveryTransactions -> Res.string.id_recovery_transactions
             WalletSettingsSection.TwoFactor -> Res.string.id_twofactor_authentication
             else -> Res.string.id_settings
@@ -236,9 +243,9 @@ class WalletSettingsViewModel(
     private suspend fun build(settings: Settings?, twoFactorConfig: TwoFactorConfig?): List<WalletSetting> {
         val list = mutableListOf<WalletSetting>()
 
-        if(section == WalletSettingsSection.TwoFactor && twoFactorConfig != null) {
+        if (section == WalletSettingsSection.TwoFactor && twoFactorConfig != null) {
 
-            if(session.walletExistsAndIsUnlocked(network)){
+            if (session.walletExistsAndIsUnlocked(network)) {
                 list += listOf(WalletSetting.Text(getString(Res.string.id_2fa_methods)))
 
                 list += twoFactorConfig.allMethods.map {
@@ -252,7 +259,7 @@ class WalletSettingsViewModel(
                     )
                 }
 
-                if(network?.isBitcoin == true){
+                if (network?.isBitcoin == true) {
                     list += listOf(
                         WalletSetting.Text(
                             title = getString(Res.string.id_2fa_threshold),
@@ -272,7 +279,7 @@ class WalletSettingsViewModel(
                 list += listOf(
                     WalletSetting.Text(
                         title = getString(Res.string.id_2fa_expiry),
-                        message = if(showBuckets) getString(Res.string.id_customize_2fa_expiration_of) else null
+                        message = if (showBuckets) getString(Res.string.id_customize_2fa_expiration_of) else null
                     )
                 )
 
@@ -298,7 +305,7 @@ class WalletSettingsViewModel(
                     WalletSetting.ButtonEvent(getString(Res.string.id_recovery_tool), Events.OpenBrowser(Urls.RECOVERY_TOOL))
                 )
 
-                if (network?.isBitcoin == true){
+                if (network?.isBitcoin == true) {
                     list += listOf(WalletSetting.RequestRecovery(network))
                 }
 
@@ -343,7 +350,7 @@ class WalletSettingsViewModel(
                 listOf(WalletSetting.SetupEmailRecovery)
             }
 
-        } else if(section == WalletSettingsSection.General){
+        } else if (section == WalletSettingsSection.General) {
 
             if (settings != null) {
 
@@ -404,12 +411,14 @@ class WalletSettingsViewModel(
                     postSideEffect(SideEffects.CopyToClipboard(event.account.receivingId))
                 }
             }
+
             is LocalEvents.ChooseAccountType -> {
                 chooseAccountType(event.accountType)
             }
+
             is LocalEvents.DisableLightning -> {
                 doAsync({
-                    if(session.hasLightning){
+                    if (session.hasLightning) {
                         session.lightningAccount.also {
                             removeAccount(it)
                         }
@@ -580,10 +589,10 @@ class WalletSettingsViewModel(
                             val methods = twoFactorConfig
                                 .enabledMethods.map {
                                     TwoFactorMethod.from(it)
-                                }.let {methods ->
-                                    if(methods.size == 1){
+                                }.let { methods ->
+                                    if (methods.size == 1) {
                                         methods
-                                    }else {
+                                    } else {
                                         methods.filter { it != event.method }
                                     }
                                 }
@@ -718,11 +727,13 @@ class WalletSettingsViewModel(
                     else -> throw Exception("Network not found")
                 }
             }
+
             AccountType.STANDARD -> when {
                 asset == null || asset.isBitcoin -> session.bitcoinMultisig!!
                 asset.isLiquidNetwork(session) -> session.liquidMultisig!!
                 else -> throw Exception("Network not found")
             }
+
             AccountType.AMP_ACCOUNT -> session.liquidMultisig!!
             AccountType.TWO_OF_THREE -> session.bitcoinMultisig!!
             AccountType.LIGHTNING -> session.lightning!!
@@ -846,7 +857,7 @@ class WalletSettingsViewModel(
     }
 
     private fun setCsvTime(csvTime: Int) {
-        if(network == null) return
+        if (network == null) return
 
         doAsync({
             session.setCsvTime(network = network, value = CsvParams(csvTime), twoFactorResolver = this)
@@ -909,7 +920,7 @@ class WalletSettingsViewModelPreview(
                 WalletSetting.RequestRecoveryTransactions,
                 WalletSetting.SetupEmailRecovery
             )
-        }else if (section == WalletSettingsSection.TwoFactor) {
+        } else if (section == WalletSettingsSection.TwoFactor) {
             listOf(
                 WalletSetting.Text(getString(Res.string.id_2fa_methods)),
             )
@@ -941,6 +952,7 @@ class WalletSettingsViewModelPreview(
             previewWallet(isHardware = false),
             section = WalletSettingsSection.TwoFactor
         )
+
         fun previewRecovery() = WalletSettingsViewModelPreview(
             previewWallet(isHardware = false),
             section = WalletSettingsSection.RecoveryTransactions

@@ -1,12 +1,10 @@
 package com.blockstream.green.data.meld
 
-
 import com.blockstream.green.data.config.AppInfo
 import com.blockstream.green.data.dataModule
 import com.blockstream.green.data.meld.data.CryptoQuoteRequest
 import com.blockstream.green.network.dataOrThrow
 import com.blockstream.green.utils.Loggable
-import com.blockstream.green.utils.dataOrThrow
 import kotlinx.coroutines.test.runTest
 import org.koin.core.context.startKoin
 import org.koin.core.context.stopKoin

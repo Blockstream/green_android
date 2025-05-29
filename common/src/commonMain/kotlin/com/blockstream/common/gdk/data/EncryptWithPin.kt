@@ -7,8 +7,9 @@ import kotlinx.serialization.Serializable
 @Serializable
 data class EncryptWithPin constructor(
     var networkInjected: Network? = null,
-    @SerialName("pin_data") val pinData: PinData,
-): GreenJson<EncryptWithPin>() {
+    @SerialName("pin_data")
+    val pinData: PinData,
+) : GreenJson<EncryptWithPin>() {
     override fun kSerializer() = serializer()
 
     val network

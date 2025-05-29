@@ -21,20 +21,20 @@ import kotlin.io.encoding.ExperimentalEncodingApi
 val gmsModule = module {
     single {
         GooglePlayImpl(ReviewManagerFactory.create(get()))
-    } binds(arrayOf(GooglePlay::class))
+    } binds (arrayOf(GooglePlay::class))
 
     single {
         val apiKey = get<AppConfig>().zendeskClientId?.let { base64 ->
             Base64.decode(base64).commonToUtf8String()
         } ?: ""
         ZendeskSdkAndroid(get(), get(), get(), get(), apiKey)
-    } binds(arrayOf(ZendeskSdk::class))
+    } binds (arrayOf(ZendeskSdk::class))
 
     single {
         FirebaseImpl(get())
-    } binds(arrayOf(Firebase::class))
+    } binds (arrayOf(Firebase::class))
 
     single {
         InstallReferrerImpl(get(), get())
-    } binds(arrayOf(InstallReferrer::class))
+    } binds (arrayOf(InstallReferrer::class))
 }

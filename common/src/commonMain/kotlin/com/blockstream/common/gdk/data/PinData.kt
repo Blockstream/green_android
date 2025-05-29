@@ -6,10 +6,13 @@ import kotlinx.serialization.Serializable
 
 @Serializable
 data class PinData(
-    @SerialName("encrypted_data") val encryptedData: String,
-    @SerialName("pin_identifier") val pinIdentifier: String,
-    @SerialName("salt") val salt: String,
-): GreenJson<PinData>() {
+    @SerialName("encrypted_data")
+    val encryptedData: String,
+    @SerialName("pin_identifier")
+    val pinIdentifier: String,
+    @SerialName("salt")
+    val salt: String,
+) : GreenJson<PinData>() {
 
     override fun kSerializer() = serializer()
 

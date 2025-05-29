@@ -63,8 +63,6 @@ inline fun <reified T> NetworkResponse<T>.exception(): Exception {
     return Exception("Something went wrong")
 }
 
-
-
 abstract class AppHttpClient(
     enableLogging: Boolean = false, configBlock: HttpClientConfig<*>.() -> Unit = {}
 ) {
@@ -149,7 +147,6 @@ abstract class AppHttpClient(
         }
     }
 
-
     companion object {
         private fun defaultHttpClient(
             enableLogging: Boolean = false, configBlock: HttpClientConfig<*>.() -> Unit = {}
@@ -186,7 +183,6 @@ abstract class AppHttpClient(
     }
 
 }
-
 
 private suspend fun HttpResponse.bodyAsTextOrNull(): String? = try {
     this.bodyAsText()

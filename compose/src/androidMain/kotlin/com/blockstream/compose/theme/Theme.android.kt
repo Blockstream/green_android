@@ -47,7 +47,6 @@ actual fun GreenChrome(isLight: Boolean) {
     }
 }
 
-
 @Composable
 @Preview(showSystemUi = true, showBackground = true, uiMode = Configuration.UI_MODE_NIGHT_NO)
 fun GreenThemePreview() {

@@ -64,7 +64,7 @@ data class AccountBalance constructor(
             account: Account,
             session: GdkSession?,
             denomination: Denomination? = null,
-            createOnlyIfBalance : Boolean = false
+            createOnlyIfBalance: Boolean = false
         ): AccountBalance? {
 
             if (session == null) {
@@ -73,17 +73,17 @@ data class AccountBalance constructor(
 
             val isLoading = session.accountAssets(account).value.isLoading
 
-            return account.balance(session).takeIf { !createOnlyIfBalance || it > 0}?.let { balance ->
+            return account.balance(session).takeIf { !createOnlyIfBalance || it > 0 }?.let { balance ->
 
                 AccountBalance(
                     account = account,
-                    balance = if(isLoading) null else balance.toAmountLook(
+                    balance = if (isLoading) null else balance.toAmountLook(
                         session = session,
                         assetId = account.network.policyAssetOrNull,
                         withUnit = true,
                         denomination = denomination
                     ),
-                    balanceExchange = if(isLoading) null else balance.toAmountLook(
+                    balanceExchange = if (isLoading) null else balance.toAmountLook(
                         session = session,
                         assetId = account.network.policyAssetOrNull,
                         withUnit = true,

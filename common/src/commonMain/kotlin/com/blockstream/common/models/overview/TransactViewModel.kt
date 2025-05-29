@@ -22,7 +22,6 @@ import kotlinx.coroutines.flow.filterNotNull
 import kotlinx.coroutines.flow.onEach
 import org.jetbrains.compose.resources.getString
 
-
 abstract class TransactViewModelAbstract(
     greenWallet: GreenWallet
 ) : WalletBalanceViewModel(greenWallet = greenWallet) {
@@ -88,7 +87,7 @@ class TransactViewModel(greenWallet: GreenWallet) :
         bootstrap()
     }
 
-    private suspend fun updateNavData(greenWallet: GreenWallet){
+    private suspend fun updateNavData(greenWallet: GreenWallet) {
         _navData.value = NavData(
             title = getString(Res.string.id_transact),
             walletName = greenWallet.name,

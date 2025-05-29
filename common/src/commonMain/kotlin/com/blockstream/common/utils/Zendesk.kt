@@ -1,7 +1,7 @@
 package com.blockstream.common.utils
 
-import com.blockstream.green.data.config.AppInfo
 import com.blockstream.common.data.SupportData
+import com.blockstream.green.data.config.AppInfo
 import com.mohamedrejeb.ksoup.entities.KsoupEntities
 
 fun createNewTicketUrl(
@@ -16,7 +16,7 @@ fun createNewTicketUrl(
     val policy: String = supportData?.zendeskSecurityPolicy ?: ""
 
     // Temp solution
-    val platform = if(appInfo.userAgent.contains("ios", ignoreCase = true)) "ios" else "android"
+    val platform = if (appInfo.userAgent.contains("ios", ignoreCase = true)) "ios" else "android"
 
     return "https://help.blockstream.com/hc/en-us/requests/new?tf_900008231623=$platform&tf_subject=${
         subject?.let {

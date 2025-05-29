@@ -18,10 +18,7 @@ import com.blockstream.common.data.Denomination
 import com.blockstream.common.data.ExceptionWithSupportData
 import com.blockstream.common.data.FeePriority
 import com.blockstream.common.data.GreenWallet
-import com.blockstream.ui.navigation.NavAction
-import com.blockstream.ui.navigation.NavData
 import com.blockstream.common.data.SupportData
-import com.blockstream.ui.events.Event
 import com.blockstream.common.events.Events
 import com.blockstream.common.extensions.ifConnected
 import com.blockstream.common.extensions.isBlank
@@ -44,13 +41,16 @@ import com.blockstream.common.lightning.lnUrlPayImage
 import com.blockstream.common.models.sheets.NoteType
 import com.blockstream.common.navigation.NavigateDestinations
 import com.blockstream.common.sideeffects.SideEffects
-import com.blockstream.green.utils.Loggable
 import com.blockstream.common.utils.StringHolder
 import com.blockstream.common.utils.UserInput
 import com.blockstream.common.utils.feeRateWithUnit
 import com.blockstream.common.utils.getStringFromId
 import com.blockstream.common.utils.ifNotNull
 import com.blockstream.common.utils.toAmountLook
+import com.blockstream.green.utils.Loggable
+import com.blockstream.ui.events.Event
+import com.blockstream.ui.navigation.NavAction
+import com.blockstream.ui.navigation.NavData
 import com.rickclephas.kmp.nativecoroutines.NativeCoroutinesState
 import com.rickclephas.kmp.observableviewmodel.stateIn
 import kotlinx.coroutines.Dispatchers
@@ -204,7 +204,6 @@ class SendViewModel(
     private val _description: MutableStateFlow<String?> = MutableStateFlow(null)
     override val description: StateFlow<String?> = _description
 
-
     private val _metadataDomain: MutableStateFlow<String?> = MutableStateFlow(null)
     override val metadataDomain: StateFlow<String?> = _metadataDomain.asStateFlow()
 
@@ -214,18 +213,17 @@ class SendViewModel(
     private val _metadataDescription: MutableStateFlow<String?> = MutableStateFlow(null)
     override val metadataDescription: StateFlow<String?> = _metadataDescription.asStateFlow()
 
-
     private val _isNoteEditable: MutableStateFlow<Boolean> = MutableStateFlow(false)
     override val isNoteEditable: StateFlow<Boolean> = _isNoteEditable
 
-    override val isAccountEdit: StateFlow<Boolean> = combine(assetsAndAccounts, accountAsset){ assetsAndAccounts, accountAsset ->
+    override val isAccountEdit: StateFlow<Boolean> = combine(assetsAndAccounts, accountAsset) { assetsAndAccounts, accountAsset ->
         assetsAndAccounts?.isNotEmpty() == true && accountAsset?.account?.isLightning != true
     }.stateIn(viewModelScope, SharingStarted.WhileSubscribed(), true)
 
     class LocalEvents {
-        object ToggleIsSendAll: Event
+        object ToggleIsSendAll : Event
         object SendLightningTransaction : Event
-        object ClickAssetsAccounts: Event
+        object ClickAssetsAccounts : Event
         object Note : Event
     }
 
@@ -233,7 +231,8 @@ class SendViewModel(
         _addressInputType = addressType
 
         isNoteEditable.onEach { isEditable ->
-            _navData.value = NavData(title = getString(Res.string.id_send),
+            _navData.value = NavData(
+                title = getString(Res.string.id_send),
                 actions = listOfNotNull(
                     (NavAction(
                         title = getString(Res.string.id_add_note),
@@ -246,7 +245,8 @@ class SendViewModel(
         }.launchIn(this)
 
         combine(isNoteEditable, onProgressSending) { isNoteEditable, onProgressSending ->
-            _navData.value = NavData(title = getString(Res.string.id_send),
+            _navData.value = NavData(
+                title = getString(Res.string.id_send),
                 subtitle = greenWallet.name,
                 actions = listOfNotNull(
                     (NavAction(
@@ -290,7 +290,10 @@ class SendViewModel(
                 amount,
                 isSendAll,
                 _feePriorityPrimitive,
-                merge(flowOf(Unit), session.accountsAndBalanceUpdated), // set initial value, watch for wallet balance updates, especially on wallet startup like bip39 uris
+                merge(
+                    flowOf(Unit),
+                    session.accountsAndBalanceUpdated
+                ), // set initial value, watch for wallet balance updates, especially on wallet startup like bip39 uris
             ) { arr ->
                 val address = arr[0] as String
 
@@ -315,18 +318,19 @@ class SendViewModel(
 
                 // Check if the current AccountAsset operates on the same network only.
                 // That way we preserve the asset from previous action
-                if(network != null && (accountAsset.value?.let { !it.account.network.isSameNetwork(network) || it.balance(session) <= 0} != false)){
+                if (network != null && (accountAsset.value?.let { !it.account.network.isSameNetwork(network) || it.balance(session) <= 0 } != false)) {
                     accountAsset.value = findAccountAsset(network, assetId = assetId.value ?: network.policyAsset)
                 }
 
                 // Prefer the real network from the account
                 _network.value = network?.let { accountAsset.value?.account?.network } ?: network
             }.onEach {
-                createTransactionParams.value = tryCatch (context = Dispatchers.Default) { createTransactionParams() }
+                createTransactionParams.value = tryCatch(context = Dispatchers.Default) { createTransactionParams() }
             }.launchIn(this)
 
             error.onEach {
-                _errorAddress.value = it.takeIf { listOf("id_invalid_address", "id_invoice_expired").contains(it) }?.let { getStringFromId(it) }
+                _errorAddress.value =
+                    it.takeIf { listOf("id_invalid_address", "id_invoice_expired").contains(it) }?.let { getStringFromId(it) }
                 _errorAmount.value = it.takeIf {
                     listOf(
                         "id_invalid_amount",
@@ -364,7 +368,7 @@ class SendViewModel(
 
             is LocalEvents.ToggleIsSendAll -> {
                 isSendAll.value = isSendAll.value.let { isSendAll ->
-                    if(isSendAll){
+                    if (isSendAll) {
                         amount.value = ""
                     }
                     !isSendAll
@@ -523,18 +527,18 @@ class SendViewModel(
                                 withGrouping = false
                             )
                         } ?: tx.addressees.firstOrNull()?.bip21Params?.amount?.let { bip21Amount ->
-                                session.convert(
-                                    assetId = assetId,
-                                    asString = bip21Amount
-                                )?.toAmountLook(
-                                    session = session,
-                                    assetId = assetId,
-                                    withUnit = false,
-                                    withGrouping = false,
-                                    withMinimumDigits = false,
-                                    denomination = denomination.value,
-                                )
-                            }).also {
+                            session.convert(
+                                assetId = assetId,
+                                asString = bip21Amount
+                            )?.toAmountLook(
+                                session = session,
+                                assetId = assetId,
+                                withUnit = false,
+                                withGrouping = false,
+                                withMinimumDigits = false,
+                                denomination = denomination.value,
+                            )
+                        }).also {
                             amount.value = it ?: ""
                         }
                     }
@@ -552,7 +556,14 @@ class SendViewModel(
 
                 tx.error.takeIf { it.isNotBlank() }?.also {
                     // If amount is blank and not SendAll, skip displaying an error, else user will immediately see the error when starts typing
-                    if((amount.value.isBlank() && !isSendAll.value) && listOf("id_invalid_amount", "id_amount_below_the_dust_threshold", "id_insufficient_funds", "id_amount_must_be_at_least_s", "id_amount_must_be_at_most_s").startsWith(it)){
+                    if ((amount.value.isBlank() && !isSendAll.value) && listOf(
+                            "id_invalid_amount",
+                            "id_amount_below_the_dust_threshold",
+                            "id_insufficient_funds",
+                            "id_amount_must_be_at_least_s",
+                            "id_amount_must_be_at_most_s"
+                        ).startsWith(it)
+                    ) {
                         // clear error
                         _error.value = null
                         return@doAsync null
@@ -577,7 +588,7 @@ class SendViewModel(
                 _error.value = null
             }
 
-            if(finalCheckBeforeContinue && params != null && it != null){
+            if (finalCheckBeforeContinue && params != null && it != null) {
                 session.pendingTransaction = PendingTransaction(
                     params = params,
                     transaction = it,
@@ -587,11 +598,15 @@ class SendViewModel(
                         sendAll = isSendAll.value
                     )
                 )
-                postSideEffect(SideEffects.NavigateTo(NavigateDestinations.SendConfirm(
-                    greenWallet = greenWallet,
-                    accountAsset = accountAsset.value!!,
-                    denomination = denomination.value
-                )))
+                postSideEffect(
+                    SideEffects.NavigateTo(
+                        NavigateDestinations.SendConfirm(
+                            greenWallet = greenWallet,
+                            accountAsset = accountAsset.value!!,
+                            denomination = denomination.value
+                        )
+                    )
+                )
             }
         }, onError = {
             _isValid.value = false
@@ -624,7 +639,7 @@ class SendViewModel(
 
             createTransactionParams.value?.let {
                 session.sendLightningTransaction(params = session.createTransaction(_network.value!!, it), comment = note.value)
-            }?: run {
+            } ?: run {
                 throw Exception("Something went wrong while creating the Transaction")
             }
 
@@ -647,9 +662,9 @@ class SendViewModel(
                 withMemo = false
             )
 
-            if(it.hasMessageOrUrl){
+            if (it.hasMessageOrUrl) {
                 postSideEffect(SideEffects.TransactionSent(it))
-            }else{
+            } else {
                 postSideEffect(SideEffects.NavigateToRoot())
             }
             postSideEffect(SideEffects.Snackbar(StringHolder.create(Res.string.id_transaction_sent)))
@@ -745,7 +760,8 @@ class SendViewModelPreview(greenWallet: GreenWallet, isLightning: Boolean = fals
 //            AccountAssetBalance(account = it.account, asset = it.asset)
 //        })
 
-    private val base64Png = "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"
+    private val base64Png =
+        "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"
 
     override val address: MutableStateFlow<String> = MutableStateFlow("address")
     override val amount: MutableStateFlow<String> = MutableStateFlow("0.1")
@@ -764,7 +780,6 @@ class SendViewModelPreview(greenWallet: GreenWallet, isLightning: Boolean = fals
         _showFeeSelector.value = true
         banner.value = Banner.preview3
     }
-
 
     companion object {
         fun preview(isLightning: Boolean = false) = SendViewModelPreview(previewWallet(), isLightning = isLightning)

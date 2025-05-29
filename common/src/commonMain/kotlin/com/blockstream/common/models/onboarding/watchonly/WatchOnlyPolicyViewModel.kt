@@ -1,11 +1,11 @@
 package com.blockstream.common.models.onboarding.watchonly
 
 import com.blockstream.common.data.SetupArgs
-import com.blockstream.ui.events.Event
 import com.blockstream.common.gdk.Gdk
 import com.blockstream.common.models.GreenViewModel
 import com.blockstream.common.navigation.NavigateDestinations
 import com.blockstream.common.sideeffects.SideEffects
+import com.blockstream.ui.events.Event
 import org.koin.core.component.inject
 
 abstract class WatchOnlyPolicyViewModelAbstract() : GreenViewModel()
@@ -41,8 +41,8 @@ class WatchOnlyPolicyViewModel : WatchOnlyPolicyViewModelAbstract() {
     }
 }
 
-class WatchOnlyPolicyViewModelPreview: WatchOnlyPolicyViewModelAbstract(){
-    companion object{
+class WatchOnlyPolicyViewModelPreview : WatchOnlyPolicyViewModelAbstract() {
+    companion object {
         fun preview() = WatchOnlyPolicyViewModelPreview()
     }
 }

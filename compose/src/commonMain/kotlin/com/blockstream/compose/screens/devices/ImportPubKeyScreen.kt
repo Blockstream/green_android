@@ -42,7 +42,6 @@ import com.blockstream.ui.navigation.getResult
 import org.jetbrains.compose.resources.painterResource
 import org.jetbrains.compose.resources.stringResource
 
-
 @Composable
 fun ImportPubKeyScreen(
     viewModel: ImportPubKeyViewModelAbstract
@@ -56,7 +55,7 @@ fun ImportPubKeyScreen(
     }
 
     NavigateDestinations.Environment.getResult<Int> {
-        if(it >= 0) {
+        if (it >= 0) {
             viewModel.postEvent(
                 ImportPubKeyViewModel.LocalEvents.SelectEnviroment(
                     isTestnet = it == 1,
@@ -109,7 +108,6 @@ fun ImportPubKeyScreen(
             modifier = Modifier.weight(1f),
             verticalArrangement = Arrangement.Bottom
         ) {
-
 
             AnimatedVisibility(visible = onProgress, Modifier.fillMaxSize()) {
                 Box {

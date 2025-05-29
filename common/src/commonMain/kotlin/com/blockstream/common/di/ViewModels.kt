@@ -137,10 +137,10 @@ val factoryViewModels = module {
         SupportViewModel(get(), get(), getOrNull())
     }
     factory {
-        JadeGenuineCheckViewModel(getOrNull(),  getOrNull())
+        JadeGenuineCheckViewModel(getOrNull(), getOrNull())
     }
     factory {
-        PromoViewModel(get(),  getOrNull())
+        PromoViewModel(get(), getOrNull())
     }
     factory {
         AssetDetailsViewModel(get(), get(), getOrNull())
@@ -158,7 +158,7 @@ val factoryViewModels = module {
         SendViewModel(get(), getOrNull(), getOrNull())
     }
     factory {
-        SimpleGreenViewModel(getOrNull(), getOrNull(), getOrNull(), )
+        SimpleGreenViewModel(getOrNull(), getOrNull(), getOrNull())
     }
     factory {
         SweepViewModel(get(), getOrNull(), getOrNull())

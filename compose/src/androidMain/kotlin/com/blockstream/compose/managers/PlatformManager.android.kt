@@ -84,6 +84,7 @@ actual fun rememberPlatformManager(): PlatformManager {
         PlatformManager(context, activity, bluetoothManager, appInfo)
     }
 }
+
 actual class StateKeeperFactory(val savedStateRegistryOwner: SavedStateRegistryOwner) {
     actual fun stateKeeper(): StateKeeper {
         return savedStateRegistryOwner.stateKeeper()
@@ -115,7 +116,7 @@ actual fun askForNotificationPermissions(viewModel: GreenViewModel) {
 
         val notificatioPermissionState = rememberPermissionState(Manifest.permission.POST_NOTIFICATIONS)
         LaunchedEffect(notificatioPermissionState) {
-            if(!notificatioPermissionState.status.isGranted){
+            if (!notificatioPermissionState.status.isGranted) {
                 // Show rationale if needed
                 // notificatioPermissionState.status.shouldShowRationale
 
@@ -148,7 +149,7 @@ actual fun askForBluetoothPermissions(viewModel: GreenViewModel, fn: () -> Unit)
     val permissionState = rememberMultiplePermissionsState(BLE_PERMISSIONS.toList())
 
     LaunchedEffect(permissionState) {
-        if(!permissionState.allPermissionsGranted){
+        if (!permissionState.allPermissionsGranted) {
             // Show rationale if needed
             // permissionState.shouldShowRationale
             requestPermissionLauncher.launch(BLE_PERMISSIONS)
@@ -169,7 +170,7 @@ actual class PlatformManager constructor(
         return true
     }
 
-    actual fun openBrowser(url: String, type: OpenBrowserType){
+    actual fun openBrowser(url: String, type: OpenBrowserType) {
         try {
             if (type == OpenBrowserType.OPEN_SYSTEM) {
                 context.startActivity(Intent(Intent.ACTION_VIEW).also {
@@ -177,11 +178,11 @@ actual class PlatformManager constructor(
                 })
             } else {
                 val builder = CustomTabsIntent.Builder()
-                if(type == OpenBrowserType.MELD){
+                if (type == OpenBrowserType.MELD) {
                     builder.setShowTitle(false)
 
                     builder.setShareState(SHARE_STATE_OFF)
-                }else{
+                } else {
                     builder.setShowTitle(true)
                 }
                 builder.setUrlBarHidingEnabled(true)
@@ -285,11 +286,11 @@ actual class PlatformManager constructor(
         }
     }
 
-    actual fun enableLocationService(){
+    actual fun enableLocationService() {
         activity?.startActivity(Intent(Settings.ACTION_LOCATION_SOURCE_SETTINGS))
     }
 
-    actual fun openBluetoothSettings(){
+    actual fun openBluetoothSettings() {
         activity?.startActivity(Intent(Settings.ACTION_BLUETOOTH_SETTINGS))
     }
 
@@ -340,7 +341,7 @@ actual class PlatformManager constructor(
     }
 
     actual suspend fun processQr(data: ByteArray, text: String): ByteArray {
-        return withContext(context = Dispatchers.IO){
+        return withContext(context = Dispatchers.IO) {
             try {
                 val extraTextHeight = 80
                 val imageSize = 800
@@ -363,7 +364,6 @@ actual class PlatformManager constructor(
                 canvas.drawARGB(0xFF, 0xFF, 0xFF, 0xFF) // White
                 canvas.drawBitmap(qrCodeScalled, padding.toFloat(), padding.toFloat(), null)
 
-
                 val textPaint = TextPaint()
                 textPaint.isAntiAlias = true
                 textPaint.textSize = 18.0f
@@ -384,7 +384,6 @@ actual class PlatformManager constructor(
 
                 canvas.translate(padding.toFloat(), imageSize.toFloat())
                 staticLayout.draw(canvas)
-
 
                 val stream = ByteArrayOutputStream()
 
@@ -428,7 +427,6 @@ actual class PlatformManager constructor(
         }
     }
 }
-
 
 @Composable
 actual fun rememberImagePicker(

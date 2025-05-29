@@ -4,16 +4,15 @@ import android.app.Activity
 import android.content.res.Configuration
 import androidx.fragment.app.FragmentManager
 import com.blockstream.common.CountlyBase
-import com.blockstream.green.data.config.AppInfo
 import com.blockstream.common.data.CountlyWidget
 import com.blockstream.common.database.Database
 import com.blockstream.common.di.ApplicationScope
 import com.blockstream.common.managers.SettingsManager
+import com.blockstream.green.data.config.AppInfo
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import ly.count.android.sdk.ModuleFeedback
 import ly.count.android.sdk.ModuleFeedback.CountlyFeedbackWidget
-
 
 abstract class CountlyAndroid constructor(
     appInfo: AppInfo,

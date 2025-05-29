@@ -95,7 +95,6 @@ fun RecoverFundsScreen(
         }
     }
 
-
     val onProgressSending by viewModel.onProgressSending.collectAsStateWithLifecycle()
 
     SetupScreen(

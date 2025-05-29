@@ -4,12 +4,11 @@ import com.blockstream.common.btcpricehistory.BitcoinPriceHistoryHttpClient
 import com.blockstream.common.btcpricehistory.model.NetworkBitcoinPriceData
 import com.blockstream.green.network.NetworkResponse
 
-
 class BitcoinPriceHistoryRemoteDataSource(
     private val client: BitcoinPriceHistoryHttpClient
 ) {
     suspend fun getPriceHistory(currency: String): NetworkResponse<NetworkBitcoinPriceData> {
-        return client.get<NetworkBitcoinPriceData>(BASE_URL){
+        return client.get<NetworkBitcoinPriceData>(BASE_URL) {
             url {
                 parameters.append("currency", currency)
             }

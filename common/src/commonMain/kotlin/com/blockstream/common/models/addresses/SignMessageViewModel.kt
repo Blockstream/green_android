@@ -1,7 +1,6 @@
 package com.blockstream.common.models.addresses
 
 import com.blockstream.common.data.GreenWallet
-import com.blockstream.ui.events.Event
 import com.blockstream.common.events.Events
 import com.blockstream.common.extensions.ifConnected
 import com.blockstream.common.extensions.isNotBlank
@@ -12,12 +11,12 @@ import com.blockstream.common.gdk.data.AccountAsset
 import com.blockstream.common.gdk.device.DeviceResolver
 import com.blockstream.common.gdk.params.SignMessageParams
 import com.blockstream.common.models.GreenViewModel
+import com.blockstream.ui.events.Event
 import com.rickclephas.kmp.nativecoroutines.NativeCoroutinesState
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.onEach
-
 
 abstract class SignMessageViewModelAbstract(
     greenWallet: GreenWallet,
@@ -92,7 +91,6 @@ class SignMessageViewModelPreview : SignMessageViewModelAbstract(
     override val message: MutableStateFlow<String> = MutableStateFlow("This is my message")
     override val signature: StateFlow<String?> =
         MutableStateFlow<String?>("This is the generated Signature")
-
 
     companion object {
         fun preview() = SignMessageViewModelPreview()

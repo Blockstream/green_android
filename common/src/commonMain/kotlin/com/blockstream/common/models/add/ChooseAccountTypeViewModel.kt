@@ -35,7 +35,6 @@ import kotlinx.coroutines.flow.launchIn
 import kotlinx.coroutines.flow.onEach
 import org.jetbrains.compose.resources.getString
 
-
 abstract class ChooseAccountTypeViewModelAbstract(
     greenWallet: GreenWallet, assetId: String?, popTo: PopTo?, val allowAssetSelection: Boolean = true,
 ) : AddAccountViewModelAbstract(greenWallet = greenWallet, assetId = assetId, popTo = popTo) {
@@ -58,9 +57,14 @@ abstract class ChooseAccountTypeViewModelAbstract(
 }
 
 class ChooseAccountTypeViewModel(greenWallet: GreenWallet, initAsset: AssetBalance?, popTo: PopTo?, allowAssetSelection: Boolean) :
-    ChooseAccountTypeViewModelAbstract(greenWallet = greenWallet, assetId = initAsset?.assetId, popTo = popTo, allowAssetSelection = allowAssetSelection) {
+    ChooseAccountTypeViewModelAbstract(
+        greenWallet = greenWallet,
+        assetId = initAsset?.assetId,
+        popTo = popTo,
+        allowAssetSelection = allowAssetSelection
+    ) {
     override val asset: MutableStateFlow<AssetBalance> =
-        MutableStateFlow(initAsset ?:EnrichedAsset.Empty.let { AssetBalance.create(it) })
+        MutableStateFlow(initAsset ?: EnrichedAsset.Empty.let { AssetBalance.create(it) })
 
     private val _accountTypes: MutableStateFlow<List<AccountTypeLook>> = MutableStateFlow(listOf())
     override val accountTypes: StateFlow<List<AccountTypeLook>> = _accountTypes.asStateFlow()
@@ -174,6 +178,7 @@ class ChooseAccountTypeViewModel(greenWallet: GreenWallet, initAsset: AssetBalan
                     postSideEffect(it)
                 }
             }
+
             is LocalEvents.SetAsset -> {
                 asset.value = event.asset
             }
@@ -272,15 +277,17 @@ class ChooseAccountTypeViewModelPreview(greenWallet: GreenWallet) :
     ChooseAccountTypeViewModelAbstract(greenWallet, assetId = null, popTo = null) {
 
     override val asset: MutableStateFlow<AssetBalance> = MutableStateFlow(EnrichedAsset.Empty.let { AssetBalance.create(it) })
-    override val accountTypes: StateFlow<List<AccountTypeLook>> = MutableStateFlow(listOf(
-        AccountTypeLook(AccountType.BIP49_SEGWIT_WRAPPED, true),
-        AccountTypeLook(AccountType.BIP84_SEGWIT, true),
-        AccountTypeLook(AccountType.BIP86_TAPROOT, true),
-        AccountTypeLook(AccountType.LIGHTNING, true),
-        AccountTypeLook(AccountType.LIGHTNING, false),
-        AccountTypeLook(AccountType.STANDARD, true),
-        AccountTypeLook(AccountType.AMP_ACCOUNT, true)
-    ))
+    override val accountTypes: StateFlow<List<AccountTypeLook>> = MutableStateFlow(
+        listOf(
+            AccountTypeLook(AccountType.BIP49_SEGWIT_WRAPPED, true),
+            AccountTypeLook(AccountType.BIP84_SEGWIT, true),
+            AccountTypeLook(AccountType.BIP86_TAPROOT, true),
+            AccountTypeLook(AccountType.LIGHTNING, true),
+            AccountTypeLook(AccountType.LIGHTNING, false),
+            AccountTypeLook(AccountType.STANDARD, true),
+            AccountTypeLook(AccountType.AMP_ACCOUNT, true)
+        )
+    )
     override val accountTypeBeingCreated: StateFlow<AccountTypeLook?> = MutableStateFlow(null)
     override val isShowingAdvancedOptions: MutableStateFlow<Boolean> = MutableStateFlow(false)
     override val hasAdvancedOptions: MutableStateFlow<Boolean> = MutableStateFlow(false)

@@ -7,7 +7,8 @@ import kotlinx.serialization.Serializable
 
 @Serializable
 data class ValidateAddresseesParams(
-    @SerialName("addressees") val addressees: List<AddressParams>,
+    @SerialName("addressees")
+    val addressees: List<AddressParams>,
 ) : GreenJson<ValidateAddresseesParams>() {
     override fun explicitNulls(): Boolean = false
 

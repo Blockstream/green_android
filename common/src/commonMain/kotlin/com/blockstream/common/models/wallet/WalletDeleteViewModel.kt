@@ -1,11 +1,11 @@
 package com.blockstream.common.models.wallet
 
 import com.blockstream.common.data.GreenWallet
-import com.blockstream.ui.events.Event
 import com.blockstream.common.events.Events
 import com.blockstream.common.extensions.previewWallet
 import com.blockstream.common.models.GreenViewModel
 import com.blockstream.common.sideeffects.SideEffects
+import com.blockstream.ui.events.Event
 
 abstract class WalletDeleteViewModelAbstract(greenWallet: GreenWallet) :
     GreenViewModel(greenWalletOrNull = greenWallet) {
@@ -26,7 +26,7 @@ class WalletDeleteViewModel(greenWallet: GreenWallet) : WalletDeleteViewModelAbs
         }
     }
 
-    private fun deleteWallet(){
+    private fun deleteWallet() {
         doAsync(action = {
             sessionManager.destroyWalletSession(greenWallet)
             database.deleteWallet(greenWallet.id)

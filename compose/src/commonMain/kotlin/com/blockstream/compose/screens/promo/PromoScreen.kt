@@ -25,16 +25,15 @@ import com.blockstream.common.models.promo.PromoViewModelAbstract
 import com.blockstream.compose.components.GreenButton
 import com.blockstream.compose.components.GreenButtonSize
 import com.blockstream.compose.components.VideoSurface
-import com.blockstream.ui.navigation.LocalInnerPadding
 import com.blockstream.compose.theme.bodyLarge
 import com.blockstream.compose.theme.bodyMedium
 import com.blockstream.compose.theme.headlineLarge
 import com.blockstream.compose.theme.titleLarge
 import com.blockstream.compose.utils.AnimatedNullableVisibility
 import com.blockstream.compose.utils.SetupScreen
-import com.blockstream.ui.utils.ifTrue
 import com.blockstream.ui.components.GreenColumn
-
+import com.blockstream.ui.navigation.LocalInnerPadding
+import com.blockstream.ui.utils.ifTrue
 
 @Composable
 fun PromoScreen(

@@ -109,7 +109,6 @@ fun ReviewAddAccountScreen(
                 }
             }
 
-
             val buttonEnabled by viewModel.buttonEnabled.collectAsStateWithLifecycle()
             GreenButton(
                 text = stringResource(Res.string.id_add_new_account),

@@ -85,7 +85,6 @@ class SweepViewModel(greenWallet: GreenWallet, privateKey: String?, accountAsset
     private val network
         get() = _network.value!!
 
-
     class LocalEvents {
         data class SetPrivateKey(val privateKey: String, val isScan: Boolean) : Event, Redact
     }
@@ -99,7 +98,7 @@ class SweepViewModel(greenWallet: GreenWallet, privateKey: String?, accountAsset
         }
 
         session.ifConnected {
-            if(accountAsset.value == null) {
+            if (accountAsset.value == null) {
                 // Set first account asset
                 accountAsset.value = session.accounts.value.find { it.isBitcoin }?.accountAsset
             }
@@ -192,18 +191,18 @@ class SweepViewModel(greenWallet: GreenWallet, privateKey: String?, accountAsset
             (tx.outputs.firstOrNull()?.takeIf { it.address == receiveAddress }?.satoshi?.takeIf { it > 0L } ?: // from outputs
             tx.addressees.firstOrNull()?.takeIf { it.address == receiveAddress }?.satoshi?.takeIf { it > 0L } ?: // from addresses
             tx.satoshi[network.policyAsset]) // from satoshi
-            .also { amount ->
-                _amount.value = amount.toAmountLook(
-                    session = session,
-                    withUnit = true
-                )
+                .also { amount ->
+                    _amount.value = amount.toAmountLook(
+                        session = session,
+                        withUnit = true
+                    )
 
-                _amountFiat.value = amount.toAmountLook(
-                    session = session,
-                    withUnit = true,
-                    denomination = Denomination.fiat(session)
-                )
-            }
+                    _amountFiat.value = amount.toAmountLook(
+                        session = session,
+                        withUnit = true,
+                        denomination = Denomination.fiat(session)
+                    )
+                }
 
             tx.fee?.takeIf { it != 0L || tx.error.isNullOrBlank() }.also {
                 _feePriority.value = calculateFeePriority(
@@ -235,19 +234,25 @@ class SweepViewModel(greenWallet: GreenWallet, privateKey: String?, accountAsset
         })
     }
 
-    companion object: Loggable()
+    companion object : Loggable()
 }
 
 class SweepViewModelPreview(greenWallet: GreenWallet) :
     SweepViewModelAbstract(greenWallet = greenWallet, accountAssetOrNull = previewAccountAsset()) {
 
-    override val accounts: StateFlow<List<AccountAssetBalance>> = MutableStateFlow(listOf(previewAccountAssetBalance(), previewAccountAssetBalance()))
+    override val accounts: StateFlow<List<AccountAssetBalance>> =
+        MutableStateFlow(listOf(previewAccountAssetBalance(), previewAccountAssetBalance()))
     override val privateKey: MutableStateFlow<String> = MutableStateFlow("privatekey")
     override val amount: StateFlow<String?> = MutableStateFlow("1.0 BTC")
     override val amountFiat: StateFlow<String?> = MutableStateFlow("150.000 USD")
 
     init {
-        _feePriority.value = FeePriority.Low(fee = "0.000001 BTC", feeFiat = "13.00 USD", feeRate = 2L.feeRateWithUnit(), expectedConfirmationTime = "id_s_hours|2")
+        _feePriority.value = FeePriority.Low(
+            fee = "0.000001 BTC",
+            feeFiat = "13.00 USD",
+            feeRate = 2L.feeRateWithUnit(),
+            expectedConfirmationTime = "id_s_hours|2"
+        )
     }
 
     companion object {

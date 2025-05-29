@@ -5,7 +5,6 @@ import com.blockstream.common.data.Denomination
 import com.blockstream.common.extensions.previewEnrichedAsset
 import com.blockstream.common.managers.SessionManager
 import kotlinx.coroutines.test.runTest
-import org.koin.test.get
 import kotlin.test.Test
 import kotlin.test.assertEquals
 

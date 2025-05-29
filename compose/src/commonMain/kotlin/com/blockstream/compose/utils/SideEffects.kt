@@ -89,7 +89,6 @@ fun HandleSideEffectDialog(
     })
 }
 
-
 @Composable
 fun HandleSideEffect(
     viewModel: GreenViewModel,

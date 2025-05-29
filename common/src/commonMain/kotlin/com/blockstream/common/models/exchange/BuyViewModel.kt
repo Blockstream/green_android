@@ -69,7 +69,6 @@ abstract class BuyViewModelAbstract(
         (settingsManager.getCountry() ?: localeManager.getCountry() ?: "US").uppercase()
     )
 
-
     internal val userPickedQuote = MutableStateFlow(false)
 
     internal val address = MutableStateFlow<Address?>(null)
@@ -379,7 +378,6 @@ class BuyViewModelPreview(greenWallet: GreenWallet) :
     override val amountHint: StateFlow<String?> = MutableStateFlow(null)
     override val suggestedAmounts: StateFlow<List<String>> =
         MutableStateFlow(listOf("200", "400", "800"))
-
 
     init {
         _denomination.value = Denomination.FIAT("USD")

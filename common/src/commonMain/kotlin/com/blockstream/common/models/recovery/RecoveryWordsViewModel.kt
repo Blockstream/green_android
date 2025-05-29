@@ -1,14 +1,14 @@
 package com.blockstream.common.models.recovery
 
-import com.blockstream.ui.navigation.NavData
 import com.blockstream.common.data.SetupArgs
-import com.blockstream.ui.events.Event
 import com.blockstream.common.events.Events
 import com.blockstream.common.models.GreenViewModel
 import com.blockstream.common.models.recovery.RecoveryCheckViewModel.Companion.RecoveryPhraseChecks
 import com.blockstream.common.navigation.NavigateDestinations
 import com.blockstream.common.sideeffects.SideEffects
 import com.blockstream.green.utils.Loggable
+import com.blockstream.ui.events.Event
+import com.blockstream.ui.navigation.NavData
 import com.rickclephas.kmp.observableviewmodel.launch
 
 abstract class RecoveryWordsViewModelAbstract(val setupArgs: SetupArgs) :
@@ -25,7 +25,8 @@ class RecoveryWordsViewModel(setupArgs: SetupArgs) : RecoveryWordsViewModelAbstr
     private val mnemonicWords = setupArgs.mnemonicAsWords
     override val totalPages = mnemonicWords.size / WORDS_PER_PAGE
 
-    override val progress: Int = ((((setupArgs.page.takeIf { setupArgs.page in 1.. totalPages } ?: 1)).toFloat() / (totalPages + RecoveryPhraseChecks)) * 100).toInt()
+    override val progress: Int =
+        ((((setupArgs.page.takeIf { setupArgs.page in 1..totalPages } ?: 1)).toFloat() / (totalPages + RecoveryPhraseChecks)) * 100).toInt()
 
     override val startIndex: Int
 
@@ -35,13 +36,14 @@ class RecoveryWordsViewModel(setupArgs: SetupArgs) : RecoveryWordsViewModelAbstr
         get() = setupArgs.page == totalPages
 
     init {
-        val from = 0 + (WORDS_PER_PAGE * ((setupArgs.page.takeIf { setupArgs.page in 1.. totalPages } ?: 1) - 1))
+        val from = 0 + (WORDS_PER_PAGE * ((setupArgs.page.takeIf { setupArgs.page in 1..totalPages } ?: 1) - 1))
         startIndex = from + 1
 
         words = mnemonicWords.subList(from, from + WORDS_PER_PAGE)
 
         viewModelScope.launch {
-            _navData.value = NavData(title = setupArgs.accountType?.toString(), subtitle = setupArgs.accountType?.let { greenWalletOrNull?.name })
+            _navData.value =
+                NavData(title = setupArgs.accountType?.toString(), subtitle = setupArgs.accountType?.let { greenWalletOrNull?.name })
         }
 
         bootstrap()
@@ -49,10 +51,10 @@ class RecoveryWordsViewModel(setupArgs: SetupArgs) : RecoveryWordsViewModelAbstr
 
     override suspend fun handleEvent(event: Event) {
         super.handleEvent(event)
-        if(event is Events.Continue){
-            (if(isLastPage){
+        if (event is Events.Continue) {
+            (if (isLastPage) {
                 NavigateDestinations.RecoveryCheck(setupArgs = setupArgs.pageOne())
-            }else{
+            } else {
                 NavigateDestinations.RecoveryWords(setupArgs = setupArgs.nextPage())
             }).also {
                 postSideEffect(SideEffects.NavigateTo(it))
@@ -60,7 +62,7 @@ class RecoveryWordsViewModel(setupArgs: SetupArgs) : RecoveryWordsViewModelAbstr
         }
     }
 
-    companion object: Loggable() {
+    companion object : Loggable() {
         const val WORDS_PER_PAGE = 6
     }
 }

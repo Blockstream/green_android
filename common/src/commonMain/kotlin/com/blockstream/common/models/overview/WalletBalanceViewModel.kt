@@ -23,7 +23,6 @@ interface IWalletBalance : IPostEvent {
     // val balanceSecondary: StateFlow<String?>
 }
 
-
 open class WalletBalanceViewModel(greenWallet: GreenWallet) :
     GreenViewModel(greenWalletOrNull = greenWallet), IWalletBalance {
 
@@ -104,7 +103,8 @@ open class WalletBalanceViewModel(greenWallet: GreenWallet) :
                 session = session,
                 assetId = session.walletAssets.value.data()?.policyId
                     ?: session.defaultNetwork.policyAsset,
-                denomination = denomination.takeIf { !it.isFiat } ?: Denomination.fiat(session) // Always create fiat from session, so that we get the correct fiat denomination
+                denomination = denomination.takeIf { !it.isFiat }
+                    ?: Denomination.fiat(session) // Always create fiat from session, so that we get the correct fiat denomination
             )
 
             _balancePrimary.value = balance

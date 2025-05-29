@@ -6,7 +6,6 @@ import com.blockstream.common.extensions.previewNetwork
 import com.blockstream.common.models.sheets.AnalyticsViewModelPreview
 import com.blockstream.compose.GreenAndroidPreview
 
-
 @Composable
 @Preview
 fun Call2ActionBottomSheetPreview() {

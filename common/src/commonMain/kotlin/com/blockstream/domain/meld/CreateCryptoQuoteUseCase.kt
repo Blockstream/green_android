@@ -11,7 +11,6 @@ import com.blockstream.green.data.meld.data.QuoteResponse
 import com.blockstream.green.network.NetworkResponse
 import com.blockstream.green.network.dataOrNull
 
-
 class CreateCryptoQuoteUseCase constructor(
     private val meldRepository: MeldRepository
 ) {

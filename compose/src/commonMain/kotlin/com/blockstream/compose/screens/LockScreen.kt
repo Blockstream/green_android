@@ -53,12 +53,13 @@ fun LockScreen(
     }
 
 
-    Box(modifier = Modifier
-        .background(MaterialTheme.colorScheme.background)
-        .fillMaxSize()
-        .clickable {
-            // Catch all clicks
-        }) {
+    Box(
+        modifier = Modifier
+            .background(MaterialTheme.colorScheme.background)
+            .fillMaxSize()
+            .clickable {
+                // Catch all clicks
+            }) {
 
         Image(
             painter = painterResource(Res.drawable.brand),

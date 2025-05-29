@@ -32,7 +32,6 @@ import com.blockstream.compose.theme.bodyMedium
 import com.blockstream.ui.components.GreenColumn
 import org.jetbrains.compose.resources.stringResource
 
-
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun SystemMessageBottomSheet(
@@ -77,7 +76,6 @@ fun SystemMessageBottomSheet(
 
                 Text(text = stringResource(Res.string.id_i_confirm_i_have_read_and), style = bodyMedium)
             }
-
 
             val onProgress by viewModel.onProgress.collectAsStateWithLifecycle()
 

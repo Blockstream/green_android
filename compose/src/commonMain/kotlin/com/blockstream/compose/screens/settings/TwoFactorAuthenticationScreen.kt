@@ -59,7 +59,6 @@ fun TwoFactorAuthenticationScreen(
             )
         }
 
-
         val tabs = viewModel.networks.map {
             it.name
         }
@@ -84,10 +83,11 @@ fun TwoFactorAuthenticationScreen(
         }
 
         Column(modifier = Modifier.fillMaxWidth()) {
-            if(tabs.size > 1) {
+            if (tabs.size > 1) {
                 TabRow(selectedTabIndex = selectedTabIndex) {
                     tabs.forEachIndexed { index, title ->
-                        Tab(text = { Text(title) },
+                        Tab(
+                            text = { Text(title) },
                             selected = selectedTabIndex == index,
                             onClick = { selectedTabIndex = index }
                         )

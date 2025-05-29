@@ -140,7 +140,7 @@ fun SecurityLevelBottomSheet(
                         )
 
                         Image(
-                            imageVector = vectorResource(if(isMobile) Res.drawable.phone_keys else Res.drawable.hardware_keys),
+                            imageVector = vectorResource(if (isMobile) Res.drawable.phone_keys else Res.drawable.hardware_keys),
                             contentDescription = null,
                             modifier = Modifier.height(150.dp)
                         )
@@ -197,7 +197,7 @@ fun SecurityLevelBottomSheet(
                             modifier = Modifier.fillMaxWidth()
                         ) {
                             if (!isMobile) {
-                                 viewModel.postEvent(SetupNewWalletViewModel.LocalEvents.SetupHardwareWallet)
+                                viewModel.postEvent(SetupNewWalletViewModel.LocalEvents.SetupHardwareWallet)
                             }
                         }
 

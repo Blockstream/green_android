@@ -8,21 +8,28 @@ import kotlinx.serialization.Serializable
 @Serializable
 data class Banner(
     @Serializable(with = HtmlEntitiesSerializer::class)
-    @SerialName("title") val title: String? = null,
+    @SerialName("title")
+    val title: String? = null,
     @Serializable(with = HtmlEntitiesSerializer::class)
-    @SerialName("message") val message: String? = null,
-    @SerialName("dismissable") val dismissable: Boolean? = null,
-    @SerialName("is_warning") val isWarning: Boolean = false,
-    @SerialName("link") val link: String? = null,
-    @SerialName("screens") val screens: List<String>? = null,
-    @SerialName("networks") val networks: List<String>? = null,
-): GreenJson<Banner>(){
+    @SerialName("message")
+    val message: String? = null,
+    @SerialName("dismissable")
+    val dismissable: Boolean? = null,
+    @SerialName("is_warning")
+    val isWarning: Boolean = false,
+    @SerialName("link")
+    val link: String? = null,
+    @SerialName("screens")
+    val screens: List<String>? = null,
+    @SerialName("networks")
+    val networks: List<String>? = null,
+) : GreenJson<Banner>() {
     override fun kSerializer() = serializer()
 
     val hasNetworks: Boolean
         get() = networks != null
 
-    companion object{
+    companion object {
         val preview1 = Banner(
             title = "Lorem Ipsum",
             message = "Lorem ipsum dolor",

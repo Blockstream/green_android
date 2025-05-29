@@ -6,7 +6,8 @@ import kotlinx.serialization.Serializable
 
 @Serializable
 data class BcurDecodeParams constructor(
-    @SerialName("part") val part: String
+    @SerialName("part")
+    val part: String
 ) : GreenJson<BcurDecodeParams>() {
 
     override fun kSerializer() = serializer()

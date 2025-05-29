@@ -9,12 +9,11 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.painter.Painter
 import androidx.compose.ui.unit.dp
 import com.blockstream.common.extensions.isNotBlank
+import com.blockstream.compose.theme.titleSmall
+import com.blockstream.compose.theme.whiteMedium
 import com.blockstream.ui.components.GreenArrow
 import com.blockstream.ui.components.GreenColumn
 import com.blockstream.ui.components.GreenRow
-import com.blockstream.compose.theme.titleSmall
-import com.blockstream.compose.theme.whiteMedium
-
 
 @Composable
 fun GreenContentCard(

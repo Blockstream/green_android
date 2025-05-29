@@ -14,7 +14,7 @@ fun String.hostname(excludePort: Boolean = false): String {
     }
     var hostname = substring(start, end)
 
-    if(excludePort) {
+    if (excludePort) {
         val port = hostname.indexOf(":")
         if (port >= 0) {
             hostname = hostname.substring(0, port)

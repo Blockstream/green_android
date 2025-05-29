@@ -77,7 +77,6 @@ import org.jetbrains.compose.resources.stringResource
 import kotlin.time.DurationUnit
 import kotlin.time.toDuration
 
-
 @Composable
 fun WalletOverviewScreen(
     viewModel: WalletOverviewViewModelAbstract
@@ -150,7 +149,7 @@ fun WalletOverviewScreen(
     var isRefreshing by remember { mutableStateOf(false) }
 
     LaunchedEffect(isRefreshing) {
-        if(isRefreshing){
+        if (isRefreshing) {
             viewModel.postEvent(WalletOverviewViewModel.LocalEvents.Refresh)
             delay(1.toDuration(DurationUnit.SECONDS))
             isRefreshing = false
@@ -177,7 +176,7 @@ fun WalletOverviewScreen(
     }, withPadding = false, withBottomInsets = false) {
 
         PullToRefreshBox(
-            modifier =  Modifier.fillMaxSize(),
+            modifier = Modifier.fillMaxSize(),
             isRefreshing = isRefreshing,
             onRefresh = {
                 isRefreshing = true

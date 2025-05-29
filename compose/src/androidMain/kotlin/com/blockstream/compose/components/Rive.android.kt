@@ -54,10 +54,12 @@ actual fun Rive(riveAnimation: RiveAnimation) {
     val isPreview = LocalInspectionMode.current || LocalPreview.current
 
     if (isPreview) {
-        Box(modifier = Modifier
-            .fillMaxWidth()
-            .height(100.dp)
-            .border(BorderStroke(1.dp, Color.Gray))) {
+        Box(
+            modifier = Modifier
+                .fillMaxWidth()
+                .height(100.dp)
+                .border(BorderStroke(1.dp, Color.Gray))
+        ) {
             Text(text = "Rive Preview", modifier = Modifier.align(Alignment.Center))
         }
     } else {

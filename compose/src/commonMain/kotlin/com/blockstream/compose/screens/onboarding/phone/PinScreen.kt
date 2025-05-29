@@ -52,7 +52,7 @@ fun PinScreen(
     SetupScreen(
         viewModel = viewModel,
         withPadding = false,
-        onProgressStyle = OnProgressStyle.Full(bluBackground = false, riveAnimation = if(rocketAnimation) RiveAnimation.ROCKET else null)
+        onProgressStyle = OnProgressStyle.Full(bluBackground = false, riveAnimation = if (rocketAnimation) RiveAnimation.ROCKET else null)
     ) {
         Column(
             modifier = Modifier

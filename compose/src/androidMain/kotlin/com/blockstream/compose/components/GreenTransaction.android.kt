@@ -9,7 +9,6 @@ import com.blockstream.common.looks.transaction.Unconfirmed
 import com.blockstream.compose.GreenAndroidPreview
 import com.blockstream.ui.components.GreenColumn
 
-
 @Composable
 @Preview
 fun GreenTransactionPreview() {

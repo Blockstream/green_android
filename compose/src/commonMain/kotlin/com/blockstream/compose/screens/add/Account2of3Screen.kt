@@ -48,7 +48,6 @@ fun Account2of3Screen(
 
                 Text(stringResource(Res.string.id_select_your_recovery_key), style = displayMedium)
 
-
 //            GreenContentCard(
 //                title = stringResource(Res.string.id_hardware_wallet),
 //                message = stringResource(Res.string.id_use_a_hardware_wallet_as_your),

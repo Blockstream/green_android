@@ -1,6 +1,5 @@
 package com.blockstream.ui.navigation.bottomsheet
 
-
 import androidx.compose.runtime.Composable
 import androidx.navigation.NavBackStackEntry
 import androidx.navigation.NavDeepLink

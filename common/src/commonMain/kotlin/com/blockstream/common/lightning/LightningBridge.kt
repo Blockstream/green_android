@@ -59,11 +59,11 @@ import breez_sdk.connect
 import breez_sdk.defaultConfig
 import breez_sdk.mnemonicToSeed
 import breez_sdk.parseInput
-import com.blockstream.green.data.config.AppInfo
 import com.blockstream.common.extensions.tryCatch
 import com.blockstream.common.fcm.FcmCommon
 import com.blockstream.common.platformFileSystem
 import com.blockstream.common.platformName
+import com.blockstream.green.data.config.AppInfo
 import com.blockstream.green.utils.Loggable
 import com.rickclephas.kmp.nativecoroutines.NativeCoroutinesIgnore
 import kotlinx.coroutines.Dispatchers
@@ -154,20 +154,25 @@ class LightningBridge constructor(
     init {
         logger.i { "Lightning SDK: $workingDir" }
         workingDir.toPath().also { path ->
-            if(!platformFileSystem().exists(path)){
+            if (!platformFileSystem().exists(path)) {
                 platformFileSystem().createDirectories(path, mustCreate = true)
             }
         }
     }
 
     @NativeCoroutinesIgnore
-    suspend fun connectToGreenlight(mnemonic: String, parentXpubHashId: String? = null, restoreOnly: Boolean = true, quickResponse: Boolean = false): Boolean? {
+    suspend fun connectToGreenlight(
+        mnemonic: String,
+        parentXpubHashId: String? = null,
+        restoreOnly: Boolean = true,
+        quickResponse: Boolean = false
+    ): Boolean? {
         if (breezSdkOrNull != null) {
             return true
         }
 
         try {
-            breezSdkOrNull = withTimeout(if(quickResponse) 5000L else 30000L) {
+            breezSdkOrNull = withTimeout(if (quickResponse) 5000L else 30000L) {
                 connect(
                     req = ConnectRequest(
                         config = createConfig(greenlightKeys.toGreenlightCredentials()),
@@ -193,13 +198,13 @@ class LightningBridge constructor(
             updateLspInformation()
 
             return true
-        } catch (e: ConnectException){
+        } catch (e: ConnectException) {
             e.printStackTrace()
 
             // SdkException for not registered node
             // Failed to initialize the SDK: Failed to connect to Greenlight: status: Internal,
             // message: "Unable to register node: not authorized: an invite code or a partner certificate is require to register a new node (see https://bit.ly/glinvites for details"
-            return if(e.message?.lowercase()?.contains("restore only", ignoreCase = true) == true) {
+            return if (e.message?.lowercase()?.contains("restore only", ignoreCase = true) == true) {
                 false
             } else {
                 null
@@ -248,12 +253,12 @@ class LightningBridge constructor(
         }
     }
 
-    fun sync(){
+    fun sync() {
         breezSdkOrNull?.sync()
     }
 
     fun balance(): Long? {
-        if(breezSdkOrNull == null){
+        if (breezSdkOrNull == null) {
             return null
         }
 
@@ -261,7 +266,7 @@ class LightningBridge constructor(
             updateNodeInfo().channelsBalanceSatoshi().also {
                 logger.d { "Balance: $it" }
             }
-        }catch (e: Exception){
+        } catch (e: Exception) {
             e.printStackTrace()
             null
         }
@@ -305,7 +310,7 @@ class LightningBridge constructor(
             breezSdkOrNull?.listPayments(
                 ListPaymentsRequest()
             )?.also {
-              logger.d { "Payments: $it" }
+                logger.d { "Payments: $it" }
             }
         } catch (e: Exception) {
             e.printStackTrace()
@@ -326,7 +331,7 @@ class LightningBridge constructor(
             breezSdk.openChannelFee(OpenChannelFeeRequest(amountMsat = satoshi.toULong() * 1000u)).also {
                 logger.d { "openChannelFee: $it" }
             }
-        }catch (e: Exception){
+        } catch (e: Exception) {
             e.printStackTrace()
             null
         }
@@ -369,7 +374,7 @@ class LightningBridge constructor(
         }
     }
 
-    private fun updateReverseSwapInfo(){
+    private fun updateReverseSwapInfo() {
         _reverseSwapInfoStateFlow.value = breezSdkOrNull?.inProgressOnchainPayments().also {
             it?.also {
                 logger.d { it.joinToString { it.toString() } }
@@ -385,12 +390,12 @@ class LightningBridge constructor(
         e.printStackTrace()
     }
 
-    fun reportIssue(paymentHash: String){
+    fun reportIssue(paymentHash: String) {
         try {
             val report = ReportIssueRequest.PaymentFailure(ReportPaymentFailureDetails(paymentHash, null))
             breezSdk.reportIssue(report)
-        } catch (e: Exception){
-          e.printStackTrace()
+        } catch (e: Exception) {
+            e.printStackTrace()
         }
     }
 
@@ -469,8 +474,8 @@ class LightningBridge constructor(
 
     fun fetchReverseSwapFees(req: ReverseSwapFeesRequest): ReverseSwapPairInfo {
         return breezSdk.fetchReverseSwapFees(req).also {
-                logger.d { "fetchReverseSwapFees: $it" }
-            }
+            logger.d { "fetchReverseSwapFees: $it" }
+        }
     }
 
     fun payOnchain(address: String, satPerVbyte: UInt?): PayOnchainResponse {
@@ -581,11 +586,11 @@ class LightningBridge constructor(
             exception.cause
         )
 
-    fun release(){
+    fun release() {
         lightningManager.release(this)
     }
 
-    companion object: Loggable() {
+    companion object : Loggable() {
         const val GREEN_NOTIFY_PRODUCTION = "https://green-notify.blockstream.com"
         const val GREEN_NOTIFY_DEVELOPMENT = "https://green-notify.dev.blockstream.com"
     }

@@ -4,7 +4,6 @@ import com.blockstream.jade.TIMEOUT_AUTONOMOUS_LONG
 import kotlinx.serialization.KSerializer
 import kotlinx.serialization.Serializable
 
-
 @Serializable
 data class OtaCompleteRequest(
     override val id: String = jadeId(),

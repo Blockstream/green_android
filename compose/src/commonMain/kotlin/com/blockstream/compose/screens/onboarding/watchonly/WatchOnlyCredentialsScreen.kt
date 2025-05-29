@@ -79,7 +79,6 @@ import com.darkrockstudios.libraries.mpfilepicker.FilePicker
 import org.jetbrains.compose.resources.painterResource
 import org.jetbrains.compose.resources.stringResource
 
-
 @Composable
 fun WatchOnlyCredentialsScreen(
     viewModel: WatchOnlyCredentialsViewModelAbstract
@@ -231,11 +230,16 @@ fun WatchOnlyCredentialsScreen(
                                 }
 
                                 ScanQrButton {
-                                    viewModel.postEvent(NavigateDestinations.Camera(isDecodeContinuous = true, parentScreenName = viewModel.screenName(), setupArgs = viewModel.setupArgs))
+                                    viewModel.postEvent(
+                                        NavigateDestinations.Camera(
+                                            isDecodeContinuous = true,
+                                            parentScreenName = viewModel.screenName(),
+                                            setupArgs = viewModel.setupArgs
+                                        )
+                                    )
                                 }
                             }
                         }
-
 
                     } else {
 
@@ -256,7 +260,6 @@ fun WatchOnlyCredentialsScreen(
                                 TextInputPaste(viewModel.username)
                             }
                         )
-
 
                         val password by viewModel.password.collectAsStateWithLifecycle()
                         val passwordVisibility = remember { mutableStateOf(false) }

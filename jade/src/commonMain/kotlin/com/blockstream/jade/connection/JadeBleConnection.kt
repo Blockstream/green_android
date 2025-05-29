@@ -1,6 +1,5 @@
 package com.blockstream.jade.connection
 
-
 import com.blockstream.jade.Loggable
 import com.juul.kable.Peripheral
 import com.juul.kable.State
@@ -45,7 +44,7 @@ class JadeBleConnection internal constructor(
         logger.d { "Connected" }
 
         peripheral.state.onEach {
-            if(it is State.Disconnected) {
+            if (it is State.Disconnected) {
                 logger.d { "BLE was disconnected, closing receiveData channel" }
                 receivedData.close(CancellationException("Jade BLE was disconnected"))
             }
@@ -70,9 +69,9 @@ class JadeBleConnection internal constructor(
         peripheral
             .observe(ObserveCharacteristics)
             .onEach {
-            // Process data.
-            onDataReceived(it)
-        }.launchIn(scope)
+                // Process data.
+                onDataReceived(it)
+            }.launchIn(scope)
     }
 
     override suspend fun disconnect() {

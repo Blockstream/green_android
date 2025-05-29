@@ -4,15 +4,15 @@ import blockstream_green.common.generated.resources.Res
 import blockstream_green.common.generated.resources.id_authentication_successful
 import breez_sdk.LnUrlAuthRequestData
 import breez_sdk.LnUrlCallbackStatus
-import com.blockstream.common.data.SupportData
 import com.blockstream.common.data.GreenWallet
-import com.blockstream.ui.navigation.NavData
-import com.blockstream.ui.events.Event
+import com.blockstream.common.data.SupportData
 import com.blockstream.common.events.Events
 import com.blockstream.common.extensions.previewWallet
 import com.blockstream.common.models.GreenViewModel
 import com.blockstream.common.sideeffects.SideEffects
 import com.blockstream.common.utils.StringHolder
+import com.blockstream.ui.events.Event
+import com.blockstream.ui.navigation.NavData
 import com.rickclephas.kmp.observableviewmodel.launch
 
 abstract class LnUrlAuthViewModelAbstract(
@@ -74,7 +74,6 @@ class LnUrlAuthViewModel(greenWallet: GreenWallet, requestData: LnUrlAuthRequest
         )
     }
 }
-
 
 class LnUrlAuthViewModelPreview(greenWallet: GreenWallet) :
     LnUrlAuthViewModelAbstract(

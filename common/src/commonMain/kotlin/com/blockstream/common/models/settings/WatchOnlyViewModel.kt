@@ -4,11 +4,9 @@ import blockstream_green.common.generated.resources.Res
 import blockstream_green.common.generated.resources.id_watchonly
 import com.blockstream.common.data.CredentialType
 import com.blockstream.common.data.GreenWallet
-import com.blockstream.ui.navigation.NavData
 import com.blockstream.common.data.RichWatchOnly
 import com.blockstream.common.data.toJson
 import com.blockstream.common.data.toLoginCredentials
-import com.blockstream.ui.events.Event
 import com.blockstream.common.extensions.isNotBlank
 import com.blockstream.common.extensions.previewAccount
 import com.blockstream.common.extensions.previewNetwork
@@ -17,8 +15,10 @@ import com.blockstream.common.extensions.richWatchOnly
 import com.blockstream.common.looks.wallet.WatchOnlyLook
 import com.blockstream.common.models.GreenViewModel
 import com.blockstream.common.sideeffects.SideEffects
-import com.blockstream.green.utils.Loggable
 import com.blockstream.common.utils.StringHolder
+import com.blockstream.green.utils.Loggable
+import com.blockstream.ui.events.Event
+import com.blockstream.ui.navigation.NavData
 import com.rickclephas.kmp.nativecoroutines.NativeCoroutinesState
 import com.rickclephas.kmp.observableviewmodel.MutableStateFlow
 import com.rickclephas.kmp.observableviewmodel.launch
@@ -27,9 +27,7 @@ import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.flow.map
-import kotlinx.coroutines.flow.stateIn
 import org.jetbrains.compose.resources.getString
-
 
 abstract class WatchOnlyViewModelAbstract(greenWallet: GreenWallet) :
     GreenViewModel(greenWalletOrNull = greenWallet) {
@@ -89,8 +87,8 @@ class WatchOnlyViewModel(greenWallet: GreenWallet) :
         }.stateIn(viewModelScope, SharingStarted.WhileSubscribed(), listOf())
 
     class LocalEvents {
-        object CreateRichWatchOnly: Event
-        object DeleteRichWatchOnly: Event
+        object CreateRichWatchOnly : Event
+        object DeleteRichWatchOnly : Event
     }
 
     init {
@@ -105,24 +103,30 @@ class WatchOnlyViewModel(greenWallet: GreenWallet) :
     override suspend fun handleEvent(event: Event) {
         super.handleEvent(event)
 
-        if(event is LocalEvents.CreateRichWatchOnly){
+        if (event is LocalEvents.CreateRichWatchOnly) {
             doAsync({
                 val rwo = database.getLoginCredential(greenWallet.id, CredentialType.RICH_WATCH_ONLY)?.richWatchOnly(greenKeystore)
-                 session.updateRichWatchOnly(rwo ?: listOf()).also {
-                    database.replaceLoginCredential(it.toLoginCredentials(session = session, greenWallet = greenWallet, greenKeystore = greenKeystore))
+                session.updateRichWatchOnly(rwo ?: listOf()).also {
+                    database.replaceLoginCredential(
+                        it.toLoginCredentials(
+                            session = session,
+                            greenWallet = greenWallet,
+                            greenKeystore = greenKeystore
+                        )
+                    )
                 }
 
             }, onSuccess = {
                 postSideEffect(SideEffects.Dialog(StringHolder.create("DEBUG"), StringHolder.create(it.toJson())))
             })
-        }else if (event is LocalEvents.DeleteRichWatchOnly){
+        } else if (event is LocalEvents.DeleteRichWatchOnly) {
             doAsync({
                 database.deleteLoginCredentials(greenWallet.id, CredentialType.RICH_WATCH_ONLY)
             }, onSuccess = {})
         }
     }
 
-    companion object: Loggable()
+    companion object : Loggable()
 }
 
 class WatchOnlyViewModelPreview(greenWallet: GreenWallet) :

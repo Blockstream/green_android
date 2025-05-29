@@ -48,7 +48,6 @@ class AssetDetailsViewModel(
 ) : AssetDetailsViewModelAbstract(greenWallet = greenWallet, accountAsset = accountAsset) {
     override fun screenName(): String = "AssetDetails"
 
-
     private val _data: MutableStateFlow<List<Pair<StringHolder, StringHolder>>> = MutableStateFlow(listOf())
     override val data = _data.asStateFlow()
 
@@ -98,7 +97,6 @@ class AssetDetailsViewModel(
                     }
                 }
 
-
             }.launchIn(viewModelScope.coroutineScope)
         }
 
@@ -106,7 +104,7 @@ class AssetDetailsViewModel(
     }
 }
 
-class AssetDetailsViewModelPreview : AssetDetailsViewModelAbstract(accountAsset = previewAccountAsset(),  greenWallet = previewWallet()) {
+class AssetDetailsViewModelPreview : AssetDetailsViewModelAbstract(accountAsset = previewAccountAsset(), greenWallet = previewWallet()) {
 
     override val data: StateFlow<List<Pair<StringHolder, StringHolder>>> = MutableStateFlow(
         listOf(

@@ -58,7 +58,7 @@ inline fun Modifier.noRippleClickable(
 inline fun Modifier.roundBackground(
     horizontal: Dp = 8.dp,
     vertical: Dp = 4.dp,
-    size : Dp = 16.dp,
+    size: Dp = 16.dp,
     color: Color = md_theme_surfaceCircle
 ): Modifier {
     return this then background(

@@ -123,7 +123,7 @@ fun TwoFactorResetBottomSheet(
                     }
                 }
 
-            } else if(twoFactorReset != null) {
+            } else if (twoFactorReset != null) {
                 GreenColumn(padding = 0, space = 8) {
                     Text(
                         stringResource(

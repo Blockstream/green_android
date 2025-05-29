@@ -1,10 +1,10 @@
 package com.blockstream.common.models.sheets
 
 import com.blockstream.common.Urls
-import com.blockstream.ui.events.Event
 import com.blockstream.common.events.Events
 import com.blockstream.common.models.GreenViewModel
 import com.blockstream.common.sideeffects.SideEffects
+import com.blockstream.ui.events.Event
 
 abstract class AnalyticsViewModelAbstract : GreenViewModel() {
     abstract val showActionButtons: Boolean
@@ -13,7 +13,7 @@ abstract class AnalyticsViewModelAbstract : GreenViewModel() {
 class AnalyticsViewModel : AnalyticsViewModelAbstract() {
     override fun screenName(): String = "Consent"
 
-    override val showActionButtons: Boolean =  settingsManager.analyticsFeatureEnabled
+    override val showActionButtons: Boolean = settingsManager.analyticsFeatureEnabled
             && (!settingsManager.isAskedAboutAnalyticsConsent()
             && !settingsManager.getApplicationSettings().analytics)
 

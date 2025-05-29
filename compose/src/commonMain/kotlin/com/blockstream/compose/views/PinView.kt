@@ -89,13 +89,13 @@ fun PinButton(
                     }
 
                     -2 -> {
-                        if(isShuffle) {
+                        if (isShuffle) {
                             Icon(
                                 painter = painterResource(Res.drawable.arrows_counter_clockwise),
                                 contentDescription = "Shuffle",
                                 tint = if (enabled) whiteHigh else whiteLow
                             )
-                        }else{
+                        } else {
                             Icon(
                                 painter = painterResource(Res.drawable.clipboard),
                                 contentDescription = "Paste",
@@ -108,7 +108,7 @@ fun PinButton(
                         Text(
                             digits?.get(key) ?: "-",
                             color = if (enabled) whiteHigh else whiteLow,
-                            style = if(isSmall) headlineSmall else headlineLarge
+                            style = if (isSmall) headlineSmall else headlineLarge
                         )
                     }
                 }
@@ -116,7 +116,6 @@ fun PinButton(
         }
     }
 }
-
 
 @Composable
 fun PinView(
@@ -136,7 +135,6 @@ fun PinView(
     var digits by remember { mutableStateOf("1 2 3 4 5 6 7 8 9 0".split(" ")) }
     var pin by remember { mutableStateOf("") }
     var pinToBeVerified by remember { mutableStateOf("") }
-
 
     fun validatePin() {
         if (pin.length == 6) {
@@ -192,7 +190,7 @@ fun PinView(
         } else if (key == -2) {
             if (withShuffle) {
                 digits = digits.shuffled()
-            }else{
+            } else {
                 platformManager.getClipboard()?.also {
                     if (it.length == 6 && it.isDigitsOnly()) {
                         pin = it
@@ -235,16 +233,15 @@ fun PinView(
                     .fillMaxWidth()
                     .ifTrue(showDigits) {
                         it.padding(vertical = 16.dp)
-                    }
-                ,
+                    },
                 horizontalArrangement = Arrangement.spacedBy(
-                    if (showDigits) 6.dp else if(isSmall) 12.dp else 24.dp,
+                    if (showDigits) 6.dp else if (isSmall) 12.dp else 24.dp,
                     Alignment.CenterHorizontally
                 ),
                 verticalAlignment = Alignment.CenterVertically
             ) {
                 (1..6).forEach {
-                    if(showDigits){
+                    if (showDigits) {
                         Text(
                             text = pin.getOrNull(it - 1)?.toString() ?: " ",
                             fontFamily = MonospaceFont(),
@@ -258,7 +255,7 @@ fun PinView(
                                 .padding(horizontal = 6.dp)
                                 .padding(vertical = 0.dp)
                         )
-                    }else {
+                    } else {
                         Box(
                             modifier = Modifier
                                 .size(18.dp)
@@ -280,13 +277,14 @@ fun PinView(
         }
 
 
-        Column(modifier = Modifier
-            .heightIn(min = 100.dp, max = if (isSmall) 220.dp else 400.dp)
-            .constrainAs(keyboard) {
-                start.linkTo(parent.start)
-                end.linkTo(parent.end)
-                bottom.linkTo(parent.bottom)
-            }) {
+        Column(
+            modifier = Modifier
+                .heightIn(min = 100.dp, max = if (isSmall) 220.dp else 400.dp)
+                .constrainAs(keyboard) {
+                    start.linkTo(parent.start)
+                    end.linkTo(parent.end)
+                    bottom.linkTo(parent.bottom)
+                }) {
 
             Row(modifier = Modifier.weight(1f)) {
                 (0..2).forEach {

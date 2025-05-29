@@ -69,7 +69,7 @@ class GreenActivity : AppCompatActivity() {
             }
         }
 
-        if(appInfo.isDevelopmentOrDebug) {
+        if (appInfo.isDevelopmentOrDebug) {
             // On development flavor, you can change settings using intent data, useful for UI tests
             intent?.let {
                 if (it.hasExtra(ENABLE_TESTNET)) {
@@ -110,9 +110,11 @@ class GreenActivity : AppCompatActivity() {
                 }
 
                 if (it.hasExtra(REGISTER_NETWORK_ID) && it.hasExtra(REGISTER_NETWORK_HOSTNAME)) {
-                    gdk.registerCustomNetwork(it.getStringExtra(REGISTER_NETWORK_ID) ?: "", it.getStringExtra(
-                        REGISTER_NETWORK_HOSTNAME
-                    ) ?: "")
+                    gdk.registerCustomNetwork(
+                        it.getStringExtra(REGISTER_NETWORK_ID) ?: "", it.getStringExtra(
+                            REGISTER_NETWORK_HOSTNAME
+                        ) ?: ""
+                    )
                 }
 
                 if (it.hasExtra(ADD_WALLET)) {
@@ -203,7 +205,7 @@ class GreenActivity : AppCompatActivity() {
             intent.data?.toString()?.let { it.contains("/jade/setup") || it.contains("/j/s") } == true
         ) {
             mainViewModel.postEvent(Events.NavigateTo(NavigateDestinations.DeviceList(isJade = true)))
-        }else if (
+        } else if (
             intent?.action == Intent.ACTION_VIEW &&
             intent.data?.toString()?.contains("/ramps/redirect") == true
         ) {
@@ -230,7 +232,7 @@ class GreenActivity : AppCompatActivity() {
         }
     }
 
-    companion object: Loggable() {
+    companion object : Loggable() {
         const val OPEN_WALLET = "OPEN_WALLET"
         const val WALLET = "WALLET"
         const val DEVICE_ID = "DEVICE_ID"

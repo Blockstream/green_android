@@ -7,7 +7,8 @@ import kotlinx.serialization.Serializable
 
 @Serializable
 data class WalletExtras(
-    @SerialName("settings") val settings: Settings? = null,
+    @SerialName("settings")
+    val settings: Settings? = null,
 ) : GreenJson<WalletExtras>() {
     override fun kSerializer() = serializer()
 

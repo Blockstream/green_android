@@ -11,7 +11,6 @@ import com.blockstream.common.data.EncryptedData
 import com.blockstream.common.gdk.JsonConverter.Companion.JsonDeserializer
 import com.blockstream.common.gdk.data.PinData
 import com.blockstream.green.utils.isDevelopmentFlavor
-import kotlinx.serialization.encodeToString
 
 @Database(
     entities = [Wallet::class, LoginCredentials::class],
@@ -47,7 +46,7 @@ abstract class AppDatabase : RoomDatabase() {
             builder.addMigrations(MIGRATION_5_6).build()
 
             if (isDevelopmentFlavor) {
-                 // builder.fallbackToDestructiveMigration()
+                // builder.fallbackToDestructiveMigration()
             }
 
             return builder.build()
@@ -68,7 +67,7 @@ class Converters {
     }
 
     @TypeConverter
-    fun fromPinData(value: PinData?): String? = value?.let { JsonDeserializer.encodeToString(it)}
+    fun fromPinData(value: PinData?): String? = value?.let { JsonDeserializer.encodeToString(it) }
 
     @TypeConverter
     fun toEncryptedData(value: String?): EncryptedData? = value?.let {
@@ -77,7 +76,8 @@ class Converters {
 
     @TypeConverter
     fun fromEncryptedData(value: EncryptedData?): String? = value?.let {
-        JsonDeserializer.encodeToString(it)}
+        JsonDeserializer.encodeToString(it)
+    }
 
     @TypeConverter
     fun toDeviceIdentifierList(value: String?): List<DeviceIdentifier>? = value?.let {
@@ -85,6 +85,6 @@ class Converters {
     }
 
     @TypeConverter
-    fun fromDeviceIdentifierList(value: List<DeviceIdentifier>?): String? = value?.let { JsonDeserializer.encodeToString(it)}
+    fun fromDeviceIdentifierList(value: List<DeviceIdentifier>?): String? = value?.let { JsonDeserializer.encodeToString(it) }
 }
 

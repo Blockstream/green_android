@@ -17,13 +17,13 @@ import blockstream_green.common.generated.resources.Res
 import blockstream_green.common.generated.resources.id_network_fee
 import blockstream_green.common.generated.resources.pencil_simple_line
 import com.blockstream.common.data.FeePriority
-import com.blockstream.ui.components.GreenRow
 import com.blockstream.compose.theme.bodyMedium
 import com.blockstream.compose.theme.labelLarge
 import com.blockstream.compose.theme.titleSmall
 import com.blockstream.compose.theme.whiteMedium
 import com.blockstream.compose.utils.AnimatedNullableVisibility
 import com.blockstream.compose.utils.roundBackground
+import com.blockstream.ui.components.GreenRow
 import org.jetbrains.compose.resources.painterResource
 import org.jetbrains.compose.resources.stringResource
 
@@ -72,7 +72,8 @@ fun GreenNetworkFee(
                 Text(feePriority.feeRate ?: "", style = bodyMedium, color = whiteMedium)
             }
 
-            Row(verticalAlignment = Alignment.CenterVertically,
+            Row(
+                verticalAlignment = Alignment.CenterVertically,
                 modifier = Modifier.padding(end = if (withEditIcon && onClick != null) 0.dp else 16.dp)
             ) {
 
@@ -89,7 +90,7 @@ fun GreenNetworkFee(
                     )
                 }
 
-                if(withEditIcon){
+                if (withEditIcon) {
                     IconButton(onClick = {
                         onClick?.invoke(true)
                     }) {

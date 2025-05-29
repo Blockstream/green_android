@@ -28,7 +28,7 @@ data class SignMessageRequest(
 }
 
 @OptIn(ExperimentalStdlibApi::class)
-class SignedMessage(val signature: String, val signerCommitment: String? = null){
+class SignedMessage(val signature: String, val signerCommitment: String? = null) {
     constructor(signature: String, signerCommitment: ByteArray) : this(
         signature = signature,
         signerCommitment = signerCommitment.toHexString()

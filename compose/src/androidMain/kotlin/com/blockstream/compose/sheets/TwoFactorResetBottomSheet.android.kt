@@ -7,7 +7,6 @@ import com.blockstream.common.gdk.data.TwoFactorReset
 import com.blockstream.common.models.SimpleGreenViewModelPreview
 import com.blockstream.compose.GreenAndroidPreview
 
-
 @Composable
 @Preview
 fun TwoFactorResetBottomSheetPreview() {

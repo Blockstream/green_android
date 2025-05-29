@@ -5,7 +5,6 @@ import blockstream_green.common.generated.resources.id_creating_wallet
 import blockstream_green.common.generated.resources.id_recovery_phrase_check
 import blockstream_green.common.generated.resources.id_restoring_your_wallet
 import com.blockstream.common.data.SetupArgs
-import com.blockstream.ui.events.Event
 import com.blockstream.common.events.Events
 import com.blockstream.common.extensions.launchIn
 import com.blockstream.common.models.GreenViewModel
@@ -15,6 +14,7 @@ import com.blockstream.common.usecases.CheckRecoveryPhraseUseCase
 import com.blockstream.common.usecases.NewWalletUseCase
 import com.blockstream.common.usecases.RestoreWalletUseCase
 import com.blockstream.green.utils.Loggable
+import com.blockstream.ui.events.Event
 import com.rickclephas.kmp.nativecoroutines.NativeCoroutinesState
 import com.rickclephas.kmp.observableviewmodel.MutableStateFlow
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -86,7 +86,7 @@ class PinViewModel constructor(
             } else {
                 postSideEffect(SideEffects.ErrorDialog(Exception("PIN should be 6 digits")))
             }
-        } else if(event is Events.Continue){
+        } else if (event is Events.Continue) {
             _greenWallet?.also {
                 postSideEffect(SideEffects.NavigateTo(NavigateDestinations.WalletOverview(greenWallet = it, showWalletOnboarding = true)))
             }
@@ -111,7 +111,9 @@ class PinViewModel constructor(
                 postSideEffect(SideEffects.NavigateBack(error = it))
             } else if (it.message == "id_login_failed") {
                 postSideEffect(SideEffects.NavigateBack(error = Exception("id_no_multisig_shield_wallet")))
-            } else if (it.message?.lowercase()?.contains("decrypt_mnemonic") == true || it.message?.lowercase()?.contains("invalid checksum") == true) {
+            } else if (it.message?.lowercase()?.contains("decrypt_mnemonic") == true || it.message?.lowercase()
+                    ?.contains("invalid checksum") == true
+            ) {
                 postSideEffect(SideEffects.NavigateBack(error = Exception("id_error_passphrases_do_not_match")))
             } else {
                 postSideEffect(SideEffects.ErrorDialog(it))

@@ -1,22 +1,21 @@
 package com.blockstream.common.models.demo
 
 import com.blockstream.common.Urls
-import com.blockstream.common.gdk.GdkSession
 import com.blockstream.common.data.DataState
-import com.blockstream.ui.events.Event
+import com.blockstream.common.gdk.GdkSession
 import com.blockstream.common.models.GreenViewModel
-import com.blockstream.ui.sideeffects.SideEffect
 import com.blockstream.common.sideeffects.SideEffects
 import com.blockstream.common.utils.toAmountLookOrNa
+import com.blockstream.ui.events.Event
+import com.blockstream.ui.sideeffects.SideEffect
+import com.rickclephas.kmp.nativecoroutines.NativeCoroutinesState
 import com.rickclephas.kmp.observableviewmodel.MutableStateFlow
 import com.rickclephas.kmp.observableviewmodel.coroutineScope
 import com.rickclephas.kmp.observableviewmodel.stateIn
-import com.rickclephas.kmp.nativecoroutines.NativeCoroutinesState
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.launch
-
 
 class DemoViewModel : GreenViewModel() {
     @NativeCoroutinesState
@@ -25,7 +24,7 @@ class DemoViewModel : GreenViewModel() {
     @NativeCoroutinesState
     val data = MutableStateFlow<DataState<Int>>(viewModelScope, DataState.Loading)
 
-    class LocalEvents{
+    class LocalEvents {
         object EventOpenBrowser : Event
         object EventLogin : Event
         object EventRefresh : Event
@@ -38,6 +37,7 @@ class DemoViewModel : GreenViewModel() {
             is LocalEvents.EventOpenBrowser -> {
                 postSideEffect(SideEffects.OpenBrowser(Urls.BLOCKSTREAM_GREEN_WEBSITE))
             }
+
             is LocalEvents.EventRefresh -> {
                 gdkSession.updateAccountsAndBalances(refresh = true)
                 gdkSession.updateWalletTransactions()
@@ -76,14 +76,14 @@ class DemoViewModel : GreenViewModel() {
 
     @NativeCoroutinesState
     val walletBalance = gdkSession.walletTotalBalance
-            .map {
-                if (it > -1) {
-                    it.toAmountLookOrNa(
-                        session = gdkSession,
-                        withUnit = true
-                    )
-                } else {
-                    "-"
-                }
-            }.stateIn(viewModelScope, SharingStarted.WhileSubscribed(), "Disconnected")
+        .map {
+            if (it > -1) {
+                it.toAmountLookOrNa(
+                    session = gdkSession,
+                    withUnit = true
+                )
+            } else {
+                "-"
+            }
+        }.stateIn(viewModelScope, SharingStarted.WhileSubscribed(), "Disconnected")
 }

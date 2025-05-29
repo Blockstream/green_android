@@ -158,7 +158,6 @@ fun SweepScreen(
                     )
                 }
 
-
                 val amount by viewModel.amount.collectAsStateWithLifecycle()
                 val amountFiat by viewModel.amountFiat.collectAsStateWithLifecycle()
 

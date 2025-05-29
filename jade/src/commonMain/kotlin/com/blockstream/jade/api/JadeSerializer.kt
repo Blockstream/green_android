@@ -8,7 +8,6 @@ import kotlinx.serialization.decodeFromByteArray
 import kotlinx.serialization.json.Json
 import kotlinx.serialization.json.JsonElement
 
-
 @OptIn(ExperimentalSerializationApi::class)
 abstract class JadeSerializer<T> {
     open fun encodeDefaultsValues() = true
@@ -37,7 +36,6 @@ abstract class JadeSerializer<T> {
         useDefiniteLengthEncoding = true
         alwaysUseByteString = true
     }.encodeToByteArray(kSerializer(), this as T)
-
 
     @ExperimentalStdlibApi
     fun toCborHex() = toCbor().toHexString()

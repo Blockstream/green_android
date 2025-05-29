@@ -35,6 +35,7 @@ data class AccountAssetBalance constructor(
             balanceExchange = balanceExchange
         ) else null
     }
+
     fun balance(session: GdkSession) = session.accountAssets(account).value.balance(assetId)
 
     companion object {
@@ -43,7 +44,7 @@ data class AccountAssetBalance constructor(
             session: GdkSession?,
             denomination: Denomination? = null
         ): AccountAssetBalance {
-            if(session == null){
+            if (session == null) {
                 return AccountAssetBalance.create(accountAsset)
             }
             return accountAsset.balance(session).let { balance ->
@@ -71,7 +72,7 @@ data class AccountAssetBalance constructor(
             session: GdkSession?,
             denomination: Denomination? = null
         ): AccountAssetBalance? {
-            if(session == null){
+            if (session == null) {
                 return null
             }
 

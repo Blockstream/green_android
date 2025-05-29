@@ -3,9 +3,7 @@ package com.blockstream.common.models.settings
 import blockstream_green.common.generated.resources.Res
 import blockstream_green.common.generated.resources.id_app_settings
 import com.blockstream.common.data.ApplicationSettings
-import com.blockstream.ui.navigation.NavData
 import com.blockstream.common.data.ScreenLockSetting
-import com.blockstream.ui.events.Event
 import com.blockstream.common.events.Events
 import com.blockstream.common.extensions.isNotBlank
 import com.blockstream.common.gdk.events.GenericEvent
@@ -13,9 +11,11 @@ import com.blockstream.common.managers.LocaleManager
 import com.blockstream.common.managers.Locales
 import com.blockstream.common.models.GreenViewModel
 import com.blockstream.common.navigation.NavigateDestinations
-import com.blockstream.ui.sideeffects.SideEffect
 import com.blockstream.common.sideeffects.SideEffects
 import com.blockstream.green.utils.Loggable
+import com.blockstream.ui.events.Event
+import com.blockstream.ui.navigation.NavData
+import com.blockstream.ui.sideeffects.SideEffect
 import com.rickclephas.kmp.nativecoroutines.NativeCoroutinesState
 import com.rickclephas.kmp.observableviewmodel.MutableStateFlow
 import com.rickclephas.kmp.observableviewmodel.coroutineScope
@@ -137,7 +137,7 @@ class AppSettingsViewModel : AppSettingsViewModelAbstract() {
     override val enhancedPrivacyEnabled = MutableStateFlow(viewModelScope, appSettings.enhancedPrivacy)
 
     @NativeCoroutinesState
-    override val screenLockInSeconds = MutableStateFlow(viewModelScope, ScreenLockSetting.bySeconds(appSettings.screenLockInSeconds) )
+    override val screenLockInSeconds = MutableStateFlow(viewModelScope, ScreenLockSetting.bySeconds(appSettings.screenLockInSeconds))
 
     @NativeCoroutinesState
     override val torEnabled = MutableStateFlow(viewModelScope, appSettings.tor)
@@ -167,36 +167,47 @@ class AppSettingsViewModel : AppSettingsViewModelAbstract() {
     override val spvEnabled: MutableStateFlow<Boolean> = MutableStateFlow(viewModelScope, appSettings.spv)
 
     @NativeCoroutinesState
-    override val multiServerValidationEnabled: MutableStateFlow<Boolean> = MutableStateFlow(viewModelScope, appSettings.multiServerValidation)
+    override val multiServerValidationEnabled: MutableStateFlow<Boolean> =
+        MutableStateFlow(viewModelScope, appSettings.multiServerValidation)
 
     @NativeCoroutinesState
-    override val personalElectrumServerTlsEnabled: MutableStateFlow<Boolean> = MutableStateFlow(viewModelScope, appSettings.personalElectrumServerTls)
+    override val personalElectrumServerTlsEnabled: MutableStateFlow<Boolean> =
+        MutableStateFlow(viewModelScope, appSettings.personalElectrumServerTls)
 
     @NativeCoroutinesState
-    override val personalBitcoinElectrumServer: MutableStateFlow<String> = MutableStateFlow(viewModelScope, appSettings.personalBitcoinElectrumServer ?: "")
+    override val personalBitcoinElectrumServer: MutableStateFlow<String> =
+        MutableStateFlow(viewModelScope, appSettings.personalBitcoinElectrumServer ?: "")
 
     @NativeCoroutinesState
-    override val personalLiquidElectrumServer: MutableStateFlow<String> = MutableStateFlow(viewModelScope, appSettings.personalLiquidElectrumServer ?: "")
+    override val personalLiquidElectrumServer: MutableStateFlow<String> =
+        MutableStateFlow(viewModelScope, appSettings.personalLiquidElectrumServer ?: "")
 
     @NativeCoroutinesState
-    override val personalTestnetElectrumServer: MutableStateFlow<String> = MutableStateFlow(viewModelScope, appSettings.personalTestnetElectrumServer ?: "")
+    override val personalTestnetElectrumServer: MutableStateFlow<String> =
+        MutableStateFlow(viewModelScope, appSettings.personalTestnetElectrumServer ?: "")
 
     @NativeCoroutinesState
-    override val personalTestnetLiquidElectrumServer: MutableStateFlow<String> = MutableStateFlow(viewModelScope, appSettings.personalTestnetLiquidElectrumServer ?: "")
+    override val personalTestnetLiquidElectrumServer: MutableStateFlow<String> =
+        MutableStateFlow(viewModelScope, appSettings.personalTestnetLiquidElectrumServer ?: "")
 
-    override val electrumServerGapLimit: MutableStateFlow<String> = MutableStateFlow(viewModelScope, "${appSettings.electrumServerGapLimit ?: ""}")
-
-    @NativeCoroutinesState
-    override val spvBitcoinElectrumServer: MutableStateFlow<String> = MutableStateFlow(viewModelScope, appSettings.spvBitcoinElectrumServer ?: "")
-
-    @NativeCoroutinesState
-    override val spvLiquidElectrumServer: MutableStateFlow<String> = MutableStateFlow(viewModelScope, appSettings.spvLiquidElectrumServer ?: "")
+    override val electrumServerGapLimit: MutableStateFlow<String> =
+        MutableStateFlow(viewModelScope, "${appSettings.electrumServerGapLimit ?: ""}")
 
     @NativeCoroutinesState
-    override val spvTestnetElectrumServer: MutableStateFlow<String> = MutableStateFlow(viewModelScope, appSettings.spvTestnetElectrumServer ?: "")
+    override val spvBitcoinElectrumServer: MutableStateFlow<String> =
+        MutableStateFlow(viewModelScope, appSettings.spvBitcoinElectrumServer ?: "")
 
     @NativeCoroutinesState
-    override val spvTestnetLiquidElectrumServer: MutableStateFlow<String> = MutableStateFlow(viewModelScope, appSettings.spvTestnetLiquidElectrumServer ?: "")
+    override val spvLiquidElectrumServer: MutableStateFlow<String> =
+        MutableStateFlow(viewModelScope, appSettings.spvLiquidElectrumServer ?: "")
+
+    @NativeCoroutinesState
+    override val spvTestnetElectrumServer: MutableStateFlow<String> =
+        MutableStateFlow(viewModelScope, appSettings.spvTestnetElectrumServer ?: "")
+
+    @NativeCoroutinesState
+    override val spvTestnetLiquidElectrumServer: MutableStateFlow<String> =
+        MutableStateFlow(viewModelScope, appSettings.spvTestnetLiquidElectrumServer ?: "")
 
     @NativeCoroutinesState
     override val locales = MutableStateFlow(viewModelScope, Locales)
@@ -204,14 +215,14 @@ class AppSettingsViewModel : AppSettingsViewModelAbstract() {
     @NativeCoroutinesState
     override val locale: MutableStateFlow<String?> = MutableStateFlow(viewModelScope, localeManager.getLocale())
 
-    class LocalEvents{
-        object AnalyticsMoreInfo: Events.EventSideEffect(SideEffects.NavigateTo(NavigateDestinations.Analytics))
-        object Save: Event
-        object Cancel: Event
+    class LocalEvents {
+        object AnalyticsMoreInfo : Events.EventSideEffect(SideEffects.NavigateTo(NavigateDestinations.Analytics))
+        object Save : Event
+        object Cancel : Event
     }
 
     class LocalSideEffects {
-        object UnsavedAppSettings: SideEffect
+        object UnsavedAppSettings : SideEffect
     }
 
     init {
@@ -294,7 +305,7 @@ class AppSettingsViewModel : AppSettingsViewModelAbstract() {
         analytics = analyticsEnabled.value,
         experimentalFeatures = experimentalFeaturesEnabled.value,
         locale = locale.value,
-        proxyUrl =  proxyUrl.value.takeIf { it.isNotBlank() && proxyEnabled.value },
+        proxyUrl = proxyUrl.value.takeIf { it.isNotBlank() && proxyEnabled.value },
         rememberHardwareDevices = rememberHardwareDevices.value,
         electrumNode = electrumNodeEnabled.value,
         tor = torEnabled.value,
@@ -320,7 +331,7 @@ class AppSettingsViewModel : AppSettingsViewModelAbstract() {
         return getSettings() != appSettings
     }
 
-    companion object: Loggable()
+    companion object : Loggable()
 }
 
 class AppSettingsViewModelPreview(initValue: Boolean = false) : AppSettingsViewModelAbstract() {
@@ -333,7 +344,8 @@ class AppSettingsViewModelPreview(initValue: Boolean = false) : AppSettingsViewM
     override val analyticsFeatureEnabled: Boolean = true
     override val experimentalFeatureEnabled: Boolean = true
     override val enhancedPrivacyEnabled: MutableStateFlow<Boolean> = MutableStateFlow(viewModelScope, initValue)
-    override val screenLockInSeconds: MutableStateFlow<ScreenLockSetting> = MutableStateFlow(viewModelScope, ScreenLockSetting.LOCK_IMMEDIATELY)
+    override val screenLockInSeconds: MutableStateFlow<ScreenLockSetting> =
+        MutableStateFlow(viewModelScope, ScreenLockSetting.LOCK_IMMEDIATELY)
     override val torEnabled: MutableStateFlow<Boolean> = MutableStateFlow(viewModelScope, initValue)
     override val proxyEnabled: MutableStateFlow<Boolean> = MutableStateFlow(viewModelScope, initValue)
     override val proxyUrl: MutableStateFlow<String> = MutableStateFlow(viewModelScope, "")

@@ -7,13 +7,13 @@ import com.blockstream.common.BitcoinUnits
 import com.blockstream.common.TestnetUnits
 import com.blockstream.common.data.GreenWallet
 import com.blockstream.common.data.WalletExtras
-import com.blockstream.ui.events.Event
 import com.blockstream.common.extensions.ifConnected
 import com.blockstream.common.extensions.launchIn
 import com.blockstream.common.extensions.previewWallet
 import com.blockstream.common.gdk.data.Settings
 import com.blockstream.common.models.GreenViewModel
 import com.blockstream.common.sideeffects.SideEffects
+import com.blockstream.ui.events.Event
 import com.rickclephas.kmp.nativecoroutines.NativeCoroutinesState
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
@@ -21,7 +21,6 @@ import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.filterNotNull
 import kotlinx.coroutines.flow.onEach
 import org.jetbrains.compose.resources.getString
-
 
 abstract class DenominationExchangeRateViewModelAbstract(greenWallet: GreenWallet) :
     GreenViewModel(greenWalletOrNull = greenWallet) {
@@ -54,14 +53,16 @@ class DenominationExchangeRateViewModel(greenWallet: GreenWallet) :
     override val selectedExchangeAndCurrency: StateFlow<String> =
         _selectedExchangeAndCurrency.asStateFlow()
 
-    private val availablePricing by lazy { session.ifConnected {
-        try {
-            session.availableCurrencies()
-        } catch (e: Exception) {
-            countly.recordException(e)
-            null
-        }
-    } ?: listOf() }
+    private val availablePricing by lazy {
+        session.ifConnected {
+            try {
+                session.availableCurrencies()
+            } catch (e: Exception) {
+                countly.recordException(e)
+                null
+            }
+        } ?: listOf()
+    }
 
     class LocalEvents {
         data class Set(val unit: String? = null, val exchangeAndCurrency: String? = null) : Event

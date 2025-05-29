@@ -20,14 +20,14 @@ import com.blockstream.compose.managers.LocalPlatformManager
 import kotlinx.coroutines.flow.MutableStateFlow
 import org.jetbrains.compose.resources.painterResource
 
-
 @Composable
 fun TextInputPaste(state: MutableStateFlow<String>) {
     val platformManager = LocalPlatformManager.current
     val value by state.collectAsStateWithLifecycle()
 
     if (value.isEmpty()) {
-        Icon(painterResource(Res.drawable.clipboard),
+        Icon(
+            painterResource(Res.drawable.clipboard),
             contentDescription = "Paste text",
             modifier = Modifier.clickable {
                 state.value = platformManager.getClipboard() ?: ""

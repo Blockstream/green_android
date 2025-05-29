@@ -209,8 +209,8 @@ fun GreenAlert(
     onPrimaryClick: (() -> Unit)? = null,
     onCloseClick: (() -> Unit)? = null,
 ) {
-    val containerColor = if(isBlue) blueSurface else orangeSurface
-    val outline = if(isBlue) blueOutline else orangeOutline
+    val containerColor = if (isBlue) blueSurface else orangeSurface
+    val outline = if (isBlue) blueOutline else orangeOutline
 
     GreenCard(
         padding = 0,

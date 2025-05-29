@@ -38,7 +38,6 @@ import com.blockstream.compose.components.GreenButtonSize
 import com.blockstream.compose.components.GreenButtonType
 import com.blockstream.compose.components.GreenQR
 import com.blockstream.compose.components.GreenScanner
-import com.blockstream.ui.navigation.LocalInnerPadding
 import com.blockstream.compose.theme.GreenTheme
 import com.blockstream.compose.theme.green
 import com.blockstream.compose.theme.headlineSmall
@@ -47,6 +46,7 @@ import com.blockstream.compose.theme.textHigh
 import com.blockstream.compose.theme.textMedium
 import com.blockstream.compose.utils.SetupScreen
 import com.blockstream.ui.components.GreenColumn
+import com.blockstream.ui.navigation.LocalInnerPadding
 import com.blockstream.ui.navigation.getResult
 import com.blockstream.ui.navigation.setResult
 import com.blockstream.ui.utils.bottom
@@ -156,7 +156,6 @@ fun JadeQRScreen(
                         )
                     }
 
-
                     val qrCode by viewModel.urPart.collectAsState()
                     val onProgress by viewModel.onProgress.collectAsStateWithLifecycle()
                     Box(
@@ -210,7 +209,6 @@ fun JadeQRScreen(
                                     viewModel.postEvent(JadeQRViewModel.LocalEvents.CheckTransactionDetails)
                                 }
                             }
-
 
                             val buttonEnabled by viewModel.buttonEnabled.collectAsStateWithLifecycle()
                             GreenButton(

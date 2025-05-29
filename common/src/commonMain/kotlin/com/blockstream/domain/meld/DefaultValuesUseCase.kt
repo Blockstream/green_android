@@ -6,7 +6,6 @@ import com.blockstream.green.data.json.DefaultJson
 import com.blockstream.green.data.meld.data.BuyDefaultValues
 import kotlinx.serialization.json.decodeFromJsonElement
 
-
 class DefaultValuesUseCase(
     private val countly: CountlyBase
 ) {

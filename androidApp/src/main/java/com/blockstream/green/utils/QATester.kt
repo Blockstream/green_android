@@ -2,7 +2,6 @@ package com.blockstream.green.utils
 
 import android.content.Context
 import androidx.lifecycle.MutableLiveData
-import com.blockstream.jade.firmware.HardwareQATester
 import com.blockstream.common.gdk.data.Notification
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.Flow
@@ -35,9 +34,9 @@ class QATester(val context: Context) : com.blockstream.jade.firmware.HardwareQAT
     }
 
     @Deprecated("Do not use")
-    fun getSessionNotificationInjectorFlow() : Flow<Notification> {
+    fun getSessionNotificationInjectorFlow(): Flow<Notification> {
         // Disable it completely
-        if(isProductionFlavor){
+        if (isProductionFlavor) {
             return emptyFlow()
         }
 

@@ -131,7 +131,6 @@ fun SecurityScreen(viewModel: SecurityViewModelAbstract) {
             }
         }) {
 
-
         LazyColumn(
             state = listState,
             verticalArrangement = Arrangement.spacedBy(8.dp),

@@ -16,17 +16,17 @@ object Base64Serializer : KSerializer<ByteArray?> {
     )
 
     override fun serialize(encoder: Encoder, value: ByteArray?) {
-        if(value != null) {
+        if (value != null) {
             encoder.encodeString(value.base64Encoded)
-        }else{
+        } else {
             encoder.encodeByte(0)
         }
     }
 
     override fun deserialize(decoder: Decoder): ByteArray? {
-        try{
+        try {
             return decoder.decodeString().base64DecodedBytes
-        }catch (e: Exception){
+        } catch (e: Exception) {
             e.printStackTrace()
         }
         return null

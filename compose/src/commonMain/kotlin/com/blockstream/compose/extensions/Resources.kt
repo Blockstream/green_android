@@ -108,7 +108,8 @@ fun WalletIcon.resource() = when (this) {
 
 fun GreenDevice?.icon(): DrawableResource = this?.deviceModel?.icon() ?: this?.deviceBrand?.deviceBrandIcon() ?: Res.drawable.generic_device
 
-fun GreenDevice?.actionIcon(): DrawableResource = this?.deviceModel?.actionIcon() ?: this?.deviceBrand?.deviceBrandIcon() ?: Res.drawable.generic_device
+fun GreenDevice?.actionIcon(): DrawableResource =
+    this?.deviceModel?.actionIcon() ?: this?.deviceBrand?.deviceBrandIcon() ?: Res.drawable.generic_device
 
 fun DeviceBrand.deviceBrandIcon(): DrawableResource = when (this) {
     DeviceBrand.Ledger -> Res.drawable.ledger_device
@@ -121,7 +122,7 @@ fun DeviceModel.icon(): DrawableResource = when (this) {
     DeviceModel.BlockstreamGeneric -> Res.drawable.blockstream_devices
     DeviceModel.BlockstreamJade -> Res.drawable.blockstream_jade_device
     DeviceModel.BlockstreamJadePlus -> Res.drawable.blockstream_jade_plus_device
-    DeviceModel.TrezorGeneric, DeviceModel.TrezorModelT, DeviceModel.TrezorModelOne ->  Res.drawable.trezor_device
+    DeviceModel.TrezorGeneric, DeviceModel.TrezorModelT, DeviceModel.TrezorModelOne -> Res.drawable.trezor_device
     DeviceModel.LedgerGeneric, DeviceModel.LedgerNanoS, DeviceModel.LedgerNanoX -> Res.drawable.ledger_device
     DeviceModel.Generic -> Res.drawable.generic_device
 }
@@ -210,7 +211,6 @@ fun TransactionLook.directionColor(index: Int) = when {
     else -> if ((transaction.assets.getOrNull(index)?.second ?: 0) < 0) textHigh else green
 }
 
-
 @Composable
 fun String?.assetIcon(session: GdkSession? = null, isLightning: Boolean = false): Painter {
     return if (this == null || this == BTC_POLICY_ASSET || this == LN_BTC_POLICY_ASSET || this == LBTC_POLICY_ASSET || (session != null && this.isPolicyAsset(
@@ -246,7 +246,7 @@ fun String?.assetIcon(session: GdkSession? = null, isLightning: Boolean = false)
 }
 
 // Temp solution
-fun String.toDrawableResource(): DrawableResource? = when(this) {
+fun String.toDrawableResource(): DrawableResource? = when (this) {
     "eye" -> Res.drawable.eye
     "eye_slash" -> Res.drawable.eye_slash
     "code_block" -> Res.drawable.code_block

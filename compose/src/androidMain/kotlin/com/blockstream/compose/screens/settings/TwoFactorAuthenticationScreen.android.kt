@@ -14,7 +14,10 @@ fun TwoFactorAuthenticationScreenPreview(
     GreenAndroidPreview {
         TwoFactorAuthenticationScreen(
             viewModel = TwoFactorAuthenticationViewModelPreview.preview(),
-            networkViewModels = listOf(WalletSettingsViewModelPreview.previewTwoFactor(), WalletSettingsViewModelPreview.previewTwoFactor()),
+            networkViewModels = listOf(
+                WalletSettingsViewModelPreview.previewTwoFactor(),
+                WalletSettingsViewModelPreview.previewTwoFactor()
+            ),
             network = previewNetwork()
         )
     }

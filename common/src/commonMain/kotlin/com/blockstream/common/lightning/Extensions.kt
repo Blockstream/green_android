@@ -1,4 +1,5 @@
-@file:OptIn(ExperimentalStdlibApi::class, ExperimentalUnsignedTypes::class,
+@file:OptIn(
+    ExperimentalStdlibApi::class, ExperimentalUnsignedTypes::class,
     ExperimentalStdlibApi::class
 )
 
@@ -60,7 +61,7 @@ fun LnInvoice.isExpired(): Boolean {
 fun LnInvoice.isAmountLocked() = this.amountMsat != null
 
 fun LnInvoice.sendableSatoshi(userSatoshi: Long?): Long? {
-    return if(isAmountLocked()){
+    return if (isAmountLocked()) {
         this.amountSatoshi() ?: 0L
     } else {
         userSatoshi
@@ -74,9 +75,9 @@ fun LnUrlWithdrawRequestData.domain() = this.callback.hostname(excludePort = tru
 
 fun LnUrlPayRequestData.isAmountLocked() = minSendable == maxSendable
 fun LnUrlPayRequestData.sendableSatoshi(userSatoshi: Long?): Long? {
-    return if(isAmountLocked()){
+    return if (isAmountLocked()) {
         maxSendableSatoshi()
-    }else{
+    } else {
         userSatoshi
     }
 }
@@ -85,9 +86,9 @@ fun LnUrlPayRequestData.maxSendableSatoshi() = this.maxSendable.satoshi()
 fun LnUrlPayRequestData.minSendableSatoshi() = this.minSendable.satoshi()
 
 fun LnUrlPayRequestData.metadata(): List<List<String>>? {
-    return try{
+    return try {
         Json.decodeFromString<List<List<String>>>(metadataStr)
-    }catch (e: Exception){
+    } catch (e: Exception) {
         e.printStackTrace()
         null
     }
@@ -103,9 +104,9 @@ fun List<List<String>>?.lnUrlPayImage(): ByteArray? {
     return this?.find {
         "image/png;base64" == it.getOrNull(0)
     }?.last()?.let {
-        try{
+        try {
             Base64.decode(it)
-        }catch (e: Exception){
+        } catch (e: Exception) {
             e.printStackTrace()
             null
         }
@@ -120,7 +121,7 @@ fun NodeState.totalInboundLiquiditySatoshi() = this.totalInboundLiquidityMsats.s
 fun NodeState.maxSinglePaymentAmountSatoshi() = this.maxSinglePaymentAmountMsat.satoshi()
 fun NodeState.maxPayableSatoshi() = this.maxPayableMsat.satoshi()
 
-fun Payment.amountSatoshi() = amountMsat.satoshi() * if(paymentType == PaymentType.RECEIVED) 1 else -1
+fun Payment.amountSatoshi() = amountMsat.satoshi() * if (paymentType == PaymentType.RECEIVED) 1 else -1
 
 fun Addressee.Companion.fromInvoice(invoice: LnInvoice, fallbackAmount: Long): Addressee {
     return Addressee(
@@ -149,6 +150,7 @@ fun Output.Companion.fromInvoice(invoice: LnInvoice, fallbackAmount: Long): Outp
         isChange = false
     )
 }
+
 fun Output.Companion.fromLnUrlPay(requestData: LnUrlPayRequestData, input: String, satoshi: Long): Output {
     return Output(
         address = input,
@@ -160,11 +162,12 @@ fun Output.Companion.fromLnUrlPay(requestData: LnUrlPayRequestData, input: Strin
 
 fun Transaction.Companion.fromPayment(payment: Payment): Transaction {
     val extras = buildMap {
-        when(val details = payment.details) {
+        when (val details = payment.details) {
             is PaymentDetails.ClosedChannel -> {
                 details.data.fundingTxid.also { put("id_funding_transaction_id", it) }
                 details.data.closingTxid?.also { put("id_closing_transaction_id", it) }
             }
+
             is PaymentDetails.Ln -> {
                 payment.description.takeIf { it.isNotBlank() }?.also { put("id_invoice_description", it) }
                 put("id_destination_public_key", details.data.destinationPubkey)
@@ -175,7 +178,8 @@ fun Transaction.Companion.fromPayment(payment: Payment): Transaction {
         }
     }.toList()
 
-    val isPendingCloseChannel = payment.paymentType == PaymentType.CLOSED_CHANNEL && (payment.details as? PaymentDetails.ClosedChannel)?.data?.state == ChannelState.PENDING_CLOSE
+    val isPendingCloseChannel =
+        payment.paymentType == PaymentType.CLOSED_CHANNEL && (payment.details as? PaymentDetails.ClosedChannel)?.data?.state == ChannelState.PENDING_CLOSE
 
     val blockHeight = when {
         isPendingCloseChannel || payment.status == PaymentStatus.PENDING -> 0
@@ -190,19 +194,22 @@ fun Transaction.Companion.fromPayment(payment: Payment): Transaction {
         canRBF = false,
         createdAtTs = payment.paymentTime * 1_000_000,
         inputs = listOf(),
-        outputs = listOf(InputOutput(
-            satoshi = payment.amountSatoshi(),
-        )),
+        outputs = listOf(
+            InputOutput(
+                satoshi = payment.amountSatoshi(),
+            )
+        ),
         fee = payment.feeMsat.satoshi(),
         feeRate = 0,
         memo = payment.description ?: "",
         spvVerified = "",
-        txHash = (payment.details as? PaymentDetails.Ln)?.data?.paymentHash ?: (payment.details as? PaymentDetails.ClosedChannel)?.data?.closingTxid ?: payment.id,
-        type = if(payment.paymentType == PaymentType.RECEIVED) "incoming" else "outgoing",
-        satoshi = mapOf(BTC_POLICY_ASSET to (payment.amountSatoshi() - if(payment.paymentType == PaymentType.SENT) payment.feeMsat.satoshi() else 0L)),
+        txHash = (payment.details as? PaymentDetails.Ln)?.data?.paymentHash
+            ?: (payment.details as? PaymentDetails.ClosedChannel)?.data?.closingTxid ?: payment.id,
+        type = if (payment.paymentType == PaymentType.RECEIVED) "incoming" else "outgoing",
+        satoshi = mapOf(BTC_POLICY_ASSET to (payment.amountSatoshi() - if (payment.paymentType == PaymentType.SENT) payment.feeMsat.satoshi() else 0L)),
         message = ((payment.details as? PaymentDetails.Ln)?.data?.lnurlSuccessAction as? SuccessActionProcessed.Message)?.data?.message,
         plaintext = (((payment.details as? PaymentDetails.Ln)?.data?.lnurlSuccessAction as? SuccessActionProcessed.Aes)?.result as? AesSuccessActionDataResult.Decrypted)?.data?.let { it.description to it.plaintext },
-        url = ((payment.details as? PaymentDetails.Ln)?.data?.lnurlSuccessAction as? SuccessActionProcessed.Url)?.data?.let { it.description to it.url},
+        url = ((payment.details as? PaymentDetails.Ln)?.data?.lnurlSuccessAction as? SuccessActionProcessed.Url)?.data?.let { it.description to it.url },
         isCloseChannel = payment.paymentType == PaymentType.CLOSED_CHANNEL,
         isPendingCloseChannel = isPendingCloseChannel,
         extras = extras
@@ -218,9 +225,9 @@ fun Transaction.Companion.fromSwapInfo(account: Account, swapInfo: SwapInfo, isR
 
     return Transaction(
         accountInjected = account,
-        blockHeight = if(isRefundableSwap) Long.MAX_VALUE else 0,
+        blockHeight = if (isRefundableSwap) Long.MAX_VALUE else 0,
         canRBF = false,
-        createdAtTs = swapInfo.createdAt.let { if(it > 0) it * 1_000_000 else 0 },
+        createdAtTs = swapInfo.createdAt.let { if (it > 0) it * 1_000_000 else 0 },
         inputs = listOf(
             InputOutput(
                 address = swapInfo.bitcoinAddress
@@ -235,7 +242,7 @@ fun Transaction.Companion.fromSwapInfo(account: Account, swapInfo: SwapInfo, isR
         ?: swapInfo.unconfirmedTxIds.firstOrNull() ?: swapInfo.paymentHash.toList().toUByteArray()
             .toHexString(),
         type = Transaction.Type.IN.gdkType,
-        satoshi = mapOf(BTC_POLICY_ASSET to swapInfo.confirmedSats.toLong() + (if(isRefundableSwap) 0 else swapInfo.unconfirmedSats.toLong())),
+        satoshi = mapOf(BTC_POLICY_ASSET to swapInfo.confirmedSats.toLong() + (if (isRefundableSwap) 0 else swapInfo.unconfirmedSats.toLong())),
         isLightningSwap = true,
         isInProgressSwap = swapInfo.confirmedSats.toLong() > 0 && !isRefundableSwap,
         isRefundableSwap = isRefundableSwap,
@@ -270,7 +277,7 @@ fun AppGreenlightCredentials.Companion.fromGreenlightCredentials(greenlightCrede
     )
 }
 
-fun RecommendedFees.fee(feePriority: FeePriority): Long{
+fun RecommendedFees.fee(feePriority: FeePriority): Long {
     return feePriority.let {
         when (it) {
             is FeePriority.High -> fastestFee

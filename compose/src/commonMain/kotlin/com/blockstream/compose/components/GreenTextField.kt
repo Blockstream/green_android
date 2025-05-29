@@ -78,7 +78,7 @@ fun GreenTextField(
                     keyboardOptions = keyboardOptions,
                     keyboardActions = keyboardActions,
                     decorationBox = {
-                        if(placeholder != null && value.isBlank()){
+                        if (placeholder != null && value.isBlank()) {
                             Text(placeholder, color = whiteMedium)
                         }
                         it()
@@ -91,7 +91,7 @@ fun GreenTextField(
                 )
 
                 if (value.isEmpty()) {
-                    if(onQrClick != null){
+                    if (onQrClick != null) {
                         IconButton(onClick = { onQrClick.invoke() }, enabled = enabled) {
                             Icon(
                                 imageVector = PhosphorIcons.Regular.QrCode,

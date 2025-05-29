@@ -54,7 +54,6 @@ actual public class BottomSheetNavigator : Navigator<Destination>("bottomSheet")
 
     private var attached by mutableStateOf(false)
 
-
     /**
      * Get the back stack from the [state]. In some cases, the [sheetInitializer] might be composed
      * before the Navigator is attached, so we specifically return an empty flow if we aren't
@@ -95,11 +94,9 @@ actual public class BottomSheetNavigator : Navigator<Destination>("bottomSheet")
 
     private var animateToDismiss: () -> Unit = {}
 
-
     internal actual val sheetInitializer: @Composable () -> Unit = {
         val saveableStateHolder = rememberSaveableStateHolder()
         val transitionsInProgressEntries by transitionsInProgress.collectAsState()
-
 
         // The latest back stack entry, retained until the sheet is completely hidden
         // While the back stack is updated immediately, we might still be hiding the sheet, so
@@ -186,7 +183,6 @@ actual public class BottomSheetNavigator : Navigator<Destination>("bottomSheet")
                 animateToDismiss = {}
             }
         }
-
 
     }
 

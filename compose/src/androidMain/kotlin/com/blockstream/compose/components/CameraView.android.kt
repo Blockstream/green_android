@@ -63,7 +63,7 @@ actual fun CameraView(
 
     val activity = LocalActivity.current as? FragmentActivity
 
-    if(activity != null) {
+    if (activity != null) {
         AndroidView(
             modifier = Modifier
                 .fillMaxSize(),
@@ -130,10 +130,12 @@ actual fun CameraView(
             })
     } else {
 
-        Box(modifier = Modifier
-            .fillMaxSize()
-            .background(Color.DarkGray)
-            .clip(RoundedCornerShape(8.dp))){
+        Box(
+            modifier = Modifier
+                .fillMaxSize()
+                .background(Color.DarkGray)
+                .clip(RoundedCornerShape(8.dp))
+        ) {
             Text("Preview Model", modifier = Modifier.align(Alignment.Center))
         }
     }
@@ -142,11 +144,12 @@ actual fun CameraView(
     val lifecycleState by lifecycleOwner.lifecycle.currentStateFlow.collectAsState()
 
     LaunchedEffect(lifecycleState) {
-        when(lifecycleState){
+        when (lifecycleState) {
             Lifecycle.State.STARTED, Lifecycle.State.RESUMED -> {
                 Logger.d { "BarcodeScanner Started/Resumed" }
                 captureManager?.onResume()
             }
+
             Lifecycle.State.DESTROYED -> {
                 Logger.d { "BarcodeScanner Destroyed" }
                 captureManager?.onPause()

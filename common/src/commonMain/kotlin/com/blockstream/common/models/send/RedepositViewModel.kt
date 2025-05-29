@@ -8,8 +8,6 @@ import com.blockstream.common.TransactionType
 import com.blockstream.common.data.Banner
 import com.blockstream.common.data.FeePriority
 import com.blockstream.common.data.GreenWallet
-import com.blockstream.ui.navigation.NavData
-import com.blockstream.ui.events.Event
 import com.blockstream.common.events.Events
 import com.blockstream.common.extensions.ifConnected
 import com.blockstream.common.extensions.isBlank
@@ -27,9 +25,10 @@ import com.blockstream.common.navigation.NavigateDestinations
 import com.blockstream.common.sideeffects.SideEffects
 import com.blockstream.common.utils.StringHolder
 import com.blockstream.common.utils.feeRateWithUnit
+import com.blockstream.ui.events.Event
+import com.blockstream.ui.navigation.NavData
 import com.rickclephas.kmp.observableviewmodel.launch
 import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.flow.filterNotNull
 import org.jetbrains.compose.resources.getString
@@ -38,9 +37,9 @@ abstract class RedepositViewModelAbstract(
     greenWallet: GreenWallet,
     accountAsset: AccountAsset,
 ) : CreateTransactionViewModelAbstract(
-        greenWallet = greenWallet,
-        accountAssetOrNull = accountAsset
-    ) {
+    greenWallet = greenWallet,
+    accountAssetOrNull = accountAsset
+) {
     override fun screenName(): String = "Redeposit"
 
     override fun segmentation(): HashMap<String, Any>? {
@@ -84,7 +83,6 @@ class RedepositViewModel(
 
         bootstrap()
     }
-
 
     override suspend fun handleEvent(event: Event) {
         super.handleEvent(event)
@@ -144,7 +142,7 @@ class RedepositViewModel(
         finalCheckBeforeContinue: Boolean
     ) {
         doAsync({
-            if(params == null){
+            if (params == null) {
                 return@doAsync null
             }
 
@@ -193,7 +191,7 @@ class RedepositViewModel(
             _isValid.value = it != null
             _error.value = null
 
-            if(finalCheckBeforeContinue && params != null && it != null){
+            if (finalCheckBeforeContinue && params != null && it != null) {
                 session.pendingTransaction = PendingTransaction(
                     params = params,
                     transaction = it,
@@ -202,11 +200,15 @@ class RedepositViewModel(
                     )
                 )
 
-                postSideEffect(SideEffects.NavigateTo(NavigateDestinations.SendConfirm(
-                    greenWallet = greenWallet,
-                    accountAsset = accountAsset.value!!,
-                    denomination = denomination.value
-                )))
+                postSideEffect(
+                    SideEffects.NavigateTo(
+                        NavigateDestinations.SendConfirm(
+                            greenWallet = greenWallet,
+                            accountAsset = accountAsset.value!!,
+                            denomination = denomination.value
+                        )
+                    )
+                )
             }
         }, onError = {
             createTransaction.value = null

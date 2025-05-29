@@ -38,12 +38,11 @@ import com.blockstream.common.gdk.params.UpdateSubAccountParams
 import com.blockstream.common.gdk.params.ValidateAddresseesParams
 import kotlinx.serialization.json.JsonElement
 
-
 actual fun getGdkBinding(
     printGdkMessages: Boolean,
     config: InitConfig
 ): GdkBinding {
-    return object : GdkBinding{
+    return object : GdkBinding {
         override val logs: StringBuilder = StringBuilder()
 
         override val dataDir: String

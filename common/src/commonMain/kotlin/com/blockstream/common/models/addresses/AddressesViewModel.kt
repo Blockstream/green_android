@@ -3,8 +3,6 @@ package com.blockstream.common.models.addresses
 import blockstream_green.common.generated.resources.Res
 import blockstream_green.common.generated.resources.id_addresses
 import com.blockstream.common.data.GreenWallet
-import com.blockstream.ui.navigation.NavData
-import com.blockstream.ui.events.Event
 import com.blockstream.common.extensions.isBlank
 import com.blockstream.common.extensions.previewAccountAsset
 import com.blockstream.common.extensions.previewWallet
@@ -12,6 +10,8 @@ import com.blockstream.common.gdk.data.AccountAsset
 import com.blockstream.common.looks.account.AddressLook
 import com.blockstream.common.models.GreenViewModel
 import com.blockstream.common.sideeffects.SideEffects
+import com.blockstream.ui.events.Event
+import com.blockstream.ui.navigation.NavData
 import com.rickclephas.kmp.nativecoroutines.NativeCoroutinesState
 import com.rickclephas.kmp.observableviewmodel.launch
 import com.rickclephas.kmp.observableviewmodel.stateIn
@@ -22,7 +22,6 @@ import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.flow.map
 import org.jetbrains.compose.resources.getString
-
 
 abstract class AddressesViewModelAbstract(greenWallet: GreenWallet, accountAsset: AccountAsset) :
     GreenViewModel(greenWalletOrNull = greenWallet, accountAssetOrNull = accountAsset) {

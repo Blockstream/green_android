@@ -1,6 +1,5 @@
 package com.blockstream.ui.navigation.bottomsheet
 
-
 import androidx.compose.material3.SheetState
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
@@ -26,7 +25,6 @@ import kotlinx.coroutines.flow.drop
 import kotlinx.coroutines.flow.transform
 import kotlinx.coroutines.launch
 import kotlin.coroutines.cancellation.CancellationException
-
 
 /**
  * Navigator that drives a [ModalBottomSheetState] for use of [ModalBottomSheetLayout]s
@@ -96,11 +94,9 @@ public actual class BottomSheetNavigator : Navigator<Destination>() {
 
     private var animateToDismiss: () -> Unit = {}
 
-
     internal actual val sheetInitializer: @Composable () -> Unit = {
         val saveableStateHolder = rememberSaveableStateHolder()
         val transitionsInProgressEntries by transitionsInProgress.collectAsState()
-
 
         // The latest back stack entry, retained until the sheet is completely hidden
         // While the back stack is updated immediately, we might still be hiding the sheet, so
@@ -133,7 +129,7 @@ public actual class BottomSheetNavigator : Navigator<Destination>() {
                 transitionsInProgressEntries.forEach(state::markTransitionComplete)
             }
             LaunchedEffect(sheetState, retainedEntry) {
-                snapshotFlow { sheetState?.isVisible == true}
+                snapshotFlow { sheetState?.isVisible == true }
                     // We are only interested in changes in the sheet's visibility
                     .distinctUntilChanged()
                     // distinctUntilChanged emits the initial value which we don't need
@@ -183,7 +179,6 @@ public actual class BottomSheetNavigator : Navigator<Destination>() {
                 animateToDismiss = {}
             }
         }
-
 
     }
 

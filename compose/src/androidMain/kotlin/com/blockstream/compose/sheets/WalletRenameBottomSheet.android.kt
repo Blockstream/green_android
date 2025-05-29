@@ -27,7 +27,7 @@ fun WalletRenameBottomSheetPreview() {
 
             Text("WalletRenameBottomSheet")
 
-            if(showBottomSheet) {
+            if (showBottomSheet) {
                 WalletRenameBottomSheet(
                     viewModel = WalletNameViewModelPreview.preview(),
                     onDismissRequest = {

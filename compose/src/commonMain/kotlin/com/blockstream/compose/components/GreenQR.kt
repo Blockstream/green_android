@@ -53,8 +53,11 @@ fun GreenQR(
 ) {
     var isFullscreen by remember { mutableStateOf(false) }
     val isVisibleAndNotBlank = isVisible && data.isNotBlank()
-    val qrPadding = if(isJadeQR) 28.dp else 18.dp
-    val qrCodePainter = rememberQrCodePainter(data = data ?: "", errorCorrectionLevel = if(isJadeQR) QrErrorCorrectionLevel.Low else QrErrorCorrectionLevel.Auto)
+    val qrPadding = if (isJadeQR) 28.dp else 18.dp
+    val qrCodePainter = rememberQrCodePainter(
+        data = data ?: "",
+        errorCorrectionLevel = if (isJadeQR) QrErrorCorrectionLevel.Low else QrErrorCorrectionLevel.Auto
+    )
 
     Column(
         modifier = Modifier
@@ -72,12 +75,13 @@ fun GreenQR(
                     )
                 ) {
 
-                    Box(modifier = Modifier
-                        .fillMaxSize()
-                        .clickable { isFullscreen = false }
-                        .ifTrue(isJadeQR) {
-                            it.background(Color.White)
-                        }
+                    Box(
+                        modifier = Modifier
+                            .fillMaxSize()
+                            .clickable { isFullscreen = false }
+                            .ifTrue(isJadeQR) {
+                                it.background(Color.White)
+                            }
                     ) {
                         Card(
                             colors = CardDefaults.cardColors(
@@ -118,7 +122,7 @@ fun GreenQR(
                             if (isVisibleAndNotBlank) {
                                 if (onQrClick != null) {
                                     onQrClick()
-                                } else if(!isJadeQR) {
+                                } else if (!isJadeQR) {
                                     isFullscreen = true
                                 }
                             } else {
@@ -147,7 +151,7 @@ fun GreenQR(
                             modifier = Modifier
                                 .fillMaxWidth()
                                 .fillMaxHeight()
-                                .padding(if(isJadeQR) 0.dp else qrPadding)
+                                .padding(if (isJadeQR) 0.dp else qrPadding)
                         )
                     } else if (isVisible) {
                         Image(
@@ -169,7 +173,7 @@ fun GreenQR(
             }
         }
 
-        if(isVisibleAndNotBlank && !isJadeQR) {
+        if (isVisibleAndNotBlank && !isJadeQR) {
             ZoomButton {
                 isFullscreen = true
             }

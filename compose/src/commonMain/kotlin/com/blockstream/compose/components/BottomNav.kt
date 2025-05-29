@@ -28,11 +28,11 @@ import com.adamglin.PhosphorIcons
 import com.adamglin.phosphoricons.Regular
 import com.adamglin.phosphoricons.regular.Plus
 import com.adamglin.phosphoricons.regular.QrCode
-import com.blockstream.ui.components.GreenRow
 import com.blockstream.compose.theme.GreenSmallEnd
 import com.blockstream.compose.theme.GreenSmallStart
 import com.blockstream.compose.theme.bottom_nav_bg
 import com.blockstream.compose.theme.green
+import com.blockstream.ui.components.GreenRow
 import org.jetbrains.compose.resources.painterResource
 import org.jetbrains.compose.resources.stringResource
 

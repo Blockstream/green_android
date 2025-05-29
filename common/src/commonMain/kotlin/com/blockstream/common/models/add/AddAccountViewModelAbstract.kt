@@ -23,7 +23,6 @@ import kotlinx.coroutines.flow.onEach
 import org.jetbrains.compose.resources.getString
 import org.koin.core.component.inject
 
-
 abstract class AddAccountViewModelAbstract(greenWallet: GreenWallet, val assetId: String?, val popTo: PopTo?) :
     GreenViewModel(greenWalletOrNull = greenWallet) {
 
@@ -92,11 +91,13 @@ abstract class AddAccountViewModelAbstract(greenWallet: GreenWallet, val assetId
                     else -> throw Exception("Network not found")
                 }
             }
+
             AccountType.STANDARD -> when {
                 asset.isBitcoin -> session.bitcoinMultisig!!
                 asset.isLiquidNetwork(session) -> session.liquidMultisig!!
                 else -> throw Exception("Network not found")
             }
+
             AccountType.AMP_ACCOUNT -> session.liquidMultisig!!
             AccountType.TWO_OF_THREE -> session.bitcoinMultisig!!
             AccountType.LIGHTNING -> session.lightning!!
@@ -104,5 +105,5 @@ abstract class AddAccountViewModelAbstract(greenWallet: GreenWallet, val assetId
         }
     }
 
-    companion object: Loggable()
+    companion object : Loggable()
 }

@@ -23,23 +23,29 @@ import kotlin.native.ObjCName
 interface IOnProgress {
     @NativeCoroutinesState
     val onProgress: StateFlow<Boolean>
+
     @NativeCoroutinesState
     val onProgressDescription: StateFlow<String?>
 }
 
 interface IPostEvent {
     @ObjCName(name = "post", swiftName = "postEvent")
-    fun postEvent(@ObjCName(swiftName = "_") event: Event)
+    fun postEvent(
+        @ObjCName(swiftName = "_")
+        event: Event
+    )
 }
 
-abstract class BaseViewModel(): ViewModel(), INavData, IOnProgress, IPostEvent {
+abstract class BaseViewModel() : ViewModel(), INavData, IOnProgress, IPostEvent {
     protected val _event: MutableSharedFlow<Event> = MutableSharedFlow()
 
     protected val _sideEffect: Channel<SideEffect> = Channel()
+
     @NativeCoroutines
     val sideEffect = _sideEffect.receiveAsFlow()
 
     protected val _navData = MutableStateFlow(NavData())
+
     @NativeCoroutinesState
     override val navData: StateFlow<NavData> = _navData
 
@@ -48,7 +54,6 @@ abstract class BaseViewModel(): ViewModel(), INavData, IOnProgress, IPostEvent {
 
     @NativeCoroutinesState
     override val onProgressDescription = MutableStateFlow<String?>(null)
-
 
     // Helper method to force the use of MutableStateFlow(viewModelScope)
     @NativeCoroutinesIgnore
@@ -64,7 +69,5 @@ abstract class BaseViewModel(): ViewModel(), INavData, IOnProgress, IPostEvent {
             _sideEffect.send(sideEffect)
         }
     }
-
-
 
 }

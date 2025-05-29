@@ -14,7 +14,6 @@ import com.blockstream.common.utils.getBitcoinOrLiquidUnit
 import com.blockstream.common.utils.toAmountLook
 import kotlinx.serialization.Serializable
 
-
 @Serializable
 data class DenominatedValue constructor(
     val denomination: Denomination,
@@ -22,7 +21,7 @@ data class DenominatedValue constructor(
     val assetId: String? = null,
     val asInput: String? = null,
     val asLook: String? = null
-): GreenJson<DenominatedValue>() {
+) : GreenJson<DenominatedValue>() {
     override fun kSerializer() = serializer()
 
     fun asNetworkUnit(session: GdkSession): String {
@@ -103,29 +102,31 @@ data class DenominatedValue constructor(
 }
 
 @Serializable
-sealed class Denomination{
+sealed class Denomination {
     abstract val denomination: String
+
     @Serializable
-    object BTC: Denomination() {
+    object BTC : Denomination() {
         override val denomination: String = BTC_UNIT
     }
+
     @Serializable
-    object MBTC : Denomination(){
+    object MBTC : Denomination() {
         override val denomination: String = MBTC_UNIT
     }
 
     @Serializable
-    object UBTC : Denomination(){
+    object UBTC : Denomination() {
         override val denomination: String = UBTC_UNIT
     }
 
     @Serializable
-    object BITS : Denomination(){
+    object BITS : Denomination() {
         override val denomination: String = BITS_UNIT
     }
 
     @Serializable
-    object SATOSHI : Denomination(){
+    object SATOSHI : Denomination() {
         override val denomination: String = SATOSHI_UNIT
     }
 
@@ -136,22 +137,22 @@ sealed class Denomination{
         return denomination
     }
 
-    fun unit(session: GdkSession, assetId: String? = null): String = if (this is FIAT){
+    fun unit(session: GdkSession, assetId: String? = null): String = if (this is FIAT) {
         this.denomination
-    }else {
+    } else {
         getBitcoinOrLiquidUnit(session = session, assetId = assetId, denomination = this)
     }
 
-    fun assetTicker(session: GdkSession, assetId: String?): String = if (this is FIAT){
+    fun assetTicker(session: GdkSession, assetId: String?): String = if (this is FIAT) {
         denomination
-    }else {
+    } else {
         assetId.assetTicker(session = session, denomination = this)
     }
 
     val isFiat
         get() = this is FIAT
 
-    fun notFiat(): Denomination?{
+    fun notFiat(): Denomination? {
         return this.takeIf { !it.isFiat }
     }
 
@@ -166,16 +167,16 @@ sealed class Denomination{
             else -> FIAT(unit)
         }
 
-        fun fiat(session: GdkSession): Denomination?{
+        fun fiat(session: GdkSession): Denomination? {
             return session.getSettings()?.pricing?.currency?.let { FIAT(it) }
         }
 
-        fun fiatOrNull(session: GdkSession, isFiat: Boolean): Denomination?{
-            return if(isFiat) fiat(session) else null
+        fun fiatOrNull(session: GdkSession, isFiat: Boolean): Denomination? {
+            return if (isFiat) fiat(session) else null
         }
 
-        fun exchange(session: GdkSession, denomination: Denomination?): Denomination?{
-            return if(denomination?.isFiat == true) default(session) else fiat(session)
+        fun exchange(session: GdkSession, denomination: Denomination?): Denomination? {
+            return if (denomination?.isFiat == true) default(session) else fiat(session)
         }
 
         fun default(session: GdkSession): Denomination {
@@ -183,7 +184,7 @@ sealed class Denomination{
         }
 
         fun defaultOrFiat(session: GdkSession, isFiat: Boolean): Denomination {
-            return (if(isFiat) fiat(session) else default(session)) ?: default(session)
+            return (if (isFiat) fiat(session) else default(session)) ?: default(session)
         }
     }
 }

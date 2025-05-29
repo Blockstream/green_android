@@ -160,7 +160,7 @@ class OnOffRampsViewModel(greenWallet: GreenWallet) :
             combine(buyAsset, buyAccount, amount) { asset, account, amount ->
 
                 tryCatchNullSuspend {
-                    if(amount.isNotBlank()) {
+                    if (amount.isNotBlank()) {
 //                        val quote = createCryptoQuoteUseCase(cryptoQuote = CryptoQuoteRequest(
 //                            sourceAmount = amount,
 //                            sourceCurrencyCode = session.settings().value?.pricing?.currency ?: "USD",
@@ -185,7 +185,6 @@ class OnOffRampsViewModel(greenWallet: GreenWallet) :
 
                     }
                 }
-
 
                 // TODO support sellAsset
                 val balance = asset?.assetId?.takeIf { it.isPolicyAsset(session) }?.let { assetId ->
@@ -274,12 +273,13 @@ class OnOffRampsViewModel(greenWallet: GreenWallet) :
     override suspend fun handleEvent(event: Event) {
         super.handleEvent(event)
 
-        when(event) {
+        when (event) {
             is Events.DismissWalletBackupAlert -> {
                 viewModelScope.launch {
                     hideWalletBackupAlert.value = true
                 }
             }
+
             is Events.Continue -> {
                 redirectToRamps()
             }

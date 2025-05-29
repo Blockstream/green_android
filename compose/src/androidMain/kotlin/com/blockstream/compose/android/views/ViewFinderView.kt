@@ -62,8 +62,10 @@ class ViewFinderView(context: Context?, attrs: AttributeSet?) :
     }
 
     fun setFrameAspectRatio(
-        @FloatRange(from =  0.0, fromInclusive = false) ratioWidth: Float,
-        @FloatRange(from =  0.0, fromInclusive = false) ratioHeight: Float
+        @FloatRange(from = 0.0, fromInclusive = false)
+        ratioWidth: Float,
+        @FloatRange(from = 0.0, fromInclusive = false)
+        ratioHeight: Float
     ) {
         mFrameRatioWidth = ratioWidth
         mFrameRatioHeight = ratioHeight
@@ -84,7 +86,7 @@ class ViewFinderView(context: Context?, attrs: AttributeSet?) :
             }
         }
 
-    @get:FloatRange(from =  0.0, fromInclusive = false)
+    @get:FloatRange(from = 0.0, fromInclusive = false)
     var frameAspectRatioHeight: Float
         get() = mFrameRatioHeight
         set(ratioHeight) {
@@ -180,9 +182,11 @@ class ViewFinderView(context: Context?, attrs: AttributeSet?) :
                 other === this -> {
                     true
                 }
+
                 other is Rect -> {
                     left == other.left && top == other.top && right == other.right && bottom == other.bottom
                 }
+
                 else -> {
                     false
                 }

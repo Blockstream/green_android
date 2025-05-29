@@ -52,7 +52,7 @@ fun GreenSwitch(
                 overflow = TextOverflow.Ellipsis,
                 modifier = Modifier.fillMaxWidth()
             )
-            if(caption != null) {
+            if (caption != null) {
                 Text(
                     text = caption,
                     style = MaterialTheme.typography.bodyMedium,

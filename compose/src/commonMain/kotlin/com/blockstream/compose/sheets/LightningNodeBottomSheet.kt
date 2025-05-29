@@ -30,7 +30,6 @@ import com.blockstream.ui.components.GreenColumn
 import com.blockstream.ui.components.GreenRow
 import org.jetbrains.compose.resources.stringResource
 
-
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun LightningNodeBottomSheet(
@@ -49,7 +48,7 @@ fun LightningNodeBottomSheet(
 
         Box {
 
-            if(data.isNotEmpty()) {
+            if (data.isNotEmpty()) {
                 GreenColumn(
                     padding = 0, space = 16, modifier = Modifier
                         .padding(top = 16.dp)

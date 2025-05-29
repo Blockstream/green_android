@@ -9,7 +9,6 @@ import com.blockstream.common.models.GreenViewModel
 import com.blockstream.compose.components.GreenBottomSheet
 import com.blockstream.compose.components.GreenQR
 
-
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun QrBottomSheet(

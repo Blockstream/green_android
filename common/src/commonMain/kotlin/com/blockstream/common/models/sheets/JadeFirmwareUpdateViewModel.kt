@@ -44,7 +44,7 @@ class JadeFirmwareUpdateViewModel(
 
     override var deviceOrNull = deviceManager.getDevice(deviceId)
 
-    override val status : StateFlow<FirmwareUpdateState?> = deviceOrNull?.firmwareState ?: MutableStateFlow(null)
+    override val status: StateFlow<FirmwareUpdateState?> = deviceOrNull?.firmwareState ?: MutableStateFlow(null)
 
     private val _firmware = MutableStateFlow("")
     override val firmware: StateFlow<String> = _firmware
@@ -68,7 +68,7 @@ class JadeFirmwareUpdateViewModel(
             }.launchIn(this)
 
             device.firmwareState.onEach {
-                when(it) {
+                when (it) {
                     is FirmwareUpdateState.Initiate -> {
                         _firmware.value = getString(
                             Res.string.id_firmware_version_s,
@@ -76,22 +76,27 @@ class JadeFirmwareUpdateViewModel(
                         )
                         _hash.value = getString(Res.string.id_hash_s, it.hash.padHex() ?: "")
                     }
+
                     is FirmwareUpdateState.Uploaded -> {
                         _progress.value = 100
 
                         delay(3000L)
                         postSideEffect(SideEffects.Dismiss)
                     }
+
                     is FirmwareUpdateState.Uploading -> {
                         _progress.value = ((it.written / it.totalSize.toFloat()) * 100).toInt()
                         _transfer.value = "${it.written} / ${it.totalSize}"
                     }
+
                     is FirmwareUpdateState.Failed -> {
                         postSideEffect(SideEffects.Dismiss)
                     }
+
                     is FirmwareUpdateState.Completed -> {
                         postSideEffect(SideEffects.Dismiss)
                     }
+
                     null -> {
                         postSideEffect(SideEffects.Dismiss)
                     }

@@ -3,8 +3,8 @@ package com.blockstream.compose.views
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.tooling.preview.Preview
 import com.blockstream.common.utils.StringHolder
-import com.blockstream.ui.components.GreenColumn
 import com.blockstream.compose.theme.GreenChromePreview
+import com.blockstream.ui.components.GreenColumn
 
 @Preview
 @Composable

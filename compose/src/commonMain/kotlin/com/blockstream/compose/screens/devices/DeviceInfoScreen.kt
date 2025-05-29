@@ -54,7 +54,6 @@ import com.blockstream.ui.navigation.getResult
 import org.jetbrains.compose.resources.painterResource
 import org.jetbrains.compose.resources.stringResource
 
-
 @Composable
 fun DeviceInfoScreen(
     viewModel: DeviceInfoViewModelAbstract,
@@ -62,11 +61,13 @@ fun DeviceInfoScreen(
 
     NavigateDestinations.Environment.getResult<Int> { result: Int ->
         viewModel.postEvent(
-            DeviceInfoViewModel.LocalEvents.SelectEnviroment(when(result) {
-                -1 -> null
-                0  -> false
-                else -> true
-            })
+            DeviceInfoViewModel.LocalEvents.SelectEnviroment(
+                when (result) {
+                    -1 -> null
+                    0 -> false
+                    else -> true
+                }
+            )
         )
     }
 
@@ -80,7 +81,7 @@ fun DeviceInfoScreen(
     }
 
     NavigateDestinations.JadeGenuineCheck.getResult<Boolean> {
-        if(it){
+        if (it) {
             viewModel.postEvent(DeviceInfoViewModel.LocalEvents.GenuineCheckSuccess)
         }
     }

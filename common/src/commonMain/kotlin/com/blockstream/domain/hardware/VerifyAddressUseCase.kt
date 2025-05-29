@@ -21,7 +21,7 @@ class VerifyAddressUseCase(private val countly: CountlyBase) {
                 path = address.userPath ?: listOf(),
                 csvBlocks = address.subType ?: 0
             ).also {
-                if(it != address.address) {
+                if (it != address.address) {
                     throw Exception("id_the_addresses_dont_match")
                 }
             }

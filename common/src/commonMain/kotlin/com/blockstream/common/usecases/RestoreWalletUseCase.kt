@@ -102,9 +102,9 @@ class RestoreWalletUseCase(
         // Biometrics
         if (cipher != null) {
             setBiometricsUseCase.invoke(session = session, cipher = cipher, wallet = wallet)
-        } else if(pin != null){
+        } else if (pin != null) {
             setPinUseCase.invoke(session = session, pin = pin, wallet = wallet)
-        } else{
+        } else {
             throw Exception("Neither Cipher nor Pin provided for wallet security")
         }
 

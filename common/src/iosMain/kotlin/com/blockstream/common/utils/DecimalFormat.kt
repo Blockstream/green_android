@@ -34,6 +34,7 @@ actual class DecimalFormat actual constructor(private val locale: String?) {
 
         return formatter
     }
+
     actual fun format(double: Double): String? {
         return decimalFormat().stringFromNumber(NSNumber(double))
     }

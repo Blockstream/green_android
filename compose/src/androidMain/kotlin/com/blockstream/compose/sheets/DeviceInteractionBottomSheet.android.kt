@@ -8,7 +8,6 @@ import com.blockstream.common.models.SimpleGreenViewModelPreview
 import com.blockstream.common.utils.StringHolder
 import com.blockstream.compose.GreenAndroidPreview
 
-
 @Composable
 @Preview
 fun VerifyOnDeviceTransactionBottomSheetPreview() {

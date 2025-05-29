@@ -3,16 +3,13 @@ package com.blockstream.common.models.devices
 import com.blockstream.common.Urls
 import com.blockstream.common.data.WatchOnlyCredentials
 import com.blockstream.common.devices.DeviceModel
-import com.blockstream.ui.events.Event
 import com.blockstream.common.gdk.data.Network
 import com.blockstream.common.models.GreenViewModel
 import com.blockstream.common.models.jade.JadeQrOperation
 import com.blockstream.common.navigation.NavigateDestinations
 import com.blockstream.common.sideeffects.SideEffects
 import com.blockstream.green.utils.Loggable
-import com.rickclephas.kmp.nativecoroutines.NativeCoroutinesState
-import kotlinx.coroutines.flow.MutableStateFlow
-import kotlinx.coroutines.flow.StateFlow
+import com.blockstream.ui.events.Event
 
 abstract class ImportPubKeyViewModelAbstract(val deviceModel: DeviceModel) : GreenViewModel() {
     override fun screenName(): String = "ImportPubKey"
@@ -30,7 +27,7 @@ class ImportPubKeyViewModel constructor(deviceModel: DeviceModel) :
         object ScanXpub : Event
         object LearnMore : Event
         data class ImportPubKey(val pubKey: String) : Event
-        data class SelectEnviroment(val isTestnet: Boolean, val customNetwork: Network?): Event
+        data class SelectEnviroment(val isTestnet: Boolean, val customNetwork: Network?) : Event
     }
 
     init {
@@ -92,7 +89,6 @@ class ImportPubKeyViewModel constructor(deviceModel: DeviceModel) :
             }
         }
     }
-
 
     companion object : Loggable()
 }

@@ -30,10 +30,12 @@ fun MenuBottomSheetPreview() {
             if (showBottomSheet) {
                 MenuBottomSheetView(
                     title = "Select Environment",
-                    entries = MenuEntryList(listOf(
-                        MenuEntry(title = "Mainnet", iconRes = "currency_btc"),
-                        MenuEntry(title = "Testnet", iconRes = "flask")
-                    )),
+                    entries = MenuEntryList(
+                        listOf(
+                            MenuEntry(title = "Mainnet", iconRes = "currency_btc"),
+                            MenuEntry(title = "Testnet", iconRes = "flask")
+                        )
+                    ),
                     onSelect = { position, menuEntry ->
 
                     },

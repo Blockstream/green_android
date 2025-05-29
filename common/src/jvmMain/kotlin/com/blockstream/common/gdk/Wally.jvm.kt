@@ -1,7 +1,7 @@
 package com.blockstream.common.gdk
 
 actual fun getWally(): Wally {
-    return object : Wally{
+    return object : Wally {
         override val aesBlockLen: Int
             get() = TODO("Not yet implemented")
         override val hmacSha256Len: Int

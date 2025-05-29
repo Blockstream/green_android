@@ -16,7 +16,6 @@ import com.blockstream.compose.components.GreenBottomSheet
 import com.blockstream.ui.components.GreenColumn
 import com.blockstream.ui.navigation.setResult
 
-
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun AssetsAccountsBottomSheet(

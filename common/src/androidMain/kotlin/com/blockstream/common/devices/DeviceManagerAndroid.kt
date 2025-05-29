@@ -25,7 +25,6 @@ import com.juul.kable.PlatformAdvertisement
 import com.juul.kable.peripheral
 import java.lang.ref.WeakReference
 
-
 class DeviceManagerAndroid constructor(
     scope: ApplicationScope,
     val context: Context,
@@ -38,7 +37,7 @@ class DeviceManagerAndroid constructor(
         peripheral: Peripheral?,
         isBonded: Boolean?
     ) -> AndroidDevice?
-): DeviceManager(scope, sessionManager, bluetoothManager, supportedBleDevices) {
+) : DeviceManager(scope, sessionManager, bluetoothManager, supportedBleDevices) {
 
     private var onPermissionSuccess: WeakReference<(() -> Unit)>? = null
     private var onPermissionError: WeakReference<((throwable: Throwable?) -> Unit)>? = null
@@ -122,7 +121,7 @@ class DeviceManagerAndroid constructor(
         usbManager.requestPermission(device, permissionIntent)
     }
 
-    override fun refreshDevices(){
+    override fun refreshDevices() {
         super.refreshDevices()
 
         scanUsbDevices()
@@ -135,17 +134,17 @@ class DeviceManagerAndroid constructor(
 
         // Disconnect devices
         val oldDevices = usbDevices.value.filter {
-            if(newUsbDevices.contains(it.toAndroidDevice()?.usbDevice)){
+            if (newUsbDevices.contains(it.toAndroidDevice()?.usbDevice)) {
                 true
-            }else{
+            } else {
                 it.toAndroidDevice()?.offline()
                 false
             }
         }
 
         val newDevices = mutableListOf<AndroidDevice>()
-        for (usbDevice in newUsbDevices){
-            if(oldDevices.find { it.toAndroidDevice()?.usbDevice == usbDevice } == null) {
+        for (usbDevice in newUsbDevices) {
+            if (oldDevices.find { it.toAndroidDevice()?.usbDevice == usbDevice } == null) {
 
                 // Jade or UsbDeviceMapper
                 (JadeUsbDevice.fromUsbDevice(deviceManager = this, usbDevice = usbDevice)

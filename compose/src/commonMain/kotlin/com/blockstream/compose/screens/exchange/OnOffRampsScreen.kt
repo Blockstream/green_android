@@ -1,8 +1,6 @@
 package com.blockstream.compose.screens.exchange
 
 import androidx.compose.animation.AnimatedVisibility
-import androidx.compose.foundation.layout.Arrangement
-import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.rememberScrollState
@@ -15,7 +13,6 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import blockstream_green.common.generated.resources.Res
@@ -156,7 +153,7 @@ fun OnOffRampsScreen(
                         val buyAccounts by viewModel.buyAccounts.collectAsStateWithLifecycle()
 
                         if (buyAccount != null) {
-                            if(buyAccounts.size > 1) {
+                            if (buyAccounts.size > 1) {
                                 GreenAccountAsset(
                                     accountAssetBalance = buyAccount,
                                     session = viewModel.sessionOrNull,

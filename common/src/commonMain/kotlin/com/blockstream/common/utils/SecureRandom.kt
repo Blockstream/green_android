@@ -1,6 +1,5 @@
 package com.blockstream.common.utils
 
-
 interface SecureRandom {
     fun randomBytes(len: Int): ByteArray
 
@@ -10,7 +9,7 @@ interface SecureRandom {
 
     fun unsecureRandomInt(until: Int): Int
 
-    fun unsecureRandomInt(from:Int, until: Int): Int
+    fun unsecureRandomInt(from: Int, until: Int): Int
 }
 
 fun randomChars(len: Int): String {

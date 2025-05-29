@@ -9,7 +9,6 @@ import blockstream_green.common.generated.resources.id_telegram
 import kotlinx.serialization.Serializable
 import org.jetbrains.compose.resources.StringResource
 
-
 @Serializable
 enum class TwoFactorMethod(val gdkType: String) {
     EMAIL("email"),
@@ -20,8 +19,8 @@ enum class TwoFactorMethod(val gdkType: String) {
 
     override fun toString(): String = gdkType
 
-    val localized : StringResource
-        get() = when(this){
+    val localized: StringResource
+        get() = when (this) {
             EMAIL -> Res.string.id_email
             SMS -> Res.string.id_sms
             PHONE -> Res.string.id_call

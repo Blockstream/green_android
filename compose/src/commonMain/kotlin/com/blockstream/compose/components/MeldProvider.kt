@@ -97,7 +97,7 @@ fun MeldProvider(
                     )
                 }
 
-                if(withEditIcon) {
+                if (withEditIcon) {
                     IconButton(onClick = onClick) {
                         Icon(
                             painter = painterResource(Res.drawable.pencil_simple_line),

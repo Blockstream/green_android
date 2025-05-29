@@ -5,7 +5,6 @@ import kotlin.test.assertEquals
 import kotlin.test.assertFalse
 import kotlin.test.assertTrue
 
-
 @OptIn(ExperimentalStdlibApi::class)
 class RandomTests {
 
@@ -55,7 +54,7 @@ class RandomTests {
     @Test
     fun test_unsecureRandomInt_range() {
         (1..1000).forEach { i ->
-            val range = i..(i+1000)
+            val range = i..(i + 1000)
             secureRandom.unsecureRandomInt(range.first, range.last).also { random ->
                 println("$range -> $random")
                 assertTrue(random in range)

@@ -25,12 +25,12 @@ fun MutableState<Boolean>.toggle() {
 }
 
 fun <T> MutableStateFlow<T>.onValueChange(maxChars: Int? = null): (T) -> Unit = { newValue ->
-    if(maxChars != null && newValue is String) {
+    if (maxChars != null && newValue is String) {
         (newValue as? String)?.also {
             @Suppress("UNCHECKED_CAST")
             this.value = newValue.substring(0, min(newValue.length, 1000)) as T
         }
-    }else{
+    } else {
         this.value = newValue
     }
 }
@@ -70,7 +70,7 @@ inline fun <T> LazyListScope.itemsSpaced(
     crossinline itemContent: @Composable LazyItemScope.(item: T) -> Unit
 ) = itemsIndexed(items = items, key = key, contentType = contentType, itemContent = { index, item ->
     itemContent(item)
-    if(index < items.size - 1) {
+    if (index < items.size - 1) {
         Spacer(Modifier.height(space.dp))
     }
 })

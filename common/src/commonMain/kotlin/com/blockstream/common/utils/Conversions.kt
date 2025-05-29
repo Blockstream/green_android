@@ -16,12 +16,12 @@ import com.blockstream.common.gdk.data.Balance
 fun getUnit(session: GdkSession) = session.getSettings()?.unit ?: BTC_UNIT
 
 // Use it for UI purposes
-fun getFiatCurrency(session: GdkSession): String{
+fun getFiatCurrency(session: GdkSession): String {
     return session.getSettings()?.pricing?.currency?.getFiatUnit(session) ?: "n/a"
 }
 
 fun String.getFiatUnit(session: GdkSession): String {
-    return if(session.isTestnet) "FIAT" else this
+    return if (session.isTestnet) "FIAT" else this
 }
 
 // TODO: Rename to networkUnit
@@ -61,19 +61,21 @@ fun getDecimals(unit: String): Int {
 }
 
 fun gdkNumberFormat(decimals: Int, withDecimalSeparator: Boolean = false) = (DecimalFormat(GDK_LOCALE)).apply {
-    minimumFractionDigits = if(withDecimalSeparator) decimals else 0
+    minimumFractionDigits = if (withDecimalSeparator) decimals else 0
     maximumFractionDigits = decimals
     isGroupingUsed = false
     decimalSeparator = '.'
     groupingSeparator = ','
 }
 
-fun userNumberFormat(decimals: Int,
-                    withDecimalSeparator: Boolean,
-                    withGrouping: Boolean = false,
-                    withMinimumDigits:Boolean = false,
-                    locale: String? = null) = DecimalFormat(locale).apply {
-    minimumFractionDigits = if(withDecimalSeparator || withMinimumDigits) decimals else 0
+fun userNumberFormat(
+    decimals: Int,
+    withDecimalSeparator: Boolean,
+    withGrouping: Boolean = false,
+    withMinimumDigits: Boolean = false,
+    locale: String? = null
+) = DecimalFormat(locale).apply {
+    minimumFractionDigits = if (withDecimalSeparator || withMinimumDigits) decimals else 0
     maximumFractionDigits = decimals
     isDecimalSeparatorAlwaysShown = withDecimalSeparator
     isGroupingUsed = withGrouping
@@ -81,9 +83,10 @@ fun userNumberFormat(decimals: Int,
 
 fun Long.feeRateWithUnit(): String {
     val feePerByte = this / 1000.0
-    return userNumberFormat(decimals = 2, withDecimalSeparator = true, withGrouping = true, withMinimumDigits = true).format(feePerByte).let {
-        "$it sats / vbyte"
-    }
+    return userNumberFormat(decimals = 2, withDecimalSeparator = true, withGrouping = true, withMinimumDigits = true).format(feePerByte)
+        .let {
+            "$it sats / vbyte"
+        }
 }
 
 fun Balance?.toAmountLook(
@@ -94,22 +97,22 @@ fun Balance?.toAmountLook(
     withMinimumDigits: Boolean = false,
     denomination: Denomination? = null
 ): String? {
-    if(this == null) return null
-    return if(assetId.isPolicyAsset(session)){
-        if(denomination?.isFiat == true) {
-             try {
-                 userNumberFormat(
-                     decimals = 2,
-                     withDecimalSeparator = true,
-                     withGrouping = withGrouping
-                 ).format(fiat?.toDouble() ?: 0.0)?.let {
-                     if (withUnit) "$it ${fiatCurrency?.getFiatUnit(session)}" else it
-                 }
+    if (this == null) return null
+    return if (assetId.isPolicyAsset(session)) {
+        if (denomination?.isFiat == true) {
+            try {
+                userNumberFormat(
+                    decimals = 2,
+                    withDecimalSeparator = true,
+                    withGrouping = withGrouping
+                ).format(fiat?.toDouble() ?: 0.0)?.let {
+                    if (withUnit) "$it ${fiatCurrency?.getFiatUnit(session)}" else it
+                }
             } catch (e: Exception) {
                 null
             }
 
-        }else{
+        } else {
             try {
                 val unit = denomination?.denomination
                     ?: (session.getSettings(assetId.networkForAsset(session))?.unit ?: BTC_UNIT)
@@ -128,7 +131,7 @@ fun Balance?.toAmountLook(
             }
         }
 
-    }else{
+    } else {
         try {
             userNumberFormat(
                 asset?.precision ?: 0,
@@ -153,7 +156,7 @@ suspend fun Long?.toAmountLookOrNa(
     withMinimumDigits: Boolean = false,
     denomination: Denomination? = null
 ): String {
-    if(this == null) return "n/a"
+    if (this == null) return "n/a"
     return toAmountLook(
         session = session,
         assetId = assetId,
@@ -174,10 +177,10 @@ suspend fun Long?.toAmountLook(
     withMinimumDigits: Boolean = false,
     denomination: Denomination? = null
 ): String? {
-    if(this == null) return null
+    if (this == null) return null
     val convert = session.convert(assetId = assetId, asLong = this)
-    return if(assetId == null || assetId.isPolicyAsset(session)){
-        if(denomination?.isFiat == true) {
+    return if (assetId == null || assetId.isPolicyAsset(session)) {
+        if (denomination?.isFiat == true) {
             convert?.toAmountLook(
                 session,
                 assetId = assetId,
@@ -185,7 +188,7 @@ suspend fun Long?.toAmountLook(
                 withGrouping = withGrouping,
                 denomination = denomination
             )
-        }else{
+        } else {
             convert?.toAmountLook(
                 session,
                 assetId = assetId,
@@ -195,8 +198,8 @@ suspend fun Long?.toAmountLook(
                 denomination = denomination
             )
         }
-    }else{
-        if(denomination?.isFiat == true) {
+    } else {
+        if (denomination?.isFiat == true) {
             null
         } else {
             // withMinimumDigits is not used on asset amounts
@@ -210,9 +213,9 @@ suspend fun Long?.toAmountLook(
             )
         }
     }?.let { amount ->
-        if(withDirection && this > 0L){
+        if (withDirection && this > 0L) {
             "$amount"
-        }else{
+        } else {
             amount
         }
     }

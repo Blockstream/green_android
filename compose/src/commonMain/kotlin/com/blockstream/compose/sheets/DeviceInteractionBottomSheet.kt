@@ -17,10 +17,10 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import blockstream_green.common.generated.resources.Res
 import blockstream_green.common.generated.resources.blockstream_devices
+import blockstream_green.common.generated.resources.id_blockstream_app_needs_the_master_blinding
 import blockstream_green.common.generated.resources.id_change
 import blockstream_green.common.generated.resources.id_confirm_on_your_device
 import blockstream_green.common.generated.resources.id_fee
-import blockstream_green.common.generated.resources.id_blockstream_app_needs_the_master_blinding
 import blockstream_green.common.generated.resources.id_sent_to
 import blockstream_green.common.generated.resources.id_to_show_balances_and
 import com.blockstream.common.Urls
@@ -97,7 +97,7 @@ fun DeviceInteractionBottomSheet(
                     )
             ) {
 
-                if(transactionConfirmLook != null) {
+                if (transactionConfirmLook != null) {
                     transactionConfirmLook.utxos?.forEach {
                         GreenAmount(
                             title = stringResource(if (it.isChange) Res.string.id_change else Res.string.id_sent_to),
@@ -120,7 +120,7 @@ fun DeviceInteractionBottomSheet(
                     }
                 }
 
-                if(verifyAddress != null){
+                if (verifyAddress != null) {
                     GreenAddress(address = verifyAddress)
                 }
 

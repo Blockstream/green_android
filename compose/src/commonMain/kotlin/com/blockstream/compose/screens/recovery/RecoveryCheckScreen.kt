@@ -103,7 +103,8 @@ fun RecoveryCheckScreen(
                             bottom.linkTo(parent.bottom)
                         })
 
-                Text("${viewModel.checkWordIndex}.", style = titleSmall, color = green,
+                Text(
+                    "${viewModel.checkWordIndex}.", style = titleSmall, color = green,
                     modifier = Modifier.constrainAs(checkIndex) {
                         start.linkTo(line.start)
                         bottom.linkTo(line.top)
@@ -113,7 +114,8 @@ fun RecoveryCheckScreen(
                 "${viewModel.checkWordIndex - 1}.".let {
                     colorText("$it ${viewModel.wordLeft}", listOf(it))
                 }.also {
-                    Text(it, style = titleSmall, color = whiteHigh,
+                    Text(
+                        it, style = titleSmall, color = whiteHigh,
                         modifier = Modifier.constrainAs(leftWord) {
                             end.linkTo(line.start, margin = 16.dp)
                             baseline.linkTo(checkIndex.baseline)
@@ -124,7 +126,8 @@ fun RecoveryCheckScreen(
                 "${viewModel.checkWordIndex + 1}.".let {
                     colorText("$it ${viewModel.wordRight}", listOf(it))
                 }.also {
-                    Text(it, style = titleSmall, color = whiteHigh,
+                    Text(
+                        it, style = titleSmall, color = whiteHigh,
                         modifier = Modifier.constrainAs(rightWord) {
                             start.linkTo(line.end, margin = 16.dp)
                             baseline.linkTo(checkIndex.baseline)

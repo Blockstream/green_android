@@ -20,7 +20,6 @@ import com.blockstream.green.utils.isDevelopmentFlavor
 import org.koin.dsl.binds
 import org.koin.dsl.module
 
-
 fun initKoinAndroid(context: Context, doOnStartup: () -> Unit = {}) {
     val appInfo = AppInfo(
         userAgent = "green_android",

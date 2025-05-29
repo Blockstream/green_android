@@ -68,7 +68,6 @@ import kotlinx.serialization.json.jsonPrimitive
 import kotlin.time.DurationUnit
 import kotlin.time.toDuration
 
-
 class JadeAPI internal constructor(
     val jade: JadeInterface,
     private val httpRequestHandler: HttpRequestHandler,
@@ -115,7 +114,7 @@ class JadeAPI internal constructor(
     }
 
     @Throws(JadeError::class)
-    private fun <T, P>resultOrThrow(
+    private fun <T, P> resultOrThrow(
         request: Request<*, *>,
         response: Response<T, P>?,
     ): P {
@@ -140,7 +139,7 @@ class JadeAPI internal constructor(
             )
         }
 
-        if(request.id != response.id) {
+        if (request.id != response.id) {
             logger.e { "Request/Response id mismatch - expected id: ${request.id}, received: ${response.id}" }
 
             throw JadeError(
@@ -179,7 +178,7 @@ class JadeAPI internal constructor(
             ), BooleanResponse.serializer()
         )
 
-        if(!response){
+        if (!response) {
             return false
         }
 
@@ -213,7 +212,8 @@ class JadeAPI internal constructor(
     // `type` can either be "ASSET" or "VALUE" to generate ABFs or VBFs.
     @Throws(Exception::class)
     suspend fun getBlindingFactor(hashPrevouts: ByteArray, outputIdx: Int, type: String): ByteArray {
-        val request = BlindingFactorRequest(params = BlindingFactorRequestParams(hashPrevouts = hashPrevouts, outputIdx = outputIdx, type = type))
+        val request =
+            BlindingFactorRequest(params = BlindingFactorRequestParams(hashPrevouts = hashPrevouts, outputIdx = outputIdx, type = type))
         return jadeRpc(request, ByteArrayResponse.serializer())
     }
 
@@ -236,16 +236,18 @@ class JadeAPI internal constructor(
     suspend fun signTx(network: String, txn: ByteArray, inputs: List<TxInput>, change: List<ChangeOutput?>): SignedTransactionInputs {
         // 1st message contains txn and number of inputs we are going to send.
         // Reply ok if that corresponds to the expected number of inputs (n).
-        val request = SignTransactionRequest(id = jadeId(), method = "sign_tx", params = SignTransactionRequestParams(
-            network = network,
-            useAeSignatures = true,
-            txn = txn,
-            numInput = inputs.size,
-            change = change
-        ))
+        val request = SignTransactionRequest(
+            id = jadeId(), method = "sign_tx", params = SignTransactionRequestParams(
+                network = network,
+                useAeSignatures = true,
+                txn = txn,
+                numInput = inputs.size,
+                change = change
+            )
+        )
         val response = jadeRpc(request, BooleanResponse.serializer())
 
-        if(!response){
+        if (!response) {
             throw JadeError(11, "Error response from initial sign_tx call", response)
         }
 
@@ -264,18 +266,20 @@ class JadeAPI internal constructor(
     ): SignedTransactionInputs {
         // 1st message contains txn and number of inputs we are going to send.
         // Reply ok if that corresponds to the expected number of inputs (n).
-        val request = SignTransactionRequest(id = jadeId(), method = "sign_liquid_tx", params = SignTransactionRequestParams(
-            network = network,
-            useAeSignatures = true,
-            txn = txn,
-            numInput = inputs.size,
-            trustedCommitments = trustedCommitments,
-            change = change
-        ))
+        val request = SignTransactionRequest(
+            id = jadeId(), method = "sign_liquid_tx", params = SignTransactionRequestParams(
+                network = network,
+                useAeSignatures = true,
+                txn = txn,
+                numInput = inputs.size,
+                trustedCommitments = trustedCommitments,
+                change = change
+            )
+        )
 
         val response = jadeRpc(request, BooleanResponse.serializer())
 
-        if(!response){
+        if (!response) {
             throw JadeError(11, "Error response from initial sign_liquid_tx call", response)
         }
 
@@ -299,7 +303,7 @@ class JadeAPI internal constructor(
 
         // Send inputs one at a time, receiving 'signer-commitment' in reply
         val signerCommitments = mutableListOf<ByteArray>()
-        for(input in inputs){
+        for (input in inputs) {
             val request = TxInputRequest(id = jadeId(), method = "tx_input", params = input.copy(aeHostEntropy = null))
             signerCommitments += jadeRpc(request, ByteArrayResponse.serializer())
         }
@@ -326,7 +330,7 @@ class JadeAPI internal constructor(
         useAeProtocol: Boolean,
         aeHostCommitment: ByteArray,
         aeHostEntropy: ByteArray
-    ) : SignedMessage {
+    ): SignedMessage {
 
         if (!useAeProtocol) {
             throw Exception("Jade only supports the Anti-Exfil protocol")
@@ -422,7 +426,6 @@ class JadeAPI internal constructor(
         return jadeRpc(request, BooleanResponse.serializer())
     }
 
-
     // Get xpub given path
     suspend fun getXpub(network: String, path: List<Long>): String {
         val request = XpubRequest(params = XpubRequestParams(network = network, path = path))
@@ -436,7 +439,7 @@ class JadeAPI internal constructor(
         return jadeRpc(request, ByteArrayResponse.serializer())
     }
 
-    private suspend fun <R: Response<*, P>, P> jadeRpc(request: Request<*, *>, responseSerializer: DeserializationStrategy<R>): P {
+    private suspend fun <R : Response<*, P>, P> jadeRpc(request: Request<*, *>, responseSerializer: DeserializationStrategy<R>): P {
 
         val response = jade.makeRpcCall(request = request, serializer = responseSerializer, timeout = request.timeout(), drain = false)
 
@@ -458,18 +461,28 @@ class JadeAPI internal constructor(
                     val data = httpResponse.jsonObject["data"]!!.jsonPrimitive.content
                     jadeRpc(request = PinRequest(params = PinRequestParams(data = data)), responseSerializer)
                 }
+
                 "handshake_init" -> {
                     val sig = httpResponse.jsonObject["sig"]?.jsonPrimitive?.content!!
                     val ske = httpResponse.jsonObject["ske"]?.jsonPrimitive?.content!!
 
                     jadeRpc(request = HandshakeInitRequest(params = HandshakeInitRequestParams(sig = sig, ske = ske)), responseSerializer)
                 }
+
                 "handshake_complete" -> {
                     val encryptedKey = httpResponse.jsonObject["encrypted_key"]?.jsonPrimitive?.content!!
                     val hmac = httpResponse.jsonObject["hmac"]?.jsonPrimitive?.content!!
 
-                    jadeRpc(request = HandshakeCompleteRequest(params = HandshakeCompleteRequestParams(encryptedKey = encryptedKey, hmac = hmac)), responseSerializer)
+                    jadeRpc(
+                        request = HandshakeCompleteRequest(
+                            params = HandshakeCompleteRequestParams(
+                                encryptedKey = encryptedKey,
+                                hmac = hmac
+                            )
+                        ), responseSerializer
+                    )
                 }
+
                 else -> {
                     throw Exception("Unsupported on-reply operation")
                 }

@@ -6,7 +6,8 @@ import kotlinx.serialization.Serializable
 
 @Serializable
 data class SubAccountsParams constructor(
-    @SerialName("refresh") val refresh: Boolean? = null,
+    @SerialName("refresh")
+    val refresh: Boolean? = null,
 ) : GreenJson<SubAccountsParams>() {
     override fun encodeDefaultsValues() = false
 

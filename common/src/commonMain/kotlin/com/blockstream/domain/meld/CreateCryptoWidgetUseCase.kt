@@ -6,7 +6,6 @@ import com.blockstream.green.data.meld.data.CryptoWidget
 import com.blockstream.green.data.meld.data.QuoteResponse
 import com.blockstream.green.network.NetworkResponse
 
-
 class CreateCryptoWidgetUseCase constructor(
     private val meldRepository: MeldRepository
 ) {

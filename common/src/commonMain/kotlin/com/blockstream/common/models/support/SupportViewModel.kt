@@ -6,18 +6,18 @@ import blockstream_green.common.generated.resources.id_thank_you_for_your_feedba
 import blockstream_green.common.generated.resources.id_you_will_receive_an_email_from
 import com.blockstream.common.SupportType
 import com.blockstream.common.data.GreenWallet
-import com.blockstream.ui.navigation.NavData
 import com.blockstream.common.data.SupportData
-import com.blockstream.ui.events.Event
 import com.blockstream.common.events.Events
 import com.blockstream.common.extensions.isNotBlank
 import com.blockstream.common.extensions.launchIn
 import com.blockstream.common.extensions.previewWallet
 import com.blockstream.common.models.GreenViewModel
 import com.blockstream.common.sideeffects.SideEffects
-import com.blockstream.green.utils.Loggable
 import com.blockstream.common.utils.StringHolder
 import com.blockstream.common.utils.isEmailValid
+import com.blockstream.green.utils.Loggable
+import com.blockstream.ui.events.Event
+import com.blockstream.ui.navigation.NavData
 import com.rickclephas.kmp.nativecoroutines.NativeCoroutinesState
 import com.rickclephas.kmp.observableviewmodel.launch
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -89,13 +89,14 @@ class SupportViewModel(type: SupportType, supportData: SupportData, greenWalletO
 
     private fun submitContactRequest() {
         doAsync({
-            val subject = (if (type == SupportType.FEEDBACK) "Feedback from" else "Bug report from").let { "$it ${appInfo.userAgent} ${supportData.subject ?: ""}".trim() }
+            val subject =
+                (if (type == SupportType.FEEDBACK) "Feedback from" else "Bug report from").let { "$it ${appInfo.userAgent} ${supportData.subject ?: ""}".trim() }
             zendeskSdk.submitNewTicket(
                 type = type,
                 subject = subject,
                 email = email.value,
                 message = message.value,
-                supportData = if(attachLogs.value) supportData.withGdkLogs(sessionOrNull) else supportData,
+                supportData = if (attachLogs.value) supportData.withGdkLogs(sessionOrNull) else supportData,
                 autoRetry = false
             )
         }, onSuccess = {

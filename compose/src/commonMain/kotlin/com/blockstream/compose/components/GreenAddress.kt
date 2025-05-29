@@ -1,6 +1,5 @@
 package com.blockstream.compose.components
 
-
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Row
@@ -23,7 +22,6 @@ import com.blockstream.compose.theme.whiteHigh
 import com.blockstream.compose.utils.CopyContainer
 import com.blockstream.ui.utils.ifTrue
 
-
 @Composable
 fun GreenAddress(
     address: String,
@@ -41,7 +39,6 @@ fun GreenAddress(
     } else {
         AnnotatedString(address)
     }
-
 
     val content = @Composable {
         Row {

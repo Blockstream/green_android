@@ -100,7 +100,8 @@ fun GreenAccountAsset(
             ) {
                 if (accountAssetBalance == null) {
                     Text(
-                        text = selectText ?: stringResource(if(withAsset) Res.string.id_select_account__asset else Res.string.id_select_account),
+                        text = selectText
+                            ?: stringResource(if (withAsset) Res.string.id_select_account__asset else Res.string.id_select_account),
                         style = labelLarge,
                         overflow = TextOverflow.Ellipsis
                     )
@@ -110,13 +111,15 @@ fun GreenAccountAsset(
                         verticalAlignment = Alignment.CenterVertically,
                         horizontalArrangement = Arrangement.spacedBy(8.dp)
                     ) {
-                        Column(modifier = Modifier
-                            .weight(1f)
-                            .ifTrue(message != null) {
-                                it.padding(vertical = 16.dp)
-                            }) {
-                            val primary = if(withAsset) accountAssetBalance.asset.name(session) else StringHolder.create(accountAssetBalance.account.name)
-                            val secondary = if(withAsset) accountAssetBalance.account.name else null
+                        Column(
+                            modifier = Modifier
+                                .weight(1f)
+                                .ifTrue(message != null) {
+                                    it.padding(vertical = 16.dp)
+                                }) {
+                            val primary =
+                                if (withAsset) accountAssetBalance.asset.name(session) else StringHolder.create(accountAssetBalance.account.name)
+                            val secondary = if (withAsset) accountAssetBalance.account.name else null
 
                             // Asset or Account
                             Text(
@@ -127,7 +130,7 @@ fun GreenAccountAsset(
                                 color = whiteHigh
                             )
 
-                            if(secondary != null) {
+                            if (secondary != null) {
                                 // Account Name
                                 Text(
                                     text = secondary,
@@ -195,7 +198,7 @@ fun GreenAccountAsset(
                 }
             }
 
-            if(withArrow) {
+            if (withArrow) {
                 Icon(
                     PhosphorIcons.Regular.CaretRight,
                     contentDescription = null,

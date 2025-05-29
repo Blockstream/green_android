@@ -1060,7 +1060,10 @@ open class GreenViewModel constructor(
             val loginData = session.loginWatchOnly(
                 network = network,
                 wallet = null,
-                watchOnlyCredentials = HwWatchOnlyCredentials.fromWatchOnlyCredentials(network = network.id, watchOnlyCredentials = watchOnlyCredentials)
+                watchOnlyCredentials = HwWatchOnlyCredentials.fromWatchOnlyCredentials(
+                    network = network.id,
+                    watchOnlyCredentials = watchOnlyCredentials
+                )
             )
 
             // First get login credentials before creating the wallet
@@ -1139,7 +1142,10 @@ open class GreenViewModel constructor(
             session.loginWatchOnly(
                 network = network,
                 wallet = wallet,
-                watchOnlyCredentials = HwWatchOnlyCredentials.fromWatchOnlyCredentials(network = network.id, watchOnlyCredentials = watchOnlyCredentials)
+                watchOnlyCredentials = HwWatchOnlyCredentials.fromWatchOnlyCredentials(
+                    network = network.id,
+                    watchOnlyCredentials = watchOnlyCredentials
+                )
             )
 
             sessionManager.upgradeOnBoardingSessionToWallet(wallet)

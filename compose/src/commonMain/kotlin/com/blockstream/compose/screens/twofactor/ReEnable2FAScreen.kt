@@ -31,7 +31,6 @@ import com.blockstream.ui.components.GreenColumn
 import org.jetbrains.compose.resources.painterResource
 import org.jetbrains.compose.resources.stringResource
 
-
 @Composable
 fun ReEnable2FAScreen(
     viewModel: ReEnable2FAViewModelAbstract

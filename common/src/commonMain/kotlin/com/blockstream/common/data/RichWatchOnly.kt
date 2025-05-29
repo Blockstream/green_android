@@ -10,14 +10,18 @@ import kotlinx.serialization.Serializable
 
 @Serializable
 data class RichWatchOnly(
-    @SerialName("network") val network: String,
-    @SerialName("username") val username: String,
-    @SerialName("password") val password: String,
-    @SerialName("watch_only_data") val watchOnlyData: String? = null,
+    @SerialName("network")
+    val network: String,
+    @SerialName("username")
+    val username: String,
+    @SerialName("password")
+    val password: String,
+    @SerialName("watch_only_data")
+    val watchOnlyData: String? = null,
 ) : GreenJson<RichWatchOnly>() {
     override fun kSerializer() = serializer()
 
-    fun toLoginCredentialsParams() : LoginCredentialsParams{
+    fun toLoginCredentialsParams(): LoginCredentialsParams {
         return LoginCredentialsParams(
             username = username,
             password = password,
@@ -39,7 +43,7 @@ data class RichWatchOnly(
 
 fun String.toRichWatchOnly(): List<RichWatchOnly> = RichWatchOnly.fromString(this)
 
-fun List<RichWatchOnly>.toJson() : String = GreenJson.json.encodeToString(this)
+fun List<RichWatchOnly>.toJson(): String = GreenJson.json.encodeToString(this)
 
 fun List<RichWatchOnly>.toLoginCredentials(
     session: GdkSession,

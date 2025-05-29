@@ -11,9 +11,7 @@ import breez_sdk.ReverseSwapFeesRequest
 import com.blockstream.common.data.Denomination
 import com.blockstream.common.data.FeePriority
 import com.blockstream.common.data.GreenWallet
-import com.blockstream.ui.navigation.NavData
 import com.blockstream.common.data.SupportData
-import com.blockstream.ui.events.Event
 import com.blockstream.common.events.Events
 import com.blockstream.common.extensions.ifConnected
 import com.blockstream.common.extensions.ifConnectedSuspend
@@ -23,13 +21,15 @@ import com.blockstream.common.extensions.previewAccountAssetBalance
 import com.blockstream.common.extensions.previewWallet
 import com.blockstream.common.gdk.data.AccountAssetBalance
 import com.blockstream.common.models.GreenViewModel
-import com.blockstream.ui.sideeffects.SideEffect
 import com.blockstream.common.sideeffects.SideEffects
-import com.blockstream.green.utils.Loggable
 import com.blockstream.common.utils.StringHolder
 import com.blockstream.common.utils.feeRateWithUnit
 import com.blockstream.common.utils.getStringFromIdOrNull
 import com.blockstream.common.utils.toAmountLook
+import com.blockstream.green.utils.Loggable
+import com.blockstream.ui.events.Event
+import com.blockstream.ui.navigation.NavData
+import com.blockstream.ui.sideeffects.SideEffect
 import com.rickclephas.kmp.nativecoroutines.NativeCoroutinesState
 import com.rickclephas.kmp.observableviewmodel.MutableStateFlow
 import com.rickclephas.kmp.observableviewmodel.coroutineScope
@@ -49,7 +49,6 @@ import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.sync.Mutex
 import org.jetbrains.compose.resources.getString
 import kotlin.math.absoluteValue
-
 
 abstract class RecoverFundsViewModelAbstract(
     greenWallet: GreenWallet,
@@ -151,7 +150,6 @@ class RecoverFundsViewModel(
         }
     }.stateIn(viewModelScope, SharingStarted.WhileSubscribed(), null)
 
-
     override val bitcoinAccounts = session.accounts.map { accounts ->
         accounts.filter { it.isBitcoin && !it.isLightning }.map {
             AccountAssetBalance.create(accountAsset = it.accountAsset, session = sessionOrNull)
@@ -178,11 +176,13 @@ class RecoverFundsViewModel(
     init {
         viewModelScope.launch {
             _navData.value = NavData(
-                title = getString(when {
-                    isRefund -> Res.string.id_refund
-                    isSendAll -> Res.string.id_empty_lightning_account
-                    else -> Res.string.id_sweep
-                }),
+                title = getString(
+                    when {
+                        isRefund -> Res.string.id_refund
+                        isSendAll -> Res.string.id_empty_lightning_account
+                        else -> Res.string.id_sweep
+                    }
+                ),
                 subtitle = greenWallet.name
             )
         }
@@ -255,7 +255,6 @@ class RecoverFundsViewModel(
             super.handleEvent(event)
         }
     }
-
 
     private fun updateFee(
         fee: String? = null,
@@ -558,7 +557,6 @@ class RecoverFundsViewModelPreview(greenWallet: GreenWallet) : RecoverFundsViewM
     isSendAll = false,
     onChainAddress = null
 ) {
-
 
     override val bitcoinAccounts: StateFlow<List<AccountAssetBalance>> = MutableStateFlow(
         listOf(

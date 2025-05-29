@@ -15,8 +15,8 @@ interface AssetsProvider {
  * GDK Cache: cached data from a previous successful fetch
  */
 object AssetManager {
-    private val liquidAssetManager by lazy { NetworkAssetManager()}
-    private val liquidTestnetAssetManager by lazy { NetworkAssetManager()}
+    private val liquidAssetManager by lazy { NetworkAssetManager() }
+    private val liquidTestnetAssetManager by lazy { NetworkAssetManager() }
 
     fun getNetworkAssetManager(isMainnet: Boolean): NetworkAssetManager {
         return if (isMainnet) {

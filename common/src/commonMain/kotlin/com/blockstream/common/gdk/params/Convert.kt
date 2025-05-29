@@ -12,19 +12,28 @@ import kotlinx.serialization.Serializable
 
 @Serializable
 data class Convert constructor(
-    @SerialName("satoshi") val satoshi: Long? = null,
-    @SerialName("asset_info") val asset: Asset? = null,
+    @SerialName("satoshi")
+    val satoshi: Long? = null,
+    @SerialName("asset_info")
+    val asset: Asset? = null,
 
-    @SerialName("btc") val btc: String? = null,
-    @SerialName("mbtc") val mbtc: String? = null,
-    @SerialName("bits") val bits: String? = null,
-    @SerialName("sats") val sats: String? = null,
+    @SerialName("btc")
+    val btc: String? = null,
+    @SerialName("mbtc")
+    val mbtc: String? = null,
+    @SerialName("bits")
+    val bits: String? = null,
+    @SerialName("sats")
+    val sats: String? = null,
 
-    @SerialName("fiat") val fiat: String? = null,
+    @SerialName("fiat")
+    val fiat: String? = null,
 
     // Fallback to avoid blocking convert_amount call
-    @SerialName("fiat_currency") val fiatCurrency: String? = "USD",
-    @SerialName("fiat_rate") val fiatRate: String? = "0",
+    @SerialName("fiat_currency")
+    val fiatCurrency: String? = "USD",
+    @SerialName("fiat_rate")
+    val fiatRate: String? = "0",
 ) : GreenJson<Convert>() {
 
     override fun encodeDefaultsValues() = false

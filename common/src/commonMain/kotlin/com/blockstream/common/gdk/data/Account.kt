@@ -11,18 +11,28 @@ import kotlinx.serialization.Serializable
 data class Account constructor(
     private var networkInjected: Network? = null,
     private var policyAsset: EnrichedAsset? = null,
-    @SerialName("name") private val gdkName: String,
-    @SerialName("pointer") val pointer: Long,
-    @SerialName("hidden") val hidden: Boolean = false,
-    @SerialName("receiving_id") val receivingId: String = "",
-    @SerialName("recovery_xpub") val recoveryXpub: String? = null,
+    @SerialName("name")
+    private val gdkName: String,
+    @SerialName("pointer")
+    val pointer: Long,
+    @SerialName("hidden")
+    val hidden: Boolean = false,
+    @SerialName("receiving_id")
+    val receivingId: String = "",
+    @SerialName("recovery_xpub")
+    val recoveryXpub: String? = null,
     @Serializable(with = AccountTypeSerializer::class)
-    @SerialName("type") val type: AccountType,
-    @SerialName("bip44_discovered") val bip44Discovered: Boolean? = null,
-    @SerialName("core_descriptors") val coreDescriptors: List<String>? = null,
-    @SerialName("slip132_extended_pubkey") val extendedPubkey: String? = null,
-    @SerialName("user_path") val derivationPath: List<Long>? = null
-): GreenJson<Account>(), Comparable<Account> {
+    @SerialName("type")
+    val type: AccountType,
+    @SerialName("bip44_discovered")
+    val bip44Discovered: Boolean? = null,
+    @SerialName("core_descriptors")
+    val coreDescriptors: List<String>? = null,
+    @SerialName("slip132_extended_pubkey")
+    val extendedPubkey: String? = null,
+    @SerialName("user_path")
+    val derivationPath: List<Long>? = null
+) : GreenJson<Account>(), Comparable<Account> {
 
     override fun kSerializer() = serializer()
 

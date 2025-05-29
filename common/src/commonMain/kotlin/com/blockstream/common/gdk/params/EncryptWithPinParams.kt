@@ -8,8 +8,10 @@ import kotlinx.serialization.json.JsonElement
 
 @Serializable
 data class EncryptWithPinParams constructor(
-    @SerialName("pin") val pin: String,
-    @SerialName("plaintext") val plaintext: JsonElement
+    @SerialName("pin")
+    val pin: String,
+    @SerialName("plaintext")
+    val plaintext: JsonElement
 ) : GreenJson<EncryptWithPinParams>() {
     override fun encodeDefaultsValues() = false
 

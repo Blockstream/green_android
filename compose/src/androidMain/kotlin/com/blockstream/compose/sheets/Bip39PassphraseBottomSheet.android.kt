@@ -6,7 +6,6 @@ import androidx.compose.ui.tooling.preview.Preview
 import com.blockstream.common.models.login.Bip39PassphraseViewModelPreview
 import com.blockstream.compose.GreenAndroidPreview
 
-
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 @Preview

@@ -47,7 +47,6 @@ import com.blockstream.ui.components.GreenColumn
 import org.jetbrains.compose.resources.painterResource
 import org.jetbrains.compose.resources.stringResource
 
-
 @Composable
 fun TextDialog(
     title: String,
@@ -108,9 +107,9 @@ fun TextDialog(
                 OutlinedTextField(
                     value = textFieldValueState,
                     onValueChange = {
-                        textFieldValueState = if(keyboardOptions?.keyboardType == KeyboardType.Decimal){
+                        textFieldValueState = if (keyboardOptions?.keyboardType == KeyboardType.Decimal) {
                             formatter.cleanup(it)
-                        }else{
+                        } else {
                             it
                         }
                     },
@@ -132,7 +131,7 @@ fun TextDialog(
                         }
                     ),
                     placeholder = {
-                         Text(placeholder ?: "")
+                        Text(placeholder ?: "")
                     },
                     label = { Text(label) },
                     suffix = {

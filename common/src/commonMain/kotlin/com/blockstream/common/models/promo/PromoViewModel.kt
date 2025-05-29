@@ -3,12 +3,12 @@ package com.blockstream.common.models.promo
 import blockstream_green.common.generated.resources.Res
 import blockstream_green.common.generated.resources.x
 import com.blockstream.common.data.GreenWallet
-import com.blockstream.ui.navigation.NavAction
-import com.blockstream.ui.navigation.NavData
 import com.blockstream.common.data.Promo
 import com.blockstream.common.events.Events
 import com.blockstream.common.extensions.previewWallet
 import com.blockstream.common.models.GreenViewModel
+import com.blockstream.ui.navigation.NavAction
+import com.blockstream.ui.navigation.NavData
 import com.rickclephas.kmp.observableviewmodel.launch
 
 abstract class PromoViewModelAbstract(promo: Promo, greenWalletOrNull: GreenWallet?) : GreenViewModel(
@@ -28,7 +28,8 @@ class PromoViewModel(promo: Promo, greenWalletOrNull: GreenWallet?) :
 
     init {
         viewModelScope.launch {
-            _navData.value = NavData(title = promo.title,
+            _navData.value = NavData(
+                title = promo.title,
                 showNavigationIcon = promo.layoutLarge == 0,
                 actions = listOfNotNull(
                     (NavAction(

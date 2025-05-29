@@ -243,7 +243,6 @@ abstract class CountlyBase(
         }
     }
 
-
     @Suppress("UNCHECKED_CAST")
     fun onBoardingSegmentation(setupArgs: SetupArgs): HashMap<String, Any> {
         return hashMapOf(
@@ -276,13 +275,12 @@ abstract class CountlyBase(
         screenName: String?,
         promo: Promo
     ): HashMap<String, Any> = (session?.let { sessionSegmentation(it) } ?: hashMapOf())
-            .also { segmentation ->
-                segmentation[PARAM_PROMO_ID] = promo.id
-                screenName?.also {
-                    segmentation[PARAM_SCREEN] = it
-                }
+        .also { segmentation ->
+            segmentation[PARAM_PROMO_ID] = promo.id
+            screenName?.also {
+                segmentation[PARAM_SCREEN] = it
             }
-
+        }
 
     private fun transactionSegmentation(
         session: GdkSession,
@@ -415,7 +413,8 @@ abstract class CountlyBase(
         loginCredentials: LoginCredentials? = null
     ) {
         traceEnd(apmEvent(Events.WALLET_LOGIN))
-        eventEnd(Events.WALLET_LOGIN.toString(),
+        eventEnd(
+            Events.WALLET_LOGIN.toString(),
             sessionSegmentation(session).also { segmentation ->
                 when {
                     loginCredentials?.credential_type == CredentialType.PIN_PINDATA -> {
@@ -846,7 +845,6 @@ abstract class CountlyBase(
                 segmentation[PARAM_SELECTED_VERSION] = version
             })
     }
-
 
     fun recordException(throwable: Throwable) {
         if (!skipExceptionRecording.contains(throwable.message)) {

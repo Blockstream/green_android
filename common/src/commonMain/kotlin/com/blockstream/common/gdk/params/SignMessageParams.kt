@@ -6,8 +6,10 @@ import kotlinx.serialization.Serializable
 
 @Serializable
 data class SignMessageParams constructor(
-    @SerialName("address") val address: String,
-    @SerialName("message") var message: String,
+    @SerialName("address")
+    val address: String,
+    @SerialName("message")
+    var message: String,
 ) : GreenJson<SignMessageParams>() {
     override fun kSerializer() = serializer()
 }

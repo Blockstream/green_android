@@ -104,6 +104,7 @@ fun BitcoinPriceChart(
             is DataState.Error -> {
                 RetryButton(onClick = onClickRetry)
             }
+
             else -> {
                 XYChartLayout(currentPeriodPrices)
             }
@@ -121,7 +122,6 @@ fun BitcoinPriceChart(
         )
     }
 }
-
 
 @Composable
 private fun BitcoinPrice(startPrice: Float, currentPrice: Float, currency: String) {
@@ -179,7 +179,6 @@ private fun BitcoinPrice(startPrice: Float, currentPrice: Float, currency: Strin
         }
     }
 }
-
 
 @OptIn(ExperimentalKoalaPlotApi::class)
 @Composable

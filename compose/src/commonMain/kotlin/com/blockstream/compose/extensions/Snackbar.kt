@@ -14,7 +14,6 @@ import com.blockstream.compose.managers.PlatformManager
 import com.blockstream.compose.sideeffects.DialogState
 import org.jetbrains.compose.resources.getString
 
-
 suspend fun SnackbarHostState.showErrorSnackbar(
     platformManager: PlatformManager,
     dialogState: DialogState,

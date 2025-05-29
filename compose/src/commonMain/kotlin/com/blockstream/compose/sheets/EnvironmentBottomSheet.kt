@@ -18,10 +18,12 @@ fun EnvironmentBottomSheet(onDismissRequest: () -> Unit) {
     var resultFromUserSelection by remember { mutableStateOf(false) }
 
     MenuBottomSheetView(
-        title = stringResource(Res.string.id_select_network), entries = MenuEntryList(listOf(
-            MenuEntry(title = "Mainnet", iconRes = "currency_btc"),
-            MenuEntry(title = "Testnet", iconRes = "flask")
-        )), onSelect = { position, _ ->
+        title = stringResource(Res.string.id_select_network), entries = MenuEntryList(
+            listOf(
+                MenuEntry(title = "Mainnet", iconRes = "currency_btc"),
+                MenuEntry(title = "Testnet", iconRes = "flask")
+            )
+        ), onSelect = { position, _ ->
             NavigateDestinations.Environment.setResult(position)
 
             resultFromUserSelection = true

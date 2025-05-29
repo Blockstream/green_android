@@ -28,7 +28,6 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import com.blockstream.compose.GreenAndroidPreview
 
-
 @Preview
 @Composable
 private fun Preview() {
@@ -65,7 +64,6 @@ private fun Preview() {
                     Spacer(modifier = Modifier.widthIn(min = 16.dp))
                     Thumb(isLoading = true)
                 }
-
 
             }
 

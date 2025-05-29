@@ -27,7 +27,6 @@ import org.jetbrains.compose.resources.StringResource
 import org.jetbrains.compose.resources.painterResource
 import org.jetbrains.compose.resources.stringResource
 
-
 @Composable
 fun WatchOnlyNetworkScreen(
     viewModel: WatchOnlyNetworkViewModelAbstract

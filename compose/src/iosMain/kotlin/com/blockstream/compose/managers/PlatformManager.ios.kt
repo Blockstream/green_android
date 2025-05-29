@@ -48,7 +48,6 @@ actual object StateKeeperFactory {
 @Composable
 actual fun rememberStateKeeperFactory(): StateKeeperFactory = StateKeeperFactory
 
-
 @Composable
 actual fun askForNotificationPermissions(viewModel: GreenViewModel) {
 
@@ -60,7 +59,7 @@ actual class PlatformManager(val application: UIApplication) {
         return false
     }
 
-    actual fun openBrowser(url: String, type: OpenBrowserType){
+    actual fun openBrowser(url: String, type: OpenBrowserType) {
         NSURL(string = url).takeIf { application.canOpenURL(it) }?.also {
             application.openURL(url = it, options = emptyMap<Any?, Any>()) {
 

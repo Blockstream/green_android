@@ -25,11 +25,11 @@ fun GreenCircle(size: Int, color: Color = MaterialTheme.colorScheme.primary) {
 @Preview
 fun GreenCirclePreview() {
 //    GreenChromePreview {
-        GreenColumn(horizontalAlignment = Alignment.CenterHorizontally) {
-            GreenCircle(size = 1)
-            GreenCircle(size = 8)
-            GreenCircle(size = 16)
-            GreenCircle(size = 24)
-        }
+    GreenColumn(horizontalAlignment = Alignment.CenterHorizontally) {
+        GreenCircle(size = 1)
+        GreenCircle(size = 8)
+        GreenCircle(size = 16)
+        GreenCircle(size = 24)
+    }
 //    }
 }

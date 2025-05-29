@@ -14,7 +14,7 @@ enum class CredentialType(val value: Long) {
     BIOMETRICS_MNEMONIC(10), // Keystore based with user presence
     KEYSTORE_HW_WATCHONLY_CREDENTIALS(11);
 
-    companion object{
+    companion object {
         fun byPosition(position: Long): CredentialType {
             return CredentialType.entries[position.toInt()]
         }

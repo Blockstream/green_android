@@ -10,11 +10,10 @@ import androidx.room.Update
 @Dao
 interface WalletDao {
     @Insert
-    suspend fun insertWallet(wallet: Wallet) : Long
+    suspend fun insertWallet(wallet: Wallet): Long
 
     @Update
     suspend fun updateWallet(vararg wallet: Wallet)
-
 
     @Insert(onConflict = OnConflictStrategy.REPLACE)
     suspend fun insertOrReplaceLoginCredentials(loginCredentials: LoginCredentials)

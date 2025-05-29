@@ -109,7 +109,7 @@ fun SendScreen(
         TextDialog(
             title = stringResource(Res.string.id_set_custom_fee_rate),
             label = stringResource(Res.string.id_fee_rate),
-            placeholder = "0${decimalSymbol}00" ,
+            placeholder = "0${decimalSymbol}00",
             initialText = viewModel.customFeeRate.value?.toString() ?: "",
             keyboardOptions = KeyboardOptions.Default.copy(
                 keyboardType = KeyboardType.Decimal,
@@ -136,7 +136,7 @@ fun SendScreen(
     SetupScreen(
         viewModel = viewModel,
         withPadding = false,
-        onProgressStyle = if(onProgressSending) OnProgressStyle.Full(bluBackground = true) else OnProgressStyle.Top,
+        onProgressStyle = if (onProgressSending) OnProgressStyle.Full(bluBackground = true) else OnProgressStyle.Top,
         sideEffectsHandler = {
             if (it is CreateTransactionViewModelAbstract.LocalSideEffects.ShowCustomFeeRate) {
                 customFeeDialog = it.feeRate.toString()
@@ -169,10 +169,14 @@ fun SendScreen(
                     maxLines = 4,
                     error = errorAddress,
                     onQrClick = {
-                        viewModel.postEvent(NavigateDestinations.Camera(isDecodeContinuous = true, parentScreenName = viewModel.screenName()))
+                        viewModel.postEvent(
+                            NavigateDestinations.Camera(
+                                isDecodeContinuous = true,
+                                parentScreenName = viewModel.screenName()
+                            )
+                        )
                     }
                 )
-
 
                 val isAccountEdit by viewModel.isAccountEdit.collectAsStateWithLifecycle()
                 AnimatedNullableVisibility(value = accountAssetBalance) {
@@ -242,7 +246,7 @@ fun SendScreen(
                 val isNoteEditable by viewModel.isNoteEditable.collectAsStateWithLifecycle()
                 AnimatedVisibility(visible = commentOrDescription.isNotBlank()) {
                     GreenDataLayout(
-                        title = stringResource(if(description != null) Res.string.id_description else Res.string.id_comment),
+                        title = stringResource(if (description != null) Res.string.id_description else Res.string.id_comment),
                         withPadding = false
                     ) {
                         Row {
@@ -252,7 +256,7 @@ fun SendScreen(
                                     .padding(vertical = 16.dp)
                                     .padding(start = 16.dp)
                             )
-                            if(isNoteEditable) {
+                            if (isNoteEditable) {
                                 IconButton(onClick = {
                                     viewModel.postEvent(SendViewModel.LocalEvents.Note)
                                 }) {

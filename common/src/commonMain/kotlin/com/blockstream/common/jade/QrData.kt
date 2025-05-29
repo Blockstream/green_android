@@ -6,7 +6,8 @@ import kotlinx.serialization.Serializable
 
 @Serializable
 data class QrData constructor(
-    @SerialName("data") val data: String,
+    @SerialName("data")
+    val data: String,
 ) : GreenJson<QrData>() {
 
     override fun encodeDefaultsValues(): Boolean = true
@@ -15,9 +16,12 @@ data class QrData constructor(
 
 @Serializable
 data class QrDataResponse constructor(
-    @SerialName("id") val id: String = "0",
-    @SerialName("method") val method: String,
-    @SerialName("params") val params: QrData,
+    @SerialName("id")
+    val id: String = "0",
+    @SerialName("method")
+    val method: String,
+    @SerialName("params")
+    val params: QrData,
 ) : GreenJson<QrDataResponse>() {
 
     override fun encodeDefaultsValues(): Boolean = true

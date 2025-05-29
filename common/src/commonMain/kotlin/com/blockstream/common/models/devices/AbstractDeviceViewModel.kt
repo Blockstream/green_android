@@ -4,7 +4,6 @@ import com.blockstream.common.Urls
 import com.blockstream.common.data.GreenWallet
 import com.blockstream.common.devices.DeviceBrand
 import com.blockstream.common.devices.GreenDevice
-import com.blockstream.ui.events.Event
 import com.blockstream.common.events.Events
 import com.blockstream.common.extensions.logException
 import com.blockstream.common.gdk.Gdk
@@ -18,10 +17,11 @@ import com.blockstream.common.managers.BluetoothState
 import com.blockstream.common.managers.DeviceManager
 import com.blockstream.common.models.GreenViewModel
 import com.blockstream.common.navigation.NavigateDestinations
-import com.blockstream.ui.sideeffects.SideEffect
 import com.blockstream.common.sideeffects.SideEffects
-import com.blockstream.green.utils.Loggable
 import com.blockstream.common.utils.StringHolder
+import com.blockstream.green.utils.Loggable
+import com.blockstream.ui.events.Event
+import com.blockstream.ui.sideeffects.SideEffect
 import com.rickclephas.kmp.observableviewmodel.stateIn
 import kotlinx.coroutines.CompletableDeferred
 import kotlinx.coroutines.Dispatchers
@@ -47,12 +47,12 @@ abstract class AbstractDeviceViewModel constructor(
     val deviceManager: DeviceManager by inject()
 
     class LocalEvents {
-        object Refresh: Event
-        object EnableBluetooth: Events.EventSideEffect(SideEffects.EnableBluetooth)
-        object AskForBluetoothPermissions: Events.EventSideEffect(SideEffects.AskForBluetoothPermissions)
-        object EnableLocationService: Events.EventSideEffect(SideEffects.EnableLocationService)
-        object LocationServiceMoreInfo: Events.OpenBrowser(Urls.BLUETOOTH_PERMISSIONS)
-        object Troubleshoot: Events.OpenBrowser(Urls.JADE_TROUBLESHOOT)
+        object Refresh : Event
+        object EnableBluetooth : Events.EventSideEffect(SideEffects.EnableBluetooth)
+        object AskForBluetoothPermissions : Events.EventSideEffect(SideEffects.AskForBluetoothPermissions)
+        object EnableLocationService : Events.EventSideEffect(SideEffects.EnableLocationService)
+        object LocationServiceMoreInfo : Events.OpenBrowser(Urls.BLUETOOTH_PERMISSIONS)
+        object Troubleshoot : Events.OpenBrowser(Urls.JADE_TROUBLESHOOT)
 
     }
 
@@ -69,7 +69,7 @@ abstract class AbstractDeviceViewModel constructor(
 
     val firmwareState = MutableStateFlow<SideEffect?>(null)
 
-    val bluetoothState = (if(isPreview) flowOf(BluetoothState.ON) else deviceManager.bluetoothState).map {
+    val bluetoothState = (if (isPreview) flowOf(BluetoothState.ON) else deviceManager.bluetoothState).map {
         it
     }.stateIn(
         viewModelScope = viewModelScope,
@@ -77,16 +77,15 @@ abstract class AbstractDeviceViewModel constructor(
         BluetoothState.UNAVAILABLE
     )
 
-
     override suspend fun handleEvent(event: Event) {
         super.handleEvent(event)
 
-        if(event is LocalEvents.Refresh) {
+        if (event is LocalEvents.Refresh) {
             deviceManager.refreshDevices()
         }
     }
 
-    internal fun askForPermissions(device: GreenDevice, navigateTo: SideEffects.NavigateTo){
+    internal fun askForPermissions(device: GreenDevice, navigateTo: SideEffects.NavigateTo) {
         device.askForUsbPermission(onSuccess = {
             postSideEffect(navigateTo)
         }, onError = { error ->
@@ -152,8 +151,10 @@ abstract class AbstractDeviceViewModel constructor(
     override fun onCleared() {
         super.onCleared()
 
-        if(disconnectDeviceOnCleared) {
-            if(sessionManager.getConnectedHardwareWalletSessions().none { it.device?.connectionIdentifier == deviceOrNull?.connectionIdentifier }){
+        if (disconnectDeviceOnCleared) {
+            if (sessionManager.getConnectedHardwareWalletSessions()
+                    .none { it.device?.connectionIdentifier == deviceOrNull?.connectionIdentifier }
+            ) {
                 // Disconnect without blocking the UI
                 applicationScope.launch(context = Dispatchers.IO + logException(countly)) {
                     deviceOrNull?.disconnect()
@@ -163,4 +164,4 @@ abstract class AbstractDeviceViewModel constructor(
     }
 
     companion object : Loggable()
- }
+}

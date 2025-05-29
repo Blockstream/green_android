@@ -119,8 +119,7 @@ fun WalletOverviewMenuDialog(viewModel: WalletOverviewViewModelAbstract, onDismi
 //                        onDismissRequest()
 //                    }
 
-
-                    if(viewModel.sessionOrNull?.isWatchOnlyValue == false && !viewModel.greenWallet.isLightning) {
+                    if (viewModel.sessionOrNull?.isWatchOnlyValue == false && !viewModel.greenWallet.isLightning) {
                         MenuHeader(text = stringResource(Res.string.id_accounts))
 
                         MenuItem(
@@ -133,7 +132,7 @@ fun WalletOverviewMenuDialog(viewModel: WalletOverviewViewModelAbstract, onDismi
                     }
 
                     val archivedAccounts by viewModel.archivedAccounts.collectAsStateWithLifecycle()
-                    if(archivedAccounts > 0) {
+                    if (archivedAccounts > 0) {
                         MenuItem(
                             text = stringResource(Res.string.id_view_archived_accounts),
                             icon = PhosphorIcons.Regular.BoxArrowDown,

@@ -106,32 +106,41 @@ class EnterRecoveryPhraseViewModel(setupArgs: SetupArgs, stateKeeper: StateKeepe
     @NativeCoroutinesState
     override val recoveryPhrase: MutableStateFlow<List<String>> =
         MutableStateFlow(viewModelScope, listOf())
+
     @NativeCoroutinesState
     override val rows: MutableStateFlow<Int> = MutableStateFlow(viewModelScope, 12)
+
     @NativeCoroutinesState
     override val activeWord: MutableStateFlow<Int> = MutableStateFlow(viewModelScope, -1)
 
     @NativeCoroutinesState
     override val matchedWords = MutableStateFlow(viewModelScope, listOf<String>())
+
     @NativeCoroutinesState
     override val enabledKeys = MutableStateFlow(viewModelScope, setOf<String>())
 
     @NativeCoroutinesState
     override val isRecoveryPhraseValid: MutableStateFlow<Boolean> =
         MutableStateFlow(viewModelScope, false)
+
     @NativeCoroutinesState
     override val showInputButtons: MutableStateFlow<Boolean> =
         MutableStateFlow(viewModelScope, true)
+
     @NativeCoroutinesState
     override val showHelpButton: MutableStateFlow<Boolean> = MutableStateFlow(viewModelScope, false)
+
     @NativeCoroutinesState
     override val showTypeNextWordHint: MutableStateFlow<Boolean> =
         MutableStateFlow(viewModelScope, false)
+
     @NativeCoroutinesState
     override val showInvalidMnemonicError: MutableStateFlow<Boolean> =
         MutableStateFlow(viewModelScope, false)
+
     @NativeCoroutinesState
     override val recoveryPhraseSize: MutableStateFlow<Int> = MutableStateFlow(viewModelScope, 12)
+
     @NativeCoroutinesState
     override val hintMessage: MutableStateFlow<String> = MutableStateFlow(viewModelScope, "")
 
@@ -170,13 +179,14 @@ class EnterRecoveryPhraseViewModel(setupArgs: SetupArgs, stateKeeper: StateKeepe
             _navData.value = NavData(
                 title = setupArgs.accountType?.toString(),
                 subtitle = greenWalletOrNull?.name,
-                actions = listOf(NavAction(
-                    title = getString(Res.string.id_help),
-                    icon = Res.drawable.question,
-                    onClick = {
-                        postSideEffect(SideEffects.NavigateTo(NavigateDestinations.RecoveryHelp))
-                    }
-                ))
+                actions = listOf(
+                    NavAction(
+                        title = getString(Res.string.id_help),
+                        icon = Res.drawable.question,
+                        onClick = {
+                            postSideEffect(SideEffects.NavigateTo(NavigateDestinations.RecoveryHelp))
+                        }
+                    ))
             )
         }
 
@@ -207,7 +217,7 @@ class EnterRecoveryPhraseViewModel(setupArgs: SetupArgs, stateKeeper: StateKeepe
         }
     }
 
-    private fun setRecoveryPhrase(phrase: String){
+    private fun setRecoveryPhrase(phrase: String) {
         // Basic check to prevent huge inputs
         recoveryPhrase.value = phrase
             .trim()
@@ -274,28 +284,27 @@ class EnterRecoveryPhraseViewModel(setupArgs: SetupArgs, stateKeeper: StateKeepe
         showTypeNextWordHint.value =
             recoveryPhrase.value.size in 1..11 && activeWord().isNullOrEmpty()
 
-
         val active = activeWord() ?: ""
 
         val matched = mutableListOf<String>()
         val enabled = mutableSetOf<String>()
 
         bip39WordList.forEach { word ->
-            if(active.isEmpty() || word.startsWith(active)){
-                if(active.isNotBlank() && matched.size < 4){
+            if (active.isEmpty() || word.startsWith(active)) {
+                if (active.isNotBlank() && matched.size < 4) {
                     matched.add(word)
                 }
 
-                if(active.length < word.length){
+                if (active.length < word.length) {
                     enabled.add(word[active.length].toString())
                 }
             }
         }
 
-        matchedWords.value = if(activeWord.value != -1) matched else listOf()
+        matchedWords.value = if (activeWord.value != -1) matched else listOf()
 
         // Disable keys for words greater than 27
-        enabledKeys.value = if(recoveryPhrase.value.count() >= 27 && activeWord.value != -1) setOf() else enabled
+        enabledKeys.value = if (recoveryPhrase.value.count() >= 27 && activeWord.value != -1) setOf() else enabled
 
         rows.value = (ceil(max(recoveryPhrase.value.size, recoveryPhraseSize.value) / 3f).toInt())
 
@@ -309,7 +318,7 @@ class EnterRecoveryPhraseViewModel(setupArgs: SetupArgs, stateKeeper: StateKeepe
     }
 
     private fun removeWord() {
-        if(activeWord.value < recoveryPhrase.value.size) {
+        if (activeWord.value < recoveryPhrase.value.size) {
             if (activeWord.value != -1) {
                 recoveryPhrase.value =
                     recoveryPhrase.value.toMutableList().also { it.removeAt(activeWord.value) }
@@ -333,7 +342,7 @@ class EnterRecoveryPhraseViewModel(setupArgs: SetupArgs, stateKeeper: StateKeepe
 
     private fun keyAction(key: String) {
         if (key.length > 1) {
-           append(key)
+            append(key)
         } else if (key == " ") {
             if (activeWord.value == -1) {
                 activeWord.value = recoveryPhrase.value.size - 1
@@ -369,7 +378,7 @@ class EnterRecoveryPhraseViewModel(setupArgs: SetupArgs, stateKeeper: StateKeepe
                 }
 
                 val activeWord = activeWord()
-                if(activeWord != null && matchedWords.value.let { it.size == 1 && it.firstOrNull() == activeWord }){
+                if (activeWord != null && matchedWords.value.let { it.size == 1 && it.firstOrNull() == activeWord }) {
                     append(activeWord)
                 }
             }
@@ -431,7 +440,7 @@ class EnterRecoveryPhraseViewModel(setupArgs: SetupArgs, stateKeeper: StateKeepe
         })
     }
 
-    companion object: Loggable() {
+    companion object : Loggable() {
         const val STATE = "STATE"
     }
 }

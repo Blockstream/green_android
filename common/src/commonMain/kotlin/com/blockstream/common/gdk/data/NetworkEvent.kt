@@ -5,10 +5,13 @@ import kotlinx.serialization.Serializable
 
 @Serializable
 data class NetworkEvent constructor(
-    @SerialName("current_state") val currentState: String,
-    @SerialName("next_state") val nextState: String? = null,
-    @SerialName("wait_ms") val wait: Long = 0,
-){
+    @SerialName("current_state")
+    val currentState: String,
+    @SerialName("next_state")
+    val nextState: String? = null,
+    @SerialName("wait_ms")
+    val wait: Long = 0,
+) {
 
     val isConnected
         get() = currentState == KEY_CONNECTED
@@ -16,7 +19,7 @@ data class NetworkEvent constructor(
     val waitInSeconds
         get() = wait / 1000
 
-    companion object{
+    companion object {
         private const val KEY_CONNECTED = "connected"
         private const val KEY_DISCONNECTED = "disconnected"
 

@@ -32,7 +32,8 @@ fun WalletDeleteBottomSheet(
         title = stringResource(Res.string.id_remove_wallet),
         subtitle = viewModel.greenWallet.name,
         viewModel = viewModel,
-        onDismissRequest = onDismissRequest) {
+        onDismissRequest = onDismissRequest
+    ) {
 
         Text(text = stringResource(Res.string.id_do_you_have_the_backup), style = labelLarge)
         Text(text = stringResource(Res.string.id_be_sure_your_recovery_phrase_is))
@@ -41,7 +42,7 @@ fun WalletDeleteBottomSheet(
             mutableStateOf(false)
         }
 
-        if(isConfirmed){
+        if (isConfirmed) {
             GreenButton(
                 text = stringResource(Res.string.id_remove_wallet),
                 modifier = Modifier.fillMaxWidth(),
@@ -49,7 +50,7 @@ fun WalletDeleteBottomSheet(
             ) {
                 viewModel.postEvent(Events.Continue)
             }
-        }else{
+        } else {
             GreenButton(
                 text = stringResource(Res.string.id_remove_wallet),
                 modifier = Modifier.fillMaxWidth(),

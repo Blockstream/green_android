@@ -13,29 +13,31 @@ fun AssetsBottomSheetPreview() {
     GreenAndroidPreview {
         AssetsBottomSheet(
             viewModel = GreenViewModel.preview(),
-            assetBalance = AssetBalanceList(listOf(
-                previewAssetBalance(),
-                previewAssetBalance(),
-                previewAssetBalance(),
-                previewAssetBalance(),
-                previewAssetBalance(),
-                previewAssetBalance(),
-                previewAssetBalance(),
-                previewAssetBalance(),
-                previewAssetBalance(),
-                previewAssetBalance(),
-                previewAssetBalance(),
-                previewAssetBalance(),
-                previewAssetBalance(),
-                previewAssetBalance(),
-                previewAssetBalance(),
-                previewAssetBalance(),
-                previewAssetBalance(),
-                previewAssetBalance(),
-                previewAssetBalance(),
-                previewAssetBalance(),
-                previewAssetBalance()
-            )),
+            assetBalance = AssetBalanceList(
+                listOf(
+                    previewAssetBalance(),
+                    previewAssetBalance(),
+                    previewAssetBalance(),
+                    previewAssetBalance(),
+                    previewAssetBalance(),
+                    previewAssetBalance(),
+                    previewAssetBalance(),
+                    previewAssetBalance(),
+                    previewAssetBalance(),
+                    previewAssetBalance(),
+                    previewAssetBalance(),
+                    previewAssetBalance(),
+                    previewAssetBalance(),
+                    previewAssetBalance(),
+                    previewAssetBalance(),
+                    previewAssetBalance(),
+                    previewAssetBalance(),
+                    previewAssetBalance(),
+                    previewAssetBalance(),
+                    previewAssetBalance(),
+                    previewAssetBalance()
+                )
+            ),
             onDismissRequest = { }
         )
     }

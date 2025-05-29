@@ -17,7 +17,7 @@ class ApplicationSettingsUnitTests {
     private lateinit var settings: Settings
 
     @Test
-    fun test_initial_values_with_empty_prefs(){
+    fun test_initial_values_with_empty_prefs() {
         val appSettings = ApplicationSettings.fromSettings(settings)
 
         Assert.assertFalse(appSettings.tor)
@@ -25,7 +25,7 @@ class ApplicationSettingsUnitTests {
     }
 
     @Test
-    fun test_values_from_prefs(){
+    fun test_values_from_prefs() {
 
         whenever(settings.getStringOrNull(any())).thenAnswer {
             // value is same as requested key
@@ -36,7 +36,7 @@ class ApplicationSettingsUnitTests {
 //            // value is same as requested key
 //            it.arguments[0] as String
 //        }
-        
+
         whenever(settings.getBoolean(any(), any())).thenReturn(true)
 
         val appSettings = ApplicationSettings.fromSettings(settings)

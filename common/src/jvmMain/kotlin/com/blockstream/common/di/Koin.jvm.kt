@@ -16,7 +16,7 @@ actual val platformModule = module {
         LocaleManager()
     }
     single<ObservableSettings> {
-        val preferences : Preferences = Preferences.userRoot()
+        val preferences: Preferences = Preferences.userRoot()
         PreferencesSettings(preferences)
     }
     single<BluetoothManager> { BluetoothManager() }

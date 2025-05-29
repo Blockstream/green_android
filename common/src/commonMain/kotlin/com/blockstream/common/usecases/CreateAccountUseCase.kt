@@ -79,7 +79,6 @@ class CreateAccountUseCase(
                 )
             }
 
-
 //                if (appInfo.isDevelopmentOrDebug) {
 //                    logger.i { "Development/Debug feature setCloseToAddress" }
 //                    session.accounts.value.filter { it.isBitcoin }.let { accounts ->

@@ -15,7 +15,7 @@ interface JadeDeviceApi : DeviceOperatingNetwork {
     suspend fun supportsGenuineCheck(): Boolean
 }
 
-class JadeDeviceApiImpl: JadeDeviceApi {
+class JadeDeviceApiImpl : JadeDeviceApi {
     override var jadeApi: JadeAPI? = null
 
     override suspend fun supportsGenuineCheck(): Boolean {
@@ -29,11 +29,13 @@ class JadeDeviceApiImpl: JadeDeviceApi {
                     JadeNetworks.MAIN -> {
                         gdk.networks().bitcoinElectrum.takeIf { !isTestnet }
                     }
+
                     JadeNetworks.TEST -> {
-                        gdk.networks().testnetBitcoinElectrum.takeIf { isTestnet  }
+                        gdk.networks().testnetBitcoinElectrum.takeIf { isTestnet }
                     }
+
                     else -> {
-                        if(isTestnet) gdk.networks().testnetBitcoinElectrum else gdk.networks().bitcoinElectrum
+                        if (isTestnet) gdk.networks().testnetBitcoinElectrum else gdk.networks().bitcoinElectrum
                     }
                 }
             }
@@ -42,14 +44,16 @@ class JadeDeviceApiImpl: JadeDeviceApi {
 
     override suspend fun getOperatingNetwork(greenDevice: GreenDevice, gdk: Gdk, interaction: HardwareConnectInteraction): Network {
         return (greenDevice.gdkHardwareWallet as? JadeHWWallet)?.let { jadeHWWallet ->
-            jadeHWWallet.getVersionInfo().jadeNetworks.let { networks->
+            jadeHWWallet.getVersionInfo().jadeNetworks.let { networks ->
                 when (networks) {
                     JadeNetworks.MAIN -> {
                         gdk.networks().bitcoinElectrum
                     }
+
                     JadeNetworks.TEST -> {
                         gdk.networks().testnetBitcoinElectrum
                     }
+
                     else -> {
                         interaction.requestNetwork()
                     }

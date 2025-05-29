@@ -7,7 +7,6 @@ import com.blockstream.common.data.GreenWallet
 import com.blockstream.common.data.SupportData
 import com.blockstream.common.devices.DeviceState
 import com.blockstream.common.devices.JadeDevice
-import com.blockstream.ui.events.Event
 import com.blockstream.common.events.Events
 import com.blockstream.common.extensions.launchIn
 import com.blockstream.common.extensions.previewGreenDevice
@@ -17,10 +16,11 @@ import com.blockstream.common.gdk.params.RsaVerifyParams
 import com.blockstream.common.models.devices.JadeGenuineCheckViewModel.GenuineState
 import com.blockstream.common.navigation.NavigateDestinations
 import com.blockstream.common.sideeffects.SideEffects
-import com.blockstream.green.utils.Loggable
 import com.blockstream.common.utils.StringHolder
 import com.blockstream.common.utils.randomChars
+import com.blockstream.green.utils.Loggable
 import com.blockstream.jade.data.JadeError
+import com.blockstream.ui.events.Event
 import com.rickclephas.kmp.nativecoroutines.NativeCoroutinesState
 import com.rickclephas.kmp.observableviewmodel.launch
 import kotlinx.coroutines.delay
@@ -28,14 +28,16 @@ import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.onEach
 
-abstract class JadeGenuineCheckViewModelAbstract(greenWalletOrNull: GreenWallet?) : AbstractDeviceViewModel(greenWalletOrNull = greenWalletOrNull) {
+abstract class JadeGenuineCheckViewModelAbstract(greenWalletOrNull: GreenWallet?) :
+    AbstractDeviceViewModel(greenWalletOrNull = greenWalletOrNull) {
     override fun screenName(): String = "JadeGenuineCheck"
 
     @NativeCoroutinesState
     abstract val genuineState: StateFlow<GenuineState>
 }
 
-class JadeGenuineCheckViewModel constructor(greenWalletOrNull: GreenWallet?, deviceId: String?) : JadeGenuineCheckViewModelAbstract(greenWalletOrNull) {
+class JadeGenuineCheckViewModel constructor(greenWalletOrNull: GreenWallet?, deviceId: String?) :
+    JadeGenuineCheckViewModelAbstract(greenWalletOrNull) {
 
     private val _isGenuine = MutableStateFlow<GenuineState>(GenuineState.CHECKING)
     override val genuineState: StateFlow<GenuineState> = _isGenuine
@@ -59,9 +61,9 @@ class JadeGenuineCheckViewModel constructor(greenWalletOrNull: GreenWallet?, dev
 
         deviceOrNull = sessionOrNull?.device ?: deviceManager.getDevice(deviceId)
 
-        if(deviceOrNull == null){
+        if (deviceOrNull == null) {
             postSideEffect(SideEffects.NavigateBack())
-        }else {
+        } else {
             device.deviceState.onEach {
                 // Device went offline
                 if (it == DeviceState.DISCONNECTED) {
@@ -83,30 +85,36 @@ class JadeGenuineCheckViewModel constructor(greenWalletOrNull: GreenWallet?, dev
     override suspend fun handleEvent(event: Event) {
         super.handleEvent(event)
 
-        when(event){
+        when (event) {
             is Events.Continue -> {
                 postSideEffect(SideEffects.Success())
             }
+
             is LocalEvents.Retry -> {
                 genuineCheck()
             }
+
             is LocalEvents.Cancel -> {
                 postSideEffect(SideEffects.NavigateBack())
             }
+
             is LocalEvents.ContinueAsDIY -> {
                 jadeGenuineEvent()
                 postSideEffect(SideEffects.Success())
             }
+
             is LocalEvents.ContactSupport -> {
                 postSideEffect(
-                    SideEffects.NavigateTo(NavigateDestinations.Support(
-                        type = SupportType.INCIDENT,
-                        supportData = SupportData(
-                            subject = "Jade Genuine check failed",
-                            zendeskHardwareWallet = deviceOrNull?.deviceModel?.zendeskValue
-                        ),
-                        greenWalletOrNull = greenWalletOrNull
-                    ))
+                    SideEffects.NavigateTo(
+                        NavigateDestinations.Support(
+                            type = SupportType.INCIDENT,
+                            supportData = SupportData(
+                                subject = "Jade Genuine check failed",
+                                zendeskHardwareWallet = deviceOrNull?.deviceModel?.zendeskValue
+                            ),
+                            greenWalletOrNull = greenWalletOrNull
+                        )
+                    )
                 )
             }
         }
@@ -120,7 +128,7 @@ class JadeGenuineCheckViewModel constructor(greenWalletOrNull: GreenWallet?, dev
         }
     }
 
-    private fun genuineCheck(){
+    private fun genuineCheck() {
         doAsync({
             jadeDevice.let {
                 _isGenuine.value = GenuineState.CHECKING
@@ -162,7 +170,7 @@ class JadeGenuineCheckViewModel constructor(greenWalletOrNull: GreenWallet?, dev
         })
     }
 
-    companion object: Loggable()
+    companion object : Loggable()
 }
 
 class JadeGenuineCheckViewModelPreview : JadeGenuineCheckViewModelAbstract(previewWallet()) {
@@ -171,7 +179,7 @@ class JadeGenuineCheckViewModelPreview : JadeGenuineCheckViewModelAbstract(previ
     init {
         deviceOrNull = previewGreenDevice()
 
-         onProgress.value = true
+        onProgress.value = true
 
         viewModelScope.launch {
             delay(3_000)

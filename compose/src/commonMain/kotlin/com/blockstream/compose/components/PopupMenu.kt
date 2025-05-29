@@ -37,8 +37,8 @@ data class MenuEntry(
     val iconRes: DrawableResource? = null,
     val imageVector: ImageVector? = null,
     val onClick: () -> Unit = {}
-){
-    companion object{
+) {
+    companion object {
 
         @Composable
         fun from(navAction: NavAction): MenuEntry {
@@ -56,7 +56,6 @@ data class PopupState(
     val isContextMenuVisible: MutableState<Boolean> = mutableStateOf(false),
     val offset: MutableState<DpOffset> = mutableStateOf(DpOffset.Zero),
 )
-
 
 @Composable
 fun PopupMenu(modifier: Modifier = Modifier, state: PopupState, entries: List<MenuEntry>) {
@@ -95,11 +94,10 @@ fun PopupMenu(modifier: Modifier = Modifier, state: PopupState, entries: List<Me
     }
 }
 
-
 @Composable
 fun ActionMenu(
     navData: NavData,
-){
+) {
     val popupState = remember { PopupState() }
 
     AnimatedVisibility(

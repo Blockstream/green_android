@@ -14,24 +14,24 @@ import kotlinx.serialization.encoding.Encoder
 @Serializable(with = ChangeOutputSerializer::class)
 @KeepGeneratedSerializer
 data class ChangeOutput public constructor(
-     val path: List<Long>? = null,
-     @SerialName("recovery_xpub")
-     val recoveryXpub: String? = null,
-     @SerialName("csv_blocks")
-     val csvBlocks: Int? = null,
-     val variant: String? = null,
+    val path: List<Long>? = null,
+    @SerialName("recovery_xpub")
+    val recoveryXpub: String? = null,
+    @SerialName("csv_blocks")
+    val csvBlocks: Int? = null,
+    val variant: String? = null,
 ) : JadeSerializer<ChangeOutput>() {
     override fun kSerializer() = serializer()
 }
 
 // Use this custom serializer so that we get real null values instead of empty map values eg. [{}]
 object ChangeOutputSerializer : KSerializer<ChangeOutput> {
-     override val descriptor: SerialDescriptor = PrimitiveSerialDescriptor("ChangeOutput", PrimitiveKind.STRING)
-     override fun deserialize(decoder: Decoder): ChangeOutput {
-          return decoder.decodeSerializableValue(ChangeOutput.generatedSerializer())
-     }
+    override val descriptor: SerialDescriptor = PrimitiveSerialDescriptor("ChangeOutput", PrimitiveKind.STRING)
+    override fun deserialize(decoder: Decoder): ChangeOutput {
+        return decoder.decodeSerializableValue(ChangeOutput.generatedSerializer())
+    }
 
-     override fun serialize(encoder: Encoder, value: ChangeOutput) {
-          encoder.encodeSerializableValue(ChangeOutput.generatedSerializer(), value)
-     }
+    override fun serialize(encoder: Encoder, value: ChangeOutput) {
+        encoder.encodeSerializableValue(ChangeOutput.generatedSerializer(), value)
+    }
 }

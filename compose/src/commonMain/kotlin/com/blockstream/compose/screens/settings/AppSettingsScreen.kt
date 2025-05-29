@@ -108,7 +108,6 @@ import kotlinx.coroutines.launch
 import org.jetbrains.compose.resources.painterResource
 import org.jetbrains.compose.resources.stringResource
 
-
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun AppSettingsScreen(
@@ -120,7 +119,8 @@ fun AppSettingsScreen(
     SetupScreen(viewModel = viewModel, withPadding = false, scrollable = false, sideEffectsHandler = {
         if (it is AppSettingsViewModel.LocalSideEffects.UnsavedAppSettings) {
             val openDialogData =
-                OpenDialogData(title = StringHolder.create(Res.string.id_app_settings),
+                OpenDialogData(
+                    title = StringHolder.create(Res.string.id_app_settings),
                     message = StringHolder.create(
                         Res.string.id_your_settings_are_unsavednndo
                     ),

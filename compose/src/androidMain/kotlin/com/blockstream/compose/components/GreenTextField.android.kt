@@ -5,10 +5,9 @@ import androidx.compose.ui.tooling.preview.Preview
 import blockstream_green.common.generated.resources.Res
 import blockstream_green.common.generated.resources.id_address
 import blockstream_green.common.generated.resources.id_private_key
-import com.blockstream.ui.components.GreenColumn
 import com.blockstream.compose.theme.GreenChromePreview
+import com.blockstream.ui.components.GreenColumn
 import org.jetbrains.compose.resources.stringResource
-
 
 @Preview
 @Composable

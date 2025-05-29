@@ -10,7 +10,6 @@ import blockstream_green.common.generated.resources.id_max_single_payment_amount
 import blockstream_green.common.generated.resources.id_rescan_swaps_initiated
 import com.blockstream.common.data.GreenWallet
 import com.blockstream.common.data.SetupArgs
-import com.blockstream.ui.events.Event
 import com.blockstream.common.extensions.launchIn
 import com.blockstream.common.extensions.previewWallet
 import com.blockstream.common.lightning.LightningManager
@@ -22,9 +21,10 @@ import com.blockstream.common.lightning.totalInboundLiquiditySatoshi
 import com.blockstream.common.models.GreenViewModel
 import com.blockstream.common.navigation.NavigateDestinations
 import com.blockstream.common.sideeffects.SideEffects
-import com.blockstream.green.utils.Loggable
 import com.blockstream.common.utils.StringHolder
 import com.blockstream.common.utils.toAmountLookOrNa
+import com.blockstream.green.utils.Loggable
+import com.blockstream.ui.events.Event
 import com.rickclephas.kmp.nativecoroutines.NativeCoroutinesState
 import com.rickclephas.kmp.observableviewmodel.stateIn
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -75,32 +75,42 @@ class LightningNodeViewModel(greenWallet: GreenWallet) :
             session.lightningSdk.nodeInfoStateFlow.onEach {
                 val list = mutableListOf(
                     StringHolder.create("ID") to StringHolder.create(it.id),
-                    StringHolder.create(Res.string.id_account_balance) to StringHolder.create(it.channelsBalanceSatoshi().toAmountLookOrNa(
-                        session = session,
-                        withUnit = true,
-                        withGrouping = true
-                    )),
-                    StringHolder.create(Res.string.id_inbound_liquidity) to StringHolder.create(it.totalInboundLiquiditySatoshi().toAmountLookOrNa(
-                        session = session,
-                        withUnit = true,
-                        withGrouping = true
-                    )),
-                    StringHolder.create(Res.string.id_max_payable_amount) to StringHolder.create(it.maxPayableSatoshi().toAmountLookOrNa(
-                        session = session,
-                        withUnit = true,
-                        withGrouping = true
-                    )),
-                    StringHolder.create(Res.string.id_max_single_payment_amount) to StringHolder.create(it.maxSinglePaymentAmountSatoshi()
-                        .toAmountLookOrNa(
+                    StringHolder.create(Res.string.id_account_balance) to StringHolder.create(
+                        it.channelsBalanceSatoshi().toAmountLookOrNa(
                             session = session,
                             withUnit = true,
                             withGrouping = true
-                        )),
-                    StringHolder.create(Res.string.id_max_receivable_amount) to StringHolder.create(it.maxReceivableSatoshi().toAmountLookOrNa(
-                        session = session,
-                        withUnit = true,
-                        withGrouping = true
-                    ))
+                        )
+                    ),
+                    StringHolder.create(Res.string.id_inbound_liquidity) to StringHolder.create(
+                        it.totalInboundLiquiditySatoshi().toAmountLookOrNa(
+                            session = session,
+                            withUnit = true,
+                            withGrouping = true
+                        )
+                    ),
+                    StringHolder.create(Res.string.id_max_payable_amount) to StringHolder.create(
+                        it.maxPayableSatoshi().toAmountLookOrNa(
+                            session = session,
+                            withUnit = true,
+                            withGrouping = true
+                        )
+                    ),
+                    StringHolder.create(Res.string.id_max_single_payment_amount) to StringHolder.create(
+                        it.maxSinglePaymentAmountSatoshi()
+                            .toAmountLookOrNa(
+                                session = session,
+                                withUnit = true,
+                                withGrouping = true
+                            )
+                    ),
+                    StringHolder.create(Res.string.id_max_receivable_amount) to StringHolder.create(
+                        it.maxReceivableSatoshi().toAmountLookOrNa(
+                            session = session,
+                            withUnit = true,
+                            withGrouping = true
+                        )
+                    )
                 )
 
 

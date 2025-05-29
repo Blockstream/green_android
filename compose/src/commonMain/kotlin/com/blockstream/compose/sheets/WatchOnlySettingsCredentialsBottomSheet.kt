@@ -89,13 +89,12 @@ fun WatchOnlyCredentialsSettingsBottomSheet(
             isError = username.isNotBlank() && username.length < 8,
             label = { Text(stringResource(Res.string.id_username)) },
             supportingText = {
-                Text(if(username.length < 8) stringResource(Res.string.id_at_least_8_characters_required) else "")
+                Text(if (username.length < 8) stringResource(Res.string.id_at_least_8_characters_required) else "")
             },
             trailingIcon = {
                 TextInputPaste(viewModel.username)
             }
         )
-
 
         val password by viewModel.password.collectAsStateWithLifecycle()
         val passwordVisibility = remember { mutableStateOf(false) }
@@ -119,7 +118,7 @@ fun WatchOnlyCredentialsSettingsBottomSheet(
             isError = password.isNotBlank() && password.length < 8,
             label = { Text(stringResource(Res.string.id_password)) },
             supportingText = {
-                Text(if(password.length < 8) stringResource(Res.string.id_at_least_8_characters_required) else "")
+                Text(if (password.length < 8) stringResource(Res.string.id_at_least_8_characters_required) else "")
             },
             trailingIcon = {
                 TextInputPassword(passwordVisibility)
@@ -129,7 +128,7 @@ fun WatchOnlyCredentialsSettingsBottomSheet(
         val hasWatchOnlyCredentials by viewModel.hasWatchOnlyCredentials.collectAsStateWithLifecycle()
         val buttonEnabled by viewModel.buttonEnabled.collectAsStateWithLifecycle()
         GreenButton(
-            text = stringResource(if(hasWatchOnlyCredentials) Res.string.id_update else Res.string.id_save),
+            text = stringResource(if (hasWatchOnlyCredentials) Res.string.id_update else Res.string.id_save),
             enabled = buttonEnabled,
             modifier = Modifier.fillMaxWidth().padding(top = 16.dp)
         ) {

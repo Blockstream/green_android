@@ -13,10 +13,10 @@ open class ConsumableEvent<out T>(private val content: T) {
         return if (hasBeenHandled) {
             null
         } else {
-            if(filter == null || filter.invoke(content)) {
+            if (filter == null || filter.invoke(content)) {
                 hasBeenHandled = true
                 content
-            }else{
+            } else {
                 null
             }
         }

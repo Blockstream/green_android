@@ -68,7 +68,7 @@ fun ChangePinScreen(
             }, onModeChange = {
                 isVerify = it
             }) { pin ->
-                if(isVerify && pin.length == 6) {
+                if (isVerify && pin.length == 6) {
                     viewModel.postEvent(WalletSettingsViewModel.LocalEvents.SetPin(pin = pin))
                 }
             }

@@ -11,7 +11,6 @@ import com.blockstream.compose.GreenPreview
 import com.blockstream.ui.components.GreenColumn
 import org.jetbrains.compose.resources.stringResource
 
-
 @Preview
 @Composable
 fun GreenAccountAssetPreview() {

@@ -15,7 +15,11 @@ import kotlinx.serialization.json.decodeFromJsonElement
 interface TwoFactorResolver {
     suspend fun selectTwoFactorMethod(availableMethods: List<String>): CompletableDeferred<String>
 
-    suspend fun getTwoFactorCode(network: Network, enable2faCallMethod: Boolean, authHandlerStatus: AuthHandlerStatus): CompletableDeferred<String>
+    suspend fun getTwoFactorCode(
+        network: Network,
+        enable2faCallMethod: Boolean,
+        authHandlerStatus: AuthHandlerStatus
+    ): CompletableDeferred<String>
 }
 
 fun TwoFactorResolver.selectTwoFactorMethod(method: String): TwoFactorResolver {
@@ -24,7 +28,6 @@ fun TwoFactorResolver.selectTwoFactorMethod(method: String): TwoFactorResolver {
             CompletableDeferred(method)
     }
 }
-
 
 interface HardwareWalletResolver {
     fun requestDataFromDevice(network: Network, requiredData: DeviceRequiredData): CompletableDeferred<String>
@@ -74,15 +77,16 @@ class AuthHandler constructor(
                     CALL -> {
                         call()
                     }
+
                     REQUEST_CODE -> {
                         twoFactorResolver?.also {
 
-                            if(authHandlerStatus.methods.size == 1) {
+                            if (authHandlerStatus.methods.size == 1) {
                                 requestCode(authHandlerStatus.methods.first())
-                            }else{
+                            } else {
                                 try {
                                     requestCode(it.selectTwoFactorMethod(authHandlerStatus.methods).await())
-                                }catch (e: Exception){
+                                } catch (e: Exception) {
                                     throw Exception("id_action_canceled")
                                 }
                             }
@@ -92,12 +96,12 @@ class AuthHandler constructor(
                         }
 
                     }
+
                     RESOLVE_CODE -> {
                         if (authHandlerStatus.requiredData == null) {
                             bcurResolver?.also {
                                 resolveCode(it.requestData().await())
-                            } ?:
-                            twoFactorResolver?.also {
+                            } ?: twoFactorResolver?.also {
                                 try {
                                     resolveCode(runBlocking {
                                         it.getTwoFactorCode(
@@ -111,8 +115,7 @@ class AuthHandler constructor(
                                 } catch (e: Exception) {
                                     throw Exception("id_action_canceled")
                                 }
-                            } ?:
-                            run {
+                            } ?: run {
                                 throw RuntimeException("TwoFactorCodeResolver was not provided")
                             }
                         } else {
@@ -120,19 +123,20 @@ class AuthHandler constructor(
                                 val dataFromDevice: String?
 
                                 try {
-                                    dataFromDevice = runBlocking{ it.requestDataFromDevice(network, authHandlerStatus.requiredData).await() }
-                                } catch (e: Exception){
+                                    dataFromDevice =
+                                        runBlocking { it.requestDataFromDevice(network, authHandlerStatus.requiredData).await() }
+                                } catch (e: Exception) {
                                     // eg. signing a message in Trezor on testnet network
-                                    if(e.message?.lowercase()?.contains("cancelled") == true){
+                                    if (e.message?.lowercase()?.contains("cancelled") == true) {
                                         throw Exception("id_action_canceled")
-                                    }else{
+                                    } else {
                                         throw e
                                     }
                                 }
 
                                 try {
                                     resolveCode(dataFromDevice)
-                                }catch (e: Exception){
+                                } catch (e: Exception) {
                                     throw e
                                 }
                             } ?: run {
@@ -140,10 +144,12 @@ class AuthHandler constructor(
                             }
                         }
                     }
+
                     ERROR -> {
                         isCompleted = true
                         throw Exception(authHandlerStatus.error)
                     }
+
                     DONE -> {
                         isCompleted = true
                         result = authHandlerStatus.result
@@ -168,8 +174,8 @@ class AuthHandler constructor(
         }
 
         return result?.let { result ->
-            JsonDeserializer.decodeFromJsonElement<T>(result).let{
-                if(it is GreenJson<*> && it.keepJsonElement()) {
+            JsonDeserializer.decodeFromJsonElement<T>(result).let {
+                if (it is GreenJson<*> && it.keepJsonElement()) {
                     it.jsonElement = result
                     it.processJsonElement()
                 }
@@ -178,7 +184,7 @@ class AuthHandler constructor(
         } ?: throw RuntimeException("This call does not provide any result")
     }
 
-    companion object: Loggable() {
+    companion object : Loggable() {
         const val CALL = "call"
         const val DONE = "done"
         const val ERROR = "error"

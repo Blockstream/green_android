@@ -5,7 +5,6 @@ import com.juul.kable.PeripheralBuilder
 import com.juul.kable.PlatformAdvertisement
 import com.juul.kable.ScannerBuilder
 
-
 expect fun ScannerBuilder.conflate()
 
 expect fun PeripheralBuilder.setupJade(mtu: Int)

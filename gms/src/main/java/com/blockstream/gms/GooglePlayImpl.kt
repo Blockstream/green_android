@@ -22,7 +22,7 @@ class GooglePlayImpl(private val reviewManager: ReviewManager) : GooglePlay() {
                         // matter the result, we continue our app flow.
 
                         // As the task is always successful, we can identify if the dialog was shown if the callback is fired very quickly
-                        if(endTime - startTime < 500){
+                        if (endTime - startTime < 500) {
                             openBrowser.invoke()
                         }
                     }

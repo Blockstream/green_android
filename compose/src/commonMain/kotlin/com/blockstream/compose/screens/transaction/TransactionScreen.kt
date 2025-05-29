@@ -79,7 +79,6 @@ import com.blockstream.compose.extensions.assetIcon
 import com.blockstream.compose.extensions.color
 import com.blockstream.compose.extensions.icon
 import com.blockstream.compose.extensions.title
-import com.blockstream.ui.navigation.LocalInnerPadding
 import com.blockstream.compose.theme.MonospaceFont
 import com.blockstream.compose.theme.bodyLarge
 import com.blockstream.compose.theme.bodyMedium
@@ -95,6 +94,7 @@ import com.blockstream.compose.utils.SetupScreen
 import com.blockstream.ui.components.GreenColumn
 import com.blockstream.ui.components.GreenRow
 import com.blockstream.ui.components.GreenSpacer
+import com.blockstream.ui.navigation.LocalInnerPadding
 import com.blockstream.ui.navigation.getResult
 import org.jetbrains.compose.resources.StringResource
 import org.jetbrains.compose.resources.getString
@@ -124,20 +124,22 @@ fun TransactionScreen(
         if (it is TransactionViewModel.LocalSideEffects.SelectLiquidShareTransaction) {
             viewModel.postEvent(
                 NavigateDestinations.Menu(
-                    title = getString(Res.string.id_share), entries = MenuEntryList(listOf(
-                        MenuEntry(
-                            title = getString(Res.string.id_confidential_transaction),
-                            iconRes = "eye_slash"
-                        ),
-                        MenuEntry(
-                            title = getString(Res.string.id_non_confidential_transaction),
-                            iconRes = "eye"
-                        ),
-                        MenuEntry(
-                            title = getString(Res.string.id_unblinding_data),
-                            iconRes = "code_block"
+                    title = getString(Res.string.id_share), entries = MenuEntryList(
+                        listOf(
+                            MenuEntry(
+                                title = getString(Res.string.id_confidential_transaction),
+                                iconRes = "eye_slash"
+                            ),
+                            MenuEntry(
+                                title = getString(Res.string.id_non_confidential_transaction),
+                                iconRes = "eye"
+                            ),
+                            MenuEntry(
+                                title = getString(Res.string.id_unblinding_data),
+                                iconRes = "code_block"
+                            )
                         )
-                    ))
+                    )
                 )
             )
         }
@@ -206,7 +208,6 @@ fun TransactionScreen(
                     ""
                 }
             }
-
 
             val createdAt by viewModel.createdAt.collectAsStateWithLifecycle()
 

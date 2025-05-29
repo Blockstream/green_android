@@ -137,7 +137,8 @@ internal fun Item(index: Int, word: String) {
 
         val (wordRef, indexRef) = createRefs()
 
-        Text(word, style = headlineSmall,
+        Text(
+            word, style = headlineSmall,
             modifier = Modifier.constrainAs(wordRef) {
                 start.linkTo(parent.start)
                 end.linkTo(parent.end)

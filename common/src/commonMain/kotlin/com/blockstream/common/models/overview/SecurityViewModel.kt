@@ -39,7 +39,7 @@ import org.jetbrains.compose.resources.getString
 import org.koin.core.component.inject
 
 @Serializable
-enum class PendingAction{
+enum class PendingAction {
     CONNECT, GENUINE_CHECK, FIRMWARE_UPDATE
 }
 
@@ -127,7 +127,6 @@ class SecurityViewModel(greenWallet: GreenWallet) :
 
     override fun segmentation(): HashMap<String, Any> =
         countly.sessionSegmentation(session = session)
-
 
     override val credentials: StateFlow<List<Pair<CredentialType, LoginCredentials?>>> =
         database.getLoginCredentialsFlow(id = greenWallet.id).map { credentials ->

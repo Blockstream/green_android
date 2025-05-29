@@ -6,8 +6,9 @@ import kotlinx.serialization.Serializable
 
 @Serializable
 data class SignMessage(
-    @SerialName("signature") val signature: String,
-): GreenJson<SignMessage>(){
+    @SerialName("signature")
+    val signature: String,
+) : GreenJson<SignMessage>() {
 
     override fun kSerializer() = serializer()
 }

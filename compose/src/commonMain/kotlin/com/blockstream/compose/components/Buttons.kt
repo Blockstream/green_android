@@ -63,7 +63,6 @@ enum class GreenButtonColor {
     GREEN, GREENER, WHITE, RED
 }
 
-
 @Composable
 private fun GreenButtonText(text: String, textStyle: TextStyle) {
     Text(text, style = textStyle, maxLines = 1, overflow = TextOverflow.Ellipsis)
@@ -112,9 +111,11 @@ fun GreenButton(
         GreenButtonSize.TINY -> {
             PaddingValues(horizontal = 8.dp, vertical = 0.dp)
         }
+
         GreenButtonSize.SMALL -> {
             PaddingValues(horizontal = 12.dp, vertical = 0.dp)
         }
+
         else -> {
             ButtonDefaults.ContentPadding
         }
@@ -162,7 +163,7 @@ fun GreenButton(
                             duration = 2000,
                             enabled = onProgress,
                         ) {
-                            if(onProgress) {
+                            if (onProgress) {
                                 Icon(
                                     imageVector = PhosphorIcons.Regular.Spinner,
                                     contentDescription = null,

@@ -6,10 +6,10 @@ import kotlinx.serialization.Serializable
 import kotlinx.serialization.json.JsonElement
 import kotlinx.serialization.json.decodeFromJsonElement
 
-
 @Serializable
 data class LiquiDexV0 constructor(
-    @SerialName("proposal") val proposalJsonElement: JsonElement,
+    @SerialName("proposal")
+    val proposalJsonElement: JsonElement,
 ) : GreenJson<LiquiDexV0>() {
 
     fun toSwapProposal(): SwapProposal {

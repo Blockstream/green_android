@@ -16,10 +16,8 @@ import blockstream_green.common.generated.resources.id_undo_2fa_dispute
 import blockstream_green.common.generated.resources.id_use_your_email_to_receive
 import com.blockstream.common.Urls
 import com.blockstream.common.data.GreenWallet
-import com.blockstream.ui.navigation.NavData
 import com.blockstream.common.data.TwoFactorMethod
 import com.blockstream.common.data.TwoFactorSetupAction
-import com.blockstream.ui.events.Event
 import com.blockstream.common.events.Events
 import com.blockstream.common.extensions.ifConnected
 import com.blockstream.common.extensions.launchIn
@@ -33,6 +31,8 @@ import com.blockstream.common.models.GreenViewModel
 import com.blockstream.common.sideeffects.SideEffects
 import com.blockstream.common.utils.StringHolder
 import com.blockstream.common.utils.isEmailValid
+import com.blockstream.ui.events.Event
+import com.blockstream.ui.navigation.NavData
 import com.rickclephas.kmp.nativecoroutines.NativeCoroutinesState
 import com.rickclephas.kmp.observableviewmodel.launch
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -151,31 +151,36 @@ class TwoFactorSetupViewModel(
                 }
             }
 
-            when(action){
+            when (action) {
                 TwoFactorSetupAction.SETUP -> {
-                    _messageText.value =  if(method == TwoFactorMethod.EMAIL){
+                    _messageText.value = if (method == TwoFactorMethod.EMAIL) {
                         getString(Res.string.id_insert_your_email_to_receive)
-                    }else if(method != TwoFactorMethod.AUTHENTICATOR){
+                    } else if (method != TwoFactorMethod.AUTHENTICATOR) {
                         getString(Res.string.id_insert_your_phone_number_to)
                     } else null
                     _actionText.value = getString(Res.string.id_continue)
                 }
+
                 TwoFactorSetupAction.SETUP_EMAIL -> {
                     _messageText.value = getString(Res.string.id_use_your_email_to_receive)
                     _actionText.value = getString(Res.string.id_continue)
                 }
+
                 TwoFactorSetupAction.RESET -> {
                     _messageText.value = getString(Res.string.id_resetting_your_twofactor_takes)
                     _actionText.value = getString(Res.string.id_request_twofactor_reset)
                 }
+
                 TwoFactorSetupAction.DISPUTE -> {
                     _messageText.value = getString(Res.string.id_if_you_did_not_request_the)
                     _actionText.value = getString(Res.string.id_dispute_twofactor_reset)
                 }
+
                 TwoFactorSetupAction.UNDO_DISPUTE -> {
                     _messageText.value = getString(Res.string.id_if_you_initiated_the_2fa_reset)
                     _actionText.value = getString(Res.string.id_undo_2fa_dispute)
                 }
+
                 TwoFactorSetupAction.CANCEL -> {
                     // Cancel action init
                 }
@@ -186,7 +191,7 @@ class TwoFactorSetupViewModel(
 
         session.ifConnected {
 
-            if(action == TwoFactorSetupAction.CANCEL){
+            if (action == TwoFactorSetupAction.CANCEL) {
                 cancel2FA()
             }
 
@@ -233,7 +238,7 @@ class TwoFactorSetupViewModel(
             }
 
             is Events.Continue -> {
-                when(action){
+                when (action) {
                     TwoFactorSetupAction.RESET, TwoFactorSetupAction.DISPUTE -> {
                         reset2FA()
                     }
@@ -241,9 +246,11 @@ class TwoFactorSetupViewModel(
                     TwoFactorSetupAction.UNDO_DISPUTE -> {
                         undoReset2FA()
                     }
-                    TwoFactorSetupAction.SETUP,TwoFactorSetupAction.SETUP_EMAIL  -> {
+
+                    TwoFactorSetupAction.SETUP, TwoFactorSetupAction.SETUP_EMAIL -> {
                         enable2FA()
                     }
+
                     TwoFactorSetupAction.CANCEL -> {
                         // Cancel is triggered immediately
                     }
@@ -253,13 +260,15 @@ class TwoFactorSetupViewModel(
     }
 
     private fun enable2FA() {
-        val data = when(method){
+        val data = when (method) {
             TwoFactorMethod.SMS, TwoFactorMethod.PHONE, TwoFactorMethod.TELEGRAM -> {
                 "${country.value}${number.value}"
             }
+
             TwoFactorMethod.EMAIL -> {
                 email.value
             }
+
             TwoFactorMethod.AUTHENTICATOR -> {
                 _authenticatorUrl ?: ""
             }

@@ -3,7 +3,6 @@ package com.blockstream.common.data
 import com.blockstream.common.gdk.data.AuthHandlerStatus
 import com.blockstream.common.gdk.data.Network
 
-
 data class TwoFactorResolverData constructor(
     val methods: List<String>? = null,
     val network: Network? = null,

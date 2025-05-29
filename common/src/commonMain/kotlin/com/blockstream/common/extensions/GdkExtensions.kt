@@ -89,7 +89,8 @@ fun Account.hasTwoFactorReset(session: GdkSession): Boolean {
 fun String?.isBitcoinPolicyAsset(): Boolean = (this == null || this == BTC_POLICY_ASSET)
 fun String?.isLightningPolicyAsset(): Boolean = (this == LN_BTC_POLICY_ASSET)
 fun String?.isPolicyAsset(network: Network?): Boolean = (this == null || this == network?.policyAsset)
-fun String?.isPolicyAsset(session: GdkSession): Boolean = isBitcoinPolicyAsset() || isLightningPolicyAsset() || session.gdkSessions.keys.any { isPolicyAsset(it) }
+fun String?.isPolicyAsset(session: GdkSession): Boolean =
+    isBitcoinPolicyAsset() || isLightningPolicyAsset() || session.gdkSessions.keys.any { isPolicyAsset(it) }
 
 // If no Bitcoin network is available, fallback to Liquid
 fun String?.networkForAsset(session: GdkSession): Network? = when {
@@ -121,15 +122,15 @@ fun Account.hasHistory(session: GdkSession): Boolean {
 }
 
 fun String.getAssetNameOrNull(session: GdkSession?): String? {
-    return if(session == null || this.isPolicyAsset(session)) {
-        if(this == BTC_POLICY_ASSET){
+    return if (session == null || this.isPolicyAsset(session)) {
+        if (this == BTC_POLICY_ASSET) {
             "Bitcoin"
-        }else{
+        } else {
             "Liquid Bitcoin"
         }.let {
-            if(session?.isTestnet == true) "Testnet $it" else it
+            if (session?.isTestnet == true) "Testnet $it" else it
         }
-    }else{
+    } else {
         session.liquid?.let { session.getAsset(this)?.name }
     }
 }
@@ -141,15 +142,15 @@ fun String.getAssetName(session: GdkSession): String {
 
 @Deprecated("Use EnrichedAsset")
 fun String.getAssetTicker(session: GdkSession): String? {
-    return if(this.isPolicyAsset(session)) {
-        if(this == BTC_POLICY_ASSET){
+    return if (this.isPolicyAsset(session)) {
+        if (this == BTC_POLICY_ASSET) {
             "BTC"
-        }else{
+        } else {
             "LBTC"
         }.let {
-            if(session.isTestnet) "TEST-$it" else it
+            if (session.isTestnet) "TEST-$it" else it
         }
-    }else{
+    } else {
         session.liquid?.let { session.getAsset(this)?.ticker }
     }
 }
@@ -157,6 +158,7 @@ fun String.getAssetTicker(session: GdkSession): String? {
 fun Throwable.getGDKErrorCode(): Int {
     return this.message?.getGDKErrorCode() ?: GA_ERROR
 }
+
 fun String.getGDKErrorCode(): Int {
     return try {
         val stringCode = this.split(" ".toRegex()).toTypedArray()[1]

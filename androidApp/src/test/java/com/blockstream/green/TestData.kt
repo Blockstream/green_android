@@ -13,7 +13,6 @@ class TestData {
         const val RECOVERY_PHRASE_GREEN_PASSWORD =
             "jealous awesome suit raise math chunk much doctor long client charge good error arrange estate zebra industry ancient attend barrel social welcome shell wall final loyal uphold"
 
-
         const val RECOVERY_PHRASE_12_INVALID =
             "will isolate mixture scene enter pond horse squirrel squirrel strategy sword color"
 

@@ -52,7 +52,7 @@ typealias GASession = Any
 typealias GAAuthHandler = Any
 
 interface GdkBinding {
-    val logs : StringBuilder
+    val logs: StringBuilder
     val dataDir: String
 
     fun appendGdkLogs(json: String)
@@ -64,6 +64,7 @@ interface GdkBinding {
 
     @Throws(Exception::class)
     fun destroySession(session: GASession)
+
     @Throws(Exception::class)
     fun connect(session: GASession, params: ConnectionParams)
 
@@ -297,12 +298,12 @@ class Gdk constructor(
 
     init {
         settings.getStringOrNull(KEY_CUSTOM_NETWORK)?.also {
-            try{
+            try {
                 val jsonElement = JsonConverter.JsonDeserializer.parseToJsonElement(it)
                 val network = JsonConverter.JsonDeserializer.decodeFromJsonElement<Network>(jsonElement)
                 registerNetwork(network.id, jsonElement)
                 setCustomNetwork(network)
-            }catch (e: Exception){
+            } catch (e: Exception) {
                 e.printStackTrace()
             }
         }
@@ -321,11 +322,11 @@ class Gdk constructor(
         }
     }
 
-    fun registerCustomNetwork(originNetworkId: String, hostname: String){
+    fun registerCustomNetwork(originNetworkId: String, hostname: String) {
         networks().getNetworkAsJsonElement(originNetworkId)?.jsonObject?.let { obj ->
             buildJsonObject {
                 // Copy all fields
-                for(k in obj){
+                for (k in obj) {
                     put(k.key, k.value)
                 }
                 // Replace values
@@ -344,7 +345,7 @@ class Gdk constructor(
     }
 
     private var _networks: Networks? = null
-    private var _customNetworks: MutableMap<String,Network> = mutableMapOf()
+    private var _customNetworks: MutableMap<String, Network> = mutableMapOf()
 
     private fun setCustomNetwork(network: Network) {
         _customNetworks[network.id] = network

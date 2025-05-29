@@ -26,7 +26,6 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.ColorFilter
 import androidx.compose.ui.text.input.ImeAction
 import androidx.compose.ui.text.input.KeyboardType
-import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import blockstream_green.common.generated.resources.Res
@@ -56,12 +55,10 @@ import com.blockstream.compose.components.GreenDataLayout
 import com.blockstream.compose.components.GreenNetworkFee
 import com.blockstream.compose.dialogs.TextDialog
 import com.blockstream.compose.theme.bodyLarge
-import com.blockstream.compose.theme.bodyMedium
 import com.blockstream.compose.theme.green
 import com.blockstream.compose.theme.md_theme_onError
 import com.blockstream.compose.theme.md_theme_onErrorContainer
 import com.blockstream.compose.theme.titleLarge
-import com.blockstream.compose.theme.whiteLow
 import com.blockstream.compose.utils.AnimatedNullableVisibility
 import com.blockstream.compose.utils.HandleSideEffect
 import com.blockstream.ui.components.GreenColumn

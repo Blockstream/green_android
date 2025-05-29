@@ -59,7 +59,6 @@ import com.blockstream.ui.components.GreenRow
 import com.blockstream.ui.components.GreenSpacer
 import org.jetbrains.compose.resources.stringResource
 
-
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 internal fun AnalyticsBottomSheet(
@@ -97,11 +96,12 @@ internal fun AnalyticsBottomSheet(
         ) {
 
             Column {
-                Row(modifier = Modifier
-                    .clickable {
-                        isExpanded = !isExpanded
-                    }
-                    .padding(16.dp), verticalAlignment = Alignment.CenterVertically) {
+                Row(
+                    modifier = Modifier
+                        .clickable {
+                            isExpanded = !isExpanded
+                        }
+                        .padding(16.dp), verticalAlignment = Alignment.CenterVertically) {
 
                     AnimatedContent(
                         modifier = Modifier.weight(1f),

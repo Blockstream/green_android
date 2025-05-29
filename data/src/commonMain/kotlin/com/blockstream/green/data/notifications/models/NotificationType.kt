@@ -11,7 +11,6 @@ enum class NotificationType {
             }
         }
 
-
     }
 }
 

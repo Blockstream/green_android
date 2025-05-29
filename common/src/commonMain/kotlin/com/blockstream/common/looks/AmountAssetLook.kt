@@ -8,6 +8,6 @@ data class AmountAssetLook constructor(
     val assetId: String,
     val ticker: String,
     val fiat: String? = null
-){
+) {
     val isOutgoing by lazy { amount.startsWith("-") }
 }

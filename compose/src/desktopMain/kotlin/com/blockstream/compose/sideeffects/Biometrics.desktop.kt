@@ -35,6 +35,4 @@ actual class BiometricsState {
     ) {
     }
 
-
-
 }

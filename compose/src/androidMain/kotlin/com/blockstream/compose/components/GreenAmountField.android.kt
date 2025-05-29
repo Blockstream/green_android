@@ -11,7 +11,6 @@ import com.blockstream.common.data.Denomination
 import com.blockstream.compose.GreenAndroidPreview
 import com.blockstream.ui.components.GreenColumn
 
-
 @Preview
 @Composable
 fun GreenAmountFieldPreview() {
@@ -21,9 +20,11 @@ fun GreenAmountFieldPreview() {
             var amount by remember {
                 mutableStateOf("")
             }
-            val secondaryValue by remember { derivedStateOf {
-                amount
-            } }
+            val secondaryValue by remember {
+                derivedStateOf {
+                    amount
+                }
+            }
             GreenAmountField(amount, {
                 amount = it
             }, secondaryValue = secondaryValue, denomination = Denomination.BTC)

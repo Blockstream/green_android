@@ -60,7 +60,6 @@ class IOSSecureRandom : SecureRandom {
     }
 }
 
-
 actual fun getSecureRandom(): SecureRandom {
     return IOSSecureRandom()
 }

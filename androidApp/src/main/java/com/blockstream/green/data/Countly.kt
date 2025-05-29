@@ -8,12 +8,12 @@ import android.content.res.Configuration
 import androidx.core.content.edit
 import androidx.fragment.app.FragmentManager
 import com.blockstream.base.InstallReferrer
-import com.blockstream.green.data.config.AppInfo
 import com.blockstream.common.data.CountlyWidget
 import com.blockstream.common.database.Database
 import com.blockstream.common.di.ApplicationScope
 import com.blockstream.common.gdk.JsonConverter.Companion.JsonDeserializer
 import com.blockstream.common.managers.SettingsManager
+import com.blockstream.green.data.config.AppInfo
 import com.blockstream.green.utils.Loggable
 import com.blockstream.green.utils.isDevelopmentOrDebug
 import com.blockstream.green.utils.isProductionFlavor
@@ -42,7 +42,7 @@ class Countly constructor(
     private val settingsManager: SettingsManager,
     private val database: Database,
     private val installReferrer: InstallReferrer,
-): CountlyAndroid(appInfo, applicationScope, settingsManager, database) {
+) : CountlyAndroid(appInfo, applicationScope, settingsManager, database) {
 
     private val _requestQueue: ModuleRequestQueue.RequestQueue
     private val _feedback: ModuleFeedback.Feedback
@@ -79,7 +79,7 @@ class Countly constructor(
             it.RemoteConfigRegisterGlobalCallback { _, error, _, _ ->
                 logger.i { if (error.isNullOrBlank()) "Remote Config Completed" else "Remote Config error: $error" }
 
-                if(error.isNullOrBlank()){
+                if (error.isNullOrBlank()) {
                     remoteConfigUpdated()
                 }
             }
@@ -152,7 +152,11 @@ class Countly constructor(
         if (force || _remoteConfigUpdate.plus(30L.toDuration(DurationUnit.SECONDS)) < Clock.System.now()) {
             _remoteConfig.downloadAllKeys(null)
         } else {
-            logger.d { "Remote Config skip update: ${Clock.System.now().minus(_remoteConfigUpdate).inWholeSeconds} secs from previous update" }
+            logger.d {
+                "Remote Config skip update: ${
+                    Clock.System.now().minus(_remoteConfigUpdate).inWholeSeconds
+                } secs from previous update"
+            }
         }
     }
 
@@ -166,7 +170,7 @@ class Countly constructor(
         _consent.setConsent(noConsentRequiredGroup, true)
 
         // The following block is required only if you initiate a reset from the ConcentBottomSheetDialog
-        if(analyticsConsent){
+        if (analyticsConsent) {
             _consent.setConsentFeatureGroup(ANALYTICS_GROUP, true)
         }
 
@@ -180,6 +184,7 @@ class Countly constructor(
     override fun eventRecord(key: String, segmentation: Map<String, Any>?) {
         _events.recordEvent(key, segmentation, 1, 0.0)
     }
+
     override fun eventStart(key: String) {
         _events.startEvent(key)
     }
@@ -189,7 +194,7 @@ class Countly constructor(
     }
 
     override fun eventEnd(key: String, segmentation: Map<String, Any>?) {
-        _events.endEvent(key, segmentation ,1, 0.0)
+        _events.endEvent(key, segmentation, 1, 0.0)
     }
 
     override fun traceStart(key: String) {
@@ -200,22 +205,22 @@ class Countly constructor(
         _apm.endTrace(key, mutableMapOf())
     }
 
-    override fun sendFeedbackWidgetData(widget: CountlyFeedbackWidget, data: Map<String, Any>?){
+    override fun sendFeedbackWidgetData(widget: CountlyFeedbackWidget, data: Map<String, Any>?) {
         _feedback.reportFeedbackWidgetManually(widget, null, data)
         // can't use updateFeedback() as the data are sent async
         _feedbackWidgetStateFlow.value = null
     }
 
-    override fun getFeedbackWidgetData(widget: CountlyFeedbackWidget, callback: (CountlyWidget?) -> Unit){
+    override fun getFeedbackWidgetData(widget: CountlyFeedbackWidget, callback: (CountlyWidget?) -> Unit) {
         countly.feedback().getFeedbackWidgetData(widget) { data, _ ->
-            try{
+            try {
                 callback.invoke(JsonDeserializer.decodeFromString<CountlyWidget>(data.toString()).also {
                     it.widget = widget
                 })
 
                 // Set it to null to hide it from UI, this way user can know that this is a temporary FAB
                 _feedbackWidgetStateFlow.value = null
-            }catch (e: Exception){
+            } catch (e: Exception) {
                 logger.i { data.toString() }
                 e.printStackTrace()
                 callback.invoke(null)
@@ -223,7 +228,7 @@ class Countly constructor(
         }
     }
 
-    private fun updateFeedbackWidget(){
+    private fun updateFeedbackWidget() {
         countly.feedback().getAvailableFeedbackWidgets { countlyFeedbackWidgets, _ ->
             _feedbackWidgetStateFlow.value = countlyFeedbackWidgets?.firstOrNull()
         }
@@ -231,9 +236,9 @@ class Countly constructor(
 
     override fun showFeedbackWidget(supportFragmentManager: FragmentManager) {
         feedbackWidget?.type.also { type ->
-            if(type == ModuleFeedback.FeedbackWidgetType.nps){
+            if (type == ModuleFeedback.FeedbackWidgetType.nps) {
                 // CountlyNpsDialogFragment.show(supportFragmentManager)
-            }else if(type == ModuleFeedback.FeedbackWidgetType.survey){
+            } else if (type == ModuleFeedback.FeedbackWidgetType.survey) {
                 // CountlySurveyDialogFragment.show(supportFragmentManager)
             }
         }
@@ -244,11 +249,11 @@ class Countly constructor(
         _userProfile.save()
     }
 
-    override fun updateOffset(){
+    override fun updateOffset() {
         Countly.sharedInstance().setOffset(getOffset())
     }
 
-    override fun setProxy(proxyUrl: String?){
+    override fun setProxy(proxyUrl: String?) {
         _requestQueue.proxy = proxyUrl
     }
 
@@ -256,12 +261,13 @@ class Countly constructor(
         _crashes.recordHandledException(throwable)
     }
 
-    fun recordRating(rating: Int, comment :String){
+    fun recordRating(rating: Int, comment: String) {
         countly.ratings().recordRatingWidgetWithID(RATING_WIDGET_ID, rating, null, comment, false)
     }
 
-    override fun recordFeedback(rating: Int, email: String?, comment :String){
-        countly.ratings().recordRatingWidgetWithID(RATING_WIDGET_ID, rating, email.takeIf { !it.isNullOrBlank() }, comment, !email.isNullOrBlank())
+    override fun recordFeedback(rating: Int, email: String?, comment: String) {
+        countly.ratings()
+            .recordRatingWidgetWithID(RATING_WIDGET_ID, rating, email.takeIf { !it.isNullOrBlank() }, comment, !email.isNullOrBlank())
     }
 
     override fun viewRecord(viewName: String, segmentation: Map<String, Any>?) {

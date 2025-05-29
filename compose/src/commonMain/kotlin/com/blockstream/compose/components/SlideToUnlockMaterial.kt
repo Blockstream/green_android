@@ -57,7 +57,6 @@ import org.jetbrains.compose.resources.painterResource
 import org.jetbrains.compose.resources.stringResource
 import kotlin.math.roundToInt
 
-
 @OptIn(ExperimentalMaterialApi::class)
 @Composable
 fun SlideToUnlock(
@@ -215,7 +214,7 @@ fun Thumb(
             Image(
                 painter = painterResource(Res.drawable.arrow_fat_lines_right),
                 contentDescription = null,
-                colorFilter = ColorFilter.tint(if(enabled) whiteHigh else ButtonDefaults.buttonColors().disabledContentColor)
+                colorFilter = ColorFilter.tint(if (enabled) whiteHigh else ButtonDefaults.buttonColors().disabledContentColor)
             )
         }
     }
@@ -229,7 +228,7 @@ fun Hint(
 ) {
     Text(
         text = text,
-        color = if(enabled) whiteHigh else ButtonDefaults.buttonColors().disabledContentColor,
+        color = if (enabled) whiteHigh else ButtonDefaults.buttonColors().disabledContentColor,
         style = labelLarge,
         modifier = modifier
     )

@@ -17,12 +17,18 @@ interface HardwareConnectInteraction : FirmwareInteraction, HwWalletLogin, Hardw
     fun requestPinBlocking(deviceBrand: DeviceBrand): String
 }
 
-interface HwWalletLogin: HardwareWalletInteraction {
+interface HwWalletLogin : HardwareWalletInteraction {
     fun requestNetwork(): Network?
 }
 
-interface HardwareWalletInteraction{
-    fun interactionRequest(gdkHardwareWallet: GdkHardwareWallet, message: String?, isMasterBlindingKeyRequest: Boolean, completable: CompletableDeferred<Boolean>?)
+interface HardwareWalletInteraction {
+    fun interactionRequest(
+        gdkHardwareWallet: GdkHardwareWallet,
+        message: String?,
+        isMasterBlindingKeyRequest: Boolean,
+        completable: CompletableDeferred<Boolean>?
+    )
+
     fun requestPinMatrix(deviceBrand: DeviceBrand?): String?
     fun requestPassphrase(deviceBrand: DeviceBrand?): String?
 }

@@ -194,7 +194,6 @@ fun ChooseAccountTypeScreen(
     }
 }
 
-
 @Composable
 fun AccountType(accountType: AccountTypeLook, onClick: () -> Unit = {}) {
     GreenCard(
@@ -202,21 +201,21 @@ fun AccountType(accountType: AccountTypeLook, onClick: () -> Unit = {}) {
         padding = 0
     ) {
 
-
-        Box(modifier = Modifier
-            .ifTrue(!accountType.canBeAdded) {
-                it.alpha(0.2f).blur(4.dp)
-            }
-            .ifTrue(accountType.isLightning) {
-                it.drawDiagonalLabel(
-                    text = "BETA", color = whiteHigh, style = TextStyle(
-                        fontSize = 11.sp,
-                        fontWeight = FontWeight.Bold,
-                        color = Color.Black
-                    ),
-                    labelTextRatio = 3f
-                )
-            }) {
+        Box(
+            modifier = Modifier
+                .ifTrue(!accountType.canBeAdded) {
+                    it.alpha(0.2f).blur(4.dp)
+                }
+                .ifTrue(accountType.isLightning) {
+                    it.drawDiagonalLabel(
+                        text = "BETA", color = whiteHigh, style = TextStyle(
+                            fontSize = 11.sp,
+                            fontWeight = FontWeight.Bold,
+                            color = Color.Black
+                        ),
+                        labelTextRatio = 3f
+                    )
+                }) {
 
             Row {
                 GreenColumn(modifier = Modifier.weight(1f), space = 8) {
