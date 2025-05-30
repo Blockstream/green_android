@@ -1,7 +1,7 @@
 package com.blockstream.common.models.home
 
 import blockstream_green.common.generated.resources.Res
-import blockstream_green.common.generated.resources.green_shield
+import blockstream_green.common.generated.resources.blockstream_logo
 import blockstream_green.common.generated.resources.id_about
 import blockstream_green.common.generated.resources.id_app_settings
 import com.adamglin.PhosphorIcons
@@ -9,18 +9,17 @@ import com.adamglin.phosphoricons.Regular
 import com.adamglin.phosphoricons.regular.Sliders
 import com.blockstream.common.Urls
 import com.blockstream.common.data.Banner
-import com.blockstream.common.data.CredentialType
 import com.blockstream.common.data.GreenWallet
 import com.blockstream.common.data.Promo
 import com.blockstream.common.events.Events
 import com.blockstream.common.extensions.launchIn
 import com.blockstream.common.extensions.logException
 import com.blockstream.common.extensions.previewWalletListView
-import com.blockstream.common.gdk.GdkSession
 import com.blockstream.common.looks.wallet.WalletListLook
 import com.blockstream.common.models.GreenViewModel
 import com.blockstream.common.navigation.NavigateDestinations
 import com.blockstream.common.sideeffects.SideEffects
+import com.blockstream.domain.navigation.NavigateToWallet
 import com.blockstream.green.utils.Loggable
 import com.blockstream.ui.events.Event
 import com.blockstream.ui.navigation.NavAction
@@ -36,6 +35,7 @@ import kotlinx.coroutines.flow.filterNotNull
 import kotlinx.coroutines.flow.flowOf
 import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.flow.onEach
+import org.koin.core.component.inject
 
 abstract class HomeViewModelAbstract(val isGetStarted: Boolean = false) : GreenViewModel() {
     override fun screenName(): String? = if (isGetStarted) "GetStarted" else "Home"
@@ -50,8 +50,9 @@ abstract class HomeViewModelAbstract(val isGetStarted: Boolean = false) : GreenV
     abstract val showV5Upgrade: StateFlow<Boolean>
 }
 
-class HomeViewModel(isGetStarted: Boolean = false) :
-    HomeViewModelAbstract(isGetStarted = isGetStarted) {
+class HomeViewModel(isGetStarted: Boolean = false) : HomeViewModelAbstract(isGetStarted = isGetStarted) {
+
+    private val navigateToWallet: NavigateToWallet by inject()
 
     class LocalEvents {
         object GetStarted : Event
@@ -115,7 +116,7 @@ class HomeViewModel(isGetStarted: Boolean = false) :
                     },
                     NavAction(
                         titleRes = Res.string.id_about,
-                        icon = Res.drawable.green_shield,
+                        icon = Res.drawable.blockstream_logo,
                         isMenuEntry = true,
                     ) {
                         postSideEffect(SideEffects.NavigateTo(NavigateDestinations.About))
@@ -133,7 +134,9 @@ class HomeViewModel(isGetStarted: Boolean = false) :
         when (event) {
             is LocalEvents.SelectWallet -> {
                 viewModelScope.launch {
-                    selectWallet(event.greenWallet)
+                    postSideEffect(
+                        SideEffects.NavigateTo(destination = navigateToWallet(event.greenWallet))
+                    )
                 }
             }
 
@@ -155,35 +158,6 @@ class HomeViewModel(isGetStarted: Boolean = false) :
                 countly.hardwareWallet()
                 handleActions(event)
             }
-        }
-    }
-
-    private suspend fun selectWallet(wallet: GreenWallet) {
-        val session: GdkSession = sessionManager.getWalletSessionOrCreate(wallet)
-
-        if (session.isConnected) {
-            postSideEffect(SideEffects.NavigateTo(NavigateDestinations.WalletOverview(wallet)))
-        } else if (wallet.isHardware && !wallet.isWatchOnly && database.getLoginCredential(
-                wallet.id,
-                CredentialType.KEYSTORE_HW_WATCHONLY_CREDENTIALS
-            ) == null
-        ) {
-            postSideEffect(
-                SideEffects.NavigateTo(
-                    NavigateDestinations.DeviceScan(
-                        greenWallet = wallet
-                    )
-                )
-            )
-        } else {
-            postSideEffect(
-                SideEffects.NavigateTo(
-                    NavigateDestinations.Login(
-                        greenWallet = wallet,
-                        autoLoginWallet = true
-                    )
-                )
-            )
         }
     }
 

@@ -193,14 +193,13 @@ class BuyViewModel(greenWallet: GreenWallet) :
                 accountAsset.value = accounts.find { it.id == activeAccountId }?.accountAsset
                     ?: accounts.first().accountAsset
             }
+            
+            combine(country, session.settings().filterNotNull()) { country, settings ->
+                updateNavData(country)
+                _suggestedAmounts.value = meldUseCase.defaultValuesUseCase(settings.pricing.currency)
+            }.launchIn(this)
         }
 
-        country.onEach { country ->
-            updateNavData(country)
-            _suggestedAmounts.value =
-                meldUseCase.defaultValuesUseCase(session.settings().value!!.pricing.currency)
-
-        }.launchIn(this)
 
         quotes.onEach { list ->
             _quote.value = quote.value?.takeIf { userPickedQuote.value }?.let { quote ->

@@ -360,6 +360,14 @@ fun HandleSideEffect(
                             }
                         }
 
+                        PopTo.Transact -> {
+                            navigator.currentBackStack.value.firstOrNull { entry ->
+                                entry.destination.hasRoute<NavigateDestinations.Transact>()
+                            }?.toRoute<NavigateDestinations.Transact>()?.also { route ->
+                                navigator.popBackStack(route, inclusive = false)
+                            }
+                        }
+
                         PopTo.OnOffRamps -> {
                             navigator.currentBackStack.value.firstOrNull { entry ->
                                 entry.destination.hasRoute<NavigateDestinations.OnOffRamps>()

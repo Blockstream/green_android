@@ -2,7 +2,6 @@ package com.blockstream.compose.screens.exchange
 
 import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.foundation.layout.fillMaxWidth
-import androidx.compose.foundation.layout.imePadding
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.verticalScroll
@@ -85,6 +84,7 @@ fun BuyScreen(
     SetupScreen(
         viewModel = viewModel,
         withPadding = false,
+        withImePadding = true,
         onProgressStyle = if (onProgressBuy) OnProgressStyle.Full(bluBackground = false) else OnProgressStyle.Disabled,
         sideEffectsHandler = {
             when (it) {
@@ -103,9 +103,7 @@ fun BuyScreen(
             )
         }
 
-        GreenColumn(
-            modifier = Modifier.imePadding()
-        ) {
+        GreenColumn {
 
             GreenColumn(
                 space = 24,

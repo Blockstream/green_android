@@ -342,10 +342,8 @@ class ReceiveViewModel(greenWallet: GreenWallet, initialAccountAsset: AccountAss
             }.launchIn(this)
 
             assetAccounts.onEach { assetAccounts ->
-                if (assetAccounts.isNotEmpty()) {
-                    accountAsset.value = (assetAccounts.find { it.account.id == accountAsset.value?.account?.id }?.accountAsset
-                        ?: assetAccounts.firstOrNull()?.accountAsset)
-                }
+                accountAsset.value = (assetAccounts.find { it.account.id == accountAsset.value?.account?.id }?.accountAsset
+                    ?: assetAccounts.firstOrNull()?.accountAsset)
             }.launchIn(this)
 
             combine(accountAsset, showLightningOnChainAddress) { accountAsset, showLightningOnChainAddress ->

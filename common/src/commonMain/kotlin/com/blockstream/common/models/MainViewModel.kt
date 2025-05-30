@@ -1,11 +1,11 @@
 package com.blockstream.common.models
 
-import com.blockstream.common.data.DataState
 import com.blockstream.common.data.GreenWallet
 import com.blockstream.common.interfaces.JadeHttpRequestUrlValidator
 import com.blockstream.common.managers.LifecycleManager
 import com.blockstream.common.navigation.NavigateDestinations
 import com.blockstream.common.sideeffects.SideEffects
+import com.blockstream.domain.navigation.NavigateToWallet
 import com.blockstream.ui.events.Event
 import com.rickclephas.kmp.observableviewmodel.launch
 import kotlinx.coroutines.CompletableDeferred
@@ -13,14 +13,13 @@ import org.koin.core.component.inject
 
 class MainViewModel : GreenViewModel(), JadeHttpRequestUrlValidator {
     private val lifecycleManager: LifecycleManager by inject()
+    private val navigateToWallet: NavigateToWallet by inject()
 
     val lockScreen = lifecycleManager.isLocked
 
     private var unsafeUrls: List<String>? = null
     private var unsafeUrlWarningEmitter: CompletableDeferred<Boolean>? = null
     private var torWarningEmitter: CompletableDeferred<Boolean>? = null
-
-    val appInitWallet = MutableStateFlow<DataState<GreenWallet?>>(DataState.Loading)
 
     class LocalEvents {
         data class UrlWarningResponse(val allow: Boolean, val remember: Boolean) : Event
@@ -31,8 +30,13 @@ class MainViewModel : GreenViewModel(), JadeHttpRequestUrlValidator {
         sessionManager.httpRequestHandler.jadeHttpRequestUrlValidator = this
 
         viewModelScope.launch {
-            appInitWallet.value =
-                DataState.Success(database.getAllWallets().takeIf { it.size == 1 && settingsManager.isV5Upgraded() }?.firstOrNull())
+            if (settingsManager.isV5Upgraded()) {
+                database.getAllWallets().takeIf { it.size == 1 }?.firstOrNull()?.also {
+                    postSideEffect(
+                        SideEffects.NavigateTo(destination = navigateToWallet(it))
+                    )
+                }
+            }
         }
 
         bootstrap()

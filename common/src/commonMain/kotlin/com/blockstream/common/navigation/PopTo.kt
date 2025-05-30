@@ -4,5 +4,5 @@ import kotlinx.serialization.Serializable
 
 @Serializable
 enum class PopTo {
-    Root, Receive, OnOffRamps
+    Root, Receive, Transact, OnOffRamps
 }

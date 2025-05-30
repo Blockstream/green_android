@@ -266,7 +266,7 @@ fun GreenAmountField(
                     verticalAlignment = Alignment.CenterVertically
                 ) {
 
-                    if (!isAmountLocked) {
+                    if (!isAmountLocked && !isReadyOnly) {
                         if (value.isNotEmpty()) {
                             IconButton(onClick = { onValueChange("") }, enabled = isEditable) {
                                 Icon(

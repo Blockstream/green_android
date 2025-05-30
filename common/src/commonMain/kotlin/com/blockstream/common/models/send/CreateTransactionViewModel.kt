@@ -30,6 +30,7 @@ import com.blockstream.common.looks.transaction.TransactionConfirmLook
 import com.blockstream.common.models.GreenViewModel
 import com.blockstream.common.models.jade.JadeQrOperation
 import com.blockstream.common.navigation.NavigateDestinations
+import com.blockstream.common.navigation.PopTo
 import com.blockstream.common.sideeffects.SideEffects
 import com.blockstream.common.utils.StringHolder
 import com.blockstream.common.utils.ifNotNull
@@ -475,7 +476,7 @@ abstract class CreateTransactionViewModelAbstract(
 
                 session.pendingTransaction = null // clear pending transaction
                 postSideEffect(SideEffects.Snackbar(StringHolder.create(Res.string.id_transaction_sent)))
-                postSideEffect(SideEffects.NavigateToRoot())
+                postSideEffect(SideEffects.NavigateToRoot(popTo = PopTo.Transact))
             } else {
                 postSideEffect(
                     SideEffects.Dialog(
@@ -507,7 +508,7 @@ abstract class CreateTransactionViewModelAbstract(
 
                 it.message == "id_transaction_already_confirmed" -> {
                     postSideEffect(SideEffects.Snackbar(StringHolder.create(Res.string.id_transaction_already_confirmed)))
-                    postSideEffect(SideEffects.NavigateToRoot())
+                    postSideEffect(SideEffects.NavigateToRoot(popTo = PopTo.Transact))
                 }
 
                 it.message != "id_action_canceled" -> {

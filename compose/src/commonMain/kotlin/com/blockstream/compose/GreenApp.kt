@@ -166,9 +166,6 @@ fun GreenApp(mainViewModel: MainViewModel, modifier: Modifier = Modifier) {
         CompositionLocalProvider(
             LocalBiometricState provides biometricsState
         ) {
-
-            val appInitWallet by mainViewModel.appInitWallet.collectAsStateWithLifecycle()
-
             Box(modifier = modifier) {
 
                 AppScaffold(
@@ -190,16 +187,12 @@ fun GreenApp(mainViewModel: MainViewModel, modifier: Modifier = Modifier) {
                     // Generic Dialogs
                     DialogHost(state = dialogState)
 
-                    if (appInitWallet.isSuccess()) {
-                        Router(
-                            mainViewModel = mainViewModel,
-                            navController = navController,
-                            innerPadding = innerPadding,
-                            startDestination = appInitWallet.data()
-                                ?.let { NavigateDestinations.Login(it) }
-                                ?: NavigateDestinations.Home
-                        )
-                    }
+                    Router(
+                        mainViewModel = mainViewModel,
+                        navController = navController,
+                        innerPadding = innerPadding,
+                        startDestination = NavigateDestinations.Home
+                    )
 
                     // Handle side effects from MainViewModel like navigating from handled intent
                     HandleSideEffect(mainViewModel)

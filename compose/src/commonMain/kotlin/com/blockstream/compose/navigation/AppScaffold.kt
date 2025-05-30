@@ -121,10 +121,14 @@ fun AppScaffold(
 
     // Clear tre backstack when navigating to a new wallet
     LaunchedEffect(greenWallet) {
-        navigator.clearBackStack<NavigateDestinations.WalletOverview>()
-        navigator.clearBackStack<NavigateDestinations.Transact>()
-        navigator.clearBackStack<NavigateDestinations.Security>()
-        navigator.clearBackStack<NavigateDestinations.WalletSettings>()
+        // Be sure there is a backstack
+        // Fix: Exception java.lang.IllegalStateException: You must call setGraph() before calling getGraph()
+        if (navigator.currentBackStackEntry != null) {
+            navigator.clearBackStack<NavigateDestinations.WalletOverview>()
+            navigator.clearBackStack<NavigateDestinations.Transact>()
+            navigator.clearBackStack<NavigateDestinations.Security>()
+            navigator.clearBackStack<NavigateDestinations.WalletSettings>()
+        }
     }
 
     // val scrollBehavior = TopAppBarDefaults.exitUntilCollapsedScrollBehavior(rememberTopAppBarState())

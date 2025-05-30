@@ -183,13 +183,18 @@ fun ReceiveScreen(
         }
     }
 
-    SetupScreen(viewModel = viewModel, withPadding = false, onProgressStyle = OnProgressStyle.Disabled, sideEffectsHandler = {
-        when (it) {
-            is SideEffects.Dismiss -> {
-                bottomSheetNavigator.popBackStack()
+    SetupScreen(
+        viewModel = viewModel,
+        withPadding = false,
+        withImePadding = true,
+        onProgressStyle = OnProgressStyle.Disabled,
+        sideEffectsHandler = {
+            when (it) {
+                is SideEffects.Dismiss -> {
+                    bottomSheetNavigator.popBackStack()
+                }
             }
-        }
-    }) {
+        }) {
 
         Box(modifier = Modifier.weight(1f)) {
             GreenColumn(

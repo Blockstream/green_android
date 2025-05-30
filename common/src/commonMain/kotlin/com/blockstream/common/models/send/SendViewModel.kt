@@ -40,6 +40,7 @@ import com.blockstream.common.lightning.lnUrlPayDescription
 import com.blockstream.common.lightning.lnUrlPayImage
 import com.blockstream.common.models.sheets.NoteType
 import com.blockstream.common.navigation.NavigateDestinations
+import com.blockstream.common.navigation.PopTo
 import com.blockstream.common.sideeffects.SideEffects
 import com.blockstream.common.utils.StringHolder
 import com.blockstream.common.utils.UserInput
@@ -665,7 +666,7 @@ class SendViewModel(
             if (it.hasMessageOrUrl) {
                 postSideEffect(SideEffects.TransactionSent(it))
             } else {
-                postSideEffect(SideEffects.NavigateToRoot())
+                postSideEffect(SideEffects.NavigateToRoot(popTo = PopTo.Transact))
             }
             postSideEffect(SideEffects.Snackbar(StringHolder.create(Res.string.id_transaction_sent)))
 

@@ -14,6 +14,7 @@ import androidx.compose.foundation.layout.consumeWindowInsets
 import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.imePadding
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.rememberScrollState
@@ -49,6 +50,7 @@ fun ScreenContainer(
     viewModel: IOnProgress,
     scrollable: Boolean = false,
     withPadding: Boolean = true,
+    withImePadding: Boolean = false,
     withInsets: Boolean = true,
     withBottomInsets: Boolean = true,
     withBottomNavBarPadding: Boolean = false,
@@ -82,6 +84,8 @@ fun ScreenContainer(
                 }
             }.ifTrue(withBottomNavBarPadding) {
                 it.padding(bottom = 80.dp)
+            }.ifTrue(withImePadding) {
+                it.imePadding()
             }.then(modifier),
         verticalArrangement = verticalArrangement,
         horizontalAlignment = horizontalAlignment,

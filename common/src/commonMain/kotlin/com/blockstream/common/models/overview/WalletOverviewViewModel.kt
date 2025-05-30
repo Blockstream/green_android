@@ -267,7 +267,8 @@ class WalletOverviewViewModel(
     }.stateIn(viewModelScope, SharingStarted.WhileSubscribed(5000L), 0)
 
     override val showHardwareTransferFunds = _transaction.map {
-        sessionOrNull?.isHardwareWallet == true && (it is DataState.Success && it.data == null)
+        // Turn it off until we have the url
+        false && sessionOrNull?.isHardwareWallet == true && (it is DataState.Success && it.data == null) && database.getWallets(isHardware = false).size > 1
     }.stateIn(viewModelScope, SharingStarted.WhileSubscribed(5000L), false)
 
     override val bitcoinChartData = observeBitcoinPriceHistory.observe()

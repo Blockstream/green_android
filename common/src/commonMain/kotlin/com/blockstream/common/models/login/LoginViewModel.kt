@@ -616,6 +616,8 @@ class LoginViewModel constructor(
 
                 enableHardwareWatchOnlyUseCase(greenWallet = greenWallet, session = session)
             }
+        } ?: run {
+            postSideEffect(SideEffects.Logout(LogoutReason.DEVICE_DISCONNECTED))
         }
     }
 

@@ -13,6 +13,7 @@ import com.blockstream.domain.meld.CreateCryptoQuoteUseCase
 import com.blockstream.domain.meld.CreateCryptoWidgetUseCase
 import com.blockstream.domain.meld.DefaultValuesUseCase
 import com.blockstream.domain.meld.MeldUseCase
+import com.blockstream.domain.navigation.NavigateToWallet
 import com.blockstream.green.data.dataModule
 import com.blockstream.green.domain.domainModule
 import org.koin.dsl.module
@@ -21,6 +22,9 @@ import org.koin.dsl.module
 val commonModule = module {
     includes(dataModule)
     includes(domainModule)
+    single {
+        NavigateToWallet(get(), get())
+    }
     single {
         VerifyAddressUseCase(get())
     }

@@ -23,8 +23,8 @@ import androidx.compose.ui.unit.dp
 import blockstream_green.common.generated.resources.Res
 import blockstream_green.common.generated.resources.arrow_square_out
 import blockstream_green.common.generated.resources.arrows_counter_clockwise
+import blockstream_green.common.generated.resources.blockstream_logo
 import blockstream_green.common.generated.resources.clipboard
-import blockstream_green.common.generated.resources.green_shield
 import blockstream_green.common.generated.resources.id_about
 import blockstream_green.common.generated.resources.id_app_settings
 import blockstream_green.common.generated.resources.id_biometrics
@@ -348,7 +348,7 @@ fun LearnMoreButton(
 fun AboutButton(onClick: () -> Unit) {
     GreenIconButton(
         text = stringResource(Res.string.id_about),
-        icon = painterResource(Res.drawable.green_shield),
+        icon = painterResource(Res.drawable.blockstream_logo),
         color = whiteMedium,
         onClick = onClick
     )
