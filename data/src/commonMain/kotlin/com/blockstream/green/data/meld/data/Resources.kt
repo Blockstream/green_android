@@ -8,7 +8,7 @@ object Resources {
     class Payments() {
 
         @Resource("transactions")
-        class Transactions(val parent: Payments = Payments(), val externalCustomerIds: String)
+        class Transactions(val parent: Payments = Payments(), val externalCustomerIds: String, val statuses: String)
 
         @Resource("crypto")
         class Crypto(val parent: Payments = Payments()) {

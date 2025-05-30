@@ -7,7 +7,7 @@ import org.koin.dsl.module
 //expect val platformDataModule: Module
 
 val dataModule = module {
-    single { GreenWebooksHttpClient(get()) }
+    single { GreenWebhooksHttpClient(get()) }
 
     includes(meldModule)
     includes(notificationsDataModule)

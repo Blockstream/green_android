@@ -4,7 +4,7 @@ import com.blockstream.green.data.config.AppInfo
 import com.blockstream.green.network.AppHttpClient
 import io.ktor.client.plugins.defaultRequest
 
-class GreenWebooksHttpClient(appInfo: AppInfo) : AppHttpClient(appInfo.isDevelopmentOrDebug, {
+class GreenWebhooksHttpClient(appInfo: AppInfo) : AppHttpClient(appInfo.isDevelopmentOrDebug, {
     defaultRequest {
         url(if (appInfo.isProduction) BASE_URL else DEV_BASE_URL)
     }

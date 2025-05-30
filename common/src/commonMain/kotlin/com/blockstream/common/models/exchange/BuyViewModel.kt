@@ -26,6 +26,7 @@ import com.blockstream.common.sideeffects.SideEffects
 import com.blockstream.common.utils.StringHolder
 import com.blockstream.common.utils.UserInput
 import com.blockstream.domain.hardware.VerifyAddressUseCase
+import com.blockstream.domain.meld.GetLastSuccessfulPurchaseExchange
 import com.blockstream.domain.meld.MeldUseCase
 import com.blockstream.green.data.meld.data.QuoteResponse
 import com.blockstream.green.data.meld.data.QuotesResponse
@@ -57,6 +58,7 @@ abstract class BuyViewModelAbstract(
     internal val meldUseCase: MeldUseCase by inject()
     internal val verifyAddressUseCase: VerifyAddressUseCase by inject()
     private val localeManager: LocaleManager by inject()
+    internal val getLastSuccessfulPurchaseExchange: GetLastSuccessfulPurchaseExchange by inject()
 
     abstract val showRecoveryConfirmation: StateFlow<Boolean>
     abstract val showAccountSelector: StateFlow<Boolean>
@@ -177,6 +179,11 @@ class BuyViewModel(greenWallet: GreenWallet) :
         // Default to Fiat denomination
         _denomination.value = Denomination.defaultOrFiat(session, isFiat = true)
 
+
+        viewModelScope.launch {
+            getLastSuccessfulPurchaseExchange(GetLastSuccessfulPurchaseExchange.Params(greenWallet.xPubHashId))
+        }
+
         session.ifConnected {
             val accounts = session.accounts.value.filter { it.isBitcoin }
 
@@ -201,16 +208,21 @@ class BuyViewModel(greenWallet: GreenWallet) :
         }
 
 
-        quotes.onEach { list ->
+        combine(quotes, getLastSuccessfulPurchaseExchange.observe()) { quotesList: List<QuoteResponse>, lastProvider: String? ->
             _quote.value = quote.value?.takeIf { userPickedQuote.value }?.let { quote ->
-                // keep the same provider
-                list.find {
+                // keep the same provider if user picked it
+                quotesList.find {
                     it.serviceProvider == quote.serviceProvider
                 }
-            } ?: list.firstOrNull()?.also {
+            } ?: lastProvider?.let { provider ->
+                // otherwise, try to find the last successful provider
+                quotesList.find { it.serviceProvider == provider }
+            } ?: quotesList.firstOrNull()?.also {
+                // fallback to first available quote
                 userPickedQuote.value = false
             }
         }.launchIn(this)
+
 
         session.ifConnected {
             combine(amount, country) { amount, _ ->

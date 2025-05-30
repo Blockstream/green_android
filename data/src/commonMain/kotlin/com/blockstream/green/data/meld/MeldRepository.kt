@@ -5,10 +5,12 @@ import com.blockstream.green.data.meld.data.CryptoQuoteRequest
 import com.blockstream.green.data.meld.data.CryptoWidget
 import com.blockstream.green.data.meld.data.CryptoWidgetRequest
 import com.blockstream.green.data.meld.data.LimitsResponse
+import com.blockstream.green.data.meld.data.MeldTransactionStatus
 import com.blockstream.green.data.meld.data.QuotesResponse
 import com.blockstream.green.data.meld.datasource.MeldLocalDataSource
 import com.blockstream.green.data.meld.datasource.MeldRemoteDataSource
 import com.blockstream.green.data.meld.models.Country
+import com.blockstream.green.data.meld.models.MeldTransactionResponse
 import com.blockstream.green.network.NetworkResponse
 
 class MeldRepository(
@@ -26,8 +28,10 @@ class MeldRepository(
         return remoteDataSource.getCryptoLimits(fiatCurrency)
     }
 
-    suspend fun getTransactions(externalCustomerId: String): NetworkResponse<LimitsResponse> {
-        return remoteDataSource.getTransactions(externalCustomerId)
+    suspend fun getTransactions(
+        externalCustomerId: String, statuses: List<MeldTransactionStatus> = emptyList()
+    ): NetworkResponse<MeldTransactionResponse> {
+        return remoteDataSource.getTransactions(externalCustomerId, statuses)
     }
 
     suspend fun getCountries(): NetworkResponse<List<Country>> {
@@ -44,6 +48,7 @@ class MeldRepository(
                 localDataSource.saveCountries(countriesWithEmojis)
                 NetworkResponse.Success(countriesWithEmojis)
             }
+
             is NetworkResponse.Error -> response
         }
     }

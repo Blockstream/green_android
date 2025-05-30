@@ -5,9 +5,11 @@ import com.blockstream.green.data.meld.data.CryptoQuoteRequest
 import com.blockstream.green.data.meld.data.CryptoWidget
 import com.blockstream.green.data.meld.data.CryptoWidgetRequest
 import com.blockstream.green.data.meld.data.LimitsResponse
+import com.blockstream.green.data.meld.data.MeldTransactionStatus
 import com.blockstream.green.data.meld.data.QuotesResponse
 import com.blockstream.green.data.meld.data.Resources
 import com.blockstream.green.data.meld.models.Country
+import com.blockstream.green.data.meld.models.MeldTransactionResponse
 import com.blockstream.green.network.NetworkResponse
 
 class MeldRemoteDataSource(
@@ -25,8 +27,11 @@ class MeldRemoteDataSource(
         return client.get(Resources.Payments.Crypto.Limits(fiatCurrency = fiatCurrency))
     }
 
-    suspend fun getTransactions(externalCustomerId: String): NetworkResponse<LimitsResponse> {
-        return client.get(Resources.Payments.Transactions(externalCustomerIds = externalCustomerId))
+    suspend fun getTransactions(
+        externalCustomerId: String,
+        statuses: List<MeldTransactionStatus> = emptyList()
+    ): NetworkResponse<MeldTransactionResponse> {
+        return client.get(Resources.Payments.Transactions(externalCustomerIds = externalCustomerId, statuses = statuses.joinToString(",")))
     }
 
     suspend fun getCountries(): NetworkResponse<List<Country>> {

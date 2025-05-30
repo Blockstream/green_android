@@ -12,6 +12,7 @@ import com.blockstream.domain.hardware.VerifyAddressUseCase
 import com.blockstream.domain.meld.CreateCryptoQuoteUseCase
 import com.blockstream.domain.meld.CreateCryptoWidgetUseCase
 import com.blockstream.domain.meld.DefaultValuesUseCase
+import com.blockstream.domain.meld.GetLastSuccessfulPurchaseExchange
 import com.blockstream.domain.meld.MeldUseCase
 import com.blockstream.domain.navigation.NavigateToWallet
 import com.blockstream.green.data.dataModule
@@ -64,5 +65,9 @@ val commonModule = module {
 
     factory {
         ObserveBitcoinPriceHistory(get())
+    }
+
+    factory {
+        GetLastSuccessfulPurchaseExchange(get())
     }
 }
