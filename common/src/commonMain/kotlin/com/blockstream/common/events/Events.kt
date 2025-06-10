@@ -53,7 +53,7 @@ object Events {
     data class RemoveAccount(val account: Account) : Event
     data class SetAccountAsset(val accountAsset: AccountAsset, val setAsActive: Boolean = false) : Event
     data class SetBarcodeScannerResult(val scannedText: String) : Event
-    class ProvideCipher(
+    data class ProvideCipher(
         val platformCipher: PlatformCipher? = null,
         val exception: Exception? = null
     ) : Event

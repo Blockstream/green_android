@@ -13,6 +13,7 @@ import blockstream_green.common.generated.resources.id_well_done_you_can_continu
 import blockstream_green.common.generated.resources.question
 import com.arkivanov.essenty.statekeeper.StateKeeper
 import com.arkivanov.essenty.statekeeper.StateKeeperDispatcher
+import com.blockstream.common.crypto.BiometricsException
 import com.blockstream.common.crypto.PlatformCipher
 import com.blockstream.common.data.Redact
 import com.blockstream.common.data.SetupArgs
@@ -423,20 +424,31 @@ class EnterRecoveryPhraseViewModel(setupArgs: SetupArgs, stateKeeper: StateKeepe
 
             onProgressDescription.value = getString(Res.string.id_restoring_your_wallet)
 
-            val cipher = biometricsCipherProvider.await()
+            try {
+                val cipher = if (greenKeystore.canUseBiometrics()) {
+                    biometricsCipherProvider.await()
+                } else return@doAsync null
 
-            val pin = randomChars(15)
+                val pin = randomChars(15)
 
-            restoreWalletUseCase.invoke(
-                session = session,
-                setupArgs = setupArgs,
-                pin = pin,
-                greenWallet = greenWalletOrNull,
-                cipher = cipher
-            )
+                restoreWalletUseCase.invoke(
+                    session = session, setupArgs = setupArgs, pin = pin, greenWallet = greenWalletOrNull, cipher = cipher
+                )
+
+            } catch (e: Exception) {
+                if (e.message == "id_action_canceled" || e is BiometricsException) {
+                    null
+                } else {
+                    throw e
+                }
+            }
 
         }, onSuccess = {
-            postSideEffect(SideEffects.NavigateTo(NavigateDestinations.WalletOverview(it)))
+            if (it != null) {
+                postSideEffect(SideEffects.NavigateTo(NavigateDestinations.WalletOverview(it)))
+            } else {
+                postSideEffect(SideEffects.NavigateTo(NavigateDestinations.SetPin(setupArgs = setupArgs)))
+            }
         })
     }
 

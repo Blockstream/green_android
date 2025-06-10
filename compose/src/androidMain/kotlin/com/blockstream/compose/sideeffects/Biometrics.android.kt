@@ -305,17 +305,23 @@ actual class BiometricsState(
 
                 override fun onAuthenticationError(errorCode: Int, errString: CharSequence) {
                     scope.launch {
-                        (if (errorCode == BiometricPrompt.ERROR_USER_CANCELED || errorCode == BiometricPrompt.ERROR_NEGATIVE_BUTTON || errorCode == BiometricPrompt.ERROR_CANCELED) {
-                            Exception("id_action_canceled")
-                        } else if (errorCode == BiometricPrompt.ERROR_NO_BIOMETRICS) {
-                            BiometricsException(errString.toString())
-                        } else {
-                            BiometricsException(
-                                getString(
-                                    Res.string.id_authentication_error_s,
-                                    "$errorCode $errString"
+                        (when (errorCode) {
+                            BiometricPrompt.ERROR_USER_CANCELED, BiometricPrompt.ERROR_NEGATIVE_BUTTON, BiometricPrompt.ERROR_CANCELED -> {
+                                Exception("id_action_canceled")
+                            }
+
+                            BiometricPrompt.ERROR_NO_BIOMETRICS -> {
+                                BiometricsException(errString.toString())
+                            }
+
+                            else -> {
+                                BiometricsException(
+                                    getString(
+                                        Res.string.id_authentication_error_s,
+                                        "$errorCode $errString"
+                                    )
                                 )
-                            )
+                            }
                         }).also {
                             viewModel.postEvent(Events.ProvideCipher(exception = it))
                         }
@@ -333,14 +339,24 @@ actual class BiometricsState(
                 )
             )
         } catch (e: InvalidAlgorithmParameterException) {
+            e.printStackTrace()
             // At least one biometric must be enrolled
-            scope.launch {
-                dialogState.openDialog(OpenDialogData(message = StringHolder.create(Res.string.id_please_activate_at_least_one)))
-            }
+            viewModel.postEvent(
+                Events.ProvideCipher(
+                    exception = BiometricsException(
+                        getString(
+                            Res.string.id_please_activate_at_least_one
+                        )
+                    )
+                )
+            )
         } catch (e: Exception) {
-            scope.launch {
-                dialogState.openErrorDialog(e)
-            }
+            e.printStackTrace()
+            viewModel.postEvent(
+                Events.ProvideCipher(
+                    exception = BiometricsException(e.message ?: "Biometrics undefined error")
+                )
+            )
         }
     }
 
@@ -396,6 +412,8 @@ actual class BiometricsState(
             }
         }
     }
+
+    companion object : Loggable()
 }
 
 open class AuthenticationCallback constructor(val state: BiometricsState) :

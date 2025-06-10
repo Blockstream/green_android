@@ -165,7 +165,7 @@ class SetupNewWalletViewModel(greenWalletOrNull: GreenWallet? = null) :
             try {
                 val cipher = if (greenKeystore.canUseBiometrics()) {
                     biometricsCipherProvider.await()
-                } else null
+                } else return@doAsync null
 
                 newWalletUseCase.invoke(
                     session = session,
