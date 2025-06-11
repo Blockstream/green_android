@@ -33,6 +33,8 @@ sqldelight {
     linkSqlite.set(true)
 }
 
+nativeCoroutines { k2Mode = false }
+
 kotlin {
     compilerOptions {
         freeCompilerArgs.add("-Xexpect-actual-classes")

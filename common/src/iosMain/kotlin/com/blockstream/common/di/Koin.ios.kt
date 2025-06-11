@@ -108,10 +108,6 @@ fun startKoin(doOnStartup: () -> Unit = {}) {
 //            } binds (arrayOf(DeviceConnectionManager::class, DeviceConnectionInterface::class))
             single<FcmCommon> {
                 object : FcmCommon(get()) {
-                    override fun showDebugNotification(notification: NotificationData) {
-
-                    }
-
                     override fun showBuyTransactionNotification(notificationData: NotificationData) {
                         //no-op
                     }
@@ -131,6 +127,10 @@ fun startKoin(doOnStartup: () -> Unit = {}) {
                     override suspend fun showOpenWalletNotification(
                         wallet: GreenWallet, breezNotification: BreezNotification
                     ) {
+
+                    }
+
+                    override fun showDebugNotification(title: String, message: String) {
 
                     }
 
