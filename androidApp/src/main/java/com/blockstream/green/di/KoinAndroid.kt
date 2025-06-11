@@ -25,7 +25,8 @@ fun initKoinAndroid(context: Context, doOnStartup: () -> Unit = {}) {
         userAgent = "green_android",
         version = BuildConfig.VERSION_NAME,
         isDebug = BuildConfig.DEBUG,
-        isDevelopment = isDevelopmentFlavor
+        isDevelopment = isDevelopmentFlavor,
+        developmentPin = BuildConfig.DEV_PIN_CODE
     )
 
     val appConfig = AppConfig.default(

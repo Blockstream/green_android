@@ -29,6 +29,13 @@ if (keystorePropertiesFile.exists()){
     keystoreProperties["keyPassword"] = System.getenv("KEY_PASSWORD") ?: ""
 }
 
+// Load local.properties
+val localPropertiesFile = rootProject.file("local.properties")
+val localProperties = Properties()
+if (localPropertiesFile.exists()) {
+    localProperties.load(FileInputStream(localPropertiesFile))
+}
+
 android {
     namespace = "com.blockstream.green"
     compileSdk = libs.versions.androidCompileSdk.get().toInt()
@@ -68,7 +75,10 @@ android {
             resValue("bool", "feature_rate_google_play", "true")
             manifestPlaceholders["appIcon"] = "@mipmap/ic_launcher_dev"
             manifestPlaceholders["appIconRound"] = "@mipmap/ic_launcher_dev_round"
-            manifestPlaceholders["enableQATester"] = true
+
+            // Development PIN code from local.properties
+            val devPinCode = localProperties.getProperty("DEV_PIN_CODE") ?: ""
+            buildConfigField("String", "DEV_PIN_CODE", """"$devPinCode"""")
         }
 
         create("productionGoogle") {
@@ -80,7 +90,9 @@ android {
             resValue("bool", "feature_rate_google_play", "true")
             manifestPlaceholders["appIcon"] = "@mipmap/ic_launcher"
             manifestPlaceholders["appIconRound"] = "@mipmap/ic_launcher_round"
-            manifestPlaceholders["enableQATester"] = false
+
+            // No development PIN for production
+            buildConfigField("String", "DEV_PIN_CODE", "null")
         }
 
         create("productionFDroid") {
@@ -93,7 +105,9 @@ android {
             resValue("bool", "feature_rate_google_play", "false")
             manifestPlaceholders["appIcon"] = "@mipmap/ic_launcher"
             manifestPlaceholders["appIconRound"] = "@mipmap/ic_launcher_round"
-            manifestPlaceholders["enableQATester"] = false
+
+            // No development PIN for production
+            buildConfigField("String", "DEV_PIN_CODE", "null")
         }
     }
     applicationVariants.all {

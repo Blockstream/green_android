@@ -59,6 +59,7 @@ import com.blockstream.common.models.GreenViewModel
 import com.blockstream.common.navigation.NavigateDestinations
 import com.blockstream.common.sideeffects.SideEffects
 import com.blockstream.common.usecases.EnableHardwareWatchOnlyUseCase
+import com.blockstream.common.utils.SetupDevelopmentEnv
 import com.blockstream.common.utils.StringHolder
 import com.blockstream.green.utils.Loggable
 import com.blockstream.ui.events.Event
@@ -158,6 +159,7 @@ class LoginViewModel constructor(
     override val isLoginRequired: Boolean = false
 
     private val enableHardwareWatchOnlyUseCase: EnableHardwareWatchOnlyUseCase by inject()
+    private val setupDevelopmentEnv = SetupDevelopmentEnv() // Only for dev env
 
     @NativeCoroutinesState
     override val bip39Passphrase = MutableStateFlow(viewModelScope, "")
@@ -433,6 +435,9 @@ class LoginViewModel constructor(
             )
 
         }.launchIn(this)
+        
+        // Try auto-login for development builds
+        setupDevelopmentEnv.tryAutoLogin(this)
 
         bootstrap()
     }
