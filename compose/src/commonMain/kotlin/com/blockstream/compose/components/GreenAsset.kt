@@ -31,6 +31,7 @@ import com.blockstream.compose.theme.labelLarge
 import com.blockstream.compose.theme.titleSmall
 import com.blockstream.compose.theme.whiteHigh
 import com.blockstream.compose.theme.whiteMedium
+import com.blockstream.ui.components.ConsistentHeightBox
 import org.jetbrains.compose.resources.painterResource
 import org.jetbrains.compose.resources.stringResource
 
@@ -95,27 +96,11 @@ fun GreenAsset(
                         }
 
                         if (assetBalance.balance != null) {
-                            Column(horizontalAlignment = Alignment.End) {
-                                // Amount
-                                Text(
-                                    text = assetBalance.balance ?: "",
-                                    style = labelLarge,
-                                    maxLines = 1,
-                                    overflow = TextOverflow.Ellipsis,
-                                    color = green
-                                )
-
-                                assetBalance.balanceExchange?.also {
-                                    // Fiat
-                                    Text(
-                                        text = it,
-                                        style = bodyMedium,
-                                        maxLines = 1,
-                                        overflow = TextOverflow.Ellipsis,
-                                        color = whiteMedium,
-                                    )
-                                }
-                            }
+                            ConsistentHeightBox(placeholder = {
+                                BalanceDetails("0", "0")
+                            }, content = {
+                                BalanceDetails(assetBalance.balance, assetBalance.balanceExchange)
+                            })
                         }
                     }
                 }
@@ -130,6 +115,27 @@ fun GreenAsset(
                     )
                 }
             }
+        }
+    }
+}
+
+@Composable
+private fun BalanceDetails(assetBalance: String?, fiatAssetBalance: String?) {
+    Column(
+        horizontalAlignment = Alignment.End, verticalArrangement = Arrangement.Center
+    ) {
+        Text(
+            text = assetBalance ?: "", style = labelLarge, maxLines = 1, overflow = TextOverflow.Ellipsis, color = green
+        )
+
+        fiatAssetBalance?.also {
+            Text(
+                text = it,
+                style = bodyMedium,
+                maxLines = 1,
+                overflow = TextOverflow.Ellipsis,
+                color = whiteMedium,
+            )
         }
     }
 }
