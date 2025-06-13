@@ -68,4 +68,5 @@ class MeldRepositoryTest : KoinTest {
             assertNotEquals(0.0, it.dataOrThrow().first().maxAmount)
         }
     }
+
 }

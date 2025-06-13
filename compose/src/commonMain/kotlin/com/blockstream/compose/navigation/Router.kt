@@ -81,6 +81,7 @@ import com.blockstream.common.models.sheets.AnalyticsViewModel
 import com.blockstream.common.models.sheets.AssetDetailsViewModel
 import com.blockstream.common.models.sheets.JadeFirmwareUpdateViewModel
 import com.blockstream.common.models.sheets.LightningNodeViewModel
+import com.blockstream.common.models.sheets.MeldCountriesViewModel
 import com.blockstream.common.models.sheets.NoteViewModel
 import com.blockstream.common.models.sheets.RecoveryHelpViewModel
 import com.blockstream.common.models.sheets.TransactionDetailsViewModel
@@ -164,6 +165,7 @@ import com.blockstream.compose.sheets.Call2ActionBottomSheet
 import com.blockstream.compose.sheets.CameraBottomSheet
 import com.blockstream.compose.sheets.ChooseAssetAccountBottomSheet
 import com.blockstream.compose.sheets.CountriesBottomSheet
+import com.blockstream.compose.sheets.MeldCountriesBottomSheet
 import com.blockstream.compose.sheets.DenominationBottomSheet
 import com.blockstream.compose.sheets.DeviceInteractionBottomSheet
 import com.blockstream.compose.sheets.EnvironmentBottomSheet
@@ -769,6 +771,19 @@ fun Router(
                     title = args.title,
                     subtitle = args.subtitle,
                     showDialCode = args.showDialCode,
+                    onDismissRequest = navController.onDismissRequest()
+                )
+            }
+            appBottomSheet<NavigateDestinations.MeldCountries> {
+                val args = it.toRoute<NavigateDestinations.MeldCountries>()
+                MeldCountriesBottomSheet(
+                    viewModel = viewModel {
+                        MeldCountriesViewModel(
+                            greenWallet = args.greenWallet
+                        )
+                    },
+                    title = args.title,
+                    subtitle = args.subtitle,
                     onDismissRequest = navController.onDismissRequest()
                 )
             }

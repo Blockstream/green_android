@@ -15,7 +15,7 @@ class MeldHttpClient(appInfo: AppInfo) : AppHttpClient(appInfo.isDevelopmentOrDe
     }
 
     defaultRequest {
-        url(MELD_PRODUCTION.takeIf { appInfo.isProduction } ?: MELD_SANDBOX)
+        url(MELD_PRODUCTION.takeIf { appInfo.isProduction } ?: MELD_PRODUCTION)
         contentType(ContentType.Application.Json)
     }
 }) {

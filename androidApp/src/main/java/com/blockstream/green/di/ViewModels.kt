@@ -65,6 +65,7 @@ import com.blockstream.common.models.sheets.AnalyticsViewModel
 import com.blockstream.common.models.sheets.AssetDetailsViewModel
 import com.blockstream.common.models.sheets.JadeFirmwareUpdateViewModel
 import com.blockstream.common.models.sheets.LightningNodeViewModel
+import com.blockstream.common.models.sheets.MeldCountriesViewModel
 import com.blockstream.common.models.sheets.NoteViewModel
 import com.blockstream.common.models.sheets.RecoveryHelpViewModel
 import com.blockstream.common.models.sheets.TransactionDetailsViewModel
@@ -123,6 +124,7 @@ val viewModels = module {
     viewModelOf(::DenominationViewModel)
     viewModelOf(::BumpViewModel)
     viewModelOf(::LightningNodeViewModel)
+    viewModelOf(::MeldCountriesViewModel)
     viewModelOf(::RedepositViewModel)
     viewModelOf(::ReEnable2FAViewModel)
     viewModelOf(::WatchOnlyCredentialsSettingsViewModel)

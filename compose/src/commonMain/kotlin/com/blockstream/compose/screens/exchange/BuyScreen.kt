@@ -18,7 +18,6 @@ import blockstream_green.common.generated.resources.arrow_square_out
 import blockstream_green.common.generated.resources.id_buy_s
 import blockstream_green.common.generated.resources.id_exchange
 import com.blockstream.common.data.AlertType
-import com.blockstream.common.data.Country
 import com.blockstream.common.data.DenominatedValue
 import com.blockstream.common.events.Events
 import com.blockstream.common.gdk.data.AccountAssetBalance
@@ -39,6 +38,7 @@ import com.blockstream.compose.theme.green20
 import com.blockstream.compose.utils.OpenKeyboard
 import com.blockstream.compose.utils.SetupScreen
 import com.blockstream.green.data.meld.data.QuoteResponse
+import com.blockstream.green.data.meld.models.Country
 import com.blockstream.ui.components.GreenColumn
 import com.blockstream.ui.components.GreenRow
 import com.blockstream.ui.navigation.LocalNavigator
@@ -55,7 +55,7 @@ fun BuyScreen(
         viewModel.postEvent(Events.SetDenominatedValue(it))
     }
 
-    NavigateDestinations.Countries.getResult<Country> {
+    NavigateDestinations.MeldCountries.getResult<Country> {
         viewModel.changeCountry(it)
     }
 

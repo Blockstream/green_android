@@ -430,6 +430,13 @@ sealed class NavigateDestinations : NavigateDestination() {
     ) : NavigateDestination()
 
     @Serializable
+    data class MeldCountries(
+        val greenWallet: GreenWallet,
+        val title: String? = null,
+        val subtitle: String? = null
+    ) : NavigateDestination()
+
+    @Serializable
     data object JadeGuide : NavigateDestination()
 
     @Serializable

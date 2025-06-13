@@ -39,7 +39,6 @@ import blockstream_green.common.generated.resources.id_the_recovery_key_below_wi
 import com.adamglin.PhosphorIcons
 import com.adamglin.phosphoricons.Regular
 import com.adamglin.phosphoricons.regular.Copy
-import com.blockstream.common.data.Country
 import com.blockstream.common.data.TwoFactorMethod
 import com.blockstream.common.data.TwoFactorSetupAction
 import com.blockstream.common.events.Events
@@ -58,6 +57,7 @@ import com.blockstream.compose.theme.whiteHigh
 import com.blockstream.compose.theme.whiteMedium
 import com.blockstream.compose.utils.CopyContainer
 import com.blockstream.compose.utils.SetupScreen
+import com.blockstream.green.data.countries.Country
 import com.blockstream.ui.components.GreenColumn
 import com.blockstream.ui.components.GreenRow
 import com.blockstream.ui.navigation.getResult

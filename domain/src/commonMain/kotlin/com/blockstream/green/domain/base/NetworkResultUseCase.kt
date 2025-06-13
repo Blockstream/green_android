@@ -24,7 +24,7 @@ abstract class NetworkResultUseCase<in P, R> {
                 }
 
                 is NetworkResponse.Error -> {
-                    emit(Result.Error(Throwable(result.message)))
+                    emit(Result.Error(Throwable(result.message), result.message))
                 }
             }
         }

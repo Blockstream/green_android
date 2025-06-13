@@ -1,4 +1,4 @@
-package com.blockstream.common.data
+package com.blockstream.green.data.countries
 
 data class Country(val code: String, val name: String, val dialCode: Int, val flag: String) {
     val dialCodeString by lazy {
@@ -251,4 +251,8 @@ object Countries {
         Country("zw", "Zimbabwe", 263, "🇿🇼"),
         Country("ax", "Åland Islands", 358, "🇦🇽")
     )
+    
+    fun getEmojiFlagOrDefault(countryCode: String): String {
+        return Countries.find { it.code.equals(countryCode, ignoreCase = true) }?.flag ?: "🏳️"
+    }
 }

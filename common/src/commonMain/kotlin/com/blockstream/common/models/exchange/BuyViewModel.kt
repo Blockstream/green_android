@@ -8,7 +8,6 @@ import blockstream_green.common.generated.resources.id_please_select_your_correc
 import blockstream_green.common.generated.resources.id_select_your_region
 import blockstream_green.common.generated.resources.id_the_address_is_valid
 import blockstream_green.common.generated.resources.id_verify_address
-import com.blockstream.common.data.Country
 import com.blockstream.common.data.DenominatedValue
 import com.blockstream.common.data.Denomination
 import com.blockstream.common.data.GreenWallet
@@ -30,6 +29,7 @@ import com.blockstream.domain.hardware.VerifyAddressUseCase
 import com.blockstream.domain.meld.MeldUseCase
 import com.blockstream.green.data.meld.data.QuoteResponse
 import com.blockstream.green.data.meld.data.QuotesResponse
+import com.blockstream.green.data.meld.models.Country
 import com.blockstream.green.network.dataOrThrow
 import com.blockstream.green.utils.Loggable
 import com.blockstream.ui.events.Event
@@ -87,7 +87,7 @@ abstract class BuyViewModelAbstract(
     val onProgressBuy: StateFlow<Boolean> = _onProgressBuy
 
     fun changeCountry(country: Country) {
-        this.country.value = country.code.uppercase().also {
+        this.country.value = country.countryCode.uppercase().also {
             settingsManager.setCountry(it)
         }
     }
@@ -256,11 +256,10 @@ class BuyViewModel(greenWallet: GreenWallet) :
                     onClick = {
                         viewModelScope.launch {
                             postEvent(
-                                NavigateDestinations.Countries(
+                                NavigateDestinations.MeldCountries(
                                     greenWallet = greenWallet,
                                     title = getString(Res.string.id_select_your_region),
                                     subtitle = getString(Res.string.id_please_select_your_correct_billing),
-                                    showDialCode = false
                                 )
                             )
                         }
