@@ -35,10 +35,7 @@ import com.blockstream.common.extensions.logException
 import com.blockstream.common.gdk.GdkSession
 import com.blockstream.common.managers.SessionManager
 import com.blockstream.common.managers.SettingsManager
-import com.blockstream.compose.extensions.getNetworkColor
-import com.blockstream.compose.theme.bitcoin
-import com.blockstream.compose.theme.green
-import com.blockstream.compose.theme.lightning
+import com.blockstream.compose.theme.md_theme_primary
 import com.blockstream.green.BuildConfig
 import com.blockstream.green.GreenActivity
 import com.blockstream.green.R
@@ -204,10 +201,8 @@ class NotificationManagerAndroid constructor(
 
         return NotificationCompat.Builder(context, WALLETS_CHANNEL_ID).setContentTitle(wallet.name)
             .setColorized(true).setSmallIcon(R.drawable.ic_stat_green)
-            .setContentIntent(pendingIntent).setColor(
-                if (session.gdkSessions.size == 1) session.mainAssetNetwork.id.getNetworkColor()
-                    .toArgb() else green.toArgb()
-            ).setOngoing(true).setPriority(NotificationCompat.PRIORITY_HIGH)
+            .setContentIntent(pendingIntent).setColor(md_theme_primary.toArgb())
+            .setOngoing(true).setPriority(NotificationCompat.PRIORITY_HIGH)
             .addAction(R.drawable.ic_close, getString(Res.string.id_logout), logoutIntent).apply {
 
                 session.device?.let {
@@ -246,7 +241,7 @@ class NotificationManagerAndroid constructor(
         return NotificationCompat.Builder(context, LIGHTNING_CHANNEL_ID)
             .setSmallIcon(R.drawable.ic_stat_green).setContentTitle(wallet.name)
             .setContentText(getString(Res.string.id_open_wallet_to_receive_a_payment))
-            .setContentIntent(pendingIntent).setColorized(true).setColor(lightning.toArgb())
+            .setContentIntent(pendingIntent).setColorized(true).setColor(md_theme_primary.toArgb())
             .setSound(notificationSound).setPriority(NotificationCompat.PRIORITY_MAX)
             .setAutoCancel(true).setVisibility(NotificationCompat.VISIBILITY_PUBLIC).build().also {
                 androidNotificationManager.notify(
@@ -271,7 +266,7 @@ class NotificationManagerAndroid constructor(
         return NotificationCompat.Builder(context, LIGHTNING_CHANNEL_ID)
             .setSmallIcon(R.drawable.ic_stat_green).setContentTitle(wallet.name)
             .setContentText(getString(Res.string.id_payment_received))
-            .setContentIntent(pendingIntent).setColorized(true).setColor(lightning.toArgb())
+            .setContentIntent(pendingIntent).setColorized(true).setColor(md_theme_primary.toArgb())
             .setPriority(NotificationCompat.PRIORITY_DEFAULT).setAutoCancel(true)
             .setVisibility(NotificationCompat.VISIBILITY_PUBLIC).build().also {
                 androidNotificationManager.notify(
@@ -292,7 +287,7 @@ class NotificationManagerAndroid constructor(
             .setSmallIcon(R.drawable.ic_stat_green)
             .setLargeIcon(BitmapFactory.decodeResource(context.resources, R.mipmap.ic_launcher))
             .setContentTitle(title).setContentText(body)
-            .setColorized(true).setColor(bitcoin.toArgb())
+            .setColorized(true).setColor(md_theme_primary.toArgb())
             .setPriority(NotificationCompat.PRIORITY_DEFAULT).setAutoCancel(true)
             .setVisibility(NotificationCompat.VISIBILITY_PUBLIC).build().also {
                 androidNotificationManager.notify(notificationData.hashCode(), it)
@@ -309,7 +304,7 @@ class NotificationManagerAndroid constructor(
 
         return NotificationCompat.Builder(context, LIGHTNING_CHANNEL_ID)
             .setSmallIcon(R.drawable.ic_stat_green).setContentTitle(title).setContentText(message)
-            .setColorized(true).setColor(green.toArgb()).setSound(notificationSound)
+            .setColorized(true).setColor(md_theme_primary.toArgb()).setSound(notificationSound)
             .setPriority(NotificationCompat.PRIORITY_MAX).setAutoCancel(true)
             .setOnlyAlertOnce(false).setVisibility(NotificationCompat.VISIBILITY_PUBLIC).build()
             .also {
