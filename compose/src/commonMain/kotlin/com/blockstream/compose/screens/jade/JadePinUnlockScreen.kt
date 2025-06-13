@@ -3,6 +3,8 @@ package com.blockstream.compose.screens.jade
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.rememberScrollState
+import androidx.compose.foundation.verticalScroll
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
@@ -51,6 +53,7 @@ fun JadePinUnlockScreen(
         GreenColumn(
             verticalArrangement = Arrangement.SpaceEvenly,
             modifier = Modifier.fillMaxSize()
+                .verticalScroll(rememberScrollState())
         ) {
             GreenColumn(padding = 32, horizontalAlignment = Alignment.CenterHorizontally) {
                 Text(
