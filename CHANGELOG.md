@@ -3,10 +3,16 @@ All notable changes to this project will be documented in this file.
 
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/).
 
-## [Unreleased]
+## [5.0.3] - 2025-06-13
 
 #### Fixed
 - Make QR pin unlock screen scrollable to support larger font sizes
+- Fix inconsistent asset card heights when fiat values are missing
+- Fix vertical alignment of asset balance when fiat value is missing
+- Fix app behavior during onboarding when no fingerprints are enrolled
+- Fix navigation to Transact after send
+- Fix login with a single hardware wallet non watch-only
+- Fix crash introduced in 5.0.0
 
 ## [5.0.0] - 2025-05-26
 
