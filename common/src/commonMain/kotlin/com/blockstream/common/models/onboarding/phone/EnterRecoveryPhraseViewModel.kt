@@ -419,10 +419,16 @@ class EnterRecoveryPhraseViewModel(setupArgs: SetupArgs, stateKeeper: StateKeepe
                 session = session,
                 isTestnet = setupArgs.isTestnet == true,
                 mnemonic = setupArgs.mnemonic,
-                password = setupArgs.password
+                password = setupArgs.password,
+                greenWallet = setupArgs.greenWallet
             )
 
             onProgressDescription.value = getString(Res.string.id_restoring_your_wallet)
+
+            // If it's recovery wallet restore, use pin instead of biometrics
+            if (setupArgs.greenWallet != null) {
+                return@doAsync null
+            }
 
             try {
                 val cipher = if (greenKeystore.canUseBiometrics()) {
@@ -442,7 +448,6 @@ class EnterRecoveryPhraseViewModel(setupArgs: SetupArgs, stateKeeper: StateKeepe
                     throw e
                 }
             }
-
         }, onSuccess = {
             if (it != null) {
                 postSideEffect(SideEffects.NavigateTo(NavigateDestinations.WalletOverview(it)))

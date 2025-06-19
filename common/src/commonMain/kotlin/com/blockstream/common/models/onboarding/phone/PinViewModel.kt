@@ -101,7 +101,8 @@ class PinViewModel constructor(
                 session = session,
                 isTestnet = setupArgs.isTestnet == true,
                 mnemonic = setupArgs.mnemonic,
-                password = setupArgs.password
+                password = setupArgs.password,
+                greenWallet = setupArgs.greenWallet
             )
 
         }, onSuccess = {
