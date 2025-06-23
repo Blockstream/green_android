@@ -5,7 +5,6 @@ import blockstream_green.common.generated.resources.id_redeposit
 import blockstream_green.common.generated.resources.id_reenable_2fa
 import com.blockstream.common.TransactionSegmentation
 import com.blockstream.common.TransactionType
-import com.blockstream.common.data.Banner
 import com.blockstream.common.data.FeePriority
 import com.blockstream.common.data.GreenWallet
 import com.blockstream.common.events.Events
@@ -25,6 +24,7 @@ import com.blockstream.common.navigation.NavigateDestinations
 import com.blockstream.common.sideeffects.SideEffects
 import com.blockstream.common.utils.StringHolder
 import com.blockstream.common.utils.feeRateWithUnit
+import com.blockstream.green.data.banner.Banner
 import com.blockstream.ui.events.Event
 import com.blockstream.ui.navigation.NavData
 import com.rickclephas.kmp.observableviewmodel.launch

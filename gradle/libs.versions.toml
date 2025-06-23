@@ -36,7 +36,7 @@ kermit = "2.0.5"
 kmp-observableviewmodel = "1.0.0-BETA-11"
 splash-screen = "1.1.0-rc01"
 koin-bom = "4.1.0"
-ksoupEntites = "0.2.1"
+ksoup-entites = "0.2.1"
 androidx-lifecycle = "2.9.1"
 compose-lifecycle = "2.9.0"
 middleEllipsisText3 = "1.2.0"
@@ -48,7 +48,7 @@ qrose = "1.0.1"
 kotlincrypto-hash = "0.7.0"
 sqldelight = "2.1.0"
 mockito-kotlin = "5.4.0"
-mockk = "1.14.2"
+mockk = "1.14.4"
 preference-ktx = "1.2.1"
 guava = "31.1-android"
 review-ktx = "2.0.2"
@@ -161,7 +161,7 @@ kotlinx-datetime = { module = "org.jetbrains.kotlinx:kotlinx-datetime", version.
 androidx-room-ktx = { module = "androidx.room:room-ktx", version.ref = "room" }
 androidx-room-compiler = { module = "androidx.room:room-compiler", version.ref = "room" }
 androidx-room-runtime = { module = "androidx.room:room-runtime", version.ref = "room" }
-ksoup-entites = { module = "com.mohamedrejeb.ksoup:ksoup-entites", version.ref = "ksoupEntites" }
+ksoup-entites = { module = "com.mohamedrejeb.ksoup:ksoup-entites", version.ref = "ksoup-entites" }
 mockito-kotlin = { module = "org.mockito.kotlin:mockito-kotlin", version.ref = "mockito-kotlin" }
 mockk = { module = "io.mockk:mockk", version.ref = "mockk" }
 multiplatform-settings = { module = "com.russhwolf:multiplatform-settings", version.ref = "multiplatformSettings" }

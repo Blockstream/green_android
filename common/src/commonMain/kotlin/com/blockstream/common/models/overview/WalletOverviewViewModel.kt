@@ -61,7 +61,7 @@ abstract class WalletOverviewViewModelAbstract(
     greenWallet: GreenWallet
 ) : WalletBalanceViewModel(greenWallet = greenWallet) {
 
-    override fun screenName(): String = "WalletOverview"
+    override fun screenName(): String = "HomeTab"
 
     @NativeCoroutinesState
     abstract val alerts: StateFlow<List<AlertType>>

@@ -1,7 +1,6 @@
 package com.blockstream.common
 
 import com.blockstream.common.data.ApplicationSettings
-import com.blockstream.common.data.Banner
 import com.blockstream.common.data.CountlyAsset
 import com.blockstream.common.data.CredentialType
 import com.blockstream.common.data.ExceptionWithSupportData
@@ -18,6 +17,7 @@ import com.blockstream.common.gdk.data.Account
 import com.blockstream.common.gdk.data.AccountAsset
 import com.blockstream.common.gdk.data.Network
 import com.blockstream.common.managers.SettingsManager
+import com.blockstream.green.data.banner.Banner
 import com.blockstream.green.data.config.AppInfo
 import com.blockstream.green.utils.Loggable
 import com.rickclephas.kmp.nativecoroutines.NativeCoroutines

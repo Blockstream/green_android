@@ -218,14 +218,6 @@ fun WalletOverviewScreen(
                         )
                     }
 
-                    item(key = "Promo") {
-                        Promo(
-                            viewModel = viewModel,
-                            modifier = Modifier.padding(horizontal = 16.dp).padding(top = 8.dp)
-                        )
-                    }
-
-
                     item(key = "AssetsHeader") {
                         ListHeader(title = stringResource(Res.string.id_assets))
                     }
@@ -287,6 +279,13 @@ fun WalletOverviewScreen(
                             viewModel.bitcoinChartData,
                             onClickRetry = { viewModel.refetchBitcoinPriceHistory() },
                             onClickBuyNow = { viewModel.navigateToBuy() }
+                        )
+                    }
+
+                    item(key = "Promo") {
+                        Promo(
+                            viewModel = viewModel,
+                            modifier = Modifier.padding(top = 8.dp)
                         )
                     }
                 }

@@ -19,7 +19,6 @@ import com.blockstream.common.Urls
 import com.blockstream.common.crypto.KeystoreInvalidatedException
 import com.blockstream.common.crypto.PlatformCipher
 import com.blockstream.common.data.ApplicationSettings
-import com.blockstream.common.data.Banner
 import com.blockstream.common.data.CredentialType
 import com.blockstream.common.data.DataState
 import com.blockstream.common.data.GreenWallet
@@ -61,6 +60,7 @@ import com.blockstream.common.sideeffects.SideEffects
 import com.blockstream.common.usecases.EnableHardwareWatchOnlyUseCase
 import com.blockstream.common.utils.SetupDevelopmentEnv
 import com.blockstream.common.utils.StringHolder
+import com.blockstream.green.data.banner.Banner
 import com.blockstream.green.utils.Loggable
 import com.blockstream.ui.events.Event
 import com.blockstream.ui.navigation.NavAction

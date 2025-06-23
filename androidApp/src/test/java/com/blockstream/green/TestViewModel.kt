@@ -8,6 +8,7 @@ import com.blockstream.common.managers.PromoManager
 import com.blockstream.common.managers.SessionManager
 import com.blockstream.common.managers.SettingsManager
 import com.blockstream.common.models.GreenViewModel
+import com.blockstream.domain.promo.GetPromoUseCase
 import com.blockstream.green.data.config.AppInfo
 import io.mockk.every
 import io.mockk.mockk
@@ -62,6 +63,8 @@ open class TestViewModel<VM : GreenViewModel> : KoinTest {
                 module {
                     single { AppInfo("green_test", "1.0.0-test", true, true) }
 
+                    single { GetPromoUseCase(get(), get(), get()) }
+
                     declareMock<CountlyBase> {
                         every { viewModel(any()) } returns Unit
                         every { remoteConfigUpdateEvent } returns MutableSharedFlow<Unit>()
@@ -83,7 +86,7 @@ open class TestViewModel<VM : GreenViewModel> : KoinTest {
                     }
 
                     declareMock<Database> {
-
+                        
                     }
                 }
             )

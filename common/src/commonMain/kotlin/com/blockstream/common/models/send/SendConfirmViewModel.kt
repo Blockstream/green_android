@@ -8,7 +8,6 @@ import blockstream_green.common.generated.resources.id_the_address_is_valid
 import blockstream_green.common.generated.resources.note_pencil
 import blockstream_green.common.generated.resources.signature
 import com.blockstream.common.BTC_POLICY_ASSET
-import com.blockstream.common.data.Banner
 import com.blockstream.common.data.Denomination
 import com.blockstream.common.data.GreenWallet
 import com.blockstream.common.extensions.ifConnected
@@ -23,6 +22,7 @@ import com.blockstream.common.models.sheets.NoteType
 import com.blockstream.common.navigation.NavigateDestinations
 import com.blockstream.common.sideeffects.SideEffects
 import com.blockstream.common.utils.StringHolder
+import com.blockstream.green.data.banner.Banner
 import com.blockstream.green.utils.Loggable
 import com.blockstream.ui.events.Event
 import com.blockstream.ui.navigation.NavAction

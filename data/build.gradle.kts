@@ -38,6 +38,8 @@ kotlin {
 
                 api(project.dependencies.platform(libs.koin.bom))
                 api(libs.koin.core)
+
+                api(libs.ksoup.entites) // html entities
             }
         }
 

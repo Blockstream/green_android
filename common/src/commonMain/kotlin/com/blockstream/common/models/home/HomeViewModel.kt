@@ -8,7 +8,6 @@ import com.adamglin.PhosphorIcons
 import com.adamglin.phosphoricons.Regular
 import com.adamglin.phosphoricons.regular.Sliders
 import com.blockstream.common.Urls
-import com.blockstream.common.data.Banner
 import com.blockstream.common.data.GreenWallet
 import com.blockstream.common.data.Promo
 import com.blockstream.common.events.Events
@@ -20,6 +19,7 @@ import com.blockstream.common.models.GreenViewModel
 import com.blockstream.common.navigation.NavigateDestinations
 import com.blockstream.common.sideeffects.SideEffects
 import com.blockstream.domain.navigation.NavigateToWallet
+import com.blockstream.green.data.banner.Banner
 import com.blockstream.green.utils.Loggable
 import com.blockstream.ui.events.Event
 import com.blockstream.ui.navigation.NavAction

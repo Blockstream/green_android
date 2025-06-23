@@ -4,7 +4,6 @@ import blockstream_green.common.generated.resources.Res
 import blockstream_green.common.generated.resources.id_account_transfer
 import com.blockstream.common.TransactionSegmentation
 import com.blockstream.common.TransactionType
-import com.blockstream.common.data.Banner
 import com.blockstream.common.data.DenominatedValue
 import com.blockstream.common.data.Denomination
 import com.blockstream.common.data.FeePriority
@@ -37,6 +36,7 @@ import com.blockstream.common.utils.feeRateWithUnit
 import com.blockstream.common.utils.getStringFromId
 import com.blockstream.common.utils.ifNotNull
 import com.blockstream.common.utils.toAmountLook
+import com.blockstream.green.data.banner.Banner
 import com.blockstream.green.utils.Loggable
 import com.blockstream.ui.events.Event
 import com.blockstream.ui.navigation.NavData

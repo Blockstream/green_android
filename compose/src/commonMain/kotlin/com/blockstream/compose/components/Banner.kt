@@ -9,10 +9,10 @@ import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import blockstream_green.common.generated.resources.Res
 import blockstream_green.common.generated.resources.id_learn_more
 import blockstream_green.common.generated.resources.warning
-import com.blockstream.common.data.Banner
 import com.blockstream.common.events.Events
 import com.blockstream.common.models.GreenViewModel
 import com.blockstream.compose.utils.AnimatedNullableVisibility
+import com.blockstream.green.data.banner.Banner
 import org.jetbrains.compose.resources.painterResource
 import org.jetbrains.compose.resources.stringResource
 

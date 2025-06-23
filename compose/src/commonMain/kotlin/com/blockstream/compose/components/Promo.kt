@@ -120,19 +120,19 @@ fun Promo(
                 1 -> PromoLayout1(promo, viewModel, painter)
                 2 -> PromoLayout2(promo, viewModel, painter)
             }
-
         }
     }
 }
 
 @Composable
-fun ColumnScope.PromoCta(promo: Promo, viewModel: GreenViewModel) {
+fun ColumnScope.PromoCta(promo: Promo, modifier: Modifier = Modifier, viewModel: GreenViewModel) {
     promo.ctaSmall?.also { ctaSmall ->
         GreenButton(
             text = ctaSmall,
             size = GreenButtonSize.BIG,
             modifier = Modifier.fillMaxWidth()
-                .padding(16.dp)
+                .padding(horizontal = 16.dp).padding(top = 16.dp)
+                .then(modifier)
         ) {
             if (promo.isSmall) {
                 viewModel.postEvent(Events.PromoAction)
@@ -189,7 +189,7 @@ fun BoxScope.PromoLayout0(promo: Promo, viewModel: GreenViewModel, painter: Asyn
             }
         }
 
-        PromoCta(promo, viewModel)
+        PromoCta(promo = promo, viewModel = viewModel)
     }
 }
 
@@ -228,7 +228,7 @@ fun BoxScope.PromoLayout1(promo: Promo, viewModel: GreenViewModel, painter: Asyn
             }
         }
 
-        PromoCta(promo, viewModel)
+        PromoCta(promo = promo, modifier = Modifier.padding(bottom = 16.dp), viewModel = viewModel)
     }
 }
 
@@ -272,6 +272,6 @@ fun BoxScope.PromoLayout2(promo: Promo, viewModel: GreenViewModel, painter: Asyn
 
         GreenSpacer(80)
 
-        PromoCta(promo, viewModel)
+        PromoCta(promo = promo, modifier = Modifier.padding(bottom = 16.dp), viewModel = viewModel)
     }
 }

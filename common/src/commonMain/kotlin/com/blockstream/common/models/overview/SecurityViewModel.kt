@@ -47,7 +47,7 @@ abstract class SecurityViewModelAbstract(
     greenWallet: GreenWallet
 ) : GreenViewModel(greenWalletOrNull = greenWallet) {
 
-    override fun screenName(): String = "Security"
+    override fun screenName(): String = "SecurityTab"
 
     abstract val isHardware: Boolean
     abstract val isJade: StateFlow<Boolean>

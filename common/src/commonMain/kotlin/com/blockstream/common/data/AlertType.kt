@@ -10,7 +10,7 @@ sealed class AlertType {
     data object TestnetWarning : AlertType()
     data object EphemeralBip39 : AlertType()
     data class RecoveryIsUnconfirmed(val withCloseButton: Boolean) : AlertType()
-    data class Banner(val banner: com.blockstream.common.data.Banner) : AlertType()
+    data class Banner(val banner: com.blockstream.green.data.banner.Banner) : AlertType()
     data object FailedNetworkLogin : AlertType()
     data class LspStatus(val maintenance: Boolean) : AlertType()
 }

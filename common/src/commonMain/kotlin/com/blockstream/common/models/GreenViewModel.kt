@@ -16,7 +16,6 @@ import com.blockstream.common.ViewModelView
 import com.blockstream.common.ZendeskSdk
 import com.blockstream.common.crypto.GreenKeystore
 import com.blockstream.common.crypto.PlatformCipher
-import com.blockstream.common.data.Banner
 import com.blockstream.common.data.CredentialType
 import com.blockstream.common.data.DenominatedValue
 import com.blockstream.common.data.Denomination
@@ -67,6 +66,9 @@ import com.blockstream.common.navigation.NavigateDestinations
 import com.blockstream.common.sideeffects.SideEffects
 import com.blockstream.common.utils.StringHolder
 import com.blockstream.common.utils.generateWalletName
+import com.blockstream.domain.banner.GetBannerUseCase
+import com.blockstream.domain.promo.GetPromoUseCase
+import com.blockstream.green.data.banner.Banner
 import com.blockstream.green.data.config.AppInfo
 import com.blockstream.green.utils.Loggable
 import com.blockstream.jade.firmware.FirmwareInteraction
@@ -137,6 +139,8 @@ open class GreenViewModel constructor(
     protected val promoManager: PromoManager by inject()
     val sessionManager: SessionManager by inject()
     val settingsManager: SettingsManager by inject()
+    protected val getBannerUseCase: GetBannerUseCase by inject()
+    protected val getPromoUseCase: GetPromoUseCase by inject()
     protected val applicationScope: ApplicationScope by inject()
     protected val greenKeystore: GreenKeystore by inject()
     val zendeskSdk: ZendeskSdk by inject()
@@ -346,53 +350,19 @@ open class GreenViewModel constructor(
 
     private fun initBanner() {
         countly.remoteConfigUpdateEvent.onEach {
-            val oldBanner = banner.value
-            countly.getRemoteConfigValueForBanners()
-                // Filter
-                ?.filter {
-                    // Filter closed banners
-                    !closedBanners.contains(it) &&
-
-                            // Filter networks
-                            (!it.hasNetworks || ((it.networks
-                                ?: listOf()).intersect((sessionOrNull?.activeSessions?.map { it.network }
-                                ?: setOf()).toSet()).isNotEmpty())) &&
-
-                            // Filter based on screen name
-                            (it.screens?.contains(screenName()) == true || it.screens?.contains("*") == true)
-                }
-                ?.shuffled()
-                ?.let {
-                    // Search for the already displayed banner, else give priority to those with screen name, else "*"
-                    it.find { it == oldBanner }
-                        ?: it.find { it.screens?.contains(screenName()) == true }
-                        ?: it.firstOrNull()
-                }.also {
-                    // Set banner to ViewModel
-                    banner.value = it
-                }
+            banner.value = getBannerUseCase(
+                screenName = screenName(),
+                banners = countly.getRemoteConfigValueForBanners(),
+                previousBanner = banner.value,
+                excludedBanners = closedBanners,
+                sessionOrNull = sessionOrNull
+            )
         }.launchIn(this)
     }
 
     protected open fun initPromo() {
-        promoManager.promos.onEach { promos ->
-            val oldPromo = promo.value
-
-            promos.filter {
-                // Filter closed promos
-                !settingsManager.isPromoDismissed(it.id) &&
-                        // Filter based on screen name
-                        (it.screens == null || it.screens.contains(screenName()) || it.screens.contains(
-                            "*"
-                        ))
-            }.let {
-                // Search for the already displayed promo, else give priority to those with screen name, else "*"
-                it.find { it == oldPromo } ?: it.find { it.screens?.contains(screenName()) == true }
-                ?: it.firstOrNull()
-            }.also {
-                // Set promo to ViewModel
-                promo.value = it
-            }
+        promoManager.promos.onEach {
+            promo.value = getPromoUseCase(screenName = screenName(), previousPromo = promo.value)
         }.launchIn(this)
     }
 

@@ -170,7 +170,6 @@ kotlin {
             api(libs.okio) // Filesystem
             api(libs.state.keeper)
             api(libs.kase64) // base64
-            api(libs.ksoup.entites) // html entities
             api(libs.kable.core)
             api(libs.kotlincrypto.hash.md)
             api(libs.kotlincrypto.hash.sha2)

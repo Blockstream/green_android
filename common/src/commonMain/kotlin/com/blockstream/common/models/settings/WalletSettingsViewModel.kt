@@ -113,7 +113,7 @@ abstract class WalletSettingsViewModelAbstract(
         WalletSettingsSection.ChangePin -> "WalletSettingsChangePIN"
         WalletSettingsSection.RecoveryTransactions -> "WalletSettingsRecoveryTransactions"
         WalletSettingsSection.TwoFactor -> "WalletSettings2FA"
-        else -> "WalletSettings"
+        else -> "WalletSettingsTab"
     }
 
     @NativeCoroutinesState

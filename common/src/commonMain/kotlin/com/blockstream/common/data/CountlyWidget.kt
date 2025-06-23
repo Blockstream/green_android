@@ -1,7 +1,7 @@
 package com.blockstream.common.data
 
 import com.blockstream.common.gdk.GreenJson
-import com.blockstream.common.serializers.HtmlEntitiesSerializer
+import com.blockstream.green.data.serializers.HtmlEntitiesSerializer
 import kotlinx.serialization.SerialName
 import kotlinx.serialization.Serializable
 import kotlinx.serialization.Transient

@@ -1,7 +1,6 @@
-package com.blockstream.common.data
+package com.blockstream.green.data.banner
 
-import com.blockstream.common.gdk.GreenJson
-import com.blockstream.common.serializers.HtmlEntitiesSerializer
+import com.blockstream.green.data.serializers.HtmlEntitiesSerializer
 import kotlinx.serialization.SerialName
 import kotlinx.serialization.Serializable
 
@@ -22,24 +21,19 @@ data class Banner(
     @SerialName("screens")
     val screens: List<String>? = null,
     @SerialName("networks")
-    val networks: List<String>? = null,
-) : GreenJson<Banner>() {
-    override fun kSerializer() = serializer()
+    val networks: List<String>? = null
+) {
 
     val hasNetworks: Boolean
         get() = networks != null
 
     companion object {
         val preview1 = Banner(
-            title = "Lorem Ipsum",
-            message = "Lorem ipsum dolor",
-            dismissable = true
+            title = "Lorem Ipsum", message = "Lorem ipsum dolor", dismissable = true
         )
 
         val preview2 = Banner(
-            title = "Lorem Ipsum &amp;&amp;",
-            message = "Lorem ipsum dolor sit amet, consectetur adipiscing elit.",
-            isWarning = true
+            title = "Lorem Ipsum &amp;&amp;", message = "Lorem ipsum dolor sit amet, consectetur adipiscing elit.", isWarning = true
         )
 
         val preview3 = Banner(

@@ -1,4 +1,4 @@
-package com.blockstream.common.serializers
+package com.blockstream.green.data.serializers
 
 import com.mohamedrejeb.ksoup.entities.KsoupEntities
 import kotlinx.serialization.KSerializer
@@ -13,4 +13,3 @@ object HtmlEntitiesSerializer : KSerializer<String> {
     override fun serialize(encoder: Encoder, value: String) = encoder.encodeString(KsoupEntities.encodeHtml((value)))
     override fun deserialize(decoder: Decoder): String = KsoupEntities.decodeHtml(decoder.decodeString())
 }
-

@@ -26,7 +26,7 @@ abstract class TransactViewModelAbstract(
     greenWallet: GreenWallet
 ) : WalletBalanceViewModel(greenWallet = greenWallet) {
 
-    override fun screenName(): String = "Transact"
+    override fun screenName(): String = "TransactTab"
 
     @NativeCoroutinesState
     abstract val transactions: StateFlow<DataState<List<TransactionLook>>>

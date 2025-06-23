@@ -1,7 +1,7 @@
 package com.blockstream.common.data
 
 import com.blockstream.common.gdk.GreenJson
-import com.blockstream.common.serializers.HtmlEntitiesSerializer
+import com.blockstream.green.data.serializers.HtmlEntitiesSerializer
 import kotlinx.serialization.KSerializer
 import kotlinx.serialization.SerialName
 import kotlinx.serialization.Serializable
@@ -41,6 +41,8 @@ data class Promo(
     val layoutSmall: Int = 0,
     @SerialName("layout_large")
     val layoutLarge: Int = 0,
+    @SerialName("target")
+    val target: String? = null,
 
     @Serializable(with = HtmlEntitiesSerializer::class)
     val title: String? = null,

@@ -12,7 +12,6 @@ import com.blockstream.common.AddressInputType
 import com.blockstream.common.BTC_POLICY_ASSET
 import com.blockstream.common.TransactionSegmentation
 import com.blockstream.common.TransactionType
-import com.blockstream.common.data.Banner
 import com.blockstream.common.data.DenominatedValue
 import com.blockstream.common.data.Denomination
 import com.blockstream.common.data.ExceptionWithSupportData
@@ -48,6 +47,7 @@ import com.blockstream.common.utils.feeRateWithUnit
 import com.blockstream.common.utils.getStringFromId
 import com.blockstream.common.utils.ifNotNull
 import com.blockstream.common.utils.toAmountLook
+import com.blockstream.green.data.banner.Banner
 import com.blockstream.green.utils.Loggable
 import com.blockstream.ui.events.Event
 import com.blockstream.ui.navigation.NavAction
