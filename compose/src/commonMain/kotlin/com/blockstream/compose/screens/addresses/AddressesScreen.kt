@@ -41,6 +41,7 @@ import blockstream_green.common.generated.resources.signature
 import com.adamglin.PhosphorIcons
 import com.adamglin.phosphoricons.Regular
 import com.adamglin.phosphoricons.regular.Copy
+import com.blockstream.common.data.GreenWallet
 import com.blockstream.common.looks.account.AddressLook
 import com.blockstream.common.models.addresses.AddressesViewModel
 import com.blockstream.common.models.addresses.AddressesViewModelAbstract
@@ -60,6 +61,7 @@ import com.blockstream.compose.theme.whiteMedium
 import com.blockstream.compose.utils.SetupScreen
 import com.blockstream.ui.components.GreenColumn
 import com.blockstream.ui.components.GreenRow
+import com.blockstream.ui.navigation.getResult
 import com.blockstream.ui.utils.reachedBottom
 import org.jetbrains.compose.resources.painterResource
 import org.jetbrains.compose.resources.stringResource
@@ -80,6 +82,10 @@ fun AddressesScreen(
         if (reachedBottom && hasMore) {
             viewModel.postEvent(AddressesViewModel.LocalEvents.LoadMore)
         }
+    }
+
+    NavigateDestinations.Login.getResult<GreenWallet> {
+        viewModel.executePendingAction()
     }
 
     SetupScreen(viewModel = viewModel, withPadding = false) {
@@ -151,13 +157,22 @@ fun AddressesScreen(
                                 )
                             }, onSignatureClick = if (viewModel.canSign) {
                                 {
-                                    viewModel.postEvent(
-                                        NavigateDestinations.SignMessage(
-                                            greenWallet = viewModel.greenWallet,
-                                            accountAsset = viewModel.accountAsset.value!!,
-                                            address = address.address
+                                    if (viewModel.isHwWatchOnly.value) {
+                                        viewModel.postEvent(
+                                            NavigateDestinations.DeviceScan(
+                                                greenWallet = viewModel.greenWallet,
+                                                isWatchOnlyUpgrade = true
+                                            )
                                         )
-                                    )
+                                    } else {
+                                        viewModel.postEvent(
+                                            NavigateDestinations.SignMessage(
+                                                greenWallet = viewModel.greenWallet,
+                                                accountAsset = viewModel.accountAsset.value!!,
+                                                address = address.address
+                                            )
+                                        )
+                                    }
                                 }
                             } else null)
                     }

@@ -108,7 +108,6 @@ fun SecurityScreen(viewModel: SecurityViewModelAbstract) {
 
     val isWatchOnly by viewModel.isWatchOnly.collectAsStateWithLifecycle()
     val showGenuineCheck by viewModel.showGenuineCheck.collectAsStateWithLifecycle()
-    val isHwWatchOnly by viewModel.isHwWatchOnly.collectAsStateWithLifecycle()
 
     SetupScreen(
         viewModel = viewModel,

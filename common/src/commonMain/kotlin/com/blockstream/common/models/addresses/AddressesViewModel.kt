@@ -9,6 +9,7 @@ import com.blockstream.common.extensions.previewWallet
 import com.blockstream.common.gdk.data.AccountAsset
 import com.blockstream.common.looks.account.AddressLook
 import com.blockstream.common.models.GreenViewModel
+import com.blockstream.common.navigation.NavigateDestinations
 import com.blockstream.common.sideeffects.SideEffects
 import com.blockstream.ui.events.Event
 import com.blockstream.ui.navigation.NavData
@@ -21,7 +22,13 @@ import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.flow.map
+import kotlinx.serialization.Serializable
 import org.jetbrains.compose.resources.getString
+
+@Serializable
+sealed class PendingAction {
+    data class SignAddress(val address: String) : PendingAction()
+}
 
 abstract class AddressesViewModelAbstract(greenWallet: GreenWallet, accountAsset: AccountAsset) :
     GreenViewModel(greenWalletOrNull = greenWallet, accountAssetOrNull = accountAsset) {
@@ -37,6 +44,22 @@ abstract class AddressesViewModelAbstract(greenWallet: GreenWallet, accountAsset
     abstract val hasMore: StateFlow<Boolean>
 
     abstract val canSign: Boolean
+
+    private var pendingAction: PendingAction? = null
+
+    fun executePendingAction() {
+        if (!isHwWatchOnly.value) {
+            (pendingAction as? PendingAction.SignAddress)?.also {
+                postEvent(
+                    NavigateDestinations.SignMessage(
+                        greenWallet = greenWallet,
+                        accountAsset = accountAsset.value!!,
+                        address = it.address
+                    )
+                )
+            }
+        }
+    }
 }
 
 class AddressesViewModel(greenWallet: GreenWallet, accountAsset: AccountAsset) :
