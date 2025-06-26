@@ -82,9 +82,6 @@ abstract class WalletOverviewViewModelAbstract(
     abstract val archivedAccounts: StateFlow<Int>
 
     @NativeCoroutinesState
-    abstract val showHardwareTransferFunds: StateFlow<Boolean>
-
-    @NativeCoroutinesState
     abstract val bitcoinChartData: StateFlow<DataState<BitcoinChartData>?>
 
     abstract fun refetchBitcoinPriceHistory()
@@ -265,11 +262,6 @@ class WalletOverviewViewModel(
     override val archivedAccounts: StateFlow<Int> = session.allAccounts.map {
         it.filter { it.hidden && it.hasHistory(session) }.size
     }.stateIn(viewModelScope, SharingStarted.WhileSubscribed(5000L), 0)
-
-    override val showHardwareTransferFunds = _transaction.map {
-        // Turn it off until we have the url
-        false && sessionOrNull?.isHardwareWallet == true && (it is DataState.Success && it.data == null) && database.getWallets(isHardware = false).size > 1
-    }.stateIn(viewModelScope, SharingStarted.WhileSubscribed(5000L), false)
 
     override val bitcoinChartData = observeBitcoinPriceHistory.observe()
         .stateIn(viewModelScope, SharingStarted.WhileSubscribed(5000L), null)
@@ -468,8 +460,6 @@ class WalletOverviewViewModelPreview(val isEmpty: Boolean = false, val isHardwar
     )
 
     override val archivedAccounts: StateFlow<Int> = MutableStateFlow(1)
-
-    override val showHardwareTransferFunds: StateFlow<Boolean> = MutableStateFlow(true)
 
     override val bitcoinChartData: StateFlow<DataState<BitcoinChartData>?> = MutableStateFlow(
         null

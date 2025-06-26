@@ -29,9 +29,6 @@ import blockstream_green.common.generated.resources.Res
 import blockstream_green.common.generated.resources.id_assets
 import blockstream_green.common.generated.resources.id_bitcoin_price
 import blockstream_green.common.generated.resources.id_continue
-import blockstream_green.common.generated.resources.id_learn_more
-import blockstream_green.common.generated.resources.id_transfer_your_funds
-import blockstream_green.common.generated.resources.id_transfer_your_funds_from_your_old_wallet
 import blockstream_green.common.generated.resources.id_welcome_to_blockstream
 import blockstream_green.common.generated.resources.id_you_dont_have_any_assets_yet
 import blockstream_green.common.generated.resources.id_your_wallet_has_been_created
@@ -185,7 +182,6 @@ fun WalletOverviewScreen(
             val isWalletOnboarding by viewModel.showWalletOnboarding.collectAsStateWithLifecycle()
             val alerts by viewModel.alerts.collectAsStateWithLifecycle()
             val assets by viewModel.assets.collectAsStateWithLifecycle()
-            val showHardwareTransferFunds by viewModel.showHardwareTransferFunds.collectAsStateWithLifecycle()
             val innerPadding = LocalInnerPadding.current
 
             val listState = rememberLazyListState()
@@ -222,53 +218,41 @@ fun WalletOverviewScreen(
                         ListHeader(title = stringResource(Res.string.id_assets))
                     }
 
-                    if (showHardwareTransferFunds) {
-                        item(key = "HardwareTransferFunds") {
-                            GreenAlert(
-                                title = stringResource(Res.string.id_transfer_your_funds),
-                                message = stringResource(Res.string.id_transfer_your_funds_from_your_old_wallet),
-                                isBlue = true,
-                                primaryButton = stringResource(Res.string.id_learn_more),
-                                onPrimaryClick = {
-
-                                }
+                    
+                    if (assets.isLoading()) {
+                        item(key = "AssetsLoading") {
+                            LinearProgressIndicator(
+                                modifier = Modifier
+                                    .height(1.dp)
+                                    .padding(horizontal = 32.dp)
+                                    .fillMaxWidth()
                             )
                         }
-                    } else {
-                        if (assets.isLoading()) {
-                            item(key = "AssetsLoading") {
-                                LinearProgressIndicator(
-                                    modifier = Modifier
-                                        .height(1.dp)
-                                        .padding(horizontal = 32.dp)
-                                        .fillMaxWidth()
-                                )
-                            }
-                        } else if (assets.isNotEmpty()) {
-                            itemsSpaced(assets.data() ?: emptyList()) { asset ->
-                                GreenAsset(
-                                    assetBalance = asset,
-                                    session = viewModel.sessionOrNull
-                                ) {
-                                    viewModel.openAssetAccounts(asset.asset)
-                                }
-                            }
-                        } else {
-                            item(key = "AssetsEmpty") {
-                                Text(
-                                    text = stringResource(Res.string.id_you_dont_have_any_assets_yet),
-                                    style = bodyMedium,
-                                    textAlign = TextAlign.Center,
-                                    fontStyle = FontStyle.Italic,
-                                    color = whiteMedium,
-                                    modifier = Modifier
-                                        .fillMaxWidth()
-                                        .padding(vertical = 24.dp)
-                                        .padding(horizontal = 16.dp)
-                                )
+                    } else if (assets.isNotEmpty()) {
+                        itemsSpaced(assets.data() ?: emptyList()) { asset ->
+                            GreenAsset(
+                                assetBalance = asset,
+                                session = viewModel.sessionOrNull
+                            ) {
+                                viewModel.openAssetAccounts(asset.asset)
                             }
                         }
+                    } else {
+                        item(key = "AssetsEmpty") {
+                            Text(
+                                text = stringResource(Res.string.id_you_dont_have_any_assets_yet),
+                                style = bodyMedium,
+                                textAlign = TextAlign.Center,
+                                fontStyle = FontStyle.Italic,
+                                color = whiteMedium,
+                                modifier = Modifier
+                                    .fillMaxWidth()
+                                    .padding(vertical = 24.dp)
+                                    .padding(horizontal = 16.dp)
+                            )
+                        }
                     }
+
 
                     item(key = "BitcoinPrice") {
                         ListHeader(title = stringResource(Res.string.id_bitcoin_price))
