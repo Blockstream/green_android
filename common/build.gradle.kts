@@ -268,20 +268,21 @@ task("useBlockstreamKeys") {
     }
 }
 
-tasks.register("appKeys") {
-    doLast {
-        val appKeys = project.file("src/commonMain/composeResources/files/app_keys.txt")
-        if (appKeys.exists()) {
-            println("AppKeys: ✔")
-        } else {
-            println("AppKeys: Use empty key file")
-            appKeys.createNewFile()
-        }
-    }
-    outputs.upToDateWhen { false }
-}
-
-tasks.getByName("androidPreBuild").dependsOn(tasks.getByName("appKeys"))
+// Made the app work without app_keys.txt
+//tasks.register("appKeys") {
+//    doLast {
+//        val appKeys = project.file("src/commonMain/composeResources/files/app_keys.txt")
+//        if (appKeys.exists()) {
+//            println("AppKeys: ✔")
+//        } else {
+//            println("AppKeys: Use empty key file")
+//            appKeys.createNewFile()
+//        }
+//    }
+//    outputs.upToDateWhen { false }
+//}
+//
+// tasks.getByName("androidPreBuild").dependsOn(tasks.getByName("appKeys"))
 
 tasks.getByName("clean").doFirst {
     delete(project.file("src/include"))

@@ -174,8 +174,7 @@ production_fdroid:
   script:
     - cd $CI_PROJECT_DIR
     - echo $ANDROID_KEYSTORE_BASE64 | base64 -d > keystore.jks
-    - ./prepare_fdroid.sh
-    - ./gradlew useBlockstreamKeys
+#    - ./prepare_fdroid.sh
     - ./gradlew assembleProductionFDroidRelease
 
 development:

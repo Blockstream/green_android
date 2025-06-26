@@ -27,9 +27,11 @@ data class AppConfig(
             storeRateEnabled: Boolean
         ): AppConfig {
             val appKeys: AppKeys? = runBlocking {
-                Res.readBytes("files/app_keys.txt").commonToUtf8String().let {
-                    AppKeys.fromText(it)
-                }
+                runCatching {
+                    Res.readBytes("files/app_keys.txt").commonToUtf8String().let {
+                        AppKeys.fromText(it)
+                    }
+                }.getOrNull()
             }
 
             if (lightningFeatureEnabled && (appKeys?.greenlightCert == null || appKeys.greenlightKey == null || appKeys.breezApiKey == null)) {
