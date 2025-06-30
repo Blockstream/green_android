@@ -402,17 +402,17 @@ class EnterRecoveryPhraseViewModel(setupArgs: SetupArgs, stateKeeper: StateKeepe
             return
         }
 
-        val biometricsCipherProvider = viewModelScope.coroutineScope.async(
-            start = CoroutineStart.LAZY
-        ) {
-            CompletableDeferred<PlatformCipher>().let {
-                biometricsPlatformCipher = it
-                postSideEffect(SideEffects.RequestBiometricsCipher)
-                it.await()
-            }
-        }
-
         doAsync({
+            val biometricsCipherProvider = viewModelScope.coroutineScope.async(
+                start = CoroutineStart.LAZY
+            ) {
+                CompletableDeferred<PlatformCipher>().let {
+                    biometricsPlatformCipher = it
+                    postSideEffect(SideEffects.RequestBiometricsCipher)
+                    it.await()
+                }
+            }
+
             onProgressDescription.value = getString(Res.string.id_recovery_phrase_check)
 
             checkRecoveryPhraseUseCase.invoke(

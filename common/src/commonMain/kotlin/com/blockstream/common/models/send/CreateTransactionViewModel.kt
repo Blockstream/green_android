@@ -15,6 +15,7 @@ import com.blockstream.common.data.SupportData
 import com.blockstream.common.extensions.ifConnected
 import com.blockstream.common.extensions.isNotBlank
 import com.blockstream.common.extensions.launchIn
+import com.blockstream.common.extensions.tryCatch
 import com.blockstream.common.gdk.FeeBlockHigh
 import com.blockstream.common.gdk.FeeBlockLow
 import com.blockstream.common.gdk.FeeBlockMedium
@@ -151,7 +152,7 @@ abstract class CreateTransactionViewModelAbstract(
                 if (it == null) {
                     _feeEstimation.value = null
                 } else {
-                    _feeEstimation.value = session.getFeeEstimates(it).fees
+                    _feeEstimation.value = tryCatch { session.getFeeEstimates(it).fees }
                     _customFeeRate.value = ((_feeEstimation.value?.firstOrNull()
                         ?: it.defaultFee) / 1000.0)
                 }
