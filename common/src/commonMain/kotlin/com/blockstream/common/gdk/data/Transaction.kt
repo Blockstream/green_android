@@ -8,10 +8,10 @@ import com.blockstream.common.gdk.GdkSession
 import com.blockstream.common.gdk.GreenJson
 import com.blockstream.common.utils.StringHolder
 import com.blockstream.common.utils.toAmountLookOrNa
-import kotlinx.datetime.Instant
 import kotlinx.serialization.SerialName
 import kotlinx.serialization.Serializable
 import kotlin.math.absoluteValue
+import kotlin.time.Instant
 
 @Serializable
 data class Transaction constructor(

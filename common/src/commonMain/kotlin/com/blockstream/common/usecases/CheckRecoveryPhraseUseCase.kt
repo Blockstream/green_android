@@ -15,7 +15,7 @@ class CheckRecoveryPhraseUseCase(
         mnemonic: String,
         password: String?,
         greenWallet: GreenWallet? = null,
-    ): Unit {
+    ) {
 
         session.loginWithMnemonic(
             isTestnet = isTestnet,

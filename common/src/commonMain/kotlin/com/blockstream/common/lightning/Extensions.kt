@@ -32,12 +32,12 @@ import com.blockstream.common.gdk.data.InputOutput
 import com.blockstream.common.gdk.data.Output
 import com.blockstream.common.gdk.data.Transaction
 import com.blockstream.common.utils.hostname
-import kotlinx.datetime.Clock
-import kotlinx.datetime.Instant
 import kotlinx.datetime.TimeZone
 import kotlinx.datetime.periodUntil
 import kotlinx.serialization.json.Json
 import kotlin.io.encoding.Base64
+import kotlin.time.Clock
+import kotlin.time.Instant
 
 fun Long.milliSatoshi(): ULong = (this * 1000).toULong()
 

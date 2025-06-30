@@ -20,10 +20,10 @@ import com.rickclephas.kmp.observableviewmodel.launch
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.flow.onEach
-import kotlinx.datetime.Clock
 import kotlinx.datetime.TimeZone
 import kotlinx.datetime.toLocalDateTime
 import org.koin.core.component.inject
+import kotlin.time.Clock
 
 abstract class AboutViewModelAbstract : GreenViewModel() {
     abstract val year: String

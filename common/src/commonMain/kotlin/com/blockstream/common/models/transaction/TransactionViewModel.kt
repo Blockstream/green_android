@@ -43,11 +43,11 @@ import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.flow.filterNotNull
 import kotlinx.coroutines.flow.launchIn
 import kotlinx.coroutines.flow.onEach
-import kotlinx.datetime.Clock
 import kotlinx.serialization.json.Json
 import kotlinx.serialization.json.jsonArray
 import kotlinx.serialization.json.jsonObject
 import org.jetbrains.compose.resources.getString
+import kotlin.time.Clock
 
 abstract class TransactionViewModelAbstract(
     accountAssetOrNull: AccountAsset? = null,

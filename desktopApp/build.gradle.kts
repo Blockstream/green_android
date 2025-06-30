@@ -1,13 +1,12 @@
 
 import org.jetbrains.compose.desktop.application.dsl.TargetFormat
-import org.jetbrains.compose.reload.ComposeHotRun
-import org.jetbrains.kotlin.compose.compiler.gradle.ComposeFeatureFlag
+import org.jetbrains.compose.reload.gradle.ComposeHotRun
 
 plugins {
     alias(libs.plugins.kotlinMultiplatform)
     alias(libs.plugins.jetbrainsCompose)
     alias(libs.plugins.compose.compiler)
-    alias(libs.plugins.composeHotReload)
+    alias(libs.plugins.compose.hotReload)
 }
 
 kotlin {
@@ -20,10 +19,6 @@ kotlin {
             }
         }
     }
-}
-
-composeCompiler {
-    featureFlags.add(ComposeFeatureFlag.OptimizeNonSkippingGroups)
 }
 
 compose.desktop {
@@ -43,6 +38,6 @@ compose.desktop {
 }
 
 // build.gradle.kts
-tasks.register<ComposeHotRun>("runHot") {
+tasks.withType<ComposeHotRun>().configureEach {
     mainClass.set("com.blockstream.green.desktop.DevMainKt")
 }

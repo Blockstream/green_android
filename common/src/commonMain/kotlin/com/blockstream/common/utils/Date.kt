@@ -1,8 +1,8 @@
 package com.blockstream.common.utils
 
-import kotlinx.datetime.Clock
-import kotlinx.datetime.Instant
+import kotlin.time.Clock
 import kotlin.time.DurationUnit
+import kotlin.time.Instant
 import kotlin.time.toDuration
 
 expect fun Instant.formatMediumOnlyDate(): String

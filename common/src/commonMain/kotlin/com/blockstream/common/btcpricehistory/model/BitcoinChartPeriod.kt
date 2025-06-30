@@ -1,6 +1,6 @@
 package com.blockstream.common.btcpricehistory.model
 
-import kotlinx.datetime.Clock
+import kotlin.time.Clock
 import kotlin.time.Duration.Companion.days
 
 enum class BitcoinChartPeriod(val label: String, val days: Int) {

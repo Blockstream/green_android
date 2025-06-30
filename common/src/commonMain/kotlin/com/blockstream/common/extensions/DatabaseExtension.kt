@@ -9,7 +9,7 @@ import com.blockstream.common.data.toRichWatchOnly
 import com.blockstream.common.database.wallet.LoginCredentials
 import com.blockstream.common.gdk.data.PinData
 import com.blockstream.common.utils.getSecureRandom
-import kotlinx.datetime.Clock
+import kotlin.time.Clock
 
 fun createLoginCredentials(
     walletId: String,

@@ -17,8 +17,8 @@ import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.launchIn
 import kotlinx.coroutines.flow.onEach
-import kotlinx.datetime.Clock
 import kotlin.properties.Delegates
+import kotlin.time.Clock
 
 enum class DeviceState {
     CONNECTED, DISCONNECTED

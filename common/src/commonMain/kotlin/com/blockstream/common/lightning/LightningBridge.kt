@@ -74,8 +74,8 @@ import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.asSharedFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.withTimeout
-import kotlinx.datetime.Clock
 import okio.Path.Companion.toPath
+import kotlin.time.Clock
 
 class LightningBridge constructor(
     private val appInfo: AppInfo,

@@ -1,8 +1,8 @@
 package com.blockstream.common.utils
 
-import kotlinx.datetime.Instant
 import java.text.DateFormat
 import java.util.Date
+import kotlin.time.Instant
 
 private fun Instant.toDate() = Date(toEpochMilliseconds())
 

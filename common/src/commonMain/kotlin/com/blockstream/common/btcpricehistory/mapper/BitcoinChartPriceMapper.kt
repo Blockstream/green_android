@@ -4,7 +4,7 @@ import com.blockstream.common.btcpricehistory.model.BitcoinChartData
 import com.blockstream.common.btcpricehistory.model.BitcoinChartPeriod
 import com.blockstream.common.btcpricehistory.model.NetworkBitcoinPriceData
 import com.blockstream.common.btcpricehistory.model.timeAgoInMillis
-import kotlinx.datetime.Clock
+import kotlin.time.Clock
 
 fun NetworkBitcoinPriceData.asChartData(): BitcoinChartData {
     val data = this

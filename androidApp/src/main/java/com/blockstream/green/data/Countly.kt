@@ -17,7 +17,6 @@ import com.blockstream.green.data.config.AppInfo
 import com.blockstream.green.utils.Loggable
 import com.blockstream.green.utils.isDevelopmentOrDebug
 import com.blockstream.green.utils.isProductionFlavor
-import kotlinx.datetime.Clock
 import ly.count.android.sdk.Countly
 import ly.count.android.sdk.CountlyConfig
 import ly.count.android.sdk.ModuleAPM
@@ -31,6 +30,7 @@ import ly.count.android.sdk.ModuleRemoteConfig
 import ly.count.android.sdk.ModuleRequestQueue
 import ly.count.android.sdk.ModuleUserProfile
 import ly.count.android.sdk.ModuleViews
+import kotlin.time.Clock
 import kotlin.time.DurationUnit
 import kotlin.time.toDuration
 

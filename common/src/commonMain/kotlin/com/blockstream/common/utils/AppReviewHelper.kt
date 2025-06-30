@@ -2,9 +2,9 @@ package com.blockstream.common.utils
 
 import com.blockstream.common.CountlyBase
 import com.blockstream.common.managers.SettingsManager
-import kotlinx.datetime.Clock
 import kotlinx.datetime.TimeZone
 import kotlinx.datetime.monthsUntil
+import kotlin.time.Clock
 
 object AppReviewHelper {
     fun shouldAskForReview(

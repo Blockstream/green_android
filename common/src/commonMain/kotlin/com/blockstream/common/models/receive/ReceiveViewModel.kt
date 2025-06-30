@@ -90,10 +90,10 @@ import kotlinx.coroutines.flow.launchIn
 import kotlinx.coroutines.flow.onEach
 import kotlinx.coroutines.sync.Mutex
 import kotlinx.coroutines.withContext
-import kotlinx.datetime.Clock
 import okio.Path.Companion.toPath
 import org.jetbrains.compose.resources.getString
 import org.koin.core.component.inject
+import kotlin.time.Clock
 
 abstract class ReceiveViewModelAbstract(greenWallet: GreenWallet, accountAssetOrNull: AccountAsset?) :
     GreenViewModel(greenWalletOrNull = greenWallet, accountAssetOrNull = accountAssetOrNull) {

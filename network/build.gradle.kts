@@ -4,6 +4,8 @@ plugins {
 }
 
 kotlin {
+    jvmToolchain(libs.versions.jvm.get().toInt())
+
     androidLibrary {
         namespace = "com.blockstream.green.network"
         compileSdk = libs.versions.androidCompileSdk.get().toInt()

@@ -1,3 +1,5 @@
+import org.jetbrains.kotlin.gradle.dsl.JvmTarget
+
 plugins {
     alias(libs.plugins.androidLibrary)
     alias(libs.plugins.kotlinMultiplatform)
@@ -8,10 +10,8 @@ kotlin {
     jvmToolchain(libs.versions.jvm.get().toInt())
 
     androidTarget {
-        compilations.configureEach {
-            kotlinOptions {
-                jvmTarget = JavaVersion.VERSION_17.majorVersion
-            }
+        compilerOptions {
+            jvmTarget.set(JvmTarget.JVM_17)
         }
     }
 
@@ -26,6 +26,7 @@ kotlin {
             languageSettings.apply {
                 optIn("kotlin.io.encoding.ExperimentalEncodingApi")
                 optIn("kotlinx.serialization.ExperimentalSerializationApi")
+                optIn("kotlin.time.ExperimentalTime")
             }
         }
 

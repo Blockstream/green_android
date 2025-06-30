@@ -25,7 +25,7 @@ import com.blockstream.common.looks.transaction.Completed
 import com.blockstream.common.looks.transaction.TransactionLook
 import com.blockstream.common.looks.transaction.TransactionStatus
 import com.blockstream.common.looks.wallet.WalletListLook
-import kotlinx.datetime.Clock
+import kotlin.time.Clock
 
 fun previewWallet(
     isHardware: Boolean = false,

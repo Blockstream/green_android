@@ -1,8 +1,8 @@
 package com.blockstream.common.utils
 
-import kotlinx.datetime.Instant
 import kotlinx.datetime.toNSDate
 import platform.Foundation.NSDateFormatter
+import kotlin.time.Instant
 
 private val MediumOnlyDate by lazy {
     NSDateFormatter().also {

@@ -37,6 +37,7 @@ kotlin {
         all {
             languageSettings.apply {
                 optIn("androidx.compose.material3.ExperimentalMaterial3Api")
+                optIn("kotlin.time.ExperimentalTime")
             }
         }
 

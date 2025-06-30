@@ -24,8 +24,7 @@ plugins {
     alias(libs.plugins.kotlinxSerialization) apply false
     alias(libs.plugins.googleServices) apply false
     alias(libs.plugins.nativeCocoapods) apply false
-    alias(libs.plugins.composeHotReload) apply false
-    id("org.barfuin.gradle.taskinfo") version "2.2.0"
+    alias(libs.plugins.compose.hotReload) apply false
     alias(libs.plugins.android.kotlin.multiplatform.library) apply false
 }
 

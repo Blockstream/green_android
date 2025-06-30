@@ -161,10 +161,6 @@ ksp {
     arg(RoomSchemaArgProvider(File(projectDir, "schemas")))
 }
 
-composeCompiler {
-    enableStrongSkippingMode = true
-}
-
 kotlin {
     jvmToolchain(libs.versions.jvm.get().toInt())
 
@@ -175,6 +171,7 @@ kotlin {
                 optIn("kotlin.io.encoding.ExperimentalEncodingApi")
                 optIn("kotlin.ExperimentalUnsignedTypes")
                 optIn("kotlinx.coroutines.FlowPreview")
+                optIn("kotlin.time.ExperimentalTime")
             }
         }
     }

@@ -1,9 +1,9 @@
 package com.blockstream.common.gdk.events
 
 import com.blockstream.common.gdk.GreenJson
-import kotlinx.datetime.Clock
 import kotlinx.serialization.KSerializer
 import kotlinx.serialization.Serializable
+import kotlin.time.Clock
 
 // deviceId creates uniqueness, else just timestamp can be reversed
 @Serializable

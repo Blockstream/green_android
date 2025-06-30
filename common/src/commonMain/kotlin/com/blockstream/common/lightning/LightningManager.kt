@@ -19,9 +19,9 @@ import kotlinx.coroutines.launch
 import kotlinx.coroutines.sync.Mutex
 import kotlinx.coroutines.sync.withLock
 import kotlinx.coroutines.withContext
-import kotlinx.datetime.Clock
 import okio.Path
 import okio.Path.Companion.toPath
+import kotlin.time.Clock
 
 class LightningManager constructor(
     private val greenlightKeys: GreenlightKeys,

@@ -11,11 +11,11 @@ import com.russhwolf.settings.get
 import com.russhwolf.settings.set
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.asStateFlow
-import kotlinx.datetime.Clock
-import kotlinx.datetime.Instant
 import saschpe.kase64.base64UrlEncoded
 import kotlin.random.Random
 import kotlin.random.nextLong
+import kotlin.time.Clock
+import kotlin.time.Instant
 
 class SettingsManager constructor(
     private val settings: ObservableSettings,
