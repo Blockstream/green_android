@@ -3,7 +3,13 @@ All notable changes to this project will be documented in this file.
 
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/).
 
-## [Unreleased]
+## [5.0.6] - 2025-07-01
+
+#### Fixed
+- Fix F-Droid startup crash
+- Restore wallet from exhausted PIN attempts flow
+- Message signing in hw-wo session
+- Fix crash introduced in 5.0.0
 
 #### Changed
 - Use consistent primary blue color for all notification types
