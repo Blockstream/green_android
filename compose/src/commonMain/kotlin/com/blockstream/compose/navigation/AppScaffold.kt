@@ -24,6 +24,7 @@ import androidx.compose.runtime.derivedStateOf
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
+import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -44,10 +45,13 @@ import com.adamglin.phosphoricons.regular.ArrowsDownUp
 import com.adamglin.phosphoricons.regular.Gear
 import com.adamglin.phosphoricons.regular.House
 import com.adamglin.phosphoricons.regular.ShieldCheck
+import com.blockstream.common.models.MainViewModel
 import com.blockstream.common.navigation.NavigateDestination
 import com.blockstream.common.navigation.NavigateDestinations
+import com.blockstream.common.sideeffects.SideEffects
 import com.blockstream.compose.components.GreenTopAppBar
 import com.blockstream.compose.theme.bodyMedium
+import com.blockstream.compose.utils.HandleSideEffect
 import com.blockstream.ui.navigation.LocalNavigator
 import com.blockstream.ui.navigation.NavData
 import org.jetbrains.compose.resources.StringResource
@@ -93,6 +97,7 @@ val TopLevelRoutes = listOf(
 fun AppScaffold(
     navData: NavData = NavData(),
     snackbarHostState: SnackbarHostState? = null,
+    mainViewModel: MainViewModel,
     navigate: (destination: NavigateDestination) -> Unit = {},
     goBack: () -> Unit = { },
     content: @Composable (PaddingValues) -> Unit
@@ -101,6 +106,7 @@ fun AppScaffold(
     val navBackStackEntry by navigator.currentBackStackEntryAsState()
     val currentDestination = navBackStackEntry?.destination
     val currentBackStack by navigator.currentBackStack.collectAsStateWithLifecycle()
+    val scope = rememberCoroutineScope()
     var showNavigationBar by mutableStateOf(true)
 
     navigator.addOnDestinationChangedListener { _, destination, _ ->
@@ -128,6 +134,28 @@ fun AppScaffold(
             navigator.clearBackStack<NavigateDestinations.Transact>()
             navigator.clearBackStack<NavigateDestinations.Security>()
             navigator.clearBackStack<NavigateDestinations.WalletSettings>()
+        }
+    }
+
+    // Handle side effects from MainViewModel like navigating from handled intent
+    HandleSideEffect(mainViewModel) {
+        if (it is SideEffects.NavigateToTransactTab) {
+            greenWallet?.also {
+                while (navigator.currentBackStack.value.size > 2 && navigator.currentBackStackEntry?.destination?.hasRoute(
+                        NavigateDestinations.Transact::class
+                    ) != true
+                ) {
+                    navigator.navigateUp()
+                }
+
+                if (navigator.currentBackStackEntry?.destination?.hasRoute(NavigateDestinations.Transact::class) != true) {
+                    navigate(
+                        NavigateDestinations.Transact(
+                            greenWallet = it
+                        )
+                    )
+                }
+            }
         }
     }
 

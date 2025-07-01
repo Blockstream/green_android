@@ -36,6 +36,7 @@ import com.blockstream.compose.utils.compatTestTagsAsResourceId
 import com.blockstream.green.data.CountlyAndroid
 import com.blockstream.green.data.config.AppInfo
 import com.blockstream.green.services.TaskService
+import com.blockstream.green.utils.DeepLinkHandler
 import com.blockstream.green.utils.Loggable
 import kotlinx.coroutines.launch
 import kotlinx.serialization.json.Json
@@ -122,8 +123,7 @@ class GreenActivity : AppCompatActivity() {
                         val json = Json.parseToJsonElement(
                             String(
                                 Base64.decode(
-                                    it.getStringExtra(ADD_WALLET)!!,
-                                    Base64.DEFAULT
+                                    it.getStringExtra(ADD_WALLET)!!, Base64.DEFAULT
                                 )!!
                             )
                         )
@@ -196,30 +196,33 @@ class GreenActivity : AppCompatActivity() {
 
     override fun onNewIntent(intent: Intent) {
         super.onNewIntent(intent)
+        logger.d { "onNewIntent called with: ${intent.data}" }
+        setIntent(intent) // Important: Update the activity's intent
         handleIntent(intent)
     }
 
     private fun handleIntent(intent: Intent?) {
-        if (
-            intent?.action == Intent.ACTION_VIEW &&
-            intent.data?.toString()?.let { it.contains("/jade/setup") || it.contains("/j/s") } == true
+        logger.d { "handleIntent called with action: ${intent?.action}, data: ${intent?.data}" }
+
+        // Handle blockstream:// scheme with DeepLinkHandler
+        if (intent?.action == Intent.ACTION_VIEW && intent.data?.scheme == "blockstream") {
+            logger.d { "Handling blockstream:// deep link" }
+            if (DeepLinkHandler.handleDeepLink(intent.data, mainViewModel)) {
+                return
+            }
+        }
+
+        if (intent?.action == Intent.ACTION_VIEW && intent.data?.toString()
+                ?.let { it.contains("/jade/setup") || it.contains("/j/s") } == true
         ) {
             mainViewModel.postEvent(Events.NavigateTo(NavigateDestinations.DeviceList(isJade = true)))
-        } else if (
-            intent?.action == Intent.ACTION_VIEW &&
-            intent.data?.toString()?.contains("/ramps/redirect") == true
-        ) {
-            mainViewModel.postEvent(Events.EventSideEffect(sideEffect = SideEffects.Dialog(message = StringHolder(stringResource = Res.string.id_success))))
         } else if (intent?.action == OPEN_WALLET) {
 
-            intent.getStringExtra(WALLET)
-                ?.let { GreenJson.json.decodeFromString<GreenWallet>(it) }
-                ?.let { wallet ->
-                    mainViewModel.navigate(
-                        wallet = wallet,
-                        deviceId = intent.getStringExtra(DEVICE_ID)
-                    )
-                }
+            intent.getStringExtra(WALLET)?.let { GreenJson.json.decodeFromString<GreenWallet>(it) }?.let { wallet ->
+                mainViewModel.navigate(
+                    wallet = wallet, deviceId = intent.getStringExtra(DEVICE_ID)
+                )
+            }
         } else if (intent?.action == HIDE_AMOUNTS) {
             settingsManager.saveApplicationSettings(
                 settingsManager.getApplicationSettings().copy(hideAmounts = true)

@@ -11,15 +11,10 @@ data class MeldTransaction(
     val status: String,
     val sourceAmount: Double,
     val sourceCurrencyCode: String,
-    val destinationAmount: Double,
-    val destinationCurrencyCode: String,
     val paymentMethodType: String,
     val serviceProvider: String,
-    val serviceTransactionId: String,
     val createdAt: String,
     val updatedAt: String,
-    val countryCode: String,
-    val fiatAmountInUsd: Double,
     val cryptoDetails: MeldCryptoDetails? = null
 )
 

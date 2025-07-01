@@ -10,5 +10,5 @@ data class SessionData(
     val destinationCurrencyCode: String = "BTC",
     val walletAddress: String,
     val serviceProvider: String,
-    val redirectUrl: String = "https://blockstream.com/ramps/redirect",
+    val redirectUrl: String = "https://green-webhooks.blockstream.com/thank-you",
 )

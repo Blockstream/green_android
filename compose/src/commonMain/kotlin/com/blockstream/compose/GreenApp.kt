@@ -50,7 +50,6 @@ import com.blockstream.compose.sideeffects.DialogState
 import com.blockstream.compose.sideeffects.rememberBiometricsState
 import com.blockstream.compose.theme.GreenChrome
 import com.blockstream.compose.theme.GreenTheme
-import com.blockstream.compose.utils.HandleSideEffect
 import com.blockstream.green.data.config.AppInfo
 import com.blockstream.ui.navigation.LocalNavData
 import com.blockstream.ui.navigation.LocalNavigator
@@ -171,6 +170,7 @@ fun GreenApp(mainViewModel: MainViewModel, modifier: Modifier = Modifier) {
                 AppScaffold(
                     navData = navData,
                     snackbarHostState = snackbarHostState,
+                    mainViewModel = mainViewModel,
                     navigate = {
                         navigate(navController, it)
                     },
@@ -193,9 +193,6 @@ fun GreenApp(mainViewModel: MainViewModel, modifier: Modifier = Modifier) {
                         innerPadding = innerPadding,
                         startDestination = NavigateDestinations.Home
                     )
-
-                    // Handle side effects from MainViewModel like navigating from handled intent
-                    HandleSideEffect(mainViewModel)
                 }
             }
         }

@@ -48,6 +48,7 @@ object SideEffects {
         val supportData: SupportData? = null,
     ) : SideEffect
 
+    data object NavigateToTransactTab : SideEffect
     data class NavigateToRoot(val popTo: PopTo? = null) : SideEffect
     object CloseDrawer : SideEffect
     data class TransactionSent(val data: ProcessedTransactionDetails) : SideEffect
