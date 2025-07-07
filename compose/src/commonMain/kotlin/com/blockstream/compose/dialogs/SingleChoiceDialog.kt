@@ -19,6 +19,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.window.Dialog
+import androidx.compose.ui.window.DialogProperties
 import blockstream_green.common.generated.resources.Res
 import blockstream_green.common.generated.resources.id_cancel
 import com.blockstream.compose.components.GreenButton
@@ -36,12 +37,14 @@ fun SingleChoiceDialog(
     message: String? = null,
     items: List<String>,
     checkedItem: Int? = null,
+    dialogProperties: DialogProperties = DialogProperties(),
     onNeutralText: String? = null,
     onNeutralClick: () -> Unit = {},
     onDismissRequest: (position: Int?) -> Unit
 ) {
     var checked by remember { mutableStateOf(checkedItem) }
     Dialog(
+        properties = dialogProperties,
         onDismissRequest = {
             onDismissRequest(null)
         }

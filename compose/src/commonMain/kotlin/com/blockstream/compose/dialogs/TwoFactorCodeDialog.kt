@@ -48,7 +48,7 @@ fun TwoFactorCodeDialog(
         onDismissRequest = {
             onDismissRequest(null, null)
         },
-        properties = DialogProperties(usePlatformDefaultWidth = false),
+        properties = DialogProperties(dismissOnClickOutside = false, usePlatformDefaultWidth = false),
     ) {
         Card(
             modifier = Modifier

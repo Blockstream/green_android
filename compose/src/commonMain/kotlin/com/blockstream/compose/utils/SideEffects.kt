@@ -7,6 +7,7 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.setValue
+import androidx.compose.ui.window.DialogProperties
 import androidx.navigation.NavDestination.Companion.hasRoute
 import androidx.navigation.toRoute
 import blockstream_green.common.generated.resources.Res
@@ -116,7 +117,8 @@ fun HandleSideEffect(
                 title = stringResource(Res.string.id_choose_method_to_authorize_the),
                 items = methods.twoFactorMethodsLocalized().map {
                     stringResource(it)
-                }
+                },
+                dialogProperties = DialogProperties(dismissOnClickOutside = false)
             ) { position ->
                 viewModel.postEvent(Events.SelectTwoFactorMethod(method = position?.let {
                     methods.getOrNull(
