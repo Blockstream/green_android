@@ -79,6 +79,7 @@ fun previewWalletListView(
         title = wallet.name,
         subtitle = if (wallet.isEphemeral) "Jade".takeIf { isHardware }
             ?: wallet.ephemeralBip39Name else "",
+        isWatchOnly = false,
         isConnected = isConnected,
         isLightningShortcutConnected = false,
         icon = wallet.icon

@@ -5,7 +5,6 @@ package com.blockstream.compose.views
 import androidx.compose.foundation.ExperimentalFoundationApi
 import androidx.compose.foundation.combinedClickable
 import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
@@ -29,9 +28,11 @@ import blockstream_green.common.generated.resources.text_aa
 import blockstream_green.common.generated.resources.trash
 import com.adamglin.PhosphorIcons
 import com.adamglin.phosphoricons.Regular
+import com.adamglin.phosphoricons.regular.Binoculars
 import com.adamglin.phosphoricons.regular.CaretRight
 import com.blockstream.common.data.GreenWallet
 import com.blockstream.common.looks.wallet.WalletListLook
+import com.blockstream.compose.GreenPreview
 import com.blockstream.compose.components.GreenCard
 import com.blockstream.compose.components.MenuEntry
 import com.blockstream.compose.components.PopupMenu
@@ -41,18 +42,23 @@ import com.blockstream.compose.theme.titleSmall
 import com.blockstream.compose.theme.whiteLow
 import com.blockstream.compose.theme.whiteMedium
 import com.blockstream.ui.components.GreenCircle
-import com.blockstream.ui.components.GreenSpacer
+import com.blockstream.ui.components.GreenColumn
+import com.blockstream.ui.components.GreenRow
 import org.jetbrains.compose.resources.stringResource
+import org.jetbrains.compose.ui.tooling.preview.Preview
 
 @Composable
 private fun WalletListRow(
     title: String,
     subtitle: String,
+    isWatchOnly: Boolean,
     isConnected: Boolean,
     onClick: () -> Unit = {},
     onLongClick: () -> Unit = {}
 ) {
-    Row(
+    GreenRow(
+        padding = 0,
+        space = 8,
         modifier = Modifier
             .combinedClickable(onClick = {
                 onClick.invoke()
@@ -76,13 +82,18 @@ private fun WalletListRow(
             Text(text = subtitle, style = bodySmall, color = whiteMedium)
         }
 
-        GreenSpacer()
+
+        if (isWatchOnly) {
+            Icon(
+                imageVector = PhosphorIcons.Regular.Binoculars,
+                contentDescription = null,
+                tint = whiteLow
+            )
+        }
 
         if (isConnected) {
             GreenCircle(size = 6)
         }
-
-        GreenSpacer(space = 4)
 
         Icon(
             imageVector = PhosphorIcons.Regular.CaretRight,
@@ -132,6 +143,7 @@ fun WalletListItem(
         WalletListRow(
             title = look.title,
             subtitle = look.subtitle,
+            isWatchOnly = look.isWatchOnly,
             isConnected = look.isConnected,
             onClick = {
                 callbacks.onWalletClick.invoke(look.greenWallet)
@@ -161,6 +173,22 @@ fun WalletListItem(
                     )
                 )
             )
+        }
+    }
+}
+
+@Preview
+@Composable
+fun WalletListItemPreview() {
+    GreenPreview {
+        GreenColumn(space = 4) {
+            WalletListItem(WalletListLook.preview(isConnected = true))
+
+            WalletListItem(WalletListLook.preview(false, false))
+            WalletListItem(WalletListLook.preview(false, true))
+
+            WalletListItem(WalletListLook.preview(true, false))
+            WalletListItem(WalletListLook.preview(true, true))
         }
     }
 }
