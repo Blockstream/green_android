@@ -245,7 +245,7 @@ fun GreenPreview(content: @Composable () -> Unit) {
 
     val dialogState = remember { DialogState() }
     val navController = rememberNavController()
-//    val platformManager = rememberPlatformManager()
+    val platformManager = rememberPlatformManager()
 
     // Coil preview faker
     val previewHandler = AsyncImagePreviewHandler {
@@ -257,7 +257,7 @@ fun GreenPreview(content: @Composable () -> Unit) {
         CompositionLocalProvider(
             LocalDialog provides dialogState,
             LocalNavigator provides navController,
-//            LocalPlatformManager provides platformManager,
+            LocalPlatformManager provides platformManager,
             LocalAsyncImagePreviewHandler provides previewHandler
         ) {
             DialogHost(state = dialogState)

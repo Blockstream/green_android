@@ -46,6 +46,7 @@ import com.arkivanov.essenty.statekeeper.StateKeeper
 import com.arkivanov.essenty.statekeeper.stateKeeper
 import com.blockstream.common.events.Events
 import com.blockstream.common.extensions.logException
+import com.blockstream.common.extensions.tryCatchNull
 import com.blockstream.common.managers.BluetoothManager
 import com.blockstream.common.managers.BluetoothManager.Companion.BLE_PERMISSIONS
 import com.blockstream.common.models.GreenViewModel
@@ -70,6 +71,7 @@ import okio.Source
 import okio.source
 import org.jetbrains.compose.resources.getString
 import org.koin.compose.koinInject
+import org.koin.mp.KoinPlatform
 import java.io.ByteArrayOutputStream
 import java.io.File
 
@@ -78,7 +80,7 @@ actual fun rememberPlatformManager(): PlatformManager {
     val context = LocalContext.current
     val activity = LocalActivity.current as? FragmentActivity
     val appInfo = koinInject<AppInfo>()
-    val bluetoothManager = koinInject<BluetoothManager?>()
+    val bluetoothManager = tryCatchNull { KoinPlatform.getKoin().getOrNull<BluetoothManager>() }
 
     return remember {
         PlatformManager(context, activity, bluetoothManager, appInfo)

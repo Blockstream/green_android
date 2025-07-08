@@ -16,7 +16,6 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
@@ -28,7 +27,9 @@ import blockstream_green.common.generated.resources.id_navigate_on_your_hardware
 import blockstream_green.common.generated.resources.id_navigate_on_your_jade_to_options
 import com.blockstream.common.models.devices.ImportPubKeyViewModel
 import com.blockstream.common.models.devices.ImportPubKeyViewModelAbstract
+import com.blockstream.common.models.devices.ImportPubKeyViewModelPreview
 import com.blockstream.common.navigation.NavigateDestinations
+import com.blockstream.compose.GreenPreview
 import com.blockstream.compose.components.GreenButton
 import com.blockstream.compose.components.GreenButtonSize
 import com.blockstream.compose.components.GreenButtonType
@@ -41,6 +42,7 @@ import com.blockstream.ui.components.GreenColumn
 import com.blockstream.ui.navigation.getResult
 import org.jetbrains.compose.resources.painterResource
 import org.jetbrains.compose.resources.stringResource
+import org.jetbrains.compose.ui.tooling.preview.Preview
 
 @Composable
 fun ImportPubKeyScreen(
@@ -71,7 +73,7 @@ fun ImportPubKeyScreen(
     SetupScreen(viewModel = viewModel) {
 
         Column(
-            modifier = Modifier.weight(1f),
+            modifier = Modifier.weight(2f),
             horizontalAlignment = Alignment.CenterHorizontally
         ) {
 
@@ -79,7 +81,6 @@ fun ImportPubKeyScreen(
                 Image(
                     painter = painterResource(deviceModel.icon()),
                     contentDescription = null,
-                    contentScale = ContentScale.FillBounds,
                     modifier = Modifier.align(Alignment.Center)
                 )
             }
@@ -144,5 +145,13 @@ fun ImportPubKeyScreen(
                 }
             }
         }
+    }
+}
+
+@Composable
+@Preview
+fun ImportPubKeyScreenPreview() {
+    GreenPreview {
+        ImportPubKeyScreen(ImportPubKeyViewModelPreview())
     }
 }
