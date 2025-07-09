@@ -153,18 +153,22 @@ fun ReceiveScreen(
     val platformManager = rememberPlatformManager()
 
     NavigateDestinations.Menu.getResult<Int> {
-        scope.launch {
-            val qrCode: Painter = QrCodePainter(
-                data = receiveAddressUri ?: "",
-            )
+        if (it == 0) {
+            scope.launch {
+                viewModel.postEvent(ReceiveViewModel.LocalEvents.ShareAddress)
+            }
+        } else {
+            scope.launch {
+                runCatching {
+                    val qrCode: Painter = QrCodePainter(
+                        data = receiveAddressUri ?: "",
+                    )
 
-            viewModel.postEvent(
-                if (it == 0) ReceiveViewModel.LocalEvents.ShareAddress else ReceiveViewModel.LocalEvents.ShareQR(
-                    qrCode.toByteArray(800, 800).let {
-                        platformManager.processQr(it, receiveAddressUri ?: "")
-                    }
-                )
-            )
+                    val data = qrCode.toByteArray(800, 800).let { platformManager.processQr(it, receiveAddressUri ?: "") }
+
+                    viewModel.postEvent(event = ReceiveViewModel.LocalEvents.ShareQR(data = data))
+                }
+            }
         }
     }
 
