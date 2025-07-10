@@ -8,12 +8,13 @@ import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import blockstream_green.common.generated.resources.Res
 import blockstream_green.common.generated.resources.id_learn_more
-import blockstream_green.common.generated.resources.warning
+import com.adamglin.PhosphorIcons
+import com.adamglin.phosphoricons.Regular
+import com.adamglin.phosphoricons.regular.Warning
 import com.blockstream.common.events.Events
 import com.blockstream.common.models.GreenViewModel
 import com.blockstream.compose.utils.AnimatedNullableVisibility
 import com.blockstream.green.data.banner.Banner
-import org.jetbrains.compose.resources.painterResource
 import org.jetbrains.compose.resources.stringResource
 
 @Composable
@@ -45,7 +46,7 @@ fun Banner(
         title = banner.title,
         message = banner.message,
         maxLines = 5,
-        icon = if (banner.isWarning) painterResource(Res.drawable.warning) else null,
+        icon = if (banner.isWarning) PhosphorIcons.Regular.Warning else null,
         primaryButton = if (banner.link != null) stringResource(Res.string.id_learn_more) else null,
         onPrimaryClick = {
             onClick.invoke(banner.link ?: "")

@@ -48,7 +48,6 @@ import com.adamglin.phosphoricons.regular.ShieldCheck
 import com.blockstream.common.models.MainViewModel
 import com.blockstream.common.navigation.NavigateDestination
 import com.blockstream.common.navigation.NavigateDestinations
-import com.blockstream.common.sideeffects.SideEffects
 import com.blockstream.compose.components.GreenTopAppBar
 import com.blockstream.compose.theme.bodyMedium
 import com.blockstream.compose.utils.HandleSideEffect
@@ -138,26 +137,7 @@ fun AppScaffold(
     }
 
     // Handle side effects from MainViewModel like navigating from handled intent
-    HandleSideEffect(mainViewModel) {
-        if (it is SideEffects.NavigateToTransactTab) {
-            greenWallet?.also {
-                while (navigator.currentBackStack.value.size > 2 && navigator.currentBackStackEntry?.destination?.hasRoute(
-                        NavigateDestinations.Transact::class
-                    ) != true
-                ) {
-                    navigator.navigateUp()
-                }
-
-                if (navigator.currentBackStackEntry?.destination?.hasRoute(NavigateDestinations.Transact::class) != true) {
-                    navigate(
-                        NavigateDestinations.Transact(
-                            greenWallet = it
-                        )
-                    )
-                }
-            }
-        }
-    }
+    HandleSideEffect(mainViewModel)
 
     // val scrollBehavior = TopAppBarDefaults.exitUntilCollapsedScrollBehavior(rememberTopAppBarState())
     // val scrollBehavior = TopAppBarDefaults.pinnedScrollBehavior(rememberTopAppBarState())

@@ -11,11 +11,10 @@ import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.graphics.painter.Painter
+import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import blockstream_green.common.generated.resources.Res
-import blockstream_green.common.generated.resources.bip39_passphrase
 import blockstream_green.common.generated.resources.id_2fa_dispute_in_progress
 import blockstream_green.common.generated.resources.id_2fa_reset_in_progress
 import blockstream_green.common.generated.resources.id_back_up_your_wallet_now
@@ -24,7 +23,9 @@ import blockstream_green.common.generated.resources.id_learn_more
 import blockstream_green.common.generated.resources.id_lightning_account
 import blockstream_green.common.generated.resources.id_lightning_service_is_undergoing
 import blockstream_green.common.generated.resources.id_passphrase_protected
+import blockstream_green.common.generated.resources.id_reenable_2fa
 import blockstream_green.common.generated.resources.id_some_accounts_cannot_be_logged
+import blockstream_green.common.generated.resources.id_some_coins_are_no_longer_2fa_protected
 import blockstream_green.common.generated.resources.id_system_message
 import blockstream_green.common.generated.resources.id_the_lightning_service_is
 import blockstream_green.common.generated.resources.id_this_wallet_is_based_on_your
@@ -34,14 +35,19 @@ import blockstream_green.common.generated.resources.id_warning
 import blockstream_green.common.generated.resources.id_warning_wallet_locked_by
 import blockstream_green.common.generated.resources.id_your_recovery_phrase_is_the_only_way
 import blockstream_green.common.generated.resources.id_your_wallet_is_locked_for_a
-import blockstream_green.common.generated.resources.lightning
-import blockstream_green.common.generated.resources.warning
-import blockstream_green.common.generated.resources.x
+import com.adamglin.PhosphorIcons
+import com.adamglin.phosphoricons.Regular
+import com.adamglin.phosphoricons.regular.Info
+import com.adamglin.phosphoricons.regular.Lightning
+import com.adamglin.phosphoricons.regular.Password
+import com.adamglin.phosphoricons.regular.Warning
+import com.adamglin.phosphoricons.regular.X
 import com.blockstream.common.data.AlertType
 import com.blockstream.common.data.SetupArgs
 import com.blockstream.common.events.Events
 import com.blockstream.common.models.GreenViewModel
 import com.blockstream.common.navigation.NavigateDestinations
+import com.blockstream.compose.GreenPreview
 import com.blockstream.compose.theme.blueOutline
 import com.blockstream.compose.theme.blueSurface
 import com.blockstream.compose.theme.bodyMedium
@@ -51,8 +57,8 @@ import com.blockstream.compose.theme.titleSmall
 import com.blockstream.compose.theme.whiteMedium
 import com.blockstream.ui.components.GreenColumn
 import com.blockstream.ui.components.GreenRow
-import org.jetbrains.compose.resources.painterResource
 import org.jetbrains.compose.resources.stringResource
+import org.jetbrains.compose.ui.tooling.preview.Preview
 
 @Composable
 fun GreenAlert(modifier: Modifier = Modifier, alertType: AlertType, viewModel: GreenViewModel) {
@@ -62,7 +68,8 @@ fun GreenAlert(modifier: Modifier = Modifier, alertType: AlertType, viewModel: G
                 modifier = modifier,
                 title = stringResource(Res.string.id_warning),
                 message = stringResource(Res.string.id_this_wallet_operates_on_a_test),
-                icon = painterResource(Res.drawable.warning)
+                icon = PhosphorIcons.Regular.Info,
+                isBlue = true
             )
         }
 
@@ -71,7 +78,7 @@ fun GreenAlert(modifier: Modifier = Modifier, alertType: AlertType, viewModel: G
                 modifier = modifier,
                 title = stringResource(Res.string.id_back_up_your_wallet_now),
                 message = stringResource(Res.string.id_your_recovery_phrase_is_the_only_way),
-                icon = painterResource(Res.drawable.warning),
+                icon = PhosphorIcons.Regular.Warning,
                 primaryButton = stringResource(Res.string.id_backup),
                 onPrimaryClick = {
                     viewModel.postEvent(
@@ -98,6 +105,8 @@ fun GreenAlert(modifier: Modifier = Modifier, alertType: AlertType, viewModel: G
                 message = alertType.message,
                 maxLines = 3,
                 primaryButton = stringResource(Res.string.id_learn_more),
+                icon = PhosphorIcons.Regular.Info,
+                isBlue = true,
                 onPrimaryClick = {
                     viewModel.postEvent(
                         NavigateDestinations.SystemMessage(
@@ -119,6 +128,7 @@ fun GreenAlert(modifier: Modifier = Modifier, alertType: AlertType, viewModel: G
                 title = stringResource(Res.string.id_2fa_dispute_in_progress),
                 message = stringResource(Res.string.id_warning_wallet_locked_by),
                 primaryButton = stringResource(Res.string.id_learn_more),
+                icon = PhosphorIcons.Regular.Warning,
                 onPrimaryClick = {
                     viewModel.postEvent(
                         NavigateDestinations.TwoFactorReset(
@@ -139,6 +149,7 @@ fun GreenAlert(modifier: Modifier = Modifier, alertType: AlertType, viewModel: G
                     Res.string.id_your_wallet_is_locked_for_a,
                     alertType.twoFactorReset.daysRemaining
                 ),
+                icon = PhosphorIcons.Regular.Warning,
                 primaryButton = stringResource(Res.string.id_learn_more),
                 onPrimaryClick = {
                     viewModel.postEvent(
@@ -157,7 +168,8 @@ fun GreenAlert(modifier: Modifier = Modifier, alertType: AlertType, viewModel: G
                 modifier = modifier,
                 title = stringResource(Res.string.id_passphrase_protected),
                 message = stringResource(Res.string.id_this_wallet_is_based_on_your),
-                icon = painterResource(Res.drawable.bip39_passphrase)
+                icon = PhosphorIcons.Regular.Password,
+                isBlue = true
             )
         }
 
@@ -179,6 +191,7 @@ fun GreenAlert(modifier: Modifier = Modifier, alertType: AlertType, viewModel: G
                 title = stringResource(Res.string.id_warning),
                 message = stringResource(Res.string.id_some_accounts_cannot_be_logged),
                 primaryButton = stringResource(Res.string.id_try_again),
+                icon = PhosphorIcons.Regular.Warning,
                 onPrimaryClick = {
                     viewModel.postEvent(Events.ReconnectFailedNetworks)
                 }
@@ -190,10 +203,23 @@ fun GreenAlert(modifier: Modifier = Modifier, alertType: AlertType, viewModel: G
                 modifier = modifier,
                 title = stringResource(Res.string.id_lightning_account),
                 message = stringResource(if (alertType.maintenance) Res.string.id_lightning_service_is_undergoing else Res.string.id_the_lightning_service_is),
-                icon = painterResource(Res.drawable.lightning)
+                icon = PhosphorIcons.Regular.Lightning,
+                isBlue = true
             )
         }
 
+        is AlertType.ReEnable2FA -> {
+            GreenAlert(
+                modifier = modifier,
+                title = stringResource(Res.string.id_reenable_2fa),
+                message = stringResource(Res.string.id_some_coins_are_no_longer_2fa_protected),
+                icon = PhosphorIcons.Regular.Warning,
+                primaryButton = stringResource(Res.string.id_reenable_2fa),
+                onPrimaryClick = {
+                    viewModel.postEvent(NavigateDestinations.ReEnable2FA(viewModel.greenWallet))
+                }
+            )
+        }
     }
 }
 
@@ -204,7 +230,7 @@ fun GreenAlert(
     message: String? = null,
     maxLines: Int = Int.MAX_VALUE,
     isBlue: Boolean = false,
-    icon: Painter? = null,
+    icon: ImageVector? = null,
     primaryButton: String? = null,
     onPrimaryClick: (() -> Unit)? = null,
     onCloseClick: (() -> Unit)? = null,
@@ -229,7 +255,7 @@ fun GreenAlert(
 
                 if (icon != null) {
                     Icon(
-                        painter = icon,
+                        imageVector = icon,
                         contentDescription = null,
                         modifier = Modifier.padding(top = 4.dp)
                     )
@@ -285,11 +311,58 @@ fun GreenAlert(
                         .align(Alignment.TopEnd)
                 ) {
                     Icon(
-                        painter = painterResource(Res.drawable.x),
+                        imageVector = PhosphorIcons.Regular.X,
                         contentDescription = null,
                     )
                 }
             }
+        }
+    }
+}
+
+@Composable
+@Preview
+fun GreenAlertPreview() {
+    GreenPreview {
+        GreenColumn {
+
+            GreenAlert(title = "Important!")
+
+            GreenAlert(message = "This is a message")
+
+
+            GreenAlert(
+                title = "Lorem ipsum dolor sit amet, consectetur adipiscing elit"
+            )
+
+            GreenAlert(
+                title = "Lorem ipsum dolor sit amet",
+                message = "Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat.",
+                onCloseClick = {
+
+                })
+
+            GreenAlert(
+                message = "Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat.",
+                onCloseClick = {
+
+                })
+
+            GreenAlert(
+                title = "Important!",
+                message = "This is a message",
+                icon = PhosphorIcons.Regular.Warning,
+                primaryButton = "Learn More",
+                onCloseClick = {
+
+                })
+
+            GreenAlert(
+                title = "Lightning Account",
+                message = "The Lightning service is currently unavailable. We apologize for the disruption.",
+                icon = PhosphorIcons.Regular.Lightning,
+                isBlue = true
+            )
         }
     }
 }

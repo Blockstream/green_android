@@ -35,7 +35,8 @@ fun LightningInfo(
 ) {
     GreenColumn(
         padding = 0,
-        space = 8
+        space = 8,
+        modifier = Modifier.padding(horizontal = 16.dp)
     ) {
 
         lightningInfoLook.sweep?.also {

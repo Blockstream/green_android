@@ -114,7 +114,7 @@ fun RedepositScreen(
             )
         }
 
-        GreenColumn {
+        Column {
             GreenColumn(
                 padding = 0,
                 modifier = Modifier

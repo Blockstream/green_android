@@ -1676,4 +1676,5 @@
     <string name="id_generate_amp_id">Generate AMP ID</string>
     <string name="id_copy_amp_id">Copy AMP ID</string>
     <string name="id_data_not_available">Data not available</string>
+    <string name="id_some_coins_are_no_longer_2fa_protected">Some coins are no longer 2FA protected.</string>
 </resources>

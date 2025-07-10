@@ -477,7 +477,7 @@ abstract class CreateTransactionViewModelAbstract(
 
                 session.pendingTransaction = null // clear pending transaction
                 postSideEffect(SideEffects.Snackbar(StringHolder.create(Res.string.id_transaction_sent)))
-                postSideEffect(SideEffects.NavigateToRoot(popTo = PopTo.Transact))
+                postSideEffect(SideEffects.NavigateToTransactTab)
             } else {
                 postSideEffect(
                     SideEffects.Dialog(

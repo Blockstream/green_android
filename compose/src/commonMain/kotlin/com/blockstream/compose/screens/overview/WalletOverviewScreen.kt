@@ -205,9 +205,7 @@ fun WalletOverviewScreen(
                         }
                     }
 
-                    items(items = alerts, key = {
-                        it.hashCode()
-                    }) {
+                    items(items = alerts) {
                         GreenAlert(
                             modifier = Modifier
                                 .padding(bottom = 6.dp), alertType = it, viewModel = viewModel

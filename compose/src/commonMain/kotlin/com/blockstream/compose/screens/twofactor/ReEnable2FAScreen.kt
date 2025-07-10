@@ -22,14 +22,17 @@ import blockstream_green.common.generated.resources.id_redeposit_expired_2fa_coi
 import blockstream_green.common.generated.resources.re_enable_two_factor
 import com.blockstream.common.models.twofactor.ReEnable2FAViewModel
 import com.blockstream.common.models.twofactor.ReEnable2FAViewModelAbstract
+import com.blockstream.common.models.twofactor.ReEnable2FAViewModelPreview
+import com.blockstream.compose.GreenPreview
 import com.blockstream.compose.components.GreenAccountAsset
 import com.blockstream.compose.components.GreenButton
 import com.blockstream.compose.components.GreenButtonType
 import com.blockstream.compose.theme.bodyLarge
 import com.blockstream.compose.utils.SetupScreen
 import com.blockstream.ui.components.GreenColumn
-import org.jetbrains.compose.resources.painterResource
 import org.jetbrains.compose.resources.stringResource
+import org.jetbrains.compose.resources.vectorResource
+import org.jetbrains.compose.ui.tooling.preview.Preview
 
 @Composable
 fun ReEnable2FAScreen(
@@ -43,7 +46,7 @@ fun ReEnable2FAScreen(
             horizontalAlignment = Alignment.CenterHorizontally
         ) {
             Image(
-                painter = painterResource(Res.drawable.re_enable_two_factor),
+                imageVector = vectorResource(Res.drawable.re_enable_two_factor),
                 contentDescription = null,
                 contentScale = ContentScale.Fit,
                 modifier = Modifier
@@ -60,6 +63,7 @@ fun ReEnable2FAScreen(
         }
 
         GreenColumn(
+            padding = 0,
             modifier = Modifier
                 .weight(1f)
                 .fillMaxWidth()
@@ -87,5 +91,13 @@ fun ReEnable2FAScreen(
                 viewModel.postEvent(ReEnable2FAViewModel.LocalEvents.LearnMore)
             }
         }
+    }
+}
+
+@Composable
+@Preview
+fun ReEnable2FAScreenPreview() {
+    GreenPreview {
+        ReEnable2FAScreen(viewModel = ReEnable2FAViewModelPreview.preview())
     }
 }

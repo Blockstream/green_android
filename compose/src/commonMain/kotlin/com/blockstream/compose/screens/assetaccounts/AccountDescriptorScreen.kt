@@ -21,16 +21,17 @@ import androidx.compose.runtime.getValue
 import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.painter.Painter
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import blockstream_green.common.generated.resources.Res
 import blockstream_green.common.generated.resources.id_output_descriptors
 import blockstream_green.common.generated.resources.id_you_can_use_your_descriptor
-import blockstream_green.common.generated.resources.info
 import blockstream_green.common.generated.resources.qr_code
 import com.adamglin.PhosphorIcons
 import com.adamglin.phosphoricons.Regular
 import com.adamglin.phosphoricons.regular.Copy
+import com.adamglin.phosphoricons.regular.Info
 import com.blockstream.common.models.assetaccounts.AccountDescriptorViewModelAbstract
 import com.blockstream.common.models.assetaccounts.AccountDescriptorViewModelPreview
 import com.blockstream.common.navigation.NavigateDestinations
@@ -50,7 +51,6 @@ import org.jetbrains.compose.resources.getString
 import org.jetbrains.compose.resources.painterResource
 import org.jetbrains.compose.resources.stringResource
 import org.jetbrains.compose.ui.tooling.preview.Preview
-import androidx.compose.ui.graphics.painter.Painter
 
 @Composable
 fun AccountDescriptorScreen(
@@ -73,7 +73,7 @@ fun AccountDescriptorScreen(
                 title = null,
                 message = stringResource(Res.string.id_you_can_use_your_descriptor),
                 isBlue = true,
-                icon = painterResource(Res.drawable.info),
+                icon = PhosphorIcons.Regular.Info,
                 modifier = Modifier.fillMaxWidth()
             )
 

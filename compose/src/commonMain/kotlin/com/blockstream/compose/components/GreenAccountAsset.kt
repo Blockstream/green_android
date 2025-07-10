@@ -26,9 +26,11 @@ import blockstream_green.common.generated.resources.pencil_simple_line
 import com.adamglin.PhosphorIcons
 import com.adamglin.phosphoricons.Regular
 import com.adamglin.phosphoricons.regular.CaretRight
+import com.blockstream.common.extensions.previewAccountAsset
 import com.blockstream.common.gdk.GdkSession
 import com.blockstream.common.gdk.data.AccountAssetBalance
 import com.blockstream.common.utils.StringHolder
+import com.blockstream.compose.GreenPreview
 import com.blockstream.compose.extensions.assetIcon
 import com.blockstream.compose.extensions.policyIcon
 import com.blockstream.compose.theme.bodyMedium
@@ -38,9 +40,11 @@ import com.blockstream.compose.theme.titleSmall
 import com.blockstream.compose.theme.whiteHigh
 import com.blockstream.compose.theme.whiteLow
 import com.blockstream.compose.theme.whiteMedium
+import com.blockstream.ui.components.GreenColumn
 import com.blockstream.ui.utils.ifTrue
 import org.jetbrains.compose.resources.painterResource
 import org.jetbrains.compose.resources.stringResource
+import org.jetbrains.compose.ui.tooling.preview.Preview
 
 @Composable
 fun GreenAccountAsset(
@@ -153,7 +157,7 @@ fun GreenAccountAsset(
                             message?.also {
                                 Text(
                                     text = it,
-                                    style = labelMedium,
+                                    style = bodyMedium,
                                     color = whiteMedium,
                                     overflow = TextOverflow.Ellipsis,
                                     modifier = Modifier.padding(top = 8.dp)
@@ -206,6 +210,75 @@ fun GreenAccountAsset(
                     modifier = Modifier.padding(end = 12.dp)
                 )
             }
+        }
+    }
+}
+
+
+@Preview
+@Composable
+fun GreenAccountAssetPreview() {
+    GreenPreview {
+        GreenColumn {
+            GreenAccountAsset(
+                accountAssetBalance = previewAccountAsset().accountAssetBalance,
+                title = "Account Asset",
+                withAssetIcon = false,
+            )
+            GreenAccountAsset(
+                accountAssetBalance = previewAccountAsset().accountAssetBalance,
+                title = "Account",
+                withAsset = false,
+                withAssetIcon = false,
+            )
+            GreenAccountAsset(accountAssetBalance = previewAccountAsset().let {
+                AccountAssetBalance(
+                    account = it.account,
+                    asset = it.asset,
+                    balance = "123 BTC",
+                    balanceExchange = "45,000 USD"
+                )
+            })
+            GreenAccountAsset(accountAssetBalance = previewAccountAsset().let {
+                AccountAssetBalance(
+                    account = it.account,
+                    asset = it.asset,
+                    balance = "123 BTC",
+                    balanceExchange = "45,000 USD"
+                )
+            }, withAsset = false)
+            GreenAccountAsset(accountAssetBalance = previewAccountAsset().let {
+                AccountAssetBalance(
+                    account = it.account,
+                    asset = it.asset,
+                    balance = "123 BTC",
+                    balanceExchange = "45,000 USD"
+                )
+            }, withEditIcon = true)
+
+            GreenAccountAsset(accountAssetBalance = previewAccountAsset().let {
+                AccountAssetBalance(
+                    account = it.account.copy(
+                        gdkName = "Account Name Quite Large"
+                    ),
+                    asset = it.asset.copy(
+                        name = "Bitcoin with Quite Large Name"
+                    ),
+                    balance = "1,123,1231 BTC",
+                    balanceExchange = "23,432,425,445 USD"
+                )
+            }, withEditIcon = true)
+            GreenAccountAsset(
+                accountAssetBalance = previewAccountAsset().accountAssetBalance,
+                withEditIcon = true,
+                onClick = {})
+            GreenAccountAsset(withEditIcon = true, onClick = {})
+            GreenAccountAsset(
+                accountAssetBalance = previewAccountAsset().accountAssetBalance,
+                message = "Redeposit Expired 2FA coins",
+                withAsset = false,
+                withArrow = true,
+                onClick = {})
         }
     }
 }

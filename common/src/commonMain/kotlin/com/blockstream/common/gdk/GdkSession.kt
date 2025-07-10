@@ -3070,7 +3070,7 @@ class GdkSession constructor(
         scope.launch(context = logException(countly)) {
             _expired2FAStateFlow.value = accounts.value.filter {
 
-                it.type == AccountType.STANDARD && !it.needs2faActivation(this@GdkSession) && getUnspentOutputs(
+                it.type == AccountType.STANDARD && getUnspentOutputs(
                     account = it,
                     isExpired = true
                 ).unspentOutputs.isNotEmpty()

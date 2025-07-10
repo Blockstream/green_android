@@ -220,18 +220,20 @@ class WalletOverviewViewModel(
             .stateIn(viewModelScope, SharingStarted.WhileSubscribed(), greenWallet),
         _twoFactorState,
         _systemMessage,
+        session.expired2FA,
         session.failedNetworks,
         session.lightningSdkOrNull?.healthCheckStatus ?: MutableStateFlow(null),
         banner,
         hideWalletBackupAlert,
         session.walletTotalBalance
-    ) { greenWallet, twoFactorState, systemMessage, failedNetworkLogins, lspHeath, banner, hideWalletBackupAlert, walletTotalBalance ->
+    ) { greenWallet, twoFactorState, systemMessage, expired2FA, failedNetworkLogins, lspHeath, banner, hideWalletBackupAlert, walletTotalBalance ->
         listOfNotNull(
             if (!greenWallet.isRecoveryConfirmed && !hideWalletBackupAlert && walletTotalBalance > 0) AlertType.RecoveryIsUnconfirmed(
                 withCloseButton = true
             ) else null,
             twoFactorState,
             systemMessage,
+            if (expired2FA.isNotEmpty()) AlertType.ReEnable2FA else null,
             if (greenWallet.isBip39Ephemeral) AlertType.EphemeralBip39 else null,
             banner?.let { AlertType.Banner(it) },
             if (session.isTestnet) AlertType.TestnetWarning else null,
@@ -286,7 +288,7 @@ class WalletOverviewViewModel(
             // Support only for Bitcoin
             session.bitcoinMultisig?.let { network ->
                 session.twoFactorReset(network).filter { session.isConnected }.onEach {
-                    _twoFactorState.value = if (it != null && it.isActive == true) {
+                    _twoFactorState.value = if (it?.isActive == true) {
                         if (it.isDisputed == true) {
                             AlertType.Dispute2FA(network, it)
                         } else {

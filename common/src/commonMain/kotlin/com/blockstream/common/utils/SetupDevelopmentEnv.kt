@@ -1,8 +1,10 @@
 package com.blockstream.common.utils
 
 import com.blockstream.common.data.DataState
+import com.blockstream.common.events.Events
 import com.blockstream.common.models.login.LoginViewModel
 import com.blockstream.common.models.login.LoginViewModelAbstract
+import com.blockstream.common.sideeffects.SideEffects
 import com.blockstream.green.data.config.AppInfo
 import com.rickclephas.kmp.observableviewmodel.launch
 import kotlinx.coroutines.flow.first
@@ -40,6 +42,7 @@ class SetupDevelopmentEnv : KoinComponent {
             // If PIN credentials are available, attempt auto-login
             if (pinCredentialsState is DataState.Success) {
                 viewModel.postEvent(LoginViewModel.LocalEvents.LoginWithPin(appInfo.developmentPin!!))
+                viewModel.postEvent(Events.EventSideEffect(SideEffects.Snackbar(StringHolder(string = "Login with development PIN"))))
             }
         }
     }
