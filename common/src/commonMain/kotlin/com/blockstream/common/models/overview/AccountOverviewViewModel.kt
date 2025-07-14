@@ -22,7 +22,6 @@ import com.blockstream.common.data.GreenWallet
 import com.blockstream.common.events.Events
 import com.blockstream.common.extensions.ifConnected
 import com.blockstream.common.extensions.launchIn
-import com.blockstream.common.extensions.lightningMnemonic
 import com.blockstream.common.extensions.previewAccount
 import com.blockstream.common.extensions.previewAccountAsset
 import com.blockstream.common.extensions.previewAccountBalance
@@ -65,9 +64,6 @@ abstract class AccountOverviewViewModelAbstract(
     override fun screenName(): String = "AccountOverview"
 
     @NativeCoroutinesState
-    abstract val hasLightningShortcut: StateFlow<Boolean?>
-
-    @NativeCoroutinesState
     abstract val alerts: StateFlow<List<AlertType>>
 
     @NativeCoroutinesState
@@ -96,14 +92,6 @@ class AccountOverviewViewModel(greenWallet: GreenWallet, accountAsset: AccountAs
     AccountOverviewViewModelAbstract(greenWallet = greenWallet, accountAsset = accountAsset) {
     override fun segmentation(): HashMap<String, Any> =
         countly.accountSegmentation(session = session, account = account)
-
-    override val hasLightningShortcut = if (greenWallet.isEphemeral) {
-        emptyFlow<Boolean?>()
-    } else {
-        database.getLoginCredentialsFlow(greenWallet.id).map {
-            it.lightningMnemonic != null
-        }
-    }.filter { session.isConnected }.stateIn(viewModelScope, SharingStarted.WhileSubscribed(), null)
 
     override val assets: StateFlow<DataState<List<AssetBalance>>> = session.accountAssets(account).map { assets ->
         session.takeIf { account.isLiquid && assets.size > 1 }?.ifConnected {
@@ -197,7 +185,7 @@ class AccountOverviewViewModel(greenWallet: GreenWallet, accountAsset: AccountAs
 
     init {
         session.ifConnected {
-            combine(this.accountAsset, hasLightningShortcut, accounts) { accountAsset, hasLightningShortcut, accounts ->
+            combine(this.accountAsset, accounts) { accountAsset, accounts ->
                 _navData.value = NavData(
                     title = greenWallet.name,
                     subtitle = accountAsset?.account?.name,
@@ -353,7 +341,6 @@ class AccountOverviewViewModelPreview() : AccountOverviewViewModelAbstract(
     greenWallet = previewWallet(),
     accountAsset = previewAccountAsset()
 ) {
-    override val hasLightningShortcut = MutableStateFlow(false)
     override val alerts: StateFlow<List<AlertType>> = MutableStateFlow(listOf())
 
     override val assets: StateFlow<DataState<List<AssetBalance>>> = MutableStateFlow(
