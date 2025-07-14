@@ -61,7 +61,7 @@ open class WalletBalanceViewModel(greenWallet: GreenWallet) :
         }.onEach {
             updateBalance(
                 session.walletTotalBalance.value,
-                session.walletTotalBalanceDenominationSharedFlow.value
+                session.walletTotalBalanceDenominationSharedFlow.value.isFiat
             )
         }.launchIn(this)
     }
@@ -73,11 +73,7 @@ open class WalletBalanceViewModel(greenWallet: GreenWallet) :
             is LocalEvents.ToggleBalance -> {
                 session.walletTotalBalanceDenominationSharedFlow.value =
                     session.walletTotalBalanceDenominationSharedFlow.value.let {
-                        if (it == Denomination.BTC) {
-                            Denomination.fiat(session)!!
-                        } else {
-                            Denomination.BTC
-                        }
+                        Denomination.defaultOrFiat(session = session, isFiat = !it.isFiat)
                     }
             }
 
@@ -94,7 +90,7 @@ open class WalletBalanceViewModel(greenWallet: GreenWallet) :
         }
     }
 
-    private suspend fun updateBalance(value: Long, denomination: Denomination) {
+    private suspend fun updateBalance(value: Long, isFiat: Boolean) {
         // Loading
         if (value == -1L) {
             _balancePrimary.value = null
@@ -103,8 +99,10 @@ open class WalletBalanceViewModel(greenWallet: GreenWallet) :
                 session = session,
                 assetId = session.walletAssets.value.data()?.policyId
                     ?: session.defaultNetwork.policyAsset,
-                denomination = denomination.takeIf { !it.isFiat }
-                    ?: Denomination.fiat(session) // Always create fiat from session, so that we get the correct fiat denomination
+                denomination = Denomination.defaultOrFiat(
+                    session = session,
+                    isFiat = isFiat
+                ) // Always create fiat from session, so that we get the correct fiat denomination
             )
 
             _balancePrimary.value = balance
