@@ -81,7 +81,7 @@ private fun commonModules(appConfig: AppConfig): List<Module> {
             AssetManager
         }
         single {
-            SessionManager(get(), get(), get(), get(), get(), get(), get(), get())
+            SessionManager(get(), get(), get(), get(), get(), get(), get(), get(), get())
         }
         single {
             LifecycleManager(get(), get())

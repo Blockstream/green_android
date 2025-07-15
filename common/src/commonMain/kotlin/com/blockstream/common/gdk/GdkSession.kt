@@ -11,6 +11,7 @@ import com.blockstream.common.BTC_POLICY_ASSET
 import com.blockstream.common.BTC_UNIT
 import com.blockstream.common.CountlyBase
 import com.blockstream.common.LN_BTC_POLICY_ASSET
+import com.blockstream.common.data.AppConfig
 import com.blockstream.common.data.CountlyAsset
 import com.blockstream.common.data.DataState
 import com.blockstream.common.data.Denomination
@@ -176,6 +177,7 @@ typealias AccountId = String
 class GdkSession constructor(
     private val userAgent: String,
     private val appInfo: AppInfo,
+    private val appConfig: AppConfig,
     private val sessionManager: SessionManager,
     private val lightningManager: LightningManager,
     private val settingsManager: SettingsManager,
@@ -706,7 +708,7 @@ class GdkSession constructor(
     fun supportsLightning() = supportsLightning(isWatchOnly = isWatchOnlyValue, device = device)
 
     private fun supportsLightning(isWatchOnly: Boolean, device: GreenDevice?): Boolean {
-        return !isWatchOnly && (device == null || device.isJade)
+        return appConfig.lightningFeatureEnabled && !isWatchOnly && (device == null || device.isJade)
     }
 
     fun networks(isTestnet: Boolean, isWatchOnly: Boolean, device: GreenDevice?): List<Network> {

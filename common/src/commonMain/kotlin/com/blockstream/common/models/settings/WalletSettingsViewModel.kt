@@ -370,7 +370,8 @@ class WalletSettingsViewModel(
                 if (!session.isWatchOnlyValue) {
                     list += WalletSetting.Text(getString(Res.string.id_wallet))
                     list += listOfNotNull(
-                        WalletSetting.Lightning(enabled = session.hasLightning).takeIf { session.lightning != null },
+                        WalletSetting.Lightning(enabled = session.hasLightning)
+                            .takeIf { session.lightning != null && settingsManager.appSettings.experimentalFeatures },
                         WalletSetting.CreateAmpAccount.takeIf { session.accounts.value.find { it.type == AccountType.AMP_ACCOUNT } == null },
                         WalletSetting.CopyAmpId.takeIf { session.accounts.value.any { it.type == AccountType.AMP_ACCOUNT } },
                         WalletSetting.WatchOnly,

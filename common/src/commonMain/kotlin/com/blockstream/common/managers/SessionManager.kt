@@ -1,6 +1,7 @@
 package com.blockstream.common.managers
 
 import com.blockstream.common.CountlyBase
+import com.blockstream.common.data.AppConfig
 import com.blockstream.common.data.GreenWallet
 import com.blockstream.common.data.LogoutReason
 import com.blockstream.common.devices.GreenDevice
@@ -37,6 +38,7 @@ import kotlin.properties.Delegates
 
 class SessionManager constructor(
     private val appInfo: AppInfo,
+    private val appConfig: AppConfig,
     private val lifecycleManager: LifecycleManager,
     private val lightningManager: LightningManager,
     private val settingsManager: SettingsManager,
@@ -272,6 +274,7 @@ class SessionManager constructor(
             userAgent = userAgent,
             sessionManager = this,
             appInfo = appInfo,
+            appConfig = appConfig,
             lightningManager = lightningManager,
             settingsManager = settingsManager,
             assetManager = assetManager,
