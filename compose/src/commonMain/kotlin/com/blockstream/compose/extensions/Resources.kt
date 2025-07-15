@@ -63,6 +63,7 @@ import blockstream_green.common.generated.resources.wallet_passphrase
 import com.blockstream.common.BTC_POLICY_ASSET
 import com.blockstream.common.LBTC_POLICY_ASSET
 import com.blockstream.common.LN_BTC_POLICY_ASSET
+import com.blockstream.common.data.DeviceIdentifier
 import com.blockstream.common.data.TwoFactorMethod
 import com.blockstream.common.data.WalletIcon
 import com.blockstream.common.devices.DeviceBrand
@@ -133,6 +134,10 @@ fun DeviceModel.actionIcon(): DrawableResource = when (this) {
     DeviceModel.BlockstreamJadePlus -> Res.drawable.blockstream_jade_plus_action
     else -> icon()
 }
+
+fun List<DeviceIdentifier>?.icon(): DrawableResource = this?.firstOrNull()?.let {
+    it.model?.icon() ?: it.brand?.deviceBrandIcon()
+} ?: Res.drawable.generic_device
 
 fun String.getNetworkIcon(): DrawableResource {
     if (Network.isBitcoinMainnet(this)) return Res.drawable.bitcoin

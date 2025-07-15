@@ -170,8 +170,6 @@ import kotlinx.serialization.json.putJsonArray
 import kotlinx.serialization.json.putJsonObject
 import kotlin.math.absoluteValue
 
-typealias EnrichedAssetPair = Pair<EnrichedAsset, Long>
-
 typealias AccountId = String
 
 /* Handles multiple GDK sessions per network */

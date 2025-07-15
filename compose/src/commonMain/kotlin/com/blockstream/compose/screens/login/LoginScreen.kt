@@ -66,8 +66,10 @@ import com.blockstream.common.extensions.isNotBlank
 import com.blockstream.common.managers.LifecycleManager
 import com.blockstream.common.models.login.LoginViewModel
 import com.blockstream.common.models.login.LoginViewModelAbstract
+import com.blockstream.common.models.login.LoginViewModelPreview
 import com.blockstream.common.navigation.NavigateDestinations
 import com.blockstream.common.sideeffects.SideEffects
+import com.blockstream.compose.GreenPreview
 import com.blockstream.compose.LocalBiometricState
 import com.blockstream.compose.components.AppSettingsButton
 import com.blockstream.compose.components.Banner
@@ -102,6 +104,7 @@ import kotlinx.coroutines.flow.first
 import org.jetbrains.compose.resources.getString
 import org.jetbrains.compose.resources.painterResource
 import org.jetbrains.compose.resources.stringResource
+import org.jetbrains.compose.ui.tooling.preview.Preview
 import org.koin.compose.koinInject
 
 @Composable
@@ -284,6 +287,8 @@ fun LoginScreen(
                                 .weight(1f)
                         ) {
 
+                            val isHwWatchOnly = hwWatchOnlyCredentials.isSuccess()
+
                             GreenColumn(
                                 verticalArrangement = Arrangement.spacedBy(16.dp, Alignment.Bottom),
                                 horizontalAlignment = Alignment.End
@@ -295,14 +300,25 @@ fun LoginScreen(
                                         .weight(1f)
                                         .align(Alignment.CenterHorizontally)
                                 ) {
-                                    Image(
-                                        painter = painterResource(if (viewModel.greenWallet.isWatchOnlyQr) Res.drawable.qr_code else Res.drawable.eye),
-                                        contentDescription = "Watch Only",
-                                        // colorFilter = ColorFilter.tint(green),
-                                        alpha = 0.25f,
-                                        modifier = Modifier
-                                            .size(128.dp)
-                                    )
+
+                                    if (isHwWatchOnly) {
+                                        Image(
+                                            painter = painterResource(viewModel.greenWallet.deviceIdentifiers.icon()),
+                                            contentDescription = "",
+                                            modifier = Modifier
+                                                .size(128.dp)
+                                        )
+                                    } else {
+                                        Image(
+                                            painter = painterResource(if (viewModel.greenWallet.isWatchOnlyQr) Res.drawable.qr_code else Res.drawable.eye),
+                                            contentDescription = "Watch Only",
+                                            // colorFilter = ColorFilter.tint(green),
+                                            alpha = 0.25f,
+                                            modifier = Modifier
+                                                .size(128.dp)
+                                        )
+                                    }
+
                                 }
 
                                 Text(
@@ -626,5 +642,33 @@ fun LoginScreen(
                 }
             }
         }
+    }
+}
+
+@Composable
+@Preview
+fun LoginScreenPreview() {
+    GreenPreview {
+        LoginScreen(viewModel = LoginViewModelPreview.previewWithPassword())
+    }
+}
+
+@Composable
+@Preview
+fun LoginScreenPreview2() {
+    GreenPreview {
+        LoginScreen(viewModel = LoginViewModelPreview.previewWatchOnly().also {
+            it.onProgress.value = false
+        })
+    }
+}
+
+@Composable
+@Preview
+fun LoginScreenPreview4() {
+    GreenPreview {
+        LoginScreen(viewModel = LoginViewModelPreview.previewWithDevice().also {
+            it.onProgress.value = true
+        })
     }
 }
