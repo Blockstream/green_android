@@ -3,6 +3,14 @@ All notable changes to this project will be documented in this file.
 
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/).
 
+## [Unreleased]
+
+#### Added
+- Asset account details and list screens to view account-specific asset transactions and balances
+- Load more transactions functionality in asset account details screen
+
+#### Fixed
+
 ## [5.0.6] - 2025-07-01
 
 #### Fixed

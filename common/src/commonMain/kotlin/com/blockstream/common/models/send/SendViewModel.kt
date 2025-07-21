@@ -71,8 +71,8 @@ import org.jetbrains.compose.resources.getString
 import saschpe.kase64.base64DecodedBytes
 import kotlin.math.absoluteValue
 
-abstract class SendViewModelAbstract(greenWallet: GreenWallet) :
-    CreateTransactionViewModelAbstract(greenWallet = greenWallet) {
+abstract class SendViewModelAbstract(greenWallet: GreenWallet, accountAssetOrNull: AccountAsset? = null) :
+    CreateTransactionViewModelAbstract(greenWallet = greenWallet, accountAssetOrNull = accountAssetOrNull) {
     override fun screenName(): String = "Send"
 
     override fun segmentation(): HashMap<String, Any>? {
@@ -134,8 +134,9 @@ abstract class SendViewModelAbstract(greenWallet: GreenWallet) :
 class SendViewModel(
     greenWallet: GreenWallet,
     initAddress: String? = null,
-    addressType: AddressInputType? = null
-) : SendViewModelAbstract(greenWallet = greenWallet) {
+    addressType: AddressInputType? = null,
+    initialAccountAsset: AccountAsset? = null
+) : SendViewModelAbstract(greenWallet = greenWallet, accountAssetOrNull = initialAccountAsset) {
 
     private val _supportsSendAll: MutableStateFlow<Boolean> = MutableStateFlow(false)
     override val supportsSendAll: StateFlow<Boolean> = _supportsSendAll.asStateFlow()
@@ -319,7 +320,7 @@ class SendViewModel(
 
                 // Check if the current AccountAsset operates on the same network only.
                 // That way we preserve the asset from previous action
-                if (network != null && (accountAsset.value?.let { !it.account.network.isSameNetwork(network) || it.balance(session) <= 0 } != false)) {
+                if (network != null && (accountAsset.value?.let { !it.account.network.isSameNetwork(network) } != false)) {
                     accountAsset.value = findAccountAsset(network, assetId = assetId.value ?: network.policyAsset)
                 }
 
@@ -749,7 +750,7 @@ class SendViewModel(
 }
 
 class SendViewModelPreview(greenWallet: GreenWallet, isLightning: Boolean = false) :
-    SendViewModelAbstract(greenWallet = greenWallet) {
+    SendViewModelAbstract(greenWallet = greenWallet, accountAssetOrNull = null) {
     override val isAccountEdit: StateFlow<Boolean> = MutableStateFlow(true)
     override val errorAddress: StateFlow<String?> = MutableStateFlow(null)
     override val errorAmount: StateFlow<String?> = MutableStateFlow(null)

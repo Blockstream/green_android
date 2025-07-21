@@ -269,21 +269,6 @@ class AccountOverviewViewModel(greenWallet: GreenWallet, accountAsset: AccountAs
                 )
             }
 
-            is LocalEvents.Send -> {
-                postSideEffect(
-                    SideEffects.NavigateTo(
-                        if (session.canSendTransaction) {
-                            NavigateDestinations.Send(greenWallet = greenWallet)
-                        } else {
-                            NavigateDestinations.Sweep(
-                                greenWallet = greenWallet,
-                                accountAsset = accountAsset.value,
-                            )
-                        }
-                    )
-                )
-            }
-
             is LocalEvents.Refresh -> {
                 session.refresh(account = account)
             }

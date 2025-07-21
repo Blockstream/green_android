@@ -283,6 +283,14 @@ sealed class NavigateDestinations : NavigateDestination() {
         NavigateDestination()
 
     @Serializable
+    data class AssetAccountList(val greenWallet: GreenWallet, val assetId: String) :
+        NavigateDestination()
+
+    @Serializable
+    data class AssetAccountDetails(val greenWallet: GreenWallet, val accountAsset: AccountAsset) :
+        NavigateDestination()
+
+    @Serializable
     data class Camera(
         val isDecodeContinuous: Boolean = false,
         val parentScreenName: String? = null,
@@ -309,7 +317,8 @@ sealed class NavigateDestinations : NavigateDestination() {
     data class Send(
         val greenWallet: GreenWallet,
         val address: String? = null,
-        val addressType: AddressInputType? = null
+        val addressType: AddressInputType? = null,
+        val accountAsset: AccountAsset? = null
     ) : NavigateDestination()
 
     @Serializable

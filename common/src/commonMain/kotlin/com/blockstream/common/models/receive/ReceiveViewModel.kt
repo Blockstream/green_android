@@ -245,7 +245,7 @@ class ReceiveViewModel(greenWallet: GreenWallet, initialAccountAsset: AccountAss
             }.map {
                 AccountAssetBalance(account = it, asset = asset)
             }
-        }.stateIn(viewModelScope, SharingStarted.WhileSubscribed(5000L), emptyList())
+        }.stateIn(viewModelScope, SharingStarted.WhileSubscribed(5000L), listOfNotNull(initialAccountAsset.let { AccountAssetBalance.create(it) }))
 
     class LocalEvents {
         object CreateAccount : Event
@@ -338,7 +338,6 @@ class ReceiveViewModel(greenWallet: GreenWallet, initialAccountAsset: AccountAss
 
             accountAsset.filterNotNull().onEach {
                 asset.value = it.asset
-                setActiveAccount(it.account)
             }.launchIn(this)
 
             assetAccounts.onEach { assetAccounts ->

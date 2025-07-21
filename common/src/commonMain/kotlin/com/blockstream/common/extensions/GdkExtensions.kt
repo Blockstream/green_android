@@ -86,6 +86,17 @@ fun Account.hasTwoFactorReset(session: GdkSession): Boolean {
     return isMultisig && session.twoFactorReset(network).value?.isActive == true
 }
 
+fun List<Account>.filterForAsset(assetId: String, session: GdkSession): List<Account> {
+    val enrichedAsset = session.getEnrichedAssets(assetId)
+    return filter { account ->
+        when {
+            enrichedAsset?.isAmp == true -> account.type == AccountType.AMP_ACCOUNT
+            assetId.isPolicyAsset(session) -> account.network.policyAsset == assetId
+            else -> account.isLiquid && !account.isAmp
+        }
+    }
+}
+
 fun String?.isBitcoinPolicyAsset(): Boolean = (this == null || this == BTC_POLICY_ASSET)
 fun String?.isLightningPolicyAsset(): Boolean = (this == LN_BTC_POLICY_ASSET)
 fun String?.isPolicyAsset(network: Network?): Boolean = (this == null || this == network?.policyAsset)

@@ -158,7 +158,7 @@ val viewModels = module {
         AccountExchangeViewModel(get(), getOrNull())
     }
     viewModel {
-        SendViewModel(get(), getOrNull(), getOrNull())
+        SendViewModel(get(), getOrNull(), getOrNull(), getOrNull())
     }
     viewModel {
         SimpleGreenViewModel(getOrNull(), getOrNull(), getOrNull(), getOrNull())

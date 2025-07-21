@@ -2,7 +2,6 @@ package com.blockstream.common.models.overview
 
 import blockstream_green.common.generated.resources.Res
 import blockstream_green.common.generated.resources.id_home
-import blockstream_green.common.generated.resources.id_your_s_total_balance_is_the_sum_of
 import breez_sdk.HealthCheckStatus
 import com.blockstream.common.btcpricehistory.model.BitcoinChartData
 import com.blockstream.common.data.AlertType
@@ -11,9 +10,9 @@ import com.blockstream.common.data.Denomination
 import com.blockstream.common.data.EnrichedAsset
 import com.blockstream.common.data.GreenWallet
 import com.blockstream.common.events.Events
+import com.blockstream.common.extensions.filterForAsset
 import com.blockstream.common.extensions.hasHistory
 import com.blockstream.common.extensions.ifConnected
-import com.blockstream.common.extensions.isPolicyAsset
 import com.blockstream.common.extensions.launchIn
 import com.blockstream.common.extensions.previewAccountAsset
 import com.blockstream.common.extensions.previewAssetBalance
@@ -22,8 +21,6 @@ import com.blockstream.common.fcm.FcmCommon
 import com.blockstream.common.gdk.data.Account
 import com.blockstream.common.gdk.data.AccountAsset
 import com.blockstream.common.gdk.data.AccountAssetBalance
-import com.blockstream.common.gdk.data.AccountAssetBalanceList
-import com.blockstream.common.gdk.data.AccountType
 import com.blockstream.common.gdk.data.AssetBalance
 import com.blockstream.common.gdk.data.Settings
 import com.blockstream.common.gdk.data.WalletEvents
@@ -87,38 +84,24 @@ abstract class WalletOverviewViewModelAbstract(
     abstract fun refetchBitcoinPriceHistory()
 
     fun openAssetAccounts(asset: EnrichedAsset) {
-        viewModelScope.launch {
-            session.accounts.value.filter {
-                if (asset.isAmp) {
-                    it.type == AccountType.AMP_ACCOUNT
-                } else if (asset.assetId.isPolicyAsset(session)) {
-                    it.network.policyAsset == asset.assetId
-                } else {
-                    it.isLiquid && (it.isAmp == it.isAmp)
-                }
-            }.also { accounts ->
+        val accountsWithAsset = session.accounts.value.filterForAsset(asset.assetId, session)
+
+        if (accountsWithAsset.size == 1) {
+            accountsWithAsset.firstOrNull()?.let { account ->
                 postEvent(
-                    NavigateDestinations.Accounts(
+                    NavigateDestinations.AssetAccountDetails(
                         greenWallet = greenWallet,
-                        accounts = AccountAssetBalanceList(accounts.map {
-                            AccountAssetBalance.create(
-                                accountAsset = AccountAsset.fromAccountAsset(
-                                    account = it, assetId = asset.assetId, session = session
-                                ), session = session
-                            )
-                        }),
-                        title = asset.name(session).getStringOrNull(),
-                        message = getString(
-                            Res.string.id_your_s_total_balance_is_the_sum_of,
-                            asset.name(session).getString()
-                        ),
-                        withAsset = false,
-                        withArrow = false,
-                        withAssetIcon = false,
-                        withAction = false,
+                        accountAsset = AccountAsset(account, asset)
                     )
                 )
             }
+        } else {
+            postEvent(
+                NavigateDestinations.AssetAccountList(
+                    greenWallet = greenWallet,
+                    assetId = asset.assetId
+                )
+            )
         }
     }
 
@@ -272,7 +255,6 @@ class WalletOverviewViewModel(
 
     class LocalEvents {
         object Refresh : Event
-        object Send : Event
         object Receive : Event
         object DenominationExchangeRate : Event
         object ClickLightningSweep : Event
@@ -380,21 +362,6 @@ class WalletOverviewViewModel(
 
             is Events.DismissSystemMessage -> {
                 _systemMessage.value = null
-            }
-
-            is LocalEvents.Send -> {
-                postSideEffect(
-                    SideEffects.NavigateTo(
-                        if (session.canSendTransaction) {
-                            NavigateDestinations.Send(greenWallet = greenWallet)
-                        } else {
-                            NavigateDestinations.Sweep(
-                                greenWallet = greenWallet,
-                                accountAsset = session.activeAccount.value?.accountAsset
-                            )
-                        }
-                    )
-                )
             }
 
             is LocalEvents.Receive -> {

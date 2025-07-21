@@ -155,7 +155,7 @@ val factoryViewModels = module {
         AccountExchangeViewModel(get(), getOrNull())
     }
     factory {
-        SendViewModel(get(), getOrNull(), getOrNull())
+        SendViewModel(get(), getOrNull(), getOrNull(), getOrNull())
     }
     factory {
         SimpleGreenViewModel(getOrNull(), getOrNull(), getOrNull())
