@@ -1488,6 +1488,7 @@
     <string name="id_you_can_still_receive_funds_but">You can still receive funds, but they won&apos;t be shown on your total balance.</string>
     <string name="id_you_can_sweep_s_of_your_funds">You can sweep %1$s of your funds to your onchain account.</string>
     <string name="id_you_can_use_your_wallet_to">You can use your wallet to anonymously sign and authorize an action on:</string>
+    <string name="id_you_can_use_your_descriptor">You can use your descriptor to view your balance in the Blockstream app without the ability to spend.</string>
     <string name="id_you_cannot_add_more_than_one">You cannot add more than one Lightning Account.</string>
     <string name="id_you_cannot_create_or_restore_a">You cannot create or restore a wallet on %1$s as you already have a PIN protected wallet.</string>
     <string name="id_you_cannot_receive_more_than_s">You cannot receive more than %1$s (%2$s) on this account. Reduce the amount and try again.</string>

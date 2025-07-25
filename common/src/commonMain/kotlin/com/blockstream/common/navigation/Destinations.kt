@@ -291,6 +291,10 @@ sealed class NavigateDestinations : NavigateDestination() {
         NavigateDestination()
 
     @Serializable
+    data class AccountDescriptor(val greenWallet: GreenWallet, val accountAsset: AccountAsset) :
+        NavigateDestination()
+
+    @Serializable
     data class Camera(
         val isDecodeContinuous: Boolean = false,
         val parentScreenName: String? = null,

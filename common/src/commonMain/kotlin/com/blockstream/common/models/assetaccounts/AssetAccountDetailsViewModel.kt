@@ -1,10 +1,20 @@
 package com.blockstream.common.models.assetaccounts
 
+import blockstream_green.common.generated.resources.Res
+import blockstream_green.common.generated.resources.binoculars
+import blockstream_green.common.generated.resources.box_arrow_down
+import blockstream_green.common.generated.resources.id_archive_account
+import blockstream_green.common.generated.resources.id_rename_account
+import blockstream_green.common.generated.resources.id_watchonly
+import blockstream_green.common.generated.resources.text_aa
 import com.blockstream.common.data.DataState
 import com.blockstream.common.data.Denomination
 import com.blockstream.common.data.EnrichedAsset
 import com.blockstream.common.data.GreenWallet
+import com.blockstream.common.events.Events
+import com.blockstream.common.extensions.hasUnconfirmedTransactions
 import com.blockstream.common.extensions.ifConnected
+import com.blockstream.common.gdk.data.Account
 import com.blockstream.common.gdk.data.AccountAsset
 import com.blockstream.common.gdk.data.AccountBalance
 import com.blockstream.common.looks.transaction.TransactionLook
@@ -14,7 +24,9 @@ import com.blockstream.common.sideeffects.SideEffects
 import com.blockstream.common.utils.toAmountLook
 import com.blockstream.green.utils.Loggable
 import com.blockstream.ui.events.Event
+import com.blockstream.ui.navigation.NavAction
 import com.blockstream.ui.navigation.NavData
+import org.jetbrains.compose.resources.getString
 import com.rickclephas.kmp.nativecoroutines.NativeCoroutinesState
 import com.rickclephas.kmp.observableviewmodel.coroutineScope
 import com.rickclephas.kmp.observableviewmodel.launch
@@ -22,6 +34,7 @@ import com.rickclephas.kmp.observableviewmodel.stateIn
 import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.combine
+import kotlinx.coroutines.flow.filter
 import kotlinx.coroutines.flow.launchIn
 import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.flow.onEach
@@ -51,6 +64,9 @@ abstract class AssetAccountDetailsViewModelAbstract(
 
     @NativeCoroutinesState
     abstract val hasMoreTransactions: StateFlow<Boolean>
+    
+    @NativeCoroutinesState
+    abstract val accounts: StateFlow<List<Account>>
 }
 
 class AssetAccountDetailsViewModel(
@@ -74,6 +90,10 @@ class AssetAccountDetailsViewModel(
     override val showBuyButton: StateFlow<Boolean> = accountAsset.map {
         it?.asset?.isBitcoin == true
     }.stateIn(viewModelScope, SharingStarted.WhileSubscribed(), accountAsset.value?.asset?.isBitcoin == true)
+    
+    override val accounts: StateFlow<List<Account>> =
+        session.accounts.filter { session.isConnected }
+            .stateIn(viewModelScope, SharingStarted.WhileSubscribed(), listOf())
 
     private val hideAmounts: StateFlow<Boolean> = settingsManager.appSettingsStateFlow.map {
         it.hideAmounts
@@ -88,11 +108,22 @@ class AssetAccountDetailsViewModel(
     override val totalBalanceFiat: StateFlow<String?> = _totalBalanceFiat
 
     init {
-        viewModelScope.launch {
-            val assetName = accountAsset.value?.asset?.name(session)?.toString() ?: accountAsset.value?.assetId ?: ""
-            _navData.value = NavData(
-                title = assetName, subtitle = account.name
-            )
+        session.ifConnected {
+            combine(accountAsset, accounts, isWatchOnly) { accountAsset, accounts, watchOnly ->
+                viewModelScope.launch {
+                    val assetName = accountAsset?.asset?.name(session)?.toString() ?: accountAsset?.assetId ?: ""
+                    val accountName = accountAsset?.account?.name ?: account.name
+                    _navData.value = NavData(
+                        title = assetName, 
+                        subtitle = accountName,
+                        actions = getMenuActions(
+                            account = account,
+                            accountAsset = accountAsset,
+                            watchOnly = watchOnly
+                        )
+                    )
+                }
+            }.launchIn(viewModelScope.coroutineScope)
         }
 
         session.ifConnected {
@@ -194,6 +225,56 @@ class AssetAccountDetailsViewModel(
 
     private fun loadMoreTransactions() {
         session.getTransactions(account = account, isReset = false, isLoadMore = true)
+    }
+
+    private suspend fun getMenuActions(
+        account: Account,
+        accountAsset: AccountAsset?,
+        watchOnly: Boolean
+    ): List<NavAction> {
+        if (account.isLightning) {
+            return emptyList()
+        }
+
+        return listOfNotNull(
+            NavAction(
+                title = getString(Res.string.id_rename_account),
+                icon = Res.drawable.text_aa,
+                isMenuEntry = true,
+                onClick = {
+                    postEvent(NavigateDestinations.RenameAccount(greenWallet = greenWallet, account = account))
+                }
+            ).takeIf { !watchOnly },
+            
+            NavAction(
+                title = getString(Res.string.id_watchonly),
+                icon = Res.drawable.binoculars,
+                isMenuEntry = true,
+                onClick = {
+                    if (account.isSinglesig) {
+                        accountAsset?.also { 
+                            postEvent(NavigateDestinations.AccountDescriptor(greenWallet = greenWallet, accountAsset = it))
+                        }
+                    } else {
+                        // For multisig accounts, show the watch-only credentials bottom sheet
+                        postEvent(NavigateDestinations.WatchOnlyCredentialsSettings(greenWallet = greenWallet, network = account.network))
+                    }
+                }
+            ).takeIf { !watchOnly },
+            
+            NavAction(
+                title = getString(Res.string.id_archive_account),
+                icon = Res.drawable.box_arrow_down,
+                isMenuEntry = true,
+                onClick = {
+                    postEvent(Events.ArchiveAccount(account))
+                }
+            ).takeIf { 
+                !watchOnly &&
+                !account.isFunded(session) &&
+                !account.hasUnconfirmedTransactions(session)
+            }
+        )
     }
 
     companion object : Loggable()

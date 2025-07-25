@@ -132,6 +132,12 @@ fun Account.hasHistory(session: GdkSession): Boolean {
     return bip44Discovered == true || isFunded(session) || session.accountTransactions(this).value.isNotEmpty()
 }
 
+fun Account.hasUnconfirmedTransactions(session: GdkSession): Boolean {
+    return session.accountTransactions(this).value.data()?.any { transaction ->
+        transaction.getConfirmations(session) == 0L
+    } == true
+}
+
 fun String.getAssetNameOrNull(session: GdkSession?): String? {
     return if (session == null || this.isPolicyAsset(session)) {
         if (this == BTC_POLICY_ASSET) {

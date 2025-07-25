@@ -27,6 +27,7 @@ import com.blockstream.common.models.add.XpubViewModel
 import com.blockstream.common.models.addresses.AddressesViewModel
 import com.blockstream.common.models.addresses.SignMessageViewModel
 import com.blockstream.common.models.archived.ArchivedAccountsViewModel
+import com.blockstream.common.models.assetaccounts.AccountDescriptorViewModel
 import com.blockstream.common.models.assetaccounts.AssetAccountDetailsViewModel
 import com.blockstream.common.models.assetaccounts.AssetAccountListViewModel
 import com.blockstream.common.models.camera.CameraViewModel
@@ -106,6 +107,7 @@ import com.blockstream.compose.screens.add.ReviewAddAccountScreen
 import com.blockstream.compose.screens.add.XpubScreen
 import com.blockstream.compose.screens.addresses.AddressesScreen
 import com.blockstream.compose.screens.archived.ArchivedAccountsScreen
+import com.blockstream.compose.screens.assetaccounts.AccountDescriptorScreen
 import com.blockstream.compose.screens.assetaccounts.AssetAccountDetailsScreen
 import com.blockstream.compose.screens.assetaccounts.AssetAccountListScreen
 import com.blockstream.compose.screens.devices.DeviceInfoScreen
@@ -897,6 +899,17 @@ fun Router(
                         AssetAccountDetailsViewModel(
                             greenWallet = args.greenWallet,
                             accountAssetOrNull = args.accountAsset
+                        )
+                    }
+                )
+            }
+            appComposable<NavigateDestinations.AccountDescriptor> {
+                val args = it.toRoute<NavigateDestinations.AccountDescriptor>()
+                AccountDescriptorScreen(
+                    viewModel = viewModel {
+                        AccountDescriptorViewModel(
+                            greenWallet = args.greenWallet,
+                            accountAsset = args.accountAsset
                         )
                     }
                 )
