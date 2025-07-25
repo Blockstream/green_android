@@ -291,7 +291,7 @@ class GdkSession constructor(
     val activeAccount get() = _activeAccountStateFlow.asStateFlow()
 
     val walletTotalBalance get() = _walletTotalBalanceSharedFlow.asStateFlow()
-    val walletTotalBalanceDenominationSharedFlow = MutableStateFlow<Denomination>(Denomination.BTC)
+    val walletTotalBalanceDenominationStateFlow = MutableStateFlow<Denomination>(Denomination.BTC)
 
     val walletAssets: StateFlow<DataState<Assets>> get() = _walletAssetsFlow.asStateFlow()
 
@@ -622,7 +622,7 @@ class GdkSession constructor(
         // Prefer Multisig for initial sync as those networks are synced across devices
         // In case of Lightning Shorcut get settings from parent wallet
         val syncNetwork = activeBitcoinMultisig ?: activeLiquidMultisig ?: defaultNetwork
-        val prominentSettings = ephemeralWallet?.extras?.settings?.takeIf { isLightningShortcut } ?: getSettings(network = syncNetwork)
+        val prominentSettings = getSettings(network = syncNetwork)
         prominentSettings?.also {
             try {
                 changeGlobalSettings(it)
@@ -811,7 +811,7 @@ class GdkSession constructor(
 
         // Clear total balance
         _walletTotalBalanceSharedFlow.value = -1L
-        walletTotalBalanceDenominationSharedFlow.value = Denomination.BTC
+        walletTotalBalanceDenominationStateFlow.value = Denomination.BTC
 
         // Clear Assets
         _walletAssetsFlow.value = DataState.Loading
@@ -1633,6 +1633,7 @@ class GdkSession constructor(
                     _failedNetworksStateFlow.value += failedNetworkLogins
                     onLoginSuccess(
                         loginData = it,
+                        wallet = wallet,
                         initAccount = initAccount,
                         initNetwork = initNetwork,
                         initializeSession = initializeSession
@@ -1733,6 +1734,7 @@ class GdkSession constructor(
 
     private suspend fun onLoginSuccess(
         loginData: LoginData,
+        wallet: GreenWallet?,
         initNetwork: String?,
         initAccount: Long?,
         initializeSession: Boolean
@@ -1742,14 +1744,14 @@ class GdkSession constructor(
 
         if (initializeSession) {
             countly.activeWalletStart()
-            initializeSessionData(initNetwork, initAccount)
+            initializeSessionData(wallet, initNetwork, initAccount)
         }
 
         // Allow initialization calls to have priority over notifications initiated updates (getWalletTransactions & updateAccountAndBalances)
         _disableNotificationHandling = false
     }
 
-    private suspend fun initializeSessionData(initNetwork: String?, initAccount: Long?) {
+    private suspend fun initializeSessionData(wallet: GreenWallet?, initNetwork: String?, initAccount: Long?) {
         // Check if active account index was archived from 1) a different client (multisig) or 2) from cached Singlesig hww session
         // Expect refresh = true to be already called
         updateAccounts()
@@ -1763,6 +1765,10 @@ class GdkSession constructor(
 
         // Update the enriched assets
         updateEnrichedAssets()
+
+        // Change wallet balance denomination
+        walletTotalBalanceDenominationStateFlow.value =
+            if (wallet?.extras?.totalBalanceInFiat == true) Denomination.defaultOrFiat(session = this, isFiat = true) else Denomination.BTC
 
         if (!isWatchOnlyValue && !isLightningShortcut) {
             // Sync settings from prominent network to the rest

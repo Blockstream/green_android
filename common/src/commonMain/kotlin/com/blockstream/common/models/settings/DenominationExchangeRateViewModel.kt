@@ -6,7 +6,6 @@ import com.blockstream.common.BTC_UNIT
 import com.blockstream.common.BitcoinUnits
 import com.blockstream.common.TestnetUnits
 import com.blockstream.common.data.GreenWallet
-import com.blockstream.common.data.WalletExtras
 import com.blockstream.common.extensions.ifConnected
 import com.blockstream.common.extensions.launchIn
 import com.blockstream.common.extensions.previewWallet
@@ -116,20 +115,6 @@ class DenominationExchangeRateViewModel(greenWallet: GreenWallet) :
             }
 
             session.changeGlobalSettings(newSettings)
-
-            if (!greenWallet.isEphemeral) {
-                greenWallet.also {
-                    // Pass settings to Lightning Shortcut
-                    sessionManager.getWalletSessionOrNull(it.lightningShortcutWallet())
-                        ?.also { lightningSession ->
-                            lightningSession.changeGlobalSettings(newSettings)
-                        }
-
-                    it.extras = WalletExtras(settings = newSettings.forWalletExtras())
-
-                    database.updateWallet(it)
-                }
-            }
         }, onSuccess = {
             postSideEffect(SideEffects.Dismiss)
         })

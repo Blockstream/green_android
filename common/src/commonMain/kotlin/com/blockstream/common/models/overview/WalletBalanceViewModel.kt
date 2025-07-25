@@ -2,6 +2,7 @@ package com.blockstream.common.models.overview
 
 import com.blockstream.common.data.Denomination
 import com.blockstream.common.data.GreenWallet
+import com.blockstream.common.data.WalletExtras
 import com.blockstream.common.extensions.launchIn
 import com.blockstream.common.models.GreenViewModel
 import com.blockstream.common.utils.toAmountLook
@@ -50,7 +51,7 @@ open class WalletBalanceViewModel(greenWallet: GreenWallet) :
 
         combine(
             session.walletTotalBalance,
-            session.walletTotalBalanceDenominationSharedFlow,
+            session.walletTotalBalanceDenominationStateFlow,
             hideAmounts,
             session.settings()
         ) { _, _, _, _ ->
@@ -61,7 +62,7 @@ open class WalletBalanceViewModel(greenWallet: GreenWallet) :
         }.onEach {
             updateBalance(
                 session.walletTotalBalance.value,
-                session.walletTotalBalanceDenominationSharedFlow.value.isFiat
+                session.walletTotalBalanceDenominationStateFlow.value.isFiat
             )
         }.launchIn(this)
     }
@@ -71,10 +72,7 @@ open class WalletBalanceViewModel(greenWallet: GreenWallet) :
 
         when (event) {
             is LocalEvents.ToggleBalance -> {
-                session.walletTotalBalanceDenominationSharedFlow.value =
-                    session.walletTotalBalanceDenominationSharedFlow.value.let {
-                        Denomination.defaultOrFiat(session = session, isFiat = !it.isFiat)
-                    }
+                toggleBalance()
             }
 
             is LocalEvents.ToggleHideAmounts -> {
@@ -88,6 +86,24 @@ open class WalletBalanceViewModel(greenWallet: GreenWallet) :
                 }
             }
         }
+    }
+
+    fun toggleBalance() {
+        doAsync({
+            session.walletTotalBalanceDenominationStateFlow.value =
+                session.walletTotalBalanceDenominationStateFlow.value.let {
+                    Denomination.defaultOrFiat(session = session, isFiat = !it.isFiat)
+                }
+
+            if (!greenWallet.isEphemeral) {
+                greenWallet.also {
+                    session.walletTotalBalanceDenominationStateFlow.value.isFiat.also { isFiat ->
+                        it.extras = it.extras?.copy(totalBalanceInFiat = isFiat) ?: WalletExtras(totalBalanceInFiat = isFiat)
+                    }
+                    database.updateWallet(it)
+                }
+            }
+        })
     }
 
     private suspend fun updateBalance(value: Long, isFiat: Boolean) {

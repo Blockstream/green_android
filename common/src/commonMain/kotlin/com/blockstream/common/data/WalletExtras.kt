@@ -1,14 +1,11 @@
 package com.blockstream.common.data
 
 import com.blockstream.common.gdk.GreenJson
-import com.blockstream.common.gdk.data.Settings
-import kotlinx.serialization.SerialName
 import kotlinx.serialization.Serializable
 
 @Serializable
 data class WalletExtras(
-    @SerialName("settings")
-    val settings: Settings? = null,
+    val totalBalanceInFiat: Boolean = false
 ) : GreenJson<WalletExtras>() {
     override fun kSerializer() = serializer()
 

@@ -751,19 +751,6 @@ class WalletSettingsViewModel(
     private fun saveGlobalSettings(newSettings: Settings) {
         doAsync({
             session.changeGlobalSettings(newSettings)
-            if (!greenWallet.isEphemeral) {
-                greenWallet.also {
-                    // Pass settings to Lightning Shortcut
-                    sessionManager.getWalletSessionOrNull(it.lightningShortcutWallet())
-                        ?.also { lightningSession ->
-                            lightningSession.changeGlobalSettings(newSettings)
-                        }
-
-                    it.extras = WalletExtras(settings = newSettings.forWalletExtras())
-
-                    database.updateWallet(it)
-                }
-            }
         }, onSuccess = {
             postSideEffect(SideEffects.Success())
         })
