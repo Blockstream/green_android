@@ -36,6 +36,7 @@ data class MenuEntry(
     val title: String,
     val iconRes: DrawableResource? = null,
     val imageVector: ImageVector? = null,
+    val enabled: Boolean = true,
     val onClick: () -> Unit = {}
 ) {
     companion object {
@@ -46,6 +47,7 @@ data class MenuEntry(
                 title = navAction.title ?: stringResource(navAction.titleRes!!),
                 iconRes = navAction.icon,
                 imageVector = navAction.imageVector,
+                enabled = navAction.enabled,
                 onClick = navAction.onClick
             )
         }
@@ -70,6 +72,7 @@ fun PopupMenu(modifier: Modifier = Modifier, state: PopupState, entries: List<Me
         entries.forEach {
             DropdownMenuItem(
                 text = { Text(it.title) },
+                enabled = it.enabled,
                 onClick = {
                     it.onClick.invoke()
                     state.isContextMenuVisible.value = false
@@ -115,6 +118,7 @@ fun ActionMenu(
                     TextButton(
                         onClick = it.onClick,
                         modifier = Modifier.align(Alignment.CenterVertically),
+                        enabled = it.enabled,
                         colors = ButtonDefaults.textButtonColors(contentColor = MaterialTheme.colorScheme.onSurface)
                     ) {
                         Text(text = it.title ?: stringResource(it.titleRes!!), style = labelMedium)
@@ -122,7 +126,7 @@ fun ActionMenu(
                 } else {
                     IconButton(onClick = {
                         it.onClick()
-                    }) {
+                    }, enabled = it.enabled) {
                         it.icon?.also {
                             Icon(
                                 painter = painterResource(it),

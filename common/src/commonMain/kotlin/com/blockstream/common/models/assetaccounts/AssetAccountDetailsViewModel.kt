@@ -26,7 +26,6 @@ import com.blockstream.green.utils.Loggable
 import com.blockstream.ui.events.Event
 import com.blockstream.ui.navigation.NavAction
 import com.blockstream.ui.navigation.NavData
-import org.jetbrains.compose.resources.getString
 import com.rickclephas.kmp.nativecoroutines.NativeCoroutinesState
 import com.rickclephas.kmp.observableviewmodel.coroutineScope
 import com.rickclephas.kmp.observableviewmodel.launch
@@ -38,6 +37,7 @@ import kotlinx.coroutines.flow.filter
 import kotlinx.coroutines.flow.launchIn
 import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.flow.onEach
+import org.jetbrains.compose.resources.getString
 
 abstract class AssetAccountDetailsViewModelAbstract(
     greenWallet: GreenWallet, accountAssetOrNull: AccountAsset? = null
@@ -232,7 +232,7 @@ class AssetAccountDetailsViewModel(
         accountAsset: AccountAsset?,
         watchOnly: Boolean
     ): List<NavAction> {
-        if (account.isLightning) {
+        if (account.isLightning || watchOnly) {
             return emptyList()
         }
 
@@ -244,7 +244,7 @@ class AssetAccountDetailsViewModel(
                 onClick = {
                     postEvent(NavigateDestinations.RenameAccount(greenWallet = greenWallet, account = account))
                 }
-            ).takeIf { !watchOnly },
+            ),
             
             NavAction(
                 title = getString(Res.string.id_watchonly),
@@ -260,20 +260,17 @@ class AssetAccountDetailsViewModel(
                         postEvent(NavigateDestinations.WatchOnlyCredentialsSettings(greenWallet = greenWallet, network = account.network))
                     }
                 }
-            ).takeIf { !watchOnly },
+            ),
             
             NavAction(
                 title = getString(Res.string.id_archive_account),
                 icon = Res.drawable.box_arrow_down,
                 isMenuEntry = true,
+                enabled = !account.isFunded(session) && !account.hasUnconfirmedTransactions(session),
                 onClick = {
                     postEvent(Events.ArchiveAccount(account))
                 }
-            ).takeIf { 
-                !watchOnly &&
-                !account.isFunded(session) &&
-                !account.hasUnconfirmedTransactions(session)
-            }
+            )
         )
     }
 

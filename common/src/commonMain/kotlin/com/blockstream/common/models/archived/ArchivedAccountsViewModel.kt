@@ -9,6 +9,7 @@ import com.blockstream.common.extensions.launchIn
 import com.blockstream.common.extensions.previewAccountAssetBalance
 import com.blockstream.common.extensions.previewWallet
 import com.blockstream.common.gdk.data.AccountAssetBalance
+import com.blockstream.common.gdk.data.AccountType
 import com.blockstream.common.models.GreenViewModel
 import com.blockstream.ui.navigation.NavData
 import com.rickclephas.kmp.nativecoroutines.NativeCoroutinesState
@@ -35,9 +36,13 @@ class ArchivedAccountsViewModel(greenWallet: GreenWallet, navigateToRoot: Boolea
     ArchivedAccountsViewModelAbstract(greenWallet = greenWallet, navigateToRoot = navigateToRoot) {
 
     override val archivedAccounts: StateFlow<DataState<List<AccountAssetBalance>>> =
-        session.allAccounts.map {
+        session.allAccounts.map { allAccounts ->
             DataState.Success(
-                it.filter { it.hidden && it.hasHistory(session) }.map {
+                allAccounts.filter {
+                    it.hidden
+                }.filter {
+                    it.hasHistory(session) || !(it.type == AccountType.BIP49_SEGWIT_WRAPPED && it.pointer == 0L) // GDK default account
+                }.map {
                     AccountAssetBalance.create(accountAsset = it.accountAsset, session = session)
                 }
             )

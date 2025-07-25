@@ -1754,7 +1754,7 @@ class GdkSession constructor(
     private suspend fun initializeSessionData(wallet: GreenWallet?, initNetwork: String?, initAccount: Long?) {
         // Check if active account index was archived from 1) a different client (multisig) or 2) from cached Singlesig hww session
         // Expect refresh = true to be already called
-        updateAccounts()
+        updateAccounts(unarchiveFunded = true)
 
         _activeAccountStateFlow.value = accounts.value.find {
             it.networkId == initNetwork && it.pointer == initAccount && !it.hidden
@@ -2054,7 +2054,7 @@ class GdkSession constructor(
         _activeAccountStateFlow.value = accounts.value.find { it.id == account.id } ?: account
     }
 
-    fun removeAccount(account: Account) {
+    suspend fun removeAccount(account: Account) {
         if (account.isLightning) {
             hasLightning = false
 
@@ -2217,7 +2217,7 @@ class GdkSession constructor(
                 accountsAndBalancesMutex.withLock {
 
                     // Update accounts
-                    updateAccounts(refresh = refresh)
+                    updateAccounts(refresh = refresh, unarchiveFunded = true)
 
                     for (account in this@GdkSession.allAccounts.value) {
                         if ((updateBalancesForAccounts == null && updateBalancesForNetwork == null) || updateBalancesForAccounts?.find { account.id == it.id } != null || account.network == updateBalancesForNetwork) {
@@ -2634,12 +2634,20 @@ class GdkSession constructor(
         }
     }
 
-    private fun updateAccounts(refresh: Boolean = false) {
+    private suspend fun updateAccounts(refresh: Boolean = false, unarchiveFunded: Boolean = false) {
         getAccounts(refresh).also { fetchedAccounts ->
             _allAccountsStateFlow.value = fetchedAccounts
+
             fetchedAccounts.filter { !it.hidden }.also {
                 _accountsStateFlow.value = it
                 _zeroAccounts.value = it.isEmpty() && failedNetworks.value.isEmpty()
+            }
+
+            if (unarchiveFunded) {
+                // Unarchive accounts if they are hidden and funded
+                fetchedAccounts.filter { it.hidden && it.isFunded(this) }.forEach {
+                    updateAccount(it, isHidden = false)
+                }
             }
 
             // Update active account to get fresh data, also prevent it from being archived and active

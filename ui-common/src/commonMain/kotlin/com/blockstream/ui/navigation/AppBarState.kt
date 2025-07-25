@@ -43,6 +43,7 @@ data class NavAction(
     val icon: DrawableResource? = null,
     val imageVector: ImageVector? = null,
     val isMenuEntry: Boolean = false,
+    val enabled: Boolean = true,
     val onClick: () -> Unit = { }
 )
 
