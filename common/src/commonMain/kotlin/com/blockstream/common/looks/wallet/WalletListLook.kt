@@ -16,7 +16,6 @@ data class WalletListLook constructor(
     val subtitle: String,
     val isWatchOnly: Boolean,
     val isConnected: Boolean,
-    val isLightningShortcutConnected: Boolean,
     val icon: WalletIcon,
 ) {
 
@@ -24,8 +23,6 @@ data class WalletListLook constructor(
 
         suspend fun create(wallet: GreenWallet, sessionManager: SessionManager): WalletListLook {
             val session = sessionManager.getWalletSessionOrCreate(wallet)
-            val lightningShortcutSession =
-                sessionManager.getWalletSessionOrNull(wallet.lightningShortcutWallet())
 
             return WalletListLook(
                 greenWallet = wallet,
@@ -38,7 +35,6 @@ data class WalletListLook constructor(
                 },
                 isWatchOnly = wallet.isWatchOnly,
                 isConnected = session.isConnected,
-                isLightningShortcutConnected = lightningShortcutSession?.isConnected == true,
                 icon = wallet.icon
             )
         }

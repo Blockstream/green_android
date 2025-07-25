@@ -187,10 +187,6 @@ data class GreenWallet constructor(
             else -> WalletIcon.REGULAR
         }
 
-    fun lightningShortcutWallet(): GreenWallet {
-        return copy(wallet = wallet.copy(id = "${wallet.id}-lightning-shortcut", is_lightning = true), ephemeralIdOrNull = 0)
-    }
-
     companion object {
         fun createWallet(
             name: String,
