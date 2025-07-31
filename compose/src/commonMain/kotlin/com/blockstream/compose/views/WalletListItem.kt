@@ -28,7 +28,6 @@ import blockstream_green.common.generated.resources.text_aa
 import blockstream_green.common.generated.resources.trash
 import com.adamglin.PhosphorIcons
 import com.adamglin.phosphoricons.Regular
-import com.adamglin.phosphoricons.regular.Binoculars
 import com.adamglin.phosphoricons.regular.CaretRight
 import com.blockstream.common.data.GreenWallet
 import com.blockstream.common.looks.wallet.WalletListLook
@@ -82,14 +81,13 @@ private fun WalletListRow(
             Text(text = subtitle, style = bodySmall, color = whiteMedium)
         }
 
-
-        if (isWatchOnly) {
-            Icon(
-                imageVector = PhosphorIcons.Regular.Binoculars,
-                contentDescription = null,
-                tint = whiteLow
-            )
-        }
+//        if (isWatchOnly) {
+//            Icon(
+//                imageVector = PhosphorIcons.Regular.Binoculars,
+//                contentDescription = null,
+//                tint = whiteLow
+//            )
+//        }
 
         if (isConnected) {
             GreenCircle(size = 6)

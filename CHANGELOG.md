@@ -3,7 +3,7 @@ All notable changes to this project will be documented in this file.
 
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/).
 
-## [Unreleased]
+## [5.0.7] - 2025-07-31
 
 #### Added
 - Asset account details and list screens to view account-specific asset transactions and balances
@@ -12,6 +12,10 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/).
 - Watch-only security screen with informative description and learn more link
 
 #### Fixed
+- 2FA popup being dismissed when user clicked outside of the dialog
+- Crash when sharing address on receive screen
+- Show alerts for expired 2FA
+- Display total balance in user selected btc or fiat denomination
 
 ## [5.0.6] - 2025-07-01
 
