@@ -750,6 +750,7 @@
     <string name="id_log_in_to_your_multisig_shield">Log in to your Multisig Shield watch-only wallet with a username and password. You can create your watch-only credentials after logging into your Multisig Shield wallet.</string>
     <string name="id_log_in_using_mnemonic">Log in using mnemonic</string>
     <string name="id_log_in_via_watchonly_to_receive">Log in via Watch-only to receive funds and check balance.</string>
+    <string name="id_watchonly_description">In a watch-only wallet, your private keys remain offline for maximum security. This allows you to safely monitor your balance, history and create addresses on the go. To send, transactions are signed with your offline keys. Learn more.</string>
     <string name="id_log_out">Log out</string>
     <string name="id_logged_in_wallets">Logged in wallets</string>
     <string name="id_logging_in">Logging in…</string>

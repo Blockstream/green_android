@@ -12,7 +12,6 @@ import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.rememberScrollState
-import androidx.compose.foundation.text.ClickableText
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
@@ -46,7 +45,7 @@ import com.blockstream.compose.components.GreenButtonType
 import com.blockstream.compose.components.Promo
 import com.blockstream.compose.components.Rive
 import com.blockstream.compose.components.RiveAnimation
-import com.blockstream.compose.extensions.colorText
+import com.blockstream.compose.extensions.linkText
 import com.blockstream.compose.theme.bodyLarge
 import com.blockstream.compose.theme.bodyMedium
 import com.blockstream.compose.theme.displayLarge
@@ -139,30 +138,23 @@ fun HomeScreen(
                                     viewModel.postEvent(HomeViewModel.LocalEvents.ConnectJade)
                                 }
 
-                                val annotatedString = colorText(
+                                val annotatedString = linkText(
                                     text = stringResource(Res.string.id_by_using_blockstream_app_you_agree),
-                                    coloredTexts = listOf(
-                                        Res.string.id_terms_of_service, Res.string.id_privacy_policy
-                                    ).map { stringResource(it) })
+                                    linkTexts = listOf(
+                                        stringResource(Res.string.id_terms_of_service) to {
+                                            viewModel.postEvent(HomeViewModel.LocalEvents.ClickTermsOfService())
+                                        }, stringResource(Res.string.id_privacy_policy) to {
+                                            viewModel.postEvent(HomeViewModel.LocalEvents.ClickPrivacyPolicy())
+                                        }
+                                    )
+                                )
 
-                                ClickableText(
+                                Text(
                                     text = annotatedString,
                                     modifier = Modifier.padding(top = 14.dp)
                                         .padding(horizontal = 16.dp),
-                                    style = bodyMedium.copy(textAlign = TextAlign.Center),
-                                    onClick = {
-                                        annotatedString.getStringAnnotations(
-                                            "Index", start = it, end = it
-                                        ).firstOrNull()?.item?.toIntOrNull()?.also { index ->
-                                            (if (index == 0) {
-                                                HomeViewModel.LocalEvents.ClickTermsOfService()
-                                            } else {
-                                                HomeViewModel.LocalEvents.ClickPrivacyPolicy()
-                                            }).also { event ->
-                                                viewModel.postEvent(event)
-                                            }
-                                        }
-                                    })
+                                    style = bodyMedium.copy(textAlign = TextAlign.Center)
+                                )
                             }
                         }
 

@@ -4,7 +4,6 @@ import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.rememberScrollState
-import androidx.compose.foundation.text.ClickableText
 import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material3.Icon
@@ -47,7 +46,7 @@ import com.blockstream.common.models.settings.TwoFactorSetupViewModelAbstract
 import com.blockstream.common.navigation.NavigateDestinations
 import com.blockstream.compose.components.GreenButton
 import com.blockstream.compose.components.GreenQR
-import com.blockstream.compose.extensions.colorText
+import com.blockstream.compose.extensions.linkText
 import com.blockstream.compose.extensions.onValueChange
 import com.blockstream.compose.theme.bodyLarge
 import com.blockstream.compose.theme.bodyMedium
@@ -215,29 +214,22 @@ fun TwoFactorSetupScreen(
                     horizontalAlignment = Alignment.CenterHorizontally
                 ) {
 
-                    val annotatedText1 = colorText(
+                    val annotatedText1 = linkText(
                         text = stringResource(Res.string.id_by_continuing_you_agree_to),
-                        coloredTexts = listOf(
-                            stringResource(Res.string.id_terms_of_service),
-                            stringResource(Res.string.id_privacy_policy)
+                        linkTexts = listOf(
+                            stringResource(Res.string.id_terms_of_service) to {
+                                viewModel.postEvent(TwoFactorSetupViewModel.LocalEvents.ClickTermsOfService())
+                            },
+                            stringResource(Res.string.id_privacy_policy) to {
+                                viewModel.postEvent(TwoFactorSetupViewModel.LocalEvents.ClickPrivacyPolicy())
+                            }
                         ),
                         baseColor = whiteMedium,
                     )
 
-                    ClickableText(
+                    Text(
                         text = annotatedText1,
                         style = bodyMedium.copy(textAlign = TextAlign.Center),
-                        onClick = { offset ->
-                            annotatedText1.getStringAnnotations(
-                                tag = "Index", start = offset, end = offset
-                            ).firstOrNull()?.item?.toIntOrNull()?.let { index ->
-                                if (index == 0) {
-                                    viewModel.postEvent(TwoFactorSetupViewModel.LocalEvents.ClickTermsOfService())
-                                } else {
-                                    viewModel.postEvent(TwoFactorSetupViewModel.LocalEvents.ClickPrivacyPolicy())
-                                }
-                            }
-                        }
                     )
 
                     Text(
@@ -247,24 +239,19 @@ fun TwoFactorSetupScreen(
                         textAlign = TextAlign.Center
                     )
 
-                    val annotatedText2 = colorText(
+                    val annotatedText2 = linkText(
                         text = stringResource(Res.string.id_for_help_visit),
-                        coloredTexts = listOf(
-                            stringResource(Res.string.id_helpblockstreamcom),
+                        linkTexts = listOf(
+                            stringResource(Res.string.id_helpblockstreamcom) to {
+                                viewModel.postEvent(TwoFactorSetupViewModel.LocalEvents.ClickHelp())
+                            },
                         ),
                         baseColor = whiteMedium,
                     )
 
-                    ClickableText(
+                    Text(
                         text = annotatedText2,
-                        style = bodyMedium.copy(textAlign = TextAlign.Center),
-                        onClick = { offset ->
-                            annotatedText2.getStringAnnotations(
-                                tag = "Index", start = offset, end = offset
-                            ).firstOrNull()?.let { index ->
-                                viewModel.postEvent(TwoFactorSetupViewModel.LocalEvents.ClickHelp())
-                            }
-                        }
+                        style = bodyMedium.copy(textAlign = TextAlign.Center)
                     )
                 }
             }

@@ -9,6 +9,7 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/).
 - Asset account details and list screens to view account-specific asset transactions and balances
 - Load more transactions functionality in asset account details screen
 - Asset account details screen with menu actions (rename, watch-only, archive) for individual accounts
+- Watch-only security screen with informative description and learn more link
 
 #### Fixed
 

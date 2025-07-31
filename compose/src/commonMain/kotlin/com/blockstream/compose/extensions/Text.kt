@@ -12,8 +12,10 @@ import androidx.compose.ui.geometry.Size
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.drawscope.withTransform
 import androidx.compose.ui.text.AnnotatedString
+import androidx.compose.ui.text.LinkAnnotation
 import androidx.compose.ui.text.SpanStyle
 import androidx.compose.ui.text.TextLayoutResult
+import androidx.compose.ui.text.TextLinkStyles
 import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.buildAnnotatedString
 import androidx.compose.ui.text.drawText
@@ -26,6 +28,40 @@ import com.blockstream.common.utils.nthIndexOf
 import com.blockstream.compose.theme.md_theme_primary
 import com.blockstream.compose.theme.textHigh
 import kotlin.math.sqrt
+
+@Composable
+fun linkText(
+    text: String,
+    linkTexts: List<Pair<String, (() -> Unit)>>,
+    baseColor: Color = textHigh,
+    color: Color = md_theme_primary
+): AnnotatedString {
+    return remember(text, linkTexts) {
+        buildAnnotatedString {
+            withStyle(style = SpanStyle(color = baseColor)) {
+                append(text)
+            }
+
+            linkTexts.onEachIndexed { index, coloredText ->
+                val start = text.lowercase().indexOf(coloredText.first.lowercase())
+                if (start != -1) {
+
+                    addLink(
+                        LinkAnnotation.Clickable(
+                            tag = "RichTextLink",
+                            styles = TextLinkStyles(style = SpanStyle(color = color)),
+                            linkInteractionListener = {
+                                coloredText.second.invoke()
+                            }
+                        ),
+                        start = start,
+                        end = start + coloredText.first.length
+                    )
+                }
+            }
+        }
+    }
+}
 
 @Composable
 fun colorText(
