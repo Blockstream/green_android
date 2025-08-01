@@ -33,6 +33,7 @@ import com.blockstream.compose.GreenPreview
 import com.blockstream.compose.components.GreenButton
 import com.blockstream.compose.components.GreenButtonSize
 import com.blockstream.compose.components.GreenButtonType
+import com.blockstream.compose.components.OnProgressStyle
 import com.blockstream.compose.extensions.icon
 import com.blockstream.compose.screens.jade.JadeQRResult
 import com.blockstream.compose.theme.bodyLarge
@@ -70,7 +71,7 @@ fun ImportPubKeyScreen(
     val deviceModel = viewModel.deviceModel
     val onProgress by viewModel.onProgress.collectAsStateWithLifecycle()
 
-    SetupScreen(viewModel = viewModel) {
+    SetupScreen(viewModel = viewModel, onProgressStyle = OnProgressStyle.Disabled) {
 
         Column(
             modifier = Modifier.weight(2f),

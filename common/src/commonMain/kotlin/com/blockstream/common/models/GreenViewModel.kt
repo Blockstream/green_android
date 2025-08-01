@@ -104,6 +104,7 @@ import kotlinx.coroutines.withTimeout
 import org.koin.core.component.KoinComponent
 import org.koin.core.component.inject
 import kotlin.time.Duration
+import kotlin.time.Duration.Companion.minutes
 
 open class SimpleGreenViewModel(
     greenWalletOrNull: GreenWallet? = null,
@@ -239,6 +240,9 @@ open class GreenViewModel constructor(
     private val _isHwWatchOnly = MutableStateFlow(false)
     val isHwWatchOnly = _isHwWatchOnly
 
+    private val _isQrWatchOnly = MutableStateFlow(false)
+    val isQrWatchOnly = _isQrWatchOnly
+
     init {
         // It's better to initiate the ViewModel with a bootstrap() call
         // https://kotlinlang.org/docs/inheritance.html#derived-class-initialization-order
@@ -283,6 +287,7 @@ open class GreenViewModel constructor(
         sessionOrNull?.isWatchOnly?.onEach {
             _isWatchOnly.value = it
             _isHwWatchOnly.value = session.isHwWatchOnly
+            _isQrWatchOnly.value = greenWalletOrNull?.isWatchOnlyQr ?: false
         }?.launchIn(this)
 
         _event.onEach {
@@ -1122,7 +1127,7 @@ open class GreenViewModel constructor(
             countly.importWallet(session)
 
             wallet
-        }, onSuccess = {
+        }, timeout = 1.minutes, onSuccess = {
             postSideEffect(SideEffects.NavigateTo(NavigateDestinations.WalletOverview(it)))
         })
     }

@@ -27,15 +27,17 @@ fun GreenConfirmButton(
     val isHwWatchOnly by viewModel.isHwWatchOnly.collectAsStateWithLifecycle()
 
     if (isWatchOnly && !isSweep) {
-        GreenButton(
-            text = stringResource(Res.string.id_sign_transaction_via_qr),
-            enabled = buttonEnabled,
-            size = GreenButtonSize.BIG,
-            modifier = Modifier.fillMaxWidth(),
-            onClick = {
-                onConfirm.invoke(true)
-            }
-        )
+        if(!viewModel.account.isLiquid) {
+            GreenButton(
+                text = stringResource(Res.string.id_sign_transaction_via_qr),
+                enabled = buttonEnabled,
+                size = GreenButtonSize.BIG,
+                modifier = Modifier.fillMaxWidth(),
+                onClick = {
+                    onConfirm.invoke(true)
+                }
+            )
+        }
 
         if (isHwWatchOnly) {
             GreenButton(

@@ -774,7 +774,8 @@ class GdkSession constructor(
             }
         }
 
-    fun disconnect() {
+    private val disconnectMutex = Mutex()
+    suspend fun disconnect() {
         logger.d { "Disconnect" }
 
         _isConnectedState.value = false
@@ -829,7 +830,7 @@ class GdkSession constructor(
         _walletActiveEventInvalidated = true
         _accountEmptiedEvent = null
 
-        val gaSessionToBeDestroyed = gdkSessions.values.toList()
+        val gaSessionToBeDestroyed = disconnectMutex.withLock { gdkSessions.values.toList() }
 
         // Create a new gaSession
         gdkSessions.clear()
@@ -852,22 +853,6 @@ class GdkSession constructor(
         gaSessionToBeDestroyed.forEach {
             logger.d { "Destroy GDK Session $it" }
             gdk.destroySession(it)
-        }
-    }
-
-    private fun resetNetwork(network: Network) {
-        // Remove as active network
-        activeSessions.remove(network)
-
-        gdkSessions.remove(network)?.also { gaSessionToBeDestroyed ->
-            gdk.destroySession(gaSessionToBeDestroyed)
-        }
-
-        // Init a new Session and connect
-        try {
-            gdk.connect(gdkSession(network), createConnectionParams(network))
-        } catch (e: Exception) {
-            e.printStackTrace()
         }
     }
 
@@ -903,7 +888,23 @@ class GdkSession constructor(
         return false
     }
 
-    private fun prepareHttpRequest() {
+    private fun resetNetwork(network: Network) {
+        // Remove as active network
+        activeSessions.remove(network)
+
+        gdkSessions.remove(network)?.also { gaSessionToBeDestroyed ->
+            gdk.destroySession(gaSessionToBeDestroyed)
+        }
+
+        // Init a new Session and connect
+        try {
+            gdk.connect(gdkSession(network), createConnectionParams(network))
+        } catch (e: Exception) {
+            e.printStackTrace()
+        }
+    }
+
+    private suspend fun prepareHttpRequest() {
         logger.i { "Prepare HTTP Request Provider" }
         disconnect()
 
@@ -3081,13 +3082,14 @@ class GdkSession constructor(
     }
 
     private fun scanExpired2FA() {
-        scope.launch(context = logException(countly)) {
-            _expired2FAStateFlow.value = accounts.value.filter {
-
-                it.type == AccountType.STANDARD && getUnspentOutputs(
-                    account = it,
-                    isExpired = true
-                ).unspentOutputs.isNotEmpty()
+        if (!isWatchOnlyValue) {
+            scope.launch(context = logException(countly)) {
+                _expired2FAStateFlow.value = accounts.value.filter {
+                    it.type == AccountType.STANDARD && getUnspentOutputs(
+                        account = it,
+                        isExpired = true
+                    ).unspentOutputs.isNotEmpty()
+                }
             }
         }
     }
@@ -3323,7 +3325,7 @@ class GdkSession constructor(
 
     internal fun destroy(disconnect: Boolean = true) {
         if (disconnect) {
-            disconnect()
+            disconnectAsync()
         }
         scope.cancel("Destroy")
     }

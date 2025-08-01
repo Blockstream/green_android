@@ -38,6 +38,7 @@ import com.blockstream.compose.components.GreenButtonSize
 import com.blockstream.compose.components.GreenButtonType
 import com.blockstream.compose.components.GreenQR
 import com.blockstream.compose.components.GreenScanner
+import com.blockstream.compose.components.OnProgressStyle
 import com.blockstream.compose.theme.GreenTheme
 import com.blockstream.compose.theme.green
 import com.blockstream.compose.theme.headlineSmall
@@ -79,7 +80,12 @@ fun JadeQRScreen(
         }
     }
 
-    SetupScreen(viewModel = viewModel, withPadding = false, withBottomInsets = false, sideEffectsHandler = {
+    SetupScreen(
+        viewModel = viewModel,
+        withPadding = false,
+        withBottomInsets = false,
+        onProgressStyle = OnProgressStyle.Disabled,
+        sideEffectsHandler = {
         when (it) {
             is SideEffects.Success -> {
                 if (viewModel.operation is JadeQrOperation.PinUnlock) {

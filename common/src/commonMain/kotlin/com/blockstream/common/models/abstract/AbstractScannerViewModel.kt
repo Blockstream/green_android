@@ -15,6 +15,8 @@ import kotlinx.coroutines.CancellationException
 import kotlinx.coroutines.CompletableDeferred
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.launch
+import kotlinx.coroutines.sync.Mutex
+import kotlinx.coroutines.sync.withLock
 
 abstract class AbstractScannerViewModel(val isDecodeContinuous: Boolean = false, greenWalletOrNull: GreenWallet? = null) :
     GreenViewModel(greenWalletOrNull = greenWalletOrNull) {
@@ -28,13 +30,18 @@ abstract class AbstractScannerViewModel(val isDecodeContinuous: Boolean = false,
     internal val _progress = MutableStateFlow<Int?>(null)
     val progress: StateFlow<Int?> = _progress
 
-    private fun barcodeScannerResult(scanResult: ScanResult) {
+    private val mutex = Mutex()
+    private suspend fun barcodeScannerResult(scanResult: ScanResult) {
         if (appInfo.isDevelopmentOrDebug) {
             logger.d { "QR (DevelopmentOrDebug): $scanResult" }
         }
 
-        isScanComplete = true
-        setScanResult(scanResult)
+        mutex.withLock {
+            if (!isScanComplete) {
+                isScanComplete = true
+                setScanResult(scanResult)
+            }
+        }
     }
 
     internal fun resetScanner() {

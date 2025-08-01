@@ -19,9 +19,7 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.vector.ImageVector
-import androidx.compose.ui.text.SpanStyle
 import androidx.compose.ui.unit.dp
-import androidx.compose.ui.unit.sp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import blockstream_green.common.generated.resources.Res
 import blockstream_green.common.generated.resources.id_biometrics
@@ -30,7 +28,6 @@ import blockstream_green.common.generated.resources.id_connect_hardware_wallet
 import blockstream_green.common.generated.resources.id_firmware_update
 import blockstream_green.common.generated.resources.id_genuine_check
 import blockstream_green.common.generated.resources.id_hardware
-import blockstream_green.common.generated.resources.id_learn_more
 import blockstream_green.common.generated.resources.id_mobile
 import blockstream_green.common.generated.resources.id_pin
 import blockstream_green.common.generated.resources.id_recovery
@@ -38,7 +35,6 @@ import blockstream_green.common.generated.resources.id_recovery_phrase
 import blockstream_green.common.generated.resources.id_security_level_
 import blockstream_green.common.generated.resources.id_unlock_method
 import blockstream_green.common.generated.resources.id_watchonly
-import blockstream_green.common.generated.resources.id_watchonly_description
 import blockstream_green.common.generated.resources.id_your_device
 import blockstream_green.common.generated.resources.id_your_jade
 import com.adamglin.PhosphorIcons
@@ -76,19 +72,15 @@ import com.blockstream.compose.components.ListHeader
 import com.blockstream.compose.components.OnProgressStyle
 import com.blockstream.compose.components.Promo
 import com.blockstream.compose.screens.overview.components.WatchOnlyWalletDescription
-import com.blockstream.compose.theme.bodyMedium
 import com.blockstream.compose.theme.displaySmall
 import com.blockstream.compose.theme.green
 import com.blockstream.compose.theme.labelLarge
-import com.blockstream.compose.theme.md_theme_primary
 import com.blockstream.compose.theme.titleMedium
 import com.blockstream.compose.theme.titleSmall
 import com.blockstream.compose.theme.whiteMedium
 import com.blockstream.compose.utils.SetupScreen
 import com.blockstream.ui.components.GreenColumn
 import com.blockstream.ui.components.GreenRow
-import com.blockstream.ui.components.RichSpan
-import com.blockstream.ui.components.RichText
 import com.blockstream.ui.navigation.LocalInnerPadding
 import com.blockstream.ui.navigation.getResult
 import com.blockstream.ui.utils.bottom
@@ -121,6 +113,7 @@ fun SecurityScreen(viewModel: SecurityViewModelAbstract) {
     val isJade by viewModel.isJade.collectAsStateWithLifecycle()
 
     val isWatchOnly by viewModel.isWatchOnly.collectAsStateWithLifecycle()
+    val isQrWatchOnly by viewModel.isQrWatchOnly.collectAsStateWithLifecycle()
     val showGenuineCheck by viewModel.showGenuineCheck.collectAsStateWithLifecycle()
 
     SetupScreen(
@@ -189,7 +182,7 @@ fun SecurityScreen(viewModel: SecurityViewModelAbstract) {
                 }
             }
 
-            if (isHardware) {
+            if (isHardware && !isQrWatchOnly) {
 
                 if (isJade) {
                     item(key = "jade_header") {
