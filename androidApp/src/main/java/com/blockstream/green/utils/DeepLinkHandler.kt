@@ -31,7 +31,7 @@ object DeepLinkHandler : Loggable() {
     private fun handleRedirect(uri: Uri, mainViewModel: MainViewModel): Boolean {
         return when (uri.path) {
             "/transactions" -> {
-                mainViewModel.postEvent(Events.EventSideEffect(sideEffect = SideEffects.NavigateToTransactTab))
+                mainViewModel.postEvent(Events.EventSideEffect(sideEffect = SideEffects.NavigateAfterSendTransaction))
                 true
             }
 

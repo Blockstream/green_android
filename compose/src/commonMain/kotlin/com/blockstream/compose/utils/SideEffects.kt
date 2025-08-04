@@ -352,21 +352,13 @@ fun HandleSideEffect(
                     }
                 }
 
-                is SideEffects.NavigateToTransactTab -> {
+                is SideEffects.NavigateAfterSendTransaction -> {
                     viewModel.greenWalletOrNull?.also { greenWallet ->
                         while (navigator.currentBackStack.value.size > 2 && navigator.currentBackStackEntry?.destination?.hasRoute(
                                 NavigateDestinations.Transact::class
                             ) != true
                         ) {
                             navigator.navigateUp()
-                        }
-
-                        if (navigator.currentBackStackEntry?.destination?.hasRoute(NavigateDestinations.Transact::class) != true) {
-                            navigator.navigate(
-                                NavigateDestinations.Transact(
-                                    greenWallet = greenWallet
-                                )
-                            )
                         }
                     }
                 }
