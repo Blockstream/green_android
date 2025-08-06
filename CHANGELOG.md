@@ -3,6 +3,11 @@ All notable changes to this project will be documented in this file.
 
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/).
 
+## [Unreleased]
+
+#### Fixed
+- Buy screen now correctly pre-selects the account when navigating from account details
+
 ## [5.0.7] - 2025-07-31
 
 #### Added

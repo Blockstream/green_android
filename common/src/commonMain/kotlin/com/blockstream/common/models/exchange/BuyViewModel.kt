@@ -16,6 +16,7 @@ import com.blockstream.common.extensions.ifConnected
 import com.blockstream.common.extensions.launchIn
 import com.blockstream.common.extensions.previewAccountAsset
 import com.blockstream.common.extensions.previewWallet
+import com.blockstream.common.gdk.data.AccountAsset
 import com.blockstream.common.gdk.data.AccountAssetBalanceList
 import com.blockstream.common.gdk.data.Address
 import com.blockstream.common.managers.LocaleManager
@@ -49,9 +50,11 @@ import org.jetbrains.compose.resources.getString
 import org.koin.core.component.inject
 
 abstract class BuyViewModelAbstract(
-    greenWallet: GreenWallet
+    greenWallet: GreenWallet,
+    accountAssetOrNull: AccountAsset? = null
 ) : CreateTransactionViewModelAbstract(
-    greenWallet = greenWallet
+    greenWallet = greenWallet,
+    accountAssetOrNull = accountAssetOrNull
 ) {
     override fun screenName(): String = "Buy"
 
@@ -149,8 +152,8 @@ abstract class BuyViewModelAbstract(
     }
 }
 
-class BuyViewModel(greenWallet: GreenWallet) :
-    BuyViewModelAbstract(greenWallet = greenWallet) {
+class BuyViewModel(greenWallet: GreenWallet, initialAccountAsset: AccountAsset? = null) :
+    BuyViewModelAbstract(greenWallet = greenWallet, accountAssetOrNull = initialAccountAsset) {
 
     private val hideWalletBackupAlert = MutableStateFlow(false)
 
@@ -379,7 +382,7 @@ class BuyViewModel(greenWallet: GreenWallet) :
 }
 
 class BuyViewModelPreview(greenWallet: GreenWallet) :
-    BuyViewModelAbstract(greenWallet = greenWallet) {
+    BuyViewModelAbstract(greenWallet = greenWallet, accountAssetOrNull = null) {
 
     override val showRecoveryConfirmation: StateFlow<Boolean> = MutableStateFlow(false)
     override val showAccountSelector: StateFlow<Boolean> = MutableStateFlow(true)

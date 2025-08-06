@@ -483,7 +483,8 @@ fun Router(
                 val args = it.toRoute<NavigateDestinations.Buy>()
                 BuyScreen(viewModel {
                     BuyViewModel(
-                        greenWallet = args.greenWallet
+                        greenWallet = args.greenWallet,
+                        initialAccountAsset = args.accountAsset
                     )
                 })
             }

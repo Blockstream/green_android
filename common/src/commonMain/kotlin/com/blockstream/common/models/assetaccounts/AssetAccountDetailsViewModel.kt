@@ -183,7 +183,8 @@ class AssetAccountDetailsViewModel(
         postSideEffect(
             SideEffects.NavigateTo(
                 NavigateDestinations.Buy(
-                    greenWallet = greenWallet
+                    greenWallet = greenWallet,
+                    accountAsset = accountAsset.value
                 )
             )
         )

@@ -374,7 +374,7 @@ sealed class NavigateDestinations : NavigateDestination() {
     data class OnOffRamps(val greenWallet: GreenWallet) : NavigateDestination()
 
     @Serializable
-    data class Buy(val greenWallet: GreenWallet) : NavigateDestination()
+    data class Buy(val greenWallet: GreenWallet, val accountAsset: AccountAsset? = null) : NavigateDestination()
 
     @Serializable
     data class BuyQuotes(val greenWallet: GreenWallet, val quotes: QuotesResponse, val selectedServiceProvider: String?) :
