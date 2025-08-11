@@ -272,7 +272,7 @@ fun HandleSideEffect(
                 }
 
                 is SideEffects.ShareFile -> {
-                    platformManager.shareFile(it.path.toString())
+                    platformManager.shareFile(path = it.path?.toString(), file = it.file)
                 }
 
                 is SideEffects.NavigateBack -> {

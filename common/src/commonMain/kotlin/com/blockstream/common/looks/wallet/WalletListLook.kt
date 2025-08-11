@@ -33,7 +33,7 @@ data class WalletListLook constructor(
                     wallet.isWatchOnly -> getString(Res.string.id_watchonly)
                     else -> getString(Res.string.id_mobile_wallet)
                 },
-                isWatchOnly = wallet.isWatchOnly,
+                isWatchOnly = wallet.isWatchOnly || wallet.isWatchOnlyQr,
                 isConnected = session.isConnected,
                 icon = wallet.icon
             )

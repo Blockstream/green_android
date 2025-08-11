@@ -1,20 +1,21 @@
 package com.blockstream.common.models.jade
 
 import blockstream_green.common.generated.resources.Res
-import blockstream_green.common.generated.resources.arrows_counter_clockwise
 import blockstream_green.common.generated.resources.id_get_watch_only_information_from
 import blockstream_green.common.generated.resources.id_initiate_oracle_communication
 import blockstream_green.common.generated.resources.id_jade_will_securely_create_and
 import blockstream_green.common.generated.resources.id_qr_pin_unlock
-import blockstream_green.common.generated.resources.id_reset
+import blockstream_green.common.generated.resources.id_psbt_saved_to_files
 import blockstream_green.common.generated.resources.id_scan_qr_on_device
 import blockstream_green.common.generated.resources.id_scan_qr_on_jade
 import blockstream_green.common.generated.resources.id_scan_qr_with_device
 import blockstream_green.common.generated.resources.id_scan_qr_with_jade
 import blockstream_green.common.generated.resources.id_scan_your_xpub_on_jade
+import blockstream_green.common.generated.resources.id_success
 import blockstream_green.common.generated.resources.id_validate_pin_and_unlock
 import blockstream_green.common.generated.resources.id_validate_the_transaction_details
 import com.blockstream.common.Urls
+import com.blockstream.common.data.AppConfig
 import com.blockstream.common.data.GreenWallet
 import com.blockstream.common.data.ScanResult
 import com.blockstream.common.devices.DeviceModel
@@ -38,13 +39,25 @@ import com.blockstream.common.models.jade.JadeQRViewModel.Companion.PinUnlockSce
 import com.blockstream.common.models.jade.JadeQRViewModel.Companion.PsbtScenario
 import com.blockstream.common.navigation.NavigateDestinations
 import com.blockstream.common.sideeffects.SideEffects
+import com.blockstream.common.utils.StringHolder
 import com.blockstream.green.utils.Loggable
 import com.blockstream.ui.events.Event
-import com.blockstream.ui.navigation.NavAction
 import com.blockstream.ui.navigation.NavData
 import com.rickclephas.kmp.nativecoroutines.NativeCoroutinesState
 import com.rickclephas.kmp.observableviewmodel.coroutineScope
 import com.rickclephas.kmp.observableviewmodel.launch
+import io.github.vinceglb.filekit.FileKit
+import io.github.vinceglb.filekit.PlatformFile
+import io.github.vinceglb.filekit.cacheDir
+import io.github.vinceglb.filekit.dialogs.FileKitMode
+import io.github.vinceglb.filekit.dialogs.FileKitType
+import io.github.vinceglb.filekit.dialogs.openFilePicker
+import io.github.vinceglb.filekit.dialogs.openFileSaver
+import io.github.vinceglb.filekit.readBytes
+import io.github.vinceglb.filekit.size
+import io.github.vinceglb.filekit.write
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.IO
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -54,12 +67,22 @@ import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.flow.onEach
 import kotlinx.coroutines.isActive
 import kotlinx.coroutines.launch
+import kotlinx.coroutines.withContext
+import kotlinx.datetime.LocalDateTime
+import kotlinx.datetime.TimeZone
+import kotlinx.datetime.format
+import kotlinx.datetime.format.Padding
+import kotlinx.datetime.format.char
+import kotlinx.datetime.toLocalDateTime
 import kotlinx.serialization.Serializable
 import kotlinx.serialization.json.decodeFromJsonElement
 import kotlinx.serialization.json.jsonObject
 import kotlinx.serialization.json.jsonPrimitive
 import org.jetbrains.compose.resources.StringResource
 import org.jetbrains.compose.resources.getString
+import org.koin.core.component.inject
+import kotlin.io.encoding.Base64
+import kotlin.time.Clock
 
 @Serializable
 sealed class JadeQrOperation {
@@ -83,7 +106,7 @@ sealed class JadeQrOperation {
 data class StepInfo(
     val title: StringResource = Res.string.id_scan_qr_on_jade,
     val message: StringResource = Res.string.id_initiate_oracle_communication,
-    val step: Int? = 1,
+    val step: Int = 1,
     val isScan: Boolean = false
 )
 
@@ -140,6 +163,8 @@ class JadeQRViewModel(
     deviceModel = deviceModel,
     greenWalletOrNull = greenWalletOrNull
 ) {
+    private val appConfig: AppConfig by inject()
+
     private var _urParts = MutableStateFlow<List<String>?>(null)
 
     private var _urPartIndex = 0
@@ -163,6 +188,9 @@ class JadeQRViewModel(
         object ClickTroubleshoot : Events.OpenBrowser(Urls.HELP_QR_PIN_UNLOCK)
         object CheckTransactionDetails : Event
         object PinUnlock : Event
+
+        data class ExportPsbt(val saveToDevice: Boolean) : Event
+        data object ImportPsbt : Event
     }
 
     init {
@@ -178,15 +206,10 @@ class JadeQRViewModel(
         combine(scenario, _step) { scenario, step ->
             _navData.value = NavData(
                 title = getString(if (deviceModel.isJade) (if (scenario.isPinUnlock) Res.string.id_qr_pin_unlock else Res.string.id_scan_qr_with_jade) else Res.string.id_scan_qr_with_device),
-                actions = listOfNotNull(
-                    NavAction(
-                        title = getString(Res.string.id_reset),
-                        icon = Res.drawable.arrows_counter_clockwise,
-                        isMenuEntry = false,
-                        onClick = {
-                            restart()
-                        }
-                    ).takeIf { scenario.allowReset && step > 0 })
+                backHandlerEnabled = true,
+                onBackClicked = {
+                    postEvent(Events.NavigateBackUserAction)
+                }
             )
         }.launchIn(this)
 
@@ -226,7 +249,16 @@ class JadeQRViewModel(
 
         }.launchIn(this)
 
-        restart()
+        _step.value = 0
+        _stepInfo.value = scenario.value.steps.first()
+
+        when (operation) {
+            JadeQrOperation.LightningMnemonicExport -> prepareBip8539Request()
+            is JadeQrOperation.Psbt -> preparePsbtRequest()
+            else -> {
+
+            }
+        }
 
         bootstrap()
 
@@ -240,19 +272,6 @@ class JadeQRViewModel(
                         )
                     )
                 )
-            }
-        }
-    }
-
-    private fun restart() {
-        _step.value = 0
-        _stepInfo.value = scenario.value.steps.first()
-
-        when (operation) {
-            JadeQrOperation.LightningMnemonicExport -> prepareBip8539Request()
-            is JadeQrOperation.Psbt -> preparePsbtRequest()
-            else -> {
-
             }
         }
     }
@@ -274,6 +293,13 @@ class JadeQRViewModel(
         })
     }
 
+    private fun previousStep() {
+        if (_step.value > 0) {
+            _step.value--
+            _stepInfo.value = scenario.value.steps[_step.value]
+        }
+    }
+
     private fun nextStep() {
         _step.value++
 
@@ -285,11 +311,101 @@ class JadeQRViewModel(
         }
     }
 
+    private fun exportPsbt(saveToDevice: Boolean) {
+        doAsync({
+            // Convert it to v0 for better compatibility
+            val psbt = session.psbtToV0((operation as JadeQrOperation.Psbt).psbt)
+
+            val filename = Clock.System.now().toLocalDateTime(TimeZone.currentSystemDefault()).format(LocalDateTime.Format {
+                year(padding = Padding.ZERO)
+                char('_')
+                monthNumber(padding = Padding.ZERO)
+                char('_')
+                day(padding = Padding.ZERO)
+                char('_')
+                hour(padding = Padding.ZERO)
+                minute(padding = Padding.ZERO)
+            }).let { "tx_$it" }
+
+            val file = if (saveToDevice) {
+                FileKit.openFileSaver(suggestedName = filename, extension = "psbt") ?: throw Exception("id_action_canceled")
+            } else {
+                PlatformFile(FileKit.cacheDir, "$filename.psbt")
+            }
+
+            file.write(psbt.encodeToByteArray())
+
+            if (saveToDevice) {
+                postSideEffect(SideEffects.Snackbar(text = StringHolder.create(Res.string.id_psbt_saved_to_files)))
+            } else {
+                postSideEffect(SideEffects.ShareFile(file = file))
+            }
+        }, onSuccess = {
+            _isValid.value = true
+        })
+    }
+
+    private fun importPsbt() {
+        doAsync({
+            val file = FileKit.openFilePicker(
+                mode = FileKitMode.Single,
+                type = FileKitType.File(listOf("psbt"))
+            )
+
+            file?.let {
+                withContext(context = Dispatchers.IO) {
+                    // 500 KB
+                    if (file.size() >= 500_000) {
+                        throw Exception("File too big")
+                    }
+
+                    val psbt = file.readBytes()
+
+                    // In binary format
+                    if (session.psbtIsBinary(psbt)) {
+                        Base64.Default.encode(psbt)
+                    } else {
+                        // In Base64 format (Jade)
+                        // Remove all non-printable characters
+                        psbt
+                            .decodeToString()
+                            .replace("\r\n", "")
+                            .replace("\n", "")
+                            .replace("\r", "")
+                            .takeIf { session.psbtIsBase64(it) } ?: throw Exception("Not a valid PSBT")
+                    }
+                }
+            }
+
+        }, onSuccess = { psbt: String? ->
+            psbt?.also {
+                postSideEffect(SideEffects.Success(it))
+                postSideEffect(SideEffects.NavigateBack())
+            }
+        })
+    }
+
     override suspend fun handleEvent(event: Event) {
         super.handleEvent(event)
         when (event) {
+            is Events.NavigateBackUserAction -> {
+                if (_step.value > 0) {
+                    previousStep()
+                } else {
+                    postSideEffect(SideEffects.NavigateBack())
+                }
+            }
+
             is Events.Continue -> {
                 nextStep()
+            }
+
+            is LocalEvents.ExportPsbt -> {
+                exportPsbt(saveToDevice = event.saveToDevice)
+            }
+
+            is LocalEvents.ImportPsbt -> {
+                importPsbt()
             }
 
             is LocalEvents.CheckTransactionDetails -> {
@@ -532,7 +648,7 @@ class JadeQRViewModelPreview(
         }.launchIn(this)
     }
 
-    companion object {
+    companion object : Loggable() {
         fun preview() = JadeQRViewModelPreview()
         fun previewLightning() = JadeQRViewModelPreview(operation = JadeQrOperation.LightningMnemonicExport)
     }

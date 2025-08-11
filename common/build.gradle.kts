@@ -173,6 +173,10 @@ kotlin {
             api(libs.kable.core)
             api(libs.kotlincrypto.hash.md)
             api(libs.kotlincrypto.hash.sha2)
+
+            api(libs.filekit.core)
+            api(libs.filekit.dialogs)
+
             //implementation(libs.compose.action.menu)
             implementation(libs.phosphor.icon)
 

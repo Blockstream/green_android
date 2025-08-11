@@ -17,12 +17,12 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.painter.Painter
+import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import blockstream_green.common.generated.resources.Res
 import blockstream_green.common.generated.resources.arrow_square_out
-import blockstream_green.common.generated.resources.arrows_counter_clockwise
 import blockstream_green.common.generated.resources.blockstream_logo
 import blockstream_green.common.generated.resources.clipboard
 import blockstream_green.common.generated.resources.id_about
@@ -38,6 +38,7 @@ import blockstream_green.common.generated.resources.qr_code
 import blockstream_green.common.generated.resources.question
 import com.adamglin.PhosphorIcons
 import com.adamglin.phosphoricons.Regular
+import com.adamglin.phosphoricons.regular.ArrowCounterClockwise
 import com.adamglin.phosphoricons.regular.Spinner
 import com.blockstream.compose.theme.green
 import com.blockstream.compose.theme.labelLarge
@@ -75,7 +76,7 @@ fun GreenButton(
     type: GreenButtonType = GreenButtonType.COLOR,
     color: GreenButtonColor = GreenButtonColor.GREEN,
     size: GreenButtonSize = GreenButtonSize.NORMAL,
-    icon: Painter? = null,
+    icon: ImageVector? = null,
     enabled: Boolean = true,
     onProgress: Boolean = false,
     onClick: () -> Unit,
@@ -172,8 +173,8 @@ fun GreenButton(
                                 )
                             } else {
                                 Icon(
-                                    painter = icon.takeIf { !onProgress }
-                                        ?: painterResource(Res.drawable.arrows_counter_clockwise),
+                                    imageVector = icon.takeIf { !onProgress }
+                                        ?: PhosphorIcons.Regular.ArrowCounterClockwise,
                                     contentDescription = null,
                                     modifier = Modifier
                                         .size(18.dp)
@@ -226,7 +227,7 @@ fun GreenButton(
             ) {
                 icon?.also {
                     Icon(
-                        painter = it,
+                        imageVector = it,
                         contentDescription = null,
                         modifier = Modifier
                             .padding(end = 6.dp)
@@ -256,7 +257,7 @@ fun GreenButton(
             ) {
                 icon?.also {
                     Icon(
-                        painter = it,
+                        imageVector = it,
                         contentDescription = null,
                         modifier = Modifier
                             .padding(end = 6.dp)

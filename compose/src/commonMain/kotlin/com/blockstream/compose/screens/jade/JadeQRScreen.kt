@@ -13,7 +13,9 @@ import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.Alignment
+import androidx.compose.ui.ExperimentalComposeUiApi
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.ColorFilter
 import androidx.compose.ui.text.style.TextAlign
@@ -21,17 +23,25 @@ import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import blockstream_green.common.generated.resources.Res
 import blockstream_green.common.generated.resources.id_check_transaction_details
+import blockstream_green.common.generated.resources.id_export_to_file
+import blockstream_green.common.generated.resources.id_import_from_file
 import blockstream_green.common.generated.resources.id_next
+import blockstream_green.common.generated.resources.id_save_to_files
+import blockstream_green.common.generated.resources.id_share
 import blockstream_green.common.generated.resources.id_step_1s
 import blockstream_green.common.generated.resources.id_troubleshoot
 import blockstream_green.common.generated.resources.qr_code
 import blockstream_green.common.generated.resources.scan
+import com.blockstream.common.data.MenuEntry
+import com.blockstream.common.data.MenuEntryList
 import com.blockstream.common.events.Events
 import com.blockstream.common.models.jade.JadeQRViewModel
 import com.blockstream.common.models.jade.JadeQRViewModelAbstract
+import com.blockstream.common.models.jade.JadeQRViewModelPreview
 import com.blockstream.common.models.jade.JadeQrOperation
 import com.blockstream.common.navigation.NavigateDestinations
 import com.blockstream.common.sideeffects.SideEffects
+import com.blockstream.compose.GreenPreview
 import com.blockstream.compose.components.GreenButton
 import com.blockstream.compose.components.GreenButtonColor
 import com.blockstream.compose.components.GreenButtonSize
@@ -51,9 +61,12 @@ import com.blockstream.ui.navigation.LocalInnerPadding
 import com.blockstream.ui.navigation.getResult
 import com.blockstream.ui.navigation.setResult
 import com.blockstream.ui.utils.bottom
+import kotlinx.coroutines.launch
 import kotlinx.serialization.Serializable
+import org.jetbrains.compose.resources.getString
 import org.jetbrains.compose.resources.painterResource
 import org.jetbrains.compose.resources.stringResource
+import org.jetbrains.compose.ui.tooling.preview.Preview
 
 @Serializable
 data class JadeQRResult(
@@ -61,12 +74,16 @@ data class JadeQRResult(
     val result: String = ""
 )
 
+@OptIn(ExperimentalComposeUiApi::class)
 @Composable
 fun JadeQRScreen(
     viewModel: JadeQRViewModelAbstract,
 ) {
+    val scope = rememberCoroutineScope()
     val isLightTheme by viewModel.isLightTheme.collectAsStateWithLifecycle()
     val innerPadding = LocalInnerPadding.current
+
+    val step by viewModel.stepInfo.collectAsStateWithLifecycle()
 
     NavigateDestinations.AskJadeUnlock.getResult<Boolean> { isUnlocked ->
         if (!isUnlocked) {
@@ -78,6 +95,10 @@ fun JadeQRScreen(
                 )
             )
         }
+    }
+
+    NavigateDestinations.Menu.getResult<Int> {
+        viewModel.postEvent(JadeQRViewModel.LocalEvents.ExportPsbt(saveToDevice = it == 1))
     }
 
     SetupScreen(
@@ -100,8 +121,6 @@ fun JadeQRScreen(
             }
         }
     }) {
-
-        val step by viewModel.stepInfo.collectAsStateWithLifecycle()
 
         GreenTheme(isLight = isLightTheme) {
 
@@ -201,18 +220,64 @@ fun JadeQRScreen(
 
                     GreenColumn(padding = 0, space = 8) {
 
-                        if (!step.isScan) {
-
-                            if ((viewModel.operation as? JadeQrOperation.Psbt)?.transactionConfirmLook != null) {
+                        if (step.isScan) {
+                            if (viewModel.operation is JadeQrOperation.Psbt) {
                                 GreenButton(
-                                    text = stringResource(Res.string.id_check_transaction_details),
+                                    text = stringResource(Res.string.id_import_from_file),
                                     modifier = Modifier
                                         .fillMaxWidth(),
                                     size = GreenButtonSize.BIG,
                                     color = GreenButtonColor.WHITE,
-                                    type = GreenButtonType.OUTLINE
+                                    type = GreenButtonType.OUTLINE,
+                                    enabled = !onProgress
                                 ) {
-                                    viewModel.postEvent(JadeQRViewModel.LocalEvents.CheckTransactionDetails)
+                                    viewModel.postEvent(JadeQRViewModel.LocalEvents.ImportPsbt)
+                                }
+                            }
+                        } else {
+                            if (viewModel.operation is JadeQrOperation.Psbt) {
+                                if ((viewModel.operation as? JadeQrOperation.Psbt)?.transactionConfirmLook != null) {
+                                    GreenButton(
+                                        text = stringResource(Res.string.id_check_transaction_details),
+                                        modifier = Modifier
+                                            .fillMaxWidth(),
+                                        size = GreenButtonSize.BIG,
+                                        color = GreenButtonColor.WHITE,
+                                        type = GreenButtonType.OUTLINE,
+                                        enabled = !onProgress
+                                    ) {
+                                        viewModel.postEvent(JadeQRViewModel.LocalEvents.CheckTransactionDetails)
+                                    }
+                                }
+
+                                GreenButton(
+                                    text = stringResource(Res.string.id_export_to_file),
+                                    modifier = Modifier
+                                        .fillMaxWidth(),
+                                    size = GreenButtonSize.BIG,
+                                    color = GreenButtonColor.WHITE,
+                                    type = GreenButtonType.OUTLINE,
+                                    enabled = !onProgress
+                                ) {
+                                    scope.launch {
+                                        viewModel.postEvent(
+                                            NavigateDestinations.Menu(
+                                                title = getString(Res.string.id_share),
+                                                entries = MenuEntryList(
+                                                    listOf(
+                                                        MenuEntry(
+                                                            title = getString(Res.string.id_share),
+                                                            iconRes = "share-network"
+                                                        ),
+                                                        MenuEntry(
+                                                            title = getString(Res.string.id_save_to_files),
+                                                            iconRes = "download-simple"
+                                                        ),
+                                                    )
+                                                )
+                                            )
+                                        )
+                                    }
                                 }
                             }
 
@@ -240,5 +305,13 @@ fun JadeQRScreen(
                 }
             }
         }
+    }
+}
+
+@Composable
+@Preview
+fun QrPinUnlockScreenPreview() {
+    GreenPreview {
+        JadeQRScreen(JadeQRViewModelPreview.preview())
     }
 }

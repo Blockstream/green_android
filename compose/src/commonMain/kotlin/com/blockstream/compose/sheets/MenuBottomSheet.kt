@@ -10,8 +10,7 @@ import androidx.compose.runtime.Composable
 import com.blockstream.common.data.MenuEntry
 import com.blockstream.common.data.MenuEntryList
 import com.blockstream.compose.components.GreenBottomSheet
-import com.blockstream.compose.extensions.toDrawableResource
-import org.jetbrains.compose.resources.painterResource
+import com.blockstream.compose.extensions.toImageVector
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -43,10 +42,10 @@ fun MenuBottomSheetView(
                         onSelect.invoke(index, menuEntry)
                         onDismissRequest.invoke()
                     },
-                    leadingIcon = menuEntry.iconRes?.toDrawableResource()?.let {
+                    leadingIcon = menuEntry.iconRes?.toImageVector()?.let {
                         {
                             Icon(
-                                painterResource(it),
+                                imageVector = it,
                                 contentDescription = null
                             )
                         }

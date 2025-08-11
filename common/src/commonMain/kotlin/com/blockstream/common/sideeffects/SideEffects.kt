@@ -15,6 +15,7 @@ import com.blockstream.common.utils.StringHolder
 import com.blockstream.jade.firmware.FirmwareUpgradeRequest
 import com.blockstream.ui.events.Event
 import com.blockstream.ui.sideeffects.SideEffect
+import io.github.vinceglb.filekit.PlatformFile
 import kotlinx.coroutines.CompletableDeferred
 import okio.Path
 import org.jetbrains.compose.resources.DrawableResource
@@ -74,7 +75,7 @@ object SideEffects {
 
     data object Dismiss : SideEffect
     data class Share(val text: String? = null) : SideEffect
-    data class ShareFile(val path: Path) : SideEffect
+    data class ShareFile(val path: Path? = null, val file: PlatformFile? = null) : SideEffect
     data class TwoFactorResolver(val data: TwoFactorResolverData) : SideEffect
     data object OpenDenominationExchangeRate : SideEffect
     data object EnableBluetooth : SideEffect

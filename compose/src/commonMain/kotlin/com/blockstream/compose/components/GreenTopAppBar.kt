@@ -95,7 +95,11 @@ fun GreenTopAppBar(
                 ) { targetState ->
                     when (targetState) {
                         true -> IconButton(onClick = {
-                            goBack()
+                            navData.onBackClicked?.also {
+                                it.invoke()
+                            } ?: run {
+                                goBack()
+                            }
                         }) {
                             Icon(
                                 imageVector = Icons.AutoMirrored.Filled.ArrowBack,

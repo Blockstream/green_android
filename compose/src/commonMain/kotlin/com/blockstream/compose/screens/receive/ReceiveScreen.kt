@@ -55,6 +55,10 @@ import blockstream_green.common.generated.resources.info
 import blockstream_green.common.generated.resources.seal_check
 import blockstream_green.common.generated.resources.share_network
 import blockstream_green.common.generated.resources.warning
+import com.adamglin.PhosphorIcons
+import com.adamglin.phosphoricons.Regular
+import com.adamglin.phosphoricons.regular.SealCheck
+import com.adamglin.phosphoricons.regular.ShareNetwork
 import com.blockstream.common.data.AlertType
 import com.blockstream.common.data.DenominatedValue
 import com.blockstream.common.data.GreenWallet
@@ -446,7 +450,7 @@ fun ReceiveScreen(
                                                     text = stringResource(Res.string.id_verify_on_device),
                                                     type = GreenButtonType.OUTLINE,
                                                     color = GreenButtonColor.GREENER,
-                                                    icon = painterResource(Res.drawable.seal_check),
+                                                    icon = PhosphorIcons.Regular.SealCheck,
                                                     modifier = Modifier.fillMaxWidth(),
                                                     enabled = !onProgress
                                                 ) {
@@ -544,7 +548,7 @@ fun ReceiveScreen(
                 AnimatedVisibility(visible = receiveAddress.isNotBlank()) {
                     GreenButton(
                         text = stringResource(Res.string.id_share),
-                        icon = painterResource(Res.drawable.share_network),
+                        icon = PhosphorIcons.Regular.ShareNetwork,
                         modifier = Modifier.fillMaxWidth(),
                         enabled = !onProgress
                     ) {
@@ -556,11 +560,11 @@ fun ReceiveScreen(
                                         listOf(
                                             MenuEntry(
                                                 title = getString(Res.string.id_address),
-                                                iconRes = "text_aa"
+                                                iconRes = "text-aa"
                                             ),
                                             MenuEntry(
                                                 title = getString(Res.string.id_qr_code),
-                                                iconRes = "qr_code"
+                                                iconRes = "qr-code"
                                             ),
                                         )
                                     )

@@ -32,7 +32,7 @@ fun MenuBottomSheetPreview() {
                     title = "Select Environment",
                     entries = MenuEntryList(
                         listOf(
-                            MenuEntry(title = "Mainnet", iconRes = "currency_btc"),
+                            MenuEntry(title = "Mainnet", iconRes = "currency-btc"),
                             MenuEntry(title = "Testnet", iconRes = "flask")
                         )
                     ),

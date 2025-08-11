@@ -6,6 +6,7 @@ import androidx.compose.runtime.staticCompositionLocalOf
 import com.arkivanov.essenty.statekeeper.StateKeeper
 import com.blockstream.common.models.GreenViewModel
 import com.blockstream.common.sideeffects.OpenBrowserType
+import io.github.vinceglb.filekit.PlatformFile
 import kotlinx.coroutines.CoroutineScope
 import okio.Source
 
@@ -47,7 +48,7 @@ expect class PlatformManager {
     fun clearClipboard()
 
     suspend fun shareText(content: String)
-    suspend fun shareFile(path: String)
+    suspend fun shareFile(path: String? = null, file: PlatformFile? = null)
 
     fun hasFlash(): Boolean
 

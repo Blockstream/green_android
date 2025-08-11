@@ -11,8 +11,6 @@ import androidx.compose.runtime.CompositionLocalProvider
 import androidx.compose.ui.Modifier
 import androidx.core.splashscreen.SplashScreen.Companion.installSplashScreen
 import androidx.lifecycle.lifecycleScope
-import blockstream_green.common.generated.resources.Res
-import blockstream_green.common.generated.resources.id_success
 import com.blockstream.common.data.CredentialType
 import com.blockstream.common.data.GreenWallet
 import com.blockstream.common.database.Database
@@ -26,8 +24,6 @@ import com.blockstream.common.managers.SessionManager
 import com.blockstream.common.managers.SettingsManager
 import com.blockstream.common.models.MainViewModel
 import com.blockstream.common.navigation.NavigateDestinations
-import com.blockstream.common.sideeffects.SideEffects
-import com.blockstream.common.utils.StringHolder
 import com.blockstream.compose.GreenApp
 import com.blockstream.compose.LocalActivity
 import com.blockstream.compose.theme.GreenChrome
@@ -38,6 +34,8 @@ import com.blockstream.green.data.config.AppInfo
 import com.blockstream.green.services.TaskService
 import com.blockstream.green.utils.DeepLinkHandler
 import com.blockstream.green.utils.Loggable
+import io.github.vinceglb.filekit.FileKit
+import io.github.vinceglb.filekit.dialogs.init
 import kotlinx.coroutines.launch
 import kotlinx.serialization.json.Json
 import kotlinx.serialization.json.jsonObject
@@ -59,6 +57,8 @@ class GreenActivity : AppCompatActivity() {
         installSplashScreen()
 
         super.onCreate(savedInstanceState)
+
+        FileKit.init(this)
 
         enableEdgeToEdge()
         setContent {

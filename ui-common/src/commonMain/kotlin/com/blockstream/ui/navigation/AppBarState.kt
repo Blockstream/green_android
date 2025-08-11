@@ -28,6 +28,7 @@ data class NavData(
 
     val isVisible: Boolean = true,
     val backHandlerEnabled: Boolean = false,
+    val onBackClicked: (() -> Unit)? = null,
 
     val showBadge: Boolean = false,
     val showBottomNavigation: Boolean = false,

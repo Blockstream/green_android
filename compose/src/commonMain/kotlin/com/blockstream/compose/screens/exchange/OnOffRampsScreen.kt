@@ -16,7 +16,6 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import blockstream_green.common.generated.resources.Res
-import blockstream_green.common.generated.resources.arrow_square_out
 import blockstream_green.common.generated.resources.id_account
 import blockstream_green.common.generated.resources.id_asset_to_buy
 import blockstream_green.common.generated.resources.id_buy
@@ -25,6 +24,9 @@ import blockstream_green.common.generated.resources.id_create_new_account
 import blockstream_green.common.generated.resources.id_provided_by_
 import blockstream_green.common.generated.resources.id_select_account
 import blockstream_green.common.generated.resources.id_sell
+import com.adamglin.PhosphorIcons
+import com.adamglin.phosphoricons.Regular
+import com.adamglin.phosphoricons.regular.ArrowSquareOut
 import com.blockstream.common.data.AlertType
 import com.blockstream.common.data.DenominatedValue
 import com.blockstream.common.events.Events
@@ -56,7 +58,6 @@ import com.blockstream.ui.components.GreenArrow
 import com.blockstream.ui.components.GreenColumn
 import com.blockstream.ui.components.GreenRow
 import com.blockstream.ui.navigation.getResult
-import org.jetbrains.compose.resources.painterResource
 import org.jetbrains.compose.resources.stringResource
 
 @Composable
@@ -271,7 +272,7 @@ fun OnOffRampsScreen(
                     text = stringResource(Res.string.id_buy_with_s, "meld.io"),
                     modifier = Modifier.fillMaxWidth(),
                     size = GreenButtonSize.BIG,
-                    icon = painterResource(Res.drawable.arrow_square_out),
+                    icon = PhosphorIcons.Regular.ArrowSquareOut,
                     enabled = buttonEnabled,
                     onProgress = onProgress
                 ) {

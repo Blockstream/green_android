@@ -3,6 +3,7 @@ package com.blockstream.common.gdk
 import com.blockstream.common.gdk.Wally.Companion.BIP39_WORD_LIST_LANG
 import com.blockstream.common.utils.getSecureRandom
 import com.blockstream.common.utils.toHex
+import com.blockstream.libwally.Wally.WALLY_PSBT_VERSION_0
 import com.blockstream.libwally.Wally as WallyJava
 
 inline fun <T, R> T.bip32KeyFree(use: (T) -> R): R {
@@ -163,6 +164,32 @@ class AndroidWally : Wally {
             e.printStackTrace()
             null
         }
+    }
+
+    override fun psbtIsBase64(psbt: String): Boolean {
+        return try {
+            WallyJava.psbt_from_base64(psbt)
+            true
+        } catch (_: Exception) {
+            false
+        }
+    }
+
+    override fun psbtIsBinary(psbt: ByteArray): Boolean {
+        return try {
+            WallyJava.psbt_from_bytes(psbt)
+            true
+        } catch (_: Exception) {
+            false
+        }
+    }
+
+    override fun psbtToV0(psbt: String): String {
+        val psbt = WallyJava.psbt_from_base64(psbt)
+
+        WallyJava.psbt_set_version(psbt, 0, WALLY_PSBT_VERSION_0.toLong())
+
+        return WallyJava.psbt_to_base64(psbt, 0)
     }
 }
 

@@ -12,6 +12,7 @@ import com.blockstream.common.models.GreenViewModel
 import com.blockstream.common.platformFileSystem
 import com.blockstream.common.sideeffects.OpenBrowserType
 import com.darkrockstudios.libraries.mpfilepicker.FilePicker
+import io.github.vinceglb.filekit.PlatformFile
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
@@ -62,7 +63,7 @@ actual class PlatformManager {
     actual suspend fun shareText(content: String) {
     }
 
-    actual suspend fun shareFile(path: String) {
+    actual suspend fun shareFile(path: String, file: PlatformFile?) {
     }
 
     actual fun hasFlash(): Boolean = false

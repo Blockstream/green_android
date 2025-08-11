@@ -2916,6 +2916,12 @@ class GdkSession constructor(
             gdk.psbtFromJson(gdkSession(network), transaction = transaction.jsonElement!!)
         ).result<Psbt>()
 
+    suspend fun psbtIsBase64(psbt: String): Boolean = wally.psbtIsBase64(psbt)
+
+    suspend fun psbtIsBinary(psbt: ByteArray): Boolean = wally.psbtIsBinary(psbt)
+
+    suspend fun psbtToV0(psbt: String): String = wally.psbtToV0(psbt)
+
     suspend fun broadcastTransaction(
         network: Network,
         broadcastTransaction: BroadcastTransactionParams

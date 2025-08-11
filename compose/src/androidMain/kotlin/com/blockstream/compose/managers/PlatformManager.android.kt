@@ -63,6 +63,9 @@ import com.journeyapps.barcodescanner.MixedDecoder
 import com.preat.peekaboo.image.picker.SelectionMode
 import com.preat.peekaboo.image.picker.rememberImagePickerLauncher
 import com.preat.peekaboo.image.picker.toImageBitmap
+import io.github.vinceglb.filekit.FileKit
+import io.github.vinceglb.filekit.PlatformFile
+import io.github.vinceglb.filekit.dialogs.shareFile
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
@@ -255,23 +258,28 @@ actual class PlatformManager constructor(
         )
     }
 
-    actual suspend fun shareFile(path: String) {
-        val fileUri = FileProvider.getUriForFile(
-            context,
-            context.packageName.toString() + ".provider",
-            File(path)
-        )
+    actual suspend fun shareFile(path: String?, file: PlatformFile?) {
+        if (file != null) {
+            FileKit.shareFile(file)
+        } else {
 
-        val builder = ShareCompat.IntentBuilder(context)
-            .setType("text/plain")
-            .setStream(fileUri)
-
-        context.startActivity(
-            Intent.createChooser(
-                builder.intent,
-                getString(Res.string.id_share)
+            val fileUri = FileProvider.getUriForFile(
+                context,
+                context.packageName.toString() + ".fileprovider",
+                File(path)
             )
-        )
+
+            val builder = ShareCompat.IntentBuilder(context)
+                .setType("text/plain")
+                .setStream(fileUri)
+
+            context.startActivity(
+                Intent.createChooser(
+                    builder.intent,
+                    getString(Res.string.id_share)
+                )
+            )
+        }
     }
 
     actual fun enableBluetooth() {

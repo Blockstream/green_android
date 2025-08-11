@@ -11,9 +11,13 @@ import blockstream_green.common.generated.resources.Res
 import blockstream_green.common.generated.resources.id_connect_hardware_wallet
 import blockstream_green.common.generated.resources.id_sign_transaction_via_qr
 import com.blockstream.common.models.send.CreateTransactionViewModelAbstract
+
 import com.blockstream.common.models.send.PendingAction
+import com.blockstream.common.models.send.SendConfirmViewModelPreview
 import com.blockstream.common.navigation.NavigateDestinations
+import com.blockstream.compose.GreenPreview
 import org.jetbrains.compose.resources.stringResource
+import org.jetbrains.compose.ui.tooling.preview.Preview
 
 @Composable
 fun GreenConfirmButton(
@@ -21,11 +25,11 @@ fun GreenConfirmButton(
     isSweep: Boolean = false,
     onConfirm: (isWatchOnly: Boolean) -> Unit
 ) {
-
     val onProgressSending by viewModel.onProgressSending.collectAsStateWithLifecycle()
     val buttonEnabled by viewModel.buttonEnabled.collectAsStateWithLifecycle()
     val isWatchOnly by viewModel.isWatchOnly.collectAsStateWithLifecycle()
     val isHwWatchOnly by viewModel.isHwWatchOnly.collectAsStateWithLifecycle()
+    val isQrWatchOnly by viewModel.isQrWatchOnly.collectAsStateWithLifecycle()
 
     if (isWatchOnly && !isSweep) {
         if (viewModel.account.let { !it.isLiquid && !it.isMultisig }) {
@@ -40,7 +44,7 @@ fun GreenConfirmButton(
             )
         }
 
-        if (isHwWatchOnly) {
+        if (isHwWatchOnly && !isQrWatchOnly) {
             GreenButton(
                 text = stringResource(Res.string.id_connect_hardware_wallet),
                 enabled = buttonEnabled,
@@ -62,5 +66,15 @@ fun GreenConfirmButton(
                 onConfirm.invoke(false)
             }
         )
+    }
+}
+
+@Preview
+@Composable
+fun GreenConfirmButtonPreview() {
+    GreenPreview {
+        GreenConfirmButton(SendConfirmViewModelPreview.preview()) {
+
+        }
     }
 }

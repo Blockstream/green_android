@@ -1,4 +1,6 @@
 [versions]
+filekit-core = "0.11.0"
+filekit-dialogs = "0.11.0"
 jvm = "17"
 accompanistPermissions = "0.37.3"
 constraintlayoutComposeMultiplatform = "0.6.0"
@@ -80,6 +82,8 @@ material3-adaptive = "1.2.0-alpha06"
 koalaplot = "0.9.1"
 
 [libraries]
+filekit-dialogs = { module = "io.github.vinceglb:filekit-dialogs", version.ref = "filekit-dialogs" }
+filekit-core = { module = "io.github.vinceglb:filekit-core", version.ref = "filekit-core" }
 lifecycle-viewmodel-compose = { module = "org.jetbrains.androidx.lifecycle:lifecycle-viewmodel-compose", version.ref = "compose-lifecycle" }
 androidx-lifecycle-runtime-compose = { module = "org.jetbrains.androidx.lifecycle:lifecycle-runtime-compose", version.ref = "compose-lifecycle" }
 accompanist-permissions = { module = "com.google.accompanist:accompanist-permissions", version.ref = "accompanistPermissions" }

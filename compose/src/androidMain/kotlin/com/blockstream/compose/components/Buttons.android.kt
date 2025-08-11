@@ -8,12 +8,12 @@ import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.tooling.preview.Preview
-import blockstream_green.common.generated.resources.Res
-import blockstream_green.common.generated.resources.share_network
+import com.adamglin.PhosphorIcons
+import com.adamglin.phosphoricons.Regular
+import com.adamglin.phosphoricons.regular.ShareNetwork
 import com.blockstream.compose.GreenPreview
 import com.blockstream.ui.components.GreenColumn
 import com.blockstream.ui.components.GreenRow
-import org.jetbrains.compose.resources.painterResource
 
 @Composable
 @Preview
@@ -54,7 +54,7 @@ fun GreenButtonPreview() {
                 modifier = Modifier.fillMaxWidth()
             ) { }
             GreenRow(padding = 0) {
-                GreenButton(text = "Normal Enabled", icon = painterResource(Res.drawable.share_network)) { }
+                GreenButton(text = "Normal Enabled", icon = PhosphorIcons.Regular.ShareNetwork) { }
                 GreenButton(text = "Norma Disabled", enabled = false) { }
             }
             GreenRow(padding = 0) {

@@ -37,6 +37,12 @@ interface Wally {
 
     fun bip85FromJade(privateKey: ByteArray, publicKey: ByteArray, label: String, payload: ByteArray): String?
 
+    fun psbtIsBase64(psbt: String): Boolean
+
+    fun psbtIsBinary(psbt: ByteArray): Boolean
+
+    fun psbtToV0(psbt: String): String
+
     companion object {
         const val BIP39_WORD_LIST_LANG = "en"
     }

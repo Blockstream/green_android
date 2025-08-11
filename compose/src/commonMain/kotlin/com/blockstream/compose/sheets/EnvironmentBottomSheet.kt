@@ -20,7 +20,7 @@ fun EnvironmentBottomSheet(onDismissRequest: () -> Unit) {
     MenuBottomSheetView(
         title = stringResource(Res.string.id_select_network), entries = MenuEntryList(
             listOf(
-                MenuEntry(title = "Mainnet", iconRes = "currency_btc"),
+                MenuEntry(title = "Mainnet", iconRes = "currency-btc"),
                 MenuEntry(title = "Testnet", iconRes = "flask")
             )
         ), onSelect = { position, _ ->

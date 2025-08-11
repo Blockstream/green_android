@@ -130,7 +130,7 @@ fun TransactionScreen(
                         listOf(
                             MenuEntry(
                                 title = getString(Res.string.id_confidential_transaction),
-                                iconRes = "eye_slash"
+                                iconRes = "eye-slash"
                             ),
                             MenuEntry(
                                 title = getString(Res.string.id_non_confidential_transaction),
@@ -138,7 +138,7 @@ fun TransactionScreen(
                             ),
                             MenuEntry(
                                 title = getString(Res.string.id_unblinding_data),
-                                iconRes = "code_block"
+                                iconRes = "code-block"
                             )
                         )
                     )

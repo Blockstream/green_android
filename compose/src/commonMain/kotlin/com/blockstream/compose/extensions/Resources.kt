@@ -3,8 +3,8 @@ package com.blockstream.compose.extensions
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.painter.Painter
+import androidx.compose.ui.graphics.vector.ImageVector
 import blockstream_green.common.generated.resources.Res
-import blockstream_green.common.generated.resources.at
 import blockstream_green.common.generated.resources.bitcoin
 import blockstream_green.common.generated.resources.bitcoin_lightning
 import blockstream_green.common.generated.resources.bitcoin_lightning_testnet
@@ -14,10 +14,7 @@ import blockstream_green.common.generated.resources.blockstream_jade_action
 import blockstream_green.common.generated.resources.blockstream_jade_device
 import blockstream_green.common.generated.resources.blockstream_jade_plus_action
 import blockstream_green.common.generated.resources.blockstream_jade_plus_device
-import blockstream_green.common.generated.resources.code_block
-import blockstream_green.common.generated.resources.currency_btc
 import blockstream_green.common.generated.resources.eye
-import blockstream_green.common.generated.resources.eye_slash
 import blockstream_green.common.generated.resources.flask
 import blockstream_green.common.generated.resources.generic_device
 import blockstream_green.common.generated.resources.id_2of2
@@ -50,7 +47,6 @@ import blockstream_green.common.generated.resources.spv_error
 import blockstream_green.common.generated.resources.spv_in_progress
 import blockstream_green.common.generated.resources.spv_verified
 import blockstream_green.common.generated.resources.spv_warning
-import blockstream_green.common.generated.resources.text_aa
 import blockstream_green.common.generated.resources.trezor_device
 import blockstream_green.common.generated.resources.two_factor_authenticator
 import blockstream_green.common.generated.resources.two_factor_call
@@ -60,6 +56,20 @@ import blockstream_green.common.generated.resources.unknown
 import blockstream_green.common.generated.resources.wallet
 import blockstream_green.common.generated.resources.wallet_hw
 import blockstream_green.common.generated.resources.wallet_passphrase
+import com.adamglin.PhosphorIcons
+import com.adamglin.phosphoricons.Regular
+import com.adamglin.phosphoricons.regular.ArrowSquareDown
+import com.adamglin.phosphoricons.regular.ArrowSquareUp
+import com.adamglin.phosphoricons.regular.At
+import com.adamglin.phosphoricons.regular.CodeBlock
+import com.adamglin.phosphoricons.regular.CurrencyBtc
+import com.adamglin.phosphoricons.regular.DownloadSimple
+import com.adamglin.phosphoricons.regular.Eye
+import com.adamglin.phosphoricons.regular.EyeSlash
+import com.adamglin.phosphoricons.regular.Flask
+import com.adamglin.phosphoricons.regular.QrCode
+import com.adamglin.phosphoricons.regular.ShareNetwork
+import com.adamglin.phosphoricons.regular.TextAa
 import com.blockstream.common.BTC_POLICY_ASSET
 import com.blockstream.common.LBTC_POLICY_ASSET
 import com.blockstream.common.LN_BTC_POLICY_ASSET
@@ -251,15 +261,19 @@ fun String?.assetIcon(session: GdkSession? = null, isLightning: Boolean = false)
 }
 
 // Temp solution
-fun String.toDrawableResource(): DrawableResource? = when (this) {
-    "eye" -> Res.drawable.eye
-    "eye_slash" -> Res.drawable.eye_slash
-    "code_block" -> Res.drawable.code_block
-    "currency_btc" -> Res.drawable.currency_btc
-    "flask" -> Res.drawable.flask
-    "text_aa" -> Res.drawable.text_aa
-    "qr_code" -> Res.drawable.qr_code
-    "at" -> Res.drawable.at
+fun String.toImageVector(): ImageVector? = when (this) {
+    "eye" -> PhosphorIcons.Regular.Eye
+    "eye-slash" -> PhosphorIcons.Regular.EyeSlash
+    "code-block" -> PhosphorIcons.Regular.CodeBlock
+    "currency-btc" -> PhosphorIcons.Regular.CurrencyBtc
+    "flask" -> PhosphorIcons.Regular.Flask
+    "at" -> PhosphorIcons.Regular.At
+    "text-aa" -> PhosphorIcons.Regular.TextAa
+    "qr-code" -> PhosphorIcons.Regular.QrCode
+    "arrow-square-up" -> PhosphorIcons.Regular.ArrowSquareUp
+    "arrow-square-down" -> PhosphorIcons.Regular.ArrowSquareDown
+    "share-network" -> PhosphorIcons.Regular.ShareNetwork
+    "download-simple" -> PhosphorIcons.Regular.DownloadSimple
     else -> null
 }
 

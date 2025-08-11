@@ -351,6 +351,10 @@ class IOSWally : Wally {
             }
         }
     }
+
+    override fun psbtBase64Verify(psbt: String): Boolean {
+        TODO()
+    }
 }
 
 actual fun getWally(): Wally = IOSWally()

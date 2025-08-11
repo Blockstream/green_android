@@ -14,9 +14,11 @@ import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.navigation.get
 import blockstream_green.common.generated.resources.Res
-import blockstream_green.common.generated.resources.arrow_square_out
 import blockstream_green.common.generated.resources.id_buy_s
 import blockstream_green.common.generated.resources.id_exchange
+import com.adamglin.PhosphorIcons
+import com.adamglin.phosphoricons.Regular
+import com.adamglin.phosphoricons.regular.ArrowSquareOut
 import com.blockstream.common.data.AlertType
 import com.blockstream.common.data.DenominatedValue
 import com.blockstream.common.events.Events
@@ -44,7 +46,6 @@ import com.blockstream.ui.components.GreenRow
 import com.blockstream.ui.navigation.LocalNavigator
 import com.blockstream.ui.navigation.bottomsheet.BottomSheetNavigator
 import com.blockstream.ui.navigation.getResult
-import org.jetbrains.compose.resources.painterResource
 import org.jetbrains.compose.resources.stringResource
 
 @Composable
@@ -179,7 +180,7 @@ fun BuyScreen(
                         ),
                         modifier = Modifier.fillMaxWidth(),
                         size = GreenButtonSize.BIG,
-                        icon = painterResource(Res.drawable.arrow_square_out),
+                        icon = PhosphorIcons.Regular.ArrowSquareOut,
                         enabled = buttonEnabled,
                         onProgress = onProgress
                     ) {

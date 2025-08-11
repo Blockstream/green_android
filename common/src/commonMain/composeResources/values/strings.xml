@@ -1693,4 +1693,8 @@
     <string name="id_reset_to_default">Reset to default</string>
     <string name="id_help_us_improve">Help Us Improve</string>
     <string name="id_less_stable_connection">Less stable connection</string>
+    <string name="id_export_to_file">Export to file</string>
+    <string name="id_save_to_files">Save to Files</string>
+    <string name="id_psbt_saved_to_files">Psbt saved to Files</string>
+
 </resources>

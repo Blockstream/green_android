@@ -9,6 +9,7 @@ import com.blockstream.common.platformFileSystem
 import com.blockstream.common.sideeffects.OpenBrowserType
 import com.preat.peekaboo.image.picker.SelectionMode
 import com.preat.peekaboo.image.picker.rememberImagePickerLauncher
+import io.github.vinceglb.filekit.PlatformFile
 import kotlinx.cinterop.BetaInteropApi
 import kotlinx.cinterop.ExperimentalForeignApi
 import kotlinx.cinterop.allocArrayOf
@@ -84,7 +85,7 @@ actual class PlatformManager(val application: UIApplication) {
 
     }
 
-    actual suspend fun shareFile(path: String) {
+    actual suspend fun shareFile(path: String, file: PlatformFile?) {
 
     }
 
