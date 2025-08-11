@@ -406,14 +406,6 @@ open class GreenViewModel constructor(
                 updateAccount(account = event.account, isHidden = true)
             }
 
-            is Events.UnArchiveAccount -> {
-                updateAccount(
-                    account = event.account,
-                    isHidden = false,
-                    navigateToRoot = event.navigateToRoot
-                )
-            }
-
             is Events.RemoveAccount -> {
                 removeAccount(account = event.account)
             }

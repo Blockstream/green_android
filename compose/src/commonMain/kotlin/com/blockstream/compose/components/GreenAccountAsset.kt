@@ -8,6 +8,7 @@ import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
+import androidx.compose.material3.Checkbox
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.Text
@@ -58,14 +59,24 @@ fun GreenAccountAsset(
     withAssetIcon: Boolean = true,
     withEditIcon: Boolean = false,
     withArrow: Boolean = false,
+    selectable: Boolean = false,
+    isSelected: Boolean = false,
     onClick: (() -> Unit)? = null,
 ) {
     GreenDataLayout(modifier = modifier, title = title, onClick = onClick, withPadding = false) {
 
         Row(
-            modifier = Modifier.padding(start = 16.dp),
+            modifier = Modifier.padding(start = if(selectable) 8.dp else 16.dp),
             verticalAlignment = Alignment.CenterVertically
         ) {
+            if (selectable) {
+                Checkbox(
+                    checked = isSelected,
+                    onCheckedChange = { onClick?.invoke() },
+                    modifier = Modifier.padding(end = 8.dp)
+                )
+            }
+            
             if (withAssetIcon) {
                 Box {
                     Image(

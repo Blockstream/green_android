@@ -1362,6 +1362,7 @@
     <string name="id_unable_to_contact_the_blockstream">Unable to contact the Blockstream service. Please check your network connection and wait to be reconnected.</string>
     <string name="id_unarchive">Unarchive</string>
     <string name="id_unarchive_account">Unarchive account</string>
+    <string name="id_d_accounts_unarchived_successfully">%1$d accounts unarchived successfully</string>
     <string name="id_unblinding_data">Unblinding data</string>
     <string name="id_unconfirmed">Unconfirmed</string>
     <string name="id_undo_2fa_dispute">Undo 2FA dispute</string>
