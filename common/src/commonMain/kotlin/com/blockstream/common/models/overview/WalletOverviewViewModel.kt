@@ -25,6 +25,7 @@ import com.blockstream.common.gdk.data.AssetBalance
 import com.blockstream.common.gdk.data.Settings
 import com.blockstream.common.gdk.data.WalletEvents
 import com.blockstream.common.lightning.onchainBalanceSatoshi
+import com.blockstream.common.looks.account.LightningInfoLook
 import com.blockstream.common.looks.transaction.TransactionLook
 import com.blockstream.common.navigation.NavigateDestinations
 import com.blockstream.common.sideeffects.SideEffects
@@ -45,6 +46,7 @@ import kotlinx.coroutines.flow.collect
 import kotlinx.coroutines.flow.collectLatest
 import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.flow.debounce
+import kotlinx.coroutines.flow.emptyFlow
 import kotlinx.coroutines.flow.filter
 import kotlinx.coroutines.flow.filterNotNull
 import kotlinx.coroutines.flow.flowOf
@@ -80,6 +82,9 @@ abstract class WalletOverviewViewModelAbstract(
 
     @NativeCoroutinesState
     abstract val bitcoinChartData: StateFlow<DataState<BitcoinChartData>?>
+
+    @NativeCoroutinesState
+    abstract val lightningInfo: StateFlow<LightningInfoLook?>
 
     abstract fun refetchBitcoinPriceHistory()
 
@@ -250,6 +255,13 @@ class WalletOverviewViewModel(
 
     override val bitcoinChartData = observeBitcoinPriceHistory.observe()
         .stateIn(viewModelScope, SharingStarted.WhileSubscribed(5000L), null)
+
+    override val lightningInfo: StateFlow<LightningInfoLook?> =
+        (session.lightningSdkOrNull?.nodeInfoStateFlow?.map {
+            if (session.isConnected) {
+                LightningInfoLook.create(session = session, nodeState = it)
+            } else null
+        } ?: emptyFlow()).stateIn(viewModelScope, SharingStarted.WhileSubscribed(5000L), null)
 
     override fun refetchBitcoinPriceHistory() {
         refreshBitcoinPriceState.value++
@@ -433,6 +445,8 @@ class WalletOverviewViewModelPreview(val isEmpty: Boolean = false, val isHardwar
     override val bitcoinChartData: StateFlow<DataState<BitcoinChartData>?> = MutableStateFlow(
         null
     )
+
+    override val lightningInfo: StateFlow<LightningInfoLook?> = MutableStateFlow(null)
 
     override fun refetchBitcoinPriceHistory() {
         // No-op

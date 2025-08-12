@@ -34,6 +34,7 @@ import blockstream_green.common.generated.resources.id_you_dont_have_any_assets_
 import blockstream_green.common.generated.resources.id_your_wallet_has_been_created
 import com.blockstream.common.data.ScanResult
 import com.blockstream.common.events.Events
+import com.blockstream.common.extensions.isNotBlank
 import com.blockstream.common.models.SimpleGreenViewModel
 import com.blockstream.common.models.archived.ArchivedAccountsViewModel
 import com.blockstream.common.models.overview.WalletOverviewViewModel
@@ -62,6 +63,7 @@ import com.blockstream.compose.theme.titleLarge
 import com.blockstream.compose.theme.whiteMedium
 import com.blockstream.compose.utils.SetupScreen
 import com.blockstream.compose.utils.noRippleClickable
+import com.blockstream.compose.views.LightningInfo
 import com.blockstream.ui.common.OnScreenFocus
 import com.blockstream.ui.components.GreenColumn
 import com.blockstream.ui.components.GreenSpacer
@@ -182,6 +184,7 @@ fun WalletOverviewScreen(
             val isWalletOnboarding by viewModel.showWalletOnboarding.collectAsStateWithLifecycle()
             val alerts by viewModel.alerts.collectAsStateWithLifecycle()
             val assets by viewModel.assets.collectAsStateWithLifecycle()
+            val lightningInfo by viewModel.lightningInfo.collectAsStateWithLifecycle()
             val innerPadding = LocalInnerPadding.current
 
             val listState = rememberLazyListState()
@@ -215,7 +218,6 @@ fun WalletOverviewScreen(
                     item(key = "AssetsHeader") {
                         ListHeader(title = stringResource(Res.string.id_assets))
                     }
-
                     
                     if (assets.isLoading()) {
                         item(key = "AssetsLoading") {
@@ -251,6 +253,13 @@ fun WalletOverviewScreen(
                         }
                     }
 
+                    lightningInfo?.takeIf { it.sweep.isNotBlank() }?.also { lightningInfo ->
+                        item {
+                            LightningInfo(lightningInfoLook = lightningInfo, showCapacity = false, onSweepClick = {
+                                viewModel.postEvent(WalletOverviewViewModel.LocalEvents.ClickLightningSweep)
+                            })
+                        }
+                    }
 
                     item(key = "BitcoinPrice") {
                         ListHeader(title = stringResource(Res.string.id_bitcoin_price))

@@ -7,6 +7,7 @@ import blockstream_green.common.generated.resources.id_inbound_liquidity
 import blockstream_green.common.generated.resources.id_max_payable_amount
 import blockstream_green.common.generated.resources.id_max_receivable_amount
 import blockstream_green.common.generated.resources.id_max_single_payment_amount
+import blockstream_green.common.generated.resources.id_onchain_balance
 import blockstream_green.common.generated.resources.id_rescan_swaps_initiated
 import com.blockstream.common.data.GreenWallet
 import com.blockstream.common.data.SetupArgs
@@ -17,6 +18,7 @@ import com.blockstream.common.lightning.channelsBalanceSatoshi
 import com.blockstream.common.lightning.maxPayableSatoshi
 import com.blockstream.common.lightning.maxReceivableSatoshi
 import com.blockstream.common.lightning.maxSinglePaymentAmountSatoshi
+import com.blockstream.common.lightning.onchainBalanceSatoshi
 import com.blockstream.common.lightning.totalInboundLiquiditySatoshi
 import com.blockstream.common.models.GreenViewModel
 import com.blockstream.common.navigation.NavigateDestinations
@@ -77,6 +79,13 @@ class LightningNodeViewModel(greenWallet: GreenWallet) :
                     StringHolder.create("ID") to StringHolder.create(it.id),
                     StringHolder.create(Res.string.id_account_balance) to StringHolder.create(
                         it.channelsBalanceSatoshi().toAmountLookOrNa(
+                            session = session,
+                            withUnit = true,
+                            withGrouping = true
+                        )
+                    ),
+                    StringHolder.create(Res.string.id_onchain_balance) to StringHolder.create(
+                        it.onchainBalanceSatoshi().toAmountLookOrNa(
                             session = session,
                             withUnit = true,
                             withGrouping = true

@@ -29,30 +29,24 @@ import org.jetbrains.compose.resources.stringResource
 
 @Composable
 fun LightningInfo(
-    lightningInfoLook: LightningInfoLook,
-    onSweepClick: () -> Unit = {},
-    onLearnMore: () -> Unit = {}
+    lightningInfoLook: LightningInfoLook, showCapacity: Boolean = true, onSweepClick: () -> Unit = {}, onLearnMore: () -> Unit = {}
 ) {
     GreenColumn(
         padding = 0,
         space = 8,
-        modifier = Modifier.padding(horizontal = 16.dp)
+        modifier = Modifier.padding(top = 8.dp)
     ) {
-
         lightningInfoLook.sweep?.also {
             GreenCard(
-                colors = CardDefaults.elevatedCardColors(containerColor = md_theme_brandSurface),
+                //colors = CardDefaults.elevatedCardColors(containerColor = md_theme_brandSurface),
                 padding = 0,
             ) {
                 Column(
-                    modifier = Modifier
-                        .fillMaxWidth()
-                        .padding(
-                            horizontal = 16.dp
-                        )
-                        .padding(top = 16.dp, bottom = 8.dp)
+                    modifier = Modifier.fillMaxWidth().padding(
+                        horizontal = 16.dp
+                    ).padding(top = 16.dp, bottom = 8.dp)
                 ) {
-                    Text(text = it, color = whiteMedium, style = labelMedium)
+                    Text(text = it, color = whiteMedium)
                     GreenButton(
                         text = stringResource(Res.string.id_sweep),
                         type = GreenButtonType.TEXT,
@@ -63,34 +57,31 @@ fun LightningInfo(
                 }
             }
         }
-        lightningInfoLook.capacity?.also {
-            GreenCard(
-                colors = CardDefaults.elevatedCardColors(containerColor = md_theme_brandSurface),
-                padding = 0,
-            ) {
-                Column(
-                    modifier = Modifier
-                        .fillMaxWidth()
-                        .padding(
-                            horizontal = 16.dp
-                        )
-                        .padding(top = 16.dp, bottom = 8.dp)
+        if (showCapacity) {
+            lightningInfoLook.capacity?.also {
+                GreenCard(
+                    colors = CardDefaults.elevatedCardColors(containerColor = md_theme_brandSurface),
+                    padding = 0,
                 ) {
-                    GreenRow(padding = 0, space = 8) {
-                        Icon(
-                            painter = painterResource(Res.drawable.info),
-                            contentDescription = null,
-                            tint = whiteMedium
+                    Column(
+                        modifier = Modifier.fillMaxWidth().padding(
+                            horizontal = 16.dp
+                        ).padding(top = 16.dp, bottom = 8.dp)
+                    ) {
+                        GreenRow(padding = 0, space = 8) {
+                            Icon(
+                                painter = painterResource(Res.drawable.info), contentDescription = null, tint = whiteMedium
+                            )
+                            Text(text = it, color = whiteMedium, style = labelMedium)
+                        }
+                        GreenButton(
+                            text = stringResource(Res.string.id_learn_more),
+                            type = GreenButtonType.TEXT,
+                            size = GreenButtonSize.SMALL,
+                            modifier = Modifier.padding(start = 24.dp),
+                            onClick = onLearnMore
                         )
-                        Text(text = it, color = whiteMedium, style = labelMedium)
                     }
-                    GreenButton(
-                        text = stringResource(Res.string.id_learn_more),
-                        type = GreenButtonType.TEXT,
-                        size = GreenButtonSize.SMALL,
-                        modifier = Modifier.padding(start = 24.dp),
-                        onClick = onLearnMore
-                    )
                 }
             }
         }

@@ -4,8 +4,10 @@ import blockstream_green.common.generated.resources.Res
 import blockstream_green.common.generated.resources.binoculars
 import blockstream_green.common.generated.resources.box_arrow_down
 import blockstream_green.common.generated.resources.id_archive_account
+import blockstream_green.common.generated.resources.id_node_info
 import blockstream_green.common.generated.resources.id_rename_account
 import blockstream_green.common.generated.resources.id_watchonly
+import blockstream_green.common.generated.resources.info
 import blockstream_green.common.generated.resources.text_aa
 import com.blockstream.common.data.DataState
 import com.blockstream.common.data.Denomination
@@ -233,8 +235,21 @@ class AssetAccountDetailsViewModel(
         accountAsset: AccountAsset?,
         watchOnly: Boolean
     ): List<NavAction> {
-        if (account.isLightning || watchOnly) {
+        if (watchOnly) {
             return emptyList()
+        }
+
+        if (account.isLightning) {
+            return listOfNotNull(
+                NavAction(
+                    title = getString(Res.string.id_node_info),
+                    icon = Res.drawable.info,
+                    isMenuEntry = true,
+                    onClick = {
+                        postEvent(NavigateDestinations.LightningNode(greenWallet))
+                    }
+                )
+            )
         }
 
         return listOfNotNull(

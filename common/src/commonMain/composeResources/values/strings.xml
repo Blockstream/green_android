@@ -1489,6 +1489,7 @@
     <string name="id_you_can_send_up_to">You can send up to:</string>
     <string name="id_you_can_still_receive_funds_but">You can still receive funds, but they won&apos;t be shown on your total balance.</string>
     <string name="id_you_can_sweep_s_of_your_funds">You can sweep %1$s of your funds to your onchain account.</string>
+    <string name="id_lightning_channel_closed_you_can_sweep">Lightning channel closed. You can sweep %1$s of your funds to your onchain account.</string>
     <string name="id_you_can_use_your_wallet_to">You can use your wallet to anonymously sign and authorize an action on:</string>
     <string name="id_you_can_use_your_descriptor">You can use your descriptor to view your balance in the Blockstream app without the ability to spend.</string>
     <string name="id_you_cannot_add_more_than_one">You cannot add more than one Lightning Account.</string>
@@ -1679,4 +1680,5 @@
     <string name="id_copy_amp_id">Copy AMP ID</string>
     <string name="id_data_not_available">Data not available</string>
     <string name="id_some_coins_are_no_longer_2fa_protected">Some coins are no longer 2FA protected.</string>
+    <string name="id_onchain_balance">Onchain Balance</string>
 </resources>
