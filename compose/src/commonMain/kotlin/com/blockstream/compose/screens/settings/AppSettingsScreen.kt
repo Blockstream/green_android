@@ -41,7 +41,6 @@ import blockstream_green.common.generated.resources.cpu
 import blockstream_green.common.generated.resources.eye_slash
 import blockstream_green.common.generated.resources.flask_fill
 import blockstream_green.common.generated.resources.funnel
-import blockstream_green.common.generated.resources.hard_drives
 import blockstream_green.common.generated.resources.id_app_settings
 import blockstream_green.common.generated.resources.id_bitcoin_electrum_server
 import blockstream_green.common.generated.resources.id_cancel
@@ -49,7 +48,6 @@ import blockstream_green.common.generated.resources.id_choose_the_electrum_serve
 import blockstream_green.common.generated.resources.id_connect_through_a_proxy
 import blockstream_green.common.generated.resources.id_connect_with_tor
 import blockstream_green.common.generated.resources.id_custom_servers_and_validation
-import blockstream_green.common.generated.resources.id_double_check_spv_with_other
 import blockstream_green.common.generated.resources.id_electrum_server_gap_limit
 import blockstream_green.common.generated.resources.id_enable_experimental_features
 import blockstream_green.common.generated.resources.id_enable_limited_usage_data
@@ -63,22 +61,18 @@ import blockstream_green.common.generated.resources.id_language
 import blockstream_green.common.generated.resources.id_liquid_electrum_server
 import blockstream_green.common.generated.resources.id_liquid_testnet_electrum_server
 import blockstream_green.common.generated.resources.id_more_info
-import blockstream_green.common.generated.resources.id_multi_server_validation
 import blockstream_green.common.generated.resources.id_number_of_consecutive_empty
 import blockstream_green.common.generated.resources.id_personal_electrum_server
 import blockstream_green.common.generated.resources.id_private_but_less_stable
 import blockstream_green.common.generated.resources.id_remember_hardware_devices
 import blockstream_green.common.generated.resources.id_save
 import blockstream_green.common.generated.resources.id_screen_lock
-import blockstream_green.common.generated.resources.id_spv_verification
 import blockstream_green.common.generated.resources.id_system_default
 import blockstream_green.common.generated.resources.id_testnet_electrum_server
 import blockstream_green.common.generated.resources.id_these_settings_apply_for_every
 import blockstream_green.common.generated.resources.id_use_secure_display_and_screen
-import blockstream_green.common.generated.resources.id_verify_your_bitcoin
 import blockstream_green.common.generated.resources.id_your_settings_are_unsavednndo
 import blockstream_green.common.generated.resources.lock_simple
-import blockstream_green.common.generated.resources.shield_check
 import blockstream_green.common.generated.resources.test_tube_fill
 import blockstream_green.common.generated.resources.tor
 import blockstream_green.common.generated.resources.users_three
@@ -520,97 +514,6 @@ fun AppSettingsScreen(
                             TextInputClear(state = viewModel.electrumServerGapLimit)
                         }
                     )
-                }
-
-                HorizontalDivider(modifier = Modifier.padding(start = 54.dp))
-
-                val spvEnabled by viewModel.spvEnabled.collectAsStateWithLifecycle()
-                GreenSwitch(
-                    title = stringResource(Res.string.id_spv_verification),
-                    caption = stringResource(Res.string.id_verify_your_bitcoin),
-                    checked = spvEnabled,
-                    painter = painterResource(Res.drawable.shield_check),
-                    onCheckedChange = viewModel.spvEnabled.onValueChange()
-                )
-
-                if (viewModel.multiServerValidationFeatureEnabled) {
-
-                    HorizontalDivider(modifier = Modifier.padding(start = 54.dp))
-
-                    val multiServerValidationEnabled by viewModel.multiServerValidationEnabled.collectAsStateWithLifecycle()
-                    GreenSwitch(
-                        title = stringResource(Res.string.id_multi_server_validation),
-                        caption = stringResource(Res.string.id_double_check_spv_with_other),
-                        checked = multiServerValidationEnabled,
-                        painter = painterResource(Res.drawable.hard_drives),
-                        onCheckedChange = viewModel.multiServerValidationEnabled.onValueChange()
-                    )
-
-                    AnimatedVisibility(visible = multiServerValidationEnabled) {
-                        GreenColumn(space = 4, padding = 0) {
-                            val spvBitcoinElectrumServer by viewModel.spvBitcoinElectrumServer.collectAsStateWithLifecycle()
-                            OutlinedTextField(
-                                value = spvBitcoinElectrumServer,
-                                onValueChange = viewModel.spvBitcoinElectrumServer.onValueChange(),
-                                modifier = Modifier
-                                    .fillMaxWidth()
-                                    .padding(start = 54.dp, end = 16.dp),
-                                singleLine = true,
-                                label = { Text(stringResource(Res.string.id_bitcoin_electrum_server)) },
-                                placeholder = { Text(AppSettingsViewModelAbstract.DEFAULT_MULTI_SPV_BITCOIN_URL) },
-                                trailingIcon = {
-                                    TextInputPaste(state = viewModel.spvBitcoinElectrumServer)
-                                }
-                            )
-
-                            val spvLiquidElectrumServer by viewModel.spvLiquidElectrumServer.collectAsStateWithLifecycle()
-                            OutlinedTextField(
-                                value = spvLiquidElectrumServer,
-                                onValueChange = viewModel.spvLiquidElectrumServer.onValueChange(),
-                                modifier = Modifier
-                                    .fillMaxWidth()
-                                    .padding(start = 54.dp, end = 16.dp, bottom = 8.dp),
-                                singleLine = true,
-                                label = { Text(stringResource(Res.string.id_liquid_electrum_server)) },
-                                placeholder = { Text(AppSettingsViewModelAbstract.DEFAULT_MULTI_SPV_LIQUID_URL) },
-                                trailingIcon = {
-                                    TextInputPaste(state = viewModel.spvLiquidElectrumServer)
-                                }
-                            )
-
-                            if (testnetEnabled) {
-                                val spvTestnetElectrumServer by viewModel.spvTestnetElectrumServer.collectAsStateWithLifecycle()
-                                OutlinedTextField(
-                                    value = spvTestnetElectrumServer,
-                                    onValueChange = viewModel.spvTestnetElectrumServer.onValueChange(),
-                                    modifier = Modifier
-                                        .fillMaxWidth()
-                                        .padding(start = 54.dp, end = 16.dp),
-                                    singleLine = true,
-                                    label = { Text(stringResource(Res.string.id_testnet_electrum_server)) },
-                                    placeholder = { Text(AppSettingsViewModelAbstract.DEFAULT_MULTI_SPV_TESTNET_URL) },
-                                    trailingIcon = {
-                                        TextInputPaste(state = viewModel.spvTestnetElectrumServer)
-                                    }
-                                )
-
-                                val spvTestnetLiquidElectrumServer by viewModel.spvTestnetLiquidElectrumServer.collectAsStateWithLifecycle()
-                                OutlinedTextField(
-                                    value = spvTestnetLiquidElectrumServer,
-                                    onValueChange = viewModel.spvTestnetLiquidElectrumServer.onValueChange(),
-                                    modifier = Modifier
-                                        .fillMaxWidth()
-                                        .padding(start = 54.dp, end = 16.dp, bottom = 8.dp),
-                                    singleLine = true,
-                                    label = { Text(stringResource(Res.string.id_liquid_testnet_electrum_server)) },
-                                    placeholder = { Text(AppSettingsViewModelAbstract.DEFAULT_MULTI_SPV_TESTNET_LIQUID_URL) },
-                                    trailingIcon = {
-                                        TextInputPaste(state = viewModel.spvTestnetLiquidElectrumServer)
-                                    }
-                                )
-                            }
-                        }
-                    }
                 }
             }
 

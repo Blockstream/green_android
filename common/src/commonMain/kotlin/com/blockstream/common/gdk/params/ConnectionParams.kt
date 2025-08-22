@@ -15,19 +15,12 @@ data class ConnectionParams constructor(
     @SerialName("proxy")
     val proxy: String,
 
-    @SerialName("spv_enabled")
-    val spvEnabled: Boolean = false,
-    @SerialName("spv_multi")
-    val spvMulti: Boolean = false,
-
     @SerialName("electrum_tls")
     val electrumTls: Boolean = true,
     @SerialName("electrum_url")
     val electrumUrl: String? = null,
     @SerialName("electrum_onion_url")
     val electrumOnionUrl: String? = null,
-    @SerialName("spv_servers")
-    val spvServers: List<String>? = null,
     @SerialName("blob_server_url")
     val blobServerUrl: String? = null,
     @SerialName("blob_server_onion_url")

@@ -23,7 +23,6 @@ import com.rickclephas.kmp.observableviewmodel.launch
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.flow.launchIn
-import kotlinx.coroutines.flow.onEach
 import org.jetbrains.compose.resources.getString
 import org.koin.core.component.inject
 
@@ -68,12 +67,6 @@ abstract class AppSettingsViewModelAbstract() :
     abstract val electrumNodeEnabled: MutableStateFlow<Boolean>
 
     @NativeCoroutinesState
-    abstract val spvEnabled: MutableStateFlow<Boolean>
-
-    @NativeCoroutinesState
-    abstract val multiServerValidationEnabled: MutableStateFlow<Boolean>
-
-    @NativeCoroutinesState
     abstract val personalElectrumServerTlsEnabled: MutableStateFlow<Boolean>
 
     @NativeCoroutinesState
@@ -90,18 +83,6 @@ abstract class AppSettingsViewModelAbstract() :
 
     @NativeCoroutinesState
     abstract val electrumServerGapLimit: MutableStateFlow<String>
-
-    @NativeCoroutinesState
-    abstract val spvBitcoinElectrumServer: MutableStateFlow<String>
-
-    @NativeCoroutinesState
-    abstract val spvLiquidElectrumServer: MutableStateFlow<String>
-
-    @NativeCoroutinesState
-    abstract val spvTestnetElectrumServer: MutableStateFlow<String>
-
-    @NativeCoroutinesState
-    abstract val spvTestnetLiquidElectrumServer: MutableStateFlow<String>
 
     @NativeCoroutinesState
     abstract val locales: MutableStateFlow<Map<String?, String?>>
@@ -163,12 +144,6 @@ class AppSettingsViewModel : AppSettingsViewModelAbstract() {
     @NativeCoroutinesState
     override val electrumNodeEnabled = MutableStateFlow(viewModelScope, appSettings.electrumNode)
 
-    @NativeCoroutinesState
-    override val spvEnabled: MutableStateFlow<Boolean> = MutableStateFlow(viewModelScope, appSettings.spv)
-
-    @NativeCoroutinesState
-    override val multiServerValidationEnabled: MutableStateFlow<Boolean> =
-        MutableStateFlow(viewModelScope, appSettings.multiServerValidation)
 
     @NativeCoroutinesState
     override val personalElectrumServerTlsEnabled: MutableStateFlow<Boolean> =
@@ -194,22 +169,6 @@ class AppSettingsViewModel : AppSettingsViewModelAbstract() {
         MutableStateFlow(viewModelScope, "${appSettings.electrumServerGapLimit ?: ""}")
 
     @NativeCoroutinesState
-    override val spvBitcoinElectrumServer: MutableStateFlow<String> =
-        MutableStateFlow(viewModelScope, appSettings.spvBitcoinElectrumServer ?: "")
-
-    @NativeCoroutinesState
-    override val spvLiquidElectrumServer: MutableStateFlow<String> =
-        MutableStateFlow(viewModelScope, appSettings.spvLiquidElectrumServer ?: "")
-
-    @NativeCoroutinesState
-    override val spvTestnetElectrumServer: MutableStateFlow<String> =
-        MutableStateFlow(viewModelScope, appSettings.spvTestnetElectrumServer ?: "")
-
-    @NativeCoroutinesState
-    override val spvTestnetLiquidElectrumServer: MutableStateFlow<String> =
-        MutableStateFlow(viewModelScope, appSettings.spvTestnetLiquidElectrumServer ?: "")
-
-    @NativeCoroutinesState
     override val locales = MutableStateFlow(viewModelScope, Locales)
 
     @NativeCoroutinesState
@@ -232,18 +191,6 @@ class AppSettingsViewModel : AppSettingsViewModelAbstract() {
             database.insertEvent(GenericEvent(deviceId = settingsManager.getCountlyDeviceId()).sha256(), randomInsert = true)
         }
 
-        spvEnabled.onEach {
-            if (!it && multiServerValidationEnabled.value) {
-                multiServerValidationEnabled.value = false
-            }
-        }.launchIn(viewModelScope.coroutineScope)
-
-        multiServerValidationEnabled.onEach {
-            if (it && !spvEnabled.value) {
-                spvEnabled.value = true
-            }
-        }.launchIn(viewModelScope.coroutineScope)
-
         combine(
             enhancedPrivacyEnabled,
             screenLockInSeconds,
@@ -255,18 +202,12 @@ class AppSettingsViewModel : AppSettingsViewModelAbstract() {
             rememberHardwareDevices,
             electrumNodeEnabled,
             torEnabled,
-            spvEnabled,
-            multiServerValidationEnabled,
             electrumServerGapLimit,
             personalBitcoinElectrumServer,
             personalLiquidElectrumServer,
             personalTestnetElectrumServer,
             personalTestnetLiquidElectrumServer,
-            personalElectrumServerTlsEnabled,
-            spvBitcoinElectrumServer,
-            spvLiquidElectrumServer,
-            spvTestnetElectrumServer,
-            spvTestnetLiquidElectrumServer
+            personalElectrumServerTlsEnabled
         ) {
             _navData.value = _navData.value.copy(backHandlerEnabled = areSettingsDirty())
         }.launchIn(viewModelScope.coroutineScope)
@@ -309,8 +250,6 @@ class AppSettingsViewModel : AppSettingsViewModelAbstract() {
         rememberHardwareDevices = rememberHardwareDevices.value,
         electrumNode = electrumNodeEnabled.value,
         tor = torEnabled.value,
-        spv = spvEnabled.value,
-        multiServerValidation = multiServerValidationEnabled.value,
         electrumServerGapLimit = electrumServerGapLimit.value.takeIf { it.isNotBlank() }?.toIntOrNull(),
 
         // use null value as a reset to re-set the default urls and blank as a way to disabled it for a specific network
@@ -320,11 +259,6 @@ class AppSettingsViewModel : AppSettingsViewModelAbstract() {
         personalTestnetLiquidElectrumServer = personalTestnetLiquidElectrumServer.value.takeIf { electrumNodeEnabled.value },
 
         personalElectrumServerTls = personalElectrumServerTlsEnabled.value,
-
-        spvBitcoinElectrumServer = spvBitcoinElectrumServer.value.takeIf { spvEnabled.value },
-        spvLiquidElectrumServer = spvLiquidElectrumServer.value.takeIf { spvEnabled.value },
-        spvTestnetElectrumServer = spvTestnetElectrumServer.value.takeIf { spvEnabled.value },
-        spvTestnetLiquidElectrumServer = spvTestnetLiquidElectrumServer.value.takeIf { spvEnabled.value },
     )
 
     private fun areSettingsDirty(): Boolean {
@@ -354,18 +288,12 @@ class AppSettingsViewModelPreview(initValue: Boolean = false) : AppSettingsViewM
     override val experimentalFeaturesEnabled: MutableStateFlow<Boolean> = MutableStateFlow(viewModelScope, initValue)
     override val analyticsEnabled: MutableStateFlow<Boolean> = MutableStateFlow(viewModelScope, initValue)
     override val electrumNodeEnabled: MutableStateFlow<Boolean> = MutableStateFlow(viewModelScope, initValue)
-    override val spvEnabled: MutableStateFlow<Boolean> = MutableStateFlow(viewModelScope, initValue)
-    override val multiServerValidationEnabled: MutableStateFlow<Boolean> = MutableStateFlow(viewModelScope, initValue)
     override val personalElectrumServerTlsEnabled: MutableStateFlow<Boolean> = MutableStateFlow(viewModelScope, initValue)
     override val personalBitcoinElectrumServer: MutableStateFlow<String> = MutableStateFlow(viewModelScope, "")
     override val personalLiquidElectrumServer: MutableStateFlow<String> = MutableStateFlow(viewModelScope, "")
     override val personalTestnetElectrumServer: MutableStateFlow<String> = MutableStateFlow(viewModelScope, "")
     override val personalTestnetLiquidElectrumServer: MutableStateFlow<String> = MutableStateFlow(viewModelScope, "")
     override val electrumServerGapLimit: MutableStateFlow<String> = MutableStateFlow(viewModelScope, "")
-    override val spvBitcoinElectrumServer: MutableStateFlow<String> = MutableStateFlow(viewModelScope, "")
-    override val spvLiquidElectrumServer: MutableStateFlow<String> = MutableStateFlow(viewModelScope, "")
-    override val spvTestnetElectrumServer: MutableStateFlow<String> = MutableStateFlow(viewModelScope, "")
-    override val spvTestnetLiquidElectrumServer: MutableStateFlow<String> = MutableStateFlow(viewModelScope, "")
     override val locales: MutableStateFlow<Map<String?, String?>> = MutableStateFlow(viewModelScope, mapOf("en" to "English"))
     override val locale: MutableStateFlow<String?> = MutableStateFlow(viewModelScope, "en")
 }

@@ -91,6 +91,7 @@ open class DeviceConnectionManager(
             supportsExternalBlinding = true,
             supportsLiquid = DeviceSupportsLiquid.Lite,
             supportsP2tr = false,
+            supportsLiquidP2tr = false,
             supportsAntiExfilProtocol = DeviceSupportsAntiExfilProtocol.Optional
         )
 

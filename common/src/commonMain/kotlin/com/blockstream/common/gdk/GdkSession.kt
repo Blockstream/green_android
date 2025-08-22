@@ -660,27 +660,9 @@ class GdkSession constructor(
         val applicationSettings = settingsManager.appSettings
 
         var electrumUrl: String? = null
-        var spvServers: List<String>? = null
-
-        // SPV for liquid is disabled // https://gl.blockstream.com/blockstream/green/gdk/-/issues/580
-        val spvEnabled = applicationSettings.spv && !Network.isLiquid(network.id)
-        var spvMulti = false // Only available in Singlesig
 
         if (network.isElectrum) {
             electrumUrl = applicationSettings.getPersonalElectrumServer(network).takeIf { it.isNotBlank() }
-
-            spvMulti = applicationSettings.multiServerValidation && !Network.isLiquid(network.id)
-
-            applicationSettings.getSpvElectrumServer(network).takeIf { spvMulti && it.isNotBlank() }?.also { spvElectrumServer ->
-                spvServers = spvElectrumServer.split(",").map { it.trim() }
-            }
-
-        } else {
-            val url = applicationSettings.getPersonalElectrumServer(network)
-
-            if (spvEnabled && !url.isNullOrBlank()) {
-                electrumUrl = url
-            }
         }
 
         val useTor = applicationSettings.tor
@@ -690,15 +672,12 @@ class GdkSession constructor(
             useTor = useTor,
             userAgent = userAgent,
             proxy = applicationSettings.proxyUrl ?: "",
-            spvEnabled = spvEnabled,
-            spvMulti = spvMulti,
             gapLimit = if (network.isSinglesig) applicationSettings.electrumServerGapLimit?.coerceAtLeast(1) else null,
             electrumTls = if (electrumUrl.isNotBlank()) applicationSettings.personalElectrumServerTls else true,
             electrumUrl = electrumUrl,
             electrumOnionUrl = electrumUrl.takeIf { useTor },
             // blobServerUrl = "wss://green-blobserver.staging.blockstream.com/ws".takeIf { appInfo.isDevelopment && network.isSinglesig && network.isTestnet },
             // blobServerOnionUrl = null,
-            spvServers = spvServers
         ).also {
             logger.d { "Connection Params: $it" }
         }

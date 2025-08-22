@@ -137,9 +137,6 @@ abstract class CountlyBase(
         if (appSettings.electrumNode) {
             settingsAsSet.add(ELECTRUM_SERVER)
         }
-        if (appSettings.spv) {
-            settingsAsSet.add(SPV)
-        }
 
         return settingsAsSet.sorted().joinToString(",")
     }
@@ -995,7 +992,6 @@ abstract class CountlyBase(
         const val PROXY = "proxy"
         const val TESTNET = "testnet"
         const val ELECTRUM_SERVER = "electrum_server"
-        const val SPV = "spv"
         const val ENCHANCED_PRIVACY = "enhanced_privacy"
 
         const val BLE = "BLE"
