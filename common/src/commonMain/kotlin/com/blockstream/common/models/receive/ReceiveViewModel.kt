@@ -58,6 +58,7 @@ import com.blockstream.common.lightning.receiveAmountSatoshi
 import com.blockstream.common.lightning.satoshi
 import com.blockstream.common.lightning.totalInboundLiquiditySatoshi
 import com.blockstream.common.models.GreenViewModel
+import com.blockstream.common.models.receive.ReceiveViewModel.LocalEvents
 import com.blockstream.common.models.sheets.NoteType
 import com.blockstream.common.navigation.NavigateDestinations
 import com.blockstream.common.navigation.PopTo
@@ -90,10 +91,16 @@ import kotlinx.coroutines.flow.launchIn
 import kotlinx.coroutines.flow.onEach
 import kotlinx.coroutines.sync.Mutex
 import kotlinx.coroutines.withContext
+import kotlinx.serialization.Serializable
 import okio.Path.Companion.toPath
 import org.jetbrains.compose.resources.getString
 import org.koin.core.component.inject
 import kotlin.time.Clock
+
+@Serializable
+sealed class PendingAction {
+    data object VerifyAddress : PendingAction()
+}
 
 abstract class ReceiveViewModelAbstract(greenWallet: GreenWallet, accountAssetOrNull: AccountAsset?) :
     GreenViewModel(greenWalletOrNull = greenWallet, accountAssetOrNull = accountAssetOrNull) {
@@ -165,6 +172,16 @@ abstract class ReceiveViewModelAbstract(greenWallet: GreenWallet, accountAssetOr
 
     @NativeCoroutinesState
     abstract val assetAccounts: StateFlow<List<AccountAssetBalance>>
+
+    internal var pendingAction: PendingAction? = null
+
+    fun executePendingAction() {
+        if (!isHwWatchOnly.value) {
+            (pendingAction as? PendingAction.VerifyAddress)?.also {
+                postEvent(LocalEvents.VerifyOnDevice)
+            }
+        }
+    }
 }
 
 class ReceiveViewModel(greenWallet: GreenWallet, initialAccountAsset: AccountAsset) :
@@ -245,7 +262,9 @@ class ReceiveViewModel(greenWallet: GreenWallet, initialAccountAsset: AccountAss
             }.map {
                 AccountAssetBalance(account = it, asset = asset)
             }
-        }.stateIn(viewModelScope, SharingStarted.WhileSubscribed(5000L), listOfNotNull(initialAccountAsset.let { AccountAssetBalance.create(it) }))
+        }.stateIn(
+            viewModelScope, SharingStarted.WhileSubscribed(5000L), listOfNotNull(initialAccountAsset.let { AccountAssetBalance.create(it) })
+        )
 
     class LocalEvents {
         object CreateAccount : Event
@@ -483,7 +502,12 @@ class ReceiveViewModel(greenWallet: GreenWallet, initialAccountAsset: AccountAss
             }
 
             is LocalEvents.VerifyOnDevice -> {
-                if (!onProgress.value) {
+                if (session.isHwWatchOnly) {
+                    pendingAction = PendingAction.VerifyAddress
+                    postSideEffect(
+                        SideEffects.NavigateTo(NavigateDestinations.DeviceScan(greenWallet = greenWallet, isWatchOnlyUpgrade = true))
+                    )
+                } else {
                     _address.value?.also {
                         postSideEffect(
                             SideEffects.NavigateTo(
@@ -610,7 +634,7 @@ class ReceiveViewModel(greenWallet: GreenWallet, initialAccountAsset: AccountAss
     private fun generateAddress() {
         logger.i { "Generating address for ${account.name}" }
         _showLedgerAssetWarning.value = account.isLiquid && session.device?.isLedger == true
-        _showVerifyOnDevice.value = session.device?.canVerifyAddressOnDevice(account) ?: false
+        _showVerifyOnDevice.value = session.device?.canVerifyAddressOnDevice(account) ?: session.isHwWatchOnly
 
         if (account.isLightning) {
             _receiveAddress.value = null

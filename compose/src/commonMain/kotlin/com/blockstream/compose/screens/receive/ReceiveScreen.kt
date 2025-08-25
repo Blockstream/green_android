@@ -57,6 +57,7 @@ import blockstream_green.common.generated.resources.share_network
 import blockstream_green.common.generated.resources.warning
 import com.blockstream.common.data.AlertType
 import com.blockstream.common.data.DenominatedValue
+import com.blockstream.common.data.GreenWallet
 import com.blockstream.common.data.MenuEntry
 import com.blockstream.common.data.MenuEntryList
 import com.blockstream.common.events.Events
@@ -132,6 +133,10 @@ fun ReceiveScreen(
 
     NavigateDestinations.Note.getResult<String> {
         viewModel.postEvent(ReceiveViewModel.LocalEvents.SetNote(it))
+    }
+
+    NavigateDestinations.Login.getResult<GreenWallet> {
+        viewModel.executePendingAction()
     }
 
     val onProgress by viewModel.onProgress.collectAsStateWithLifecycle()
