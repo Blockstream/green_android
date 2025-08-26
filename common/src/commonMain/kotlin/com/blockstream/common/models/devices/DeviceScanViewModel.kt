@@ -29,7 +29,11 @@ abstract class DeviceScanViewModelAbstract(greenWallet: GreenWallet) :
     abstract val deviceFlow: StateFlow<GreenDevice?>
 }
 
-class DeviceScanViewModel(greenWallet: GreenWallet, private val isWatchOnlyUpgrade: Boolean) :
+class DeviceScanViewModel(
+    greenWallet: GreenWallet,
+    private val isWatchOnlyUpgrade: Boolean,
+    private val isWatchOnlyDeviceConnect: Boolean
+) :
     DeviceScanViewModelAbstract(greenWallet = greenWallet) {
 
     private val _deviceFlow: MutableStateFlow<GreenDevice?> = MutableStateFlow(null)
@@ -91,7 +95,7 @@ class DeviceScanViewModel(greenWallet: GreenWallet, private val isWatchOnlyUpgra
             doAsync({
 
                 if (device.gdkHardwareWallet == null) {
-                    if (!isWatchOnlyUpgrade) {
+                    if (!isWatchOnlyUpgrade && !isWatchOnlyDeviceConnect) {
                         session.disconnect()
                     }
                     deviceConnectionManager.connectDevice(
@@ -188,6 +192,10 @@ class DeviceScanViewModel(greenWallet: GreenWallet, private val isWatchOnlyUpgra
 
                 deviceManager.savedDevice = it.second
 
+                if (isWatchOnlyDeviceConnect) {
+                    session.watchOnlyDeviceConnect(it.second)
+                }
+
                 navigate(greenWallet = it.first, deviceId = it.second.connectionIdentifier)
 
                 countly.hardwareConnected(device)
@@ -213,16 +221,20 @@ class DeviceScanViewModel(greenWallet: GreenWallet, private val isWatchOnlyUpgra
     }
 
     fun navigate(greenWallet: GreenWallet, deviceId: String) {
-        postSideEffect(
-            SideEffects.NavigateTo(
-                NavigateDestinations.Login(
-                    greenWallet = greenWallet,
-                    autoLoginWallet = !isWatchOnlyUpgrade,
-                    deviceId = deviceId,
-                    isWatchOnlyUpgrade = isWatchOnlyUpgrade
+        if (isWatchOnlyDeviceConnect) {
+            postSideEffect(SideEffects.NavigateBack())
+        } else {
+            postSideEffect(
+                SideEffects.NavigateTo(
+                    NavigateDestinations.Login(
+                        greenWallet = greenWallet,
+                        autoLoginWallet = !isWatchOnlyUpgrade,
+                        deviceId = deviceId,
+                        isWatchOnlyUpgrade = isWatchOnlyUpgrade
+                    )
                 )
             )
-        )
+        }
     }
 
     companion object : Loggable()

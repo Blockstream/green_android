@@ -33,6 +33,7 @@ import com.blockstream.common.managers.BluetoothState
 import com.blockstream.common.models.devices.AbstractDeviceViewModel
 import com.blockstream.common.models.devices.DeviceScanViewModelAbstract
 import com.blockstream.common.navigation.NavigateDestinations
+import com.blockstream.common.sideeffects.SideEffects
 import com.blockstream.compose.components.GreenButton
 import com.blockstream.compose.components.GreenButtonColor
 import com.blockstream.compose.components.GreenButtonSize
@@ -47,6 +48,7 @@ import com.blockstream.compose.theme.whiteMedium
 import com.blockstream.compose.utils.SetupScreen
 import com.blockstream.ui.components.GreenColumn
 import com.blockstream.ui.navigation.getResult
+import com.blockstream.ui.navigation.setResult
 import org.jetbrains.compose.resources.painterResource
 import org.jetbrains.compose.resources.stringResource
 
@@ -68,7 +70,13 @@ fun DeviceScanScreen(
         viewModel.postEvent(Events.DeviceRequestResponse(it))
     }
 
-    SetupScreen(viewModel = viewModel, withPadding = false, horizontalAlignment = Alignment.CenterHorizontally) {
+    SetupScreen(viewModel = viewModel, withPadding = false, horizontalAlignment = Alignment.CenterHorizontally, sideEffectsHandler = {
+        when (it) {
+            is SideEffects.NavigateBack -> {
+                NavigateDestinations.DeviceScan.setResult(viewModel.greenWallet)
+            }
+        }
+    }) {
 
         Box(modifier = Modifier.weight(1f)) {
             Image(

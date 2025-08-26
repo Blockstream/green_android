@@ -30,6 +30,7 @@ import blockstream_green.common.generated.resources.id_total_spent
 import blockstream_green.common.generated.resources.id_verify_address_on_device
 import blockstream_green.common.generated.resources.id_your_redeposit_address
 import blockstream_green.common.generated.resources.pencil_simple_line
+import com.blockstream.common.data.GreenWallet
 import com.blockstream.common.extensions.isNotBlank
 import com.blockstream.common.models.send.CreateTransactionViewModelAbstract
 import com.blockstream.common.models.send.SendConfirmViewModel
@@ -78,6 +79,10 @@ fun SendConfirmScreen(
                 psbt = it.result
             )
         )
+    }
+
+    NavigateDestinations.Login.getResult<GreenWallet> {
+        viewModel.executePendingAction()
     }
 
     SetupScreen(

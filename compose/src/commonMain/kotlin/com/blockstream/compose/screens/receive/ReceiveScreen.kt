@@ -135,7 +135,7 @@ fun ReceiveScreen(
         viewModel.postEvent(ReceiveViewModel.LocalEvents.SetNote(it))
     }
 
-    NavigateDestinations.Login.getResult<GreenWallet> {
+    NavigateDestinations.DeviceScan.getResult<GreenWallet> {
         viewModel.executePendingAction()
     }
 

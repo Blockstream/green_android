@@ -52,15 +52,23 @@ import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.flow.merge
 import kotlinx.coroutines.flow.onEach
 import kotlinx.coroutines.sync.Mutex
+import kotlinx.serialization.Serializable
 import kotlinx.serialization.json.JsonObject
 import kotlinx.serialization.json.JsonPrimitive
 import kotlinx.serialization.json.jsonObject
 import org.jetbrains.compose.resources.getString
 
+@Serializable
+sealed class PendingAction {
+    data object SendTransaction : PendingAction()
+}
+
 abstract class CreateTransactionViewModelAbstract(
     greenWallet: GreenWallet,
     accountAssetOrNull: AccountAsset? = null,
 ) : GreenViewModel(greenWalletOrNull = greenWallet, accountAssetOrNull = accountAssetOrNull) {
+
+    var pendingAction: PendingAction? = null
 
     override fun segmentation(): HashMap<String, Any>? {
         return countly.sessionSegmentation(session = session)
@@ -533,6 +541,14 @@ abstract class CreateTransactionViewModelAbstract(
                 error = it
             )
         })
+    }
+
+    fun executePendingAction() {
+        if (!session.isHwWatchOnly) {
+            (pendingAction as? PendingAction.SendTransaction)?.also {
+                postEvent(LocalEvents.SignTransaction())
+            }
+        }
     }
 
     companion object : Loggable()

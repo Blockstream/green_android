@@ -96,6 +96,7 @@ import okio.Path.Companion.toPath
 import org.jetbrains.compose.resources.getString
 import org.koin.core.component.inject
 import kotlin.time.Clock
+import kotlin.time.Duration.Companion.minutes
 
 @Serializable
 sealed class PendingAction {
@@ -176,10 +177,8 @@ abstract class ReceiveViewModelAbstract(greenWallet: GreenWallet, accountAssetOr
     internal var pendingAction: PendingAction? = null
 
     fun executePendingAction() {
-        if (!isHwWatchOnly.value) {
-            (pendingAction as? PendingAction.VerifyAddress)?.also {
-                postEvent(LocalEvents.VerifyOnDevice)
-            }
+        (pendingAction as? PendingAction.VerifyAddress)?.also {
+            postEvent(LocalEvents.VerifyOnDevice)
         }
     }
 }
@@ -502,10 +501,10 @@ class ReceiveViewModel(greenWallet: GreenWallet, initialAccountAsset: AccountAss
             }
 
             is LocalEvents.VerifyOnDevice -> {
-                if (session.isHwWatchOnly) {
+                if (session.isHwWatchOnlyWithNoDevice) {
                     pendingAction = PendingAction.VerifyAddress
                     postSideEffect(
-                        SideEffects.NavigateTo(NavigateDestinations.DeviceScan(greenWallet = greenWallet, isWatchOnlyUpgrade = true))
+                        SideEffects.NavigateTo(NavigateDestinations.DeviceScan(greenWallet = greenWallet, isWatchOnlyDeviceConnect = true))
                     )
                 } else {
                     _address.value?.also {
@@ -621,7 +620,8 @@ class ReceiveViewModel(greenWallet: GreenWallet, initialAccountAsset: AccountAss
                     account = account,
                     address = address
                 )
-            }, preAction = null, postAction = null, onSuccess = {
+            }, mutex = getMutex("verifyAddressOnDevice"), timeout = 1L.minutes,
+                preAction = null, postAction = null, onSuccess = {
                 postSideEffect(SideEffects.Snackbar(StringHolder.create(Res.string.id_the_address_is_valid)))
                 postSideEffect(SideEffects.Dismiss)
             }, onError = {

@@ -61,7 +61,7 @@ abstract class SecurityViewModelAbstract(
     private var pendingAction: PendingAction? = null
 
     fun genuineCheck() {
-        if (isHwWatchOnly.value) {
+        if (session.isHwWatchOnlyWithNoDevice) {
             connectDevice(pendingAction = PendingAction.GENUINE_CHECK)
         } else {
             postEvent(NavigateDestinations.JadeGenuineCheck(greenWalletOrNull = greenWallet))
@@ -73,7 +73,7 @@ abstract class SecurityViewModelAbstract(
         postEvent(
             NavigateDestinations.DeviceScan(
                 greenWallet = greenWallet,
-                isWatchOnlyUpgrade = true
+                isWatchOnlyDeviceConnect = true
             )
         )
     }

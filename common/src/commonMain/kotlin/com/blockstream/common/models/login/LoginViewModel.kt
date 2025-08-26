@@ -616,10 +616,13 @@ class LoginViewModel constructor(
                     device = device,
                     hardwareWalletResolver = DeviceResolver(gdkHardwareWallet, this),
                     derivedLightningMnemonic = derivedLightningMnemonic,
+                    isSmartDiscovery = !isWatchOnlyUpgrade,
                     hwInteraction = this
                 )
 
-                enableHardwareWatchOnlyUseCase(greenWallet = greenWallet, session = session)
+                if (!isWatchOnlyUpgrade) {
+                    enableHardwareWatchOnlyUseCase(greenWallet = greenWallet, session = session)
+                }
             }
         } ?: run {
             postSideEffect(SideEffects.Logout(LogoutReason.DEVICE_DISCONNECTED))

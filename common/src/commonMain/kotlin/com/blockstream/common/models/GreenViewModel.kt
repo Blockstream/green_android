@@ -243,6 +243,8 @@ open class GreenViewModel constructor(
     private val _isQrWatchOnly = MutableStateFlow(false)
     val isQrWatchOnly = _isQrWatchOnly
 
+    private val mutexes = mutableMapOf<String, Mutex>()
+
     init {
         // It's better to initiate the ViewModel with a bootstrap() call
         // https://kotlinlang.org/docs/inheritance.html#derived-class-initialization-order
@@ -631,6 +633,9 @@ open class GreenViewModel constructor(
             else -> {}
         }
     }
+
+    // Note: Not synchronized or atomic, should be safe to use in most cases
+    protected fun getMutex(key: String): Mutex = mutexes.getOrPut(key) { Mutex() }
 
     protected fun <T : Any?> doAsync(
         action: suspend () -> T,

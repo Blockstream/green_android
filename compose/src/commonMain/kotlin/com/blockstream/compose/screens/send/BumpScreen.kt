@@ -36,6 +36,7 @@ import blockstream_green.common.generated.resources.id_old_fee
 import blockstream_green.common.generated.resources.id_set_custom_fee_rate
 import blockstream_green.common.generated.resources.id_total
 import com.blockstream.common.data.FeePriority
+import com.blockstream.common.data.GreenWallet
 import com.blockstream.common.models.send.BumpViewModelAbstract
 import com.blockstream.common.models.send.CreateTransactionViewModelAbstract
 import com.blockstream.common.navigation.NavigateDestinations
@@ -79,6 +80,10 @@ fun BumpScreen(
                 psbt = it.result
             )
         )
+    }
+
+    NavigateDestinations.Login.getResult<GreenWallet> {
+        viewModel.executePendingAction()
     }
 
     var customFeeDialog by remember { mutableStateOf<String?>(null) }

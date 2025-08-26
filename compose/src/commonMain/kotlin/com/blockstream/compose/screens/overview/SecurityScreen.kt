@@ -99,7 +99,7 @@ fun SecurityScreen(viewModel: SecurityViewModelAbstract) {
         }
     }
 
-    NavigateDestinations.Login.getResult<GreenWallet> {
+    NavigateDestinations.DeviceScan.getResult<GreenWallet> {
         viewModel.executePendingAction()
     }
 

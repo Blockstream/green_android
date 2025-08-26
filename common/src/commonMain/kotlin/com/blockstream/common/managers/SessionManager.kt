@@ -261,9 +261,6 @@ class SessionManager constructor(
     fun upgradeOnBoardingSessionToFullSession(woSession: GdkSession, device: GreenDevice) {
         onBoardingSession?.let {
             woSession.watchOnlyToFullSession(device = device, gdkSession = it)
-
-            it.destroy(disconnect = false)
-
             onBoardingSession = null
         }
     }

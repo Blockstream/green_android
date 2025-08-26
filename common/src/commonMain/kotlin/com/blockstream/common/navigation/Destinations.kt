@@ -141,7 +141,11 @@ sealed class NavigateDestinations : NavigateDestination() {
     data class JadeGenuineCheck(val greenWalletOrNull: GreenWallet? = null, val deviceId: String? = null) : NavigateDestination()
 
     @Serializable
-    data class DeviceScan(val greenWallet: GreenWallet, val isWatchOnlyUpgrade: Boolean = false) : NavigateDestination()
+    data class DeviceScan(
+        val greenWallet: GreenWallet,
+        val isWatchOnlyUpgrade: Boolean = false,
+        val isWatchOnlyDeviceConnect: Boolean = false
+    ) : NavigateDestination()
 
     @Serializable
     data class JadeFirmwareUpdate(val deviceId: String) : NavigateDestination()

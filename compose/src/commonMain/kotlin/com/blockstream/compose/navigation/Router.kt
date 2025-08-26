@@ -171,7 +171,6 @@ import com.blockstream.compose.sheets.Call2ActionBottomSheet
 import com.blockstream.compose.sheets.CameraBottomSheet
 import com.blockstream.compose.sheets.ChooseAssetAccountBottomSheet
 import com.blockstream.compose.sheets.CountriesBottomSheet
-import com.blockstream.compose.sheets.MeldCountriesBottomSheet
 import com.blockstream.compose.sheets.DenominationBottomSheet
 import com.blockstream.compose.sheets.DeviceInteractionBottomSheet
 import com.blockstream.compose.sheets.EnvironmentBottomSheet
@@ -179,6 +178,7 @@ import com.blockstream.compose.sheets.FeeRateBottomSheet
 import com.blockstream.compose.sheets.JadeFirmwareUpdateBottomSheet
 import com.blockstream.compose.sheets.LightningNodeBottomSheet
 import com.blockstream.compose.sheets.MainMenuBottomSheet
+import com.blockstream.compose.sheets.MeldCountriesBottomSheet
 import com.blockstream.compose.sheets.MenuBottomSheetView
 import com.blockstream.compose.sheets.NewJadeConnectedBottomSheet
 import com.blockstream.compose.sheets.NoteBottomSheet
@@ -725,7 +725,13 @@ fun Router(
             }
             appComposable<NavigateDestinations.DeviceScan> {
                 val args = it.toRoute<NavigateDestinations.DeviceScan>()
-                DeviceScanScreen(viewModel { DeviceScanViewModel(args.greenWallet, args.isWatchOnlyUpgrade) })
+                DeviceScanScreen(viewModel {
+                    DeviceScanViewModel(
+                        greenWallet = args.greenWallet,
+                        isWatchOnlyUpgrade = args.isWatchOnlyUpgrade,
+                        isWatchOnlyDeviceConnect = args.isWatchOnlyDeviceConnect
+                    )
+                })
             }
             // Bottom sheets
             appBottomSheet<NavigateDestinations.Analytics> {

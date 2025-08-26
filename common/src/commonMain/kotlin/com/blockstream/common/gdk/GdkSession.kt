@@ -219,6 +219,9 @@ class GdkSession constructor(
     var isAirgapped: Boolean = false
         private set
 
+    val isHwWatchOnlyWithNoDevice: Boolean
+        get() = isHwWatchOnly && device == null
+
     val canSendTransaction: Boolean
         get() = !isWatchOnlyValue || (isAirgapped && (isCoreDescriptorWatchOnly && !defaultNetwork.isLiquid)) || isRichWatchOnly
 
@@ -499,6 +502,10 @@ class GdkSession constructor(
         isConnectedState.drop(1).onEach {
             sessionManager.fireConnectionChangeEvent()
         }.launchIn(scope)
+    }
+
+    fun watchOnlyDeviceConnect(device: GreenDevice) {
+        this.device = device
     }
 
     private fun authHandler(network: Network, gaAuthHandler: GAAuthHandler): AuthHandler =
@@ -1308,6 +1315,7 @@ class GdkSession constructor(
         device: GreenDevice,
         derivedLightningMnemonic: String?,
         hardwareWalletResolver: HardwareWalletResolver,
+        isSmartDiscovery: Boolean,
         hwInteraction: HardwareWalletInteraction? = null,
     ): LoginData {
         // If last used network is Lightning, change to bitcoin as the ln network can't be used for login
@@ -1335,7 +1343,7 @@ class GdkSession constructor(
             walletLoginCredentialsParams = LoginCredentialsParams.empty,
             derivedLightningMnemonic = derivedLightningMnemonic,
             device = device,
-            isSmartDiscovery = true,
+            isSmartDiscovery = isSmartDiscovery,
             hardwareWalletResolver = hardwareWalletResolver,
             hwInteraction = hwInteraction,
         )

@@ -11,6 +11,7 @@ import blockstream_green.common.generated.resources.Res
 import blockstream_green.common.generated.resources.id_connect_hardware_wallet
 import blockstream_green.common.generated.resources.id_sign_transaction_via_qr
 import com.blockstream.common.models.send.CreateTransactionViewModelAbstract
+import com.blockstream.common.models.send.PendingAction
 import com.blockstream.common.navigation.NavigateDestinations
 import org.jetbrains.compose.resources.stringResource
 
@@ -47,6 +48,7 @@ fun GreenConfirmButton(
                 size = GreenButtonSize.BIG,
                 modifier = Modifier.fillMaxWidth(),
                 onClick = {
+                    viewModel.pendingAction = PendingAction.SendTransaction
                     viewModel.postEvent(NavigateDestinations.DeviceScan(greenWallet = viewModel.greenWallet, isWatchOnlyUpgrade = true))
                 }
             )
