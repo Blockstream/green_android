@@ -28,16 +28,14 @@ class EnableHardwareWatchOnlyUseCase(
             throw Exception("Watch only session is not supported")
         }
 
-        val accounts = session.allAccounts.value
-
         // Only if all accounts are singlesig you can enable
-        if (accounts.all { it.isSinglesig }) {
+        if (session.allAccounts.value.all { it.isSinglesig }) {
 
             // Wait for setup to gets completed so that the active account is set
             session.setupDefaultAccounts().join()
 
             val hwWatchOnlyCredentials =
-                accounts.filter { it.isSinglesig }.groupBy { it.network }.mapValues {
+                session.accounts.value.filter { it.isSinglesig && !it.hidden }.groupBy { it.network }.mapValues {
                     it.value.map {
                         session.getAccount(it).coreDescriptors ?: emptyList()
                     }.flatten()
