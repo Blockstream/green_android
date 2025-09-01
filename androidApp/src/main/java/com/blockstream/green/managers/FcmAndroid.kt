@@ -8,6 +8,7 @@ import com.blockstream.common.lightning.BreezNotification
 import com.blockstream.green.data.notifications.models.NotificationData
 import com.blockstream.green.utils.Loggable
 import com.blockstream.green.work.LightningWork
+import com.blockstream.green.work.MeldPendingTransactionsWorker
 import org.koin.core.component.inject
 
 class FcmAndroid constructor(
@@ -52,10 +53,20 @@ class FcmAndroid constructor(
         )
     }
 
+    fun scheduleMeldBackgroundJob(
+        externalCustomerId: String
+    ) {
+        MeldPendingTransactionsWorker.trigger(context, externalCustomerId)
+    }
+
     override fun showBuyTransactionNotification(
         notificationData: NotificationData
     ) {
         notificationManager.createBuyTransactionNotification(context, notificationData)
+        
+        notificationData.payload?.externalCustomerId?.let { externalCustomerId ->
+            scheduleMeldBackgroundJob(externalCustomerId)
+        }
     }
 
     companion object : Loggable()

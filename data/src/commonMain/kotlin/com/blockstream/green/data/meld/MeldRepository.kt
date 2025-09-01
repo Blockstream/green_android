@@ -10,8 +10,10 @@ import com.blockstream.green.data.meld.data.QuotesResponse
 import com.blockstream.green.data.meld.datasource.MeldLocalDataSource
 import com.blockstream.green.data.meld.datasource.MeldRemoteDataSource
 import com.blockstream.green.data.meld.models.Country
+import com.blockstream.green.data.meld.models.MeldTransaction
 import com.blockstream.green.data.meld.models.MeldTransactionResponse
 import com.blockstream.green.network.NetworkResponse
+import kotlinx.coroutines.flow.StateFlow
 
 class MeldRepository(
     private val remoteDataSource: MeldRemoteDataSource, private val localDataSource: MeldLocalDataSource
@@ -51,5 +53,17 @@ class MeldRepository(
 
             is NetworkResponse.Error -> response
         }
+    }
+
+    fun getAllPendingWalletIds(): Set<String> {
+        return localDataSource.getAllPendingWalletIds()
+    }
+    
+    fun getTransactionFlow(externalCustomerId: String): StateFlow<List<MeldTransaction>> {
+        return localDataSource.getTransactionFlow(externalCustomerId)
+    }
+    
+    fun updateTransactions(externalCustomerId: String, transactions: List<MeldTransaction>) {
+        localDataSource.updateTransactions(externalCustomerId, transactions)
     }
 }

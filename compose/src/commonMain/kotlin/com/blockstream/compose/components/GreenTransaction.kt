@@ -26,11 +26,13 @@ import blockstream_green.common.generated.resources.arrow_u_left_down
 import blockstream_green.common.generated.resources.arrows_down_up
 import blockstream_green.common.generated.resources.id_12_confirmations
 import blockstream_green.common.generated.resources.id_d6_confirmations
+import blockstream_green.common.generated.resources.id_processing_payment
 import blockstream_green.common.generated.resources.id_refundable
 import blockstream_green.common.generated.resources.id_unconfirmed
 import blockstream_green.common.generated.resources.question
 import com.blockstream.common.extensions.isNotBlank
 import com.blockstream.common.gdk.data.Transaction
+import com.blockstream.common.gdk.data.isMeldPending
 import com.blockstream.common.looks.transaction.Confirmed
 import com.blockstream.common.looks.transaction.TransactionLook
 import com.blockstream.common.utils.formatAuto
@@ -135,7 +137,7 @@ fun GreenTransaction(
                         modifier = Modifier.fillMaxWidth()
                     ) {
 
-                        AnimatedVisibility(visible = status.onProgress) {
+                        AnimatedVisibility(visible = (status.onProgress && !transactionLook.transaction.isMeldPending())) {
 
                             val isRefundableSwap = transactionLook.transaction.isRefundableSwap
                             if (status.onProgress || isRefundableSwap) {
@@ -166,11 +168,19 @@ fun GreenTransaction(
                             }
                         }
 
-                        AnimatedVisibility(visible = !status.onProgress) {
-                            // Date
+                        if(!transactionLook.transaction.isMeldPending()){
+                            AnimatedVisibility(visible = (!status.onProgress)) {
+                                // Date
+                                Text(
+                                    text = transactionLook.transaction.createdAtInstant?.formatAuto()
+                                        ?: "",
+                                    style = bodySmall,
+                                    color = whiteMedium
+                                )
+                            }
+                        }else{
                             Text(
-                                text = transactionLook.transaction.createdAtInstant?.formatAuto()
-                                    ?: "",
+                                text = stringResource(Res.string.id_processing_payment),
                                 style = bodySmall,
                                 color = whiteMedium
                             )

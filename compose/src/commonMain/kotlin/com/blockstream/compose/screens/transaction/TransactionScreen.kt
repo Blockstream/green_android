@@ -36,13 +36,14 @@ import blockstream_green.common.generated.resources.id_closed_channel
 import blockstream_green.common.generated.resources.id_confidential_transaction
 import blockstream_green.common.generated.resources.id_edit_note
 import blockstream_green.common.generated.resources.id_fee_rate
+import blockstream_green.common.generated.resources.id_final_amount_subject_to_network_fees
 import blockstream_green.common.generated.resources.id_incoming
 import blockstream_green.common.generated.resources.id_initiate_refund
 import blockstream_green.common.generated.resources.id_more_details
-import blockstream_green.common.generated.resources.id_network_fees
 import blockstream_green.common.generated.resources.id_non_confidential_transaction
 import blockstream_green.common.generated.resources.id_note
 import blockstream_green.common.generated.resources.id_outgoing
+import blockstream_green.common.generated.resources.id_processing_payment
 import blockstream_green.common.generated.resources.id_received
 import blockstream_green.common.generated.resources.id_received_on
 import blockstream_green.common.generated.resources.id_redeposit
@@ -82,6 +83,7 @@ import com.blockstream.compose.extensions.title
 import com.blockstream.compose.theme.MonospaceFont
 import com.blockstream.compose.theme.bodyLarge
 import com.blockstream.compose.theme.bodyMedium
+import com.blockstream.compose.theme.bodySmall
 import com.blockstream.compose.theme.green
 import com.blockstream.compose.theme.headlineSmall
 import com.blockstream.compose.theme.labelLarge
@@ -157,6 +159,7 @@ fun TransactionScreen(
 
             val status by viewModel.status.collectAsStateWithLifecycle()
             val amounts by viewModel.amounts.collectAsStateWithLifecycle()
+            val isMeldTransaction by viewModel.isMeldTransaction.collectAsStateWithLifecycle()
 
             Box(modifier = Modifier.fillMaxWidth()) {
 
@@ -217,8 +220,17 @@ fun TransactionScreen(
                 horizontalAlignment = Alignment.CenterHorizontally,
                 modifier = Modifier.fillMaxWidth()
             ) {
-                Text(text = status.title(), style = headlineSmall)
-                Text(text = message, style = bodyMedium)
+
+                if (!isMeldTransaction) {
+                    Text(text = status.title(), style = headlineSmall)
+                    Text(text = message, style = bodyMedium)
+                } else {
+                    Text(
+                        text = stringResource(Res.string.id_processing_payment),
+                        style = headlineSmall
+                    )
+                }
+
 
 
                 createdAt?.also {
@@ -236,33 +248,45 @@ fun TransactionScreen(
                     else -> Res.string.id_received
                 }
 
-                Text(
-                    text = stringResource(typeRes), style = labelMedium, modifier = Modifier
-                        .clip(RoundedCornerShape(16.dp))
-                        .background(status.color())
-                        .padding(horizontal = 8.dp, vertical = 6.dp)
-                )
+                if (!isMeldTransaction) {
+                    Text(
+                        text = stringResource(typeRes),
+                        style = labelMedium,
+                        modifier = Modifier.clip(RoundedCornerShape(16.dp))
+                            .background(status.color()).padding(horizontal = 8.dp, vertical = 6.dp)
+                    )
+                }
+
             }
 
 
             if (amounts.isNotEmpty()) {
-                GreenAmounts(
-                    amounts = amounts,
-                    session = viewModel.sessionOrNull,
-                    modifier = Modifier.padding(vertical = 32.dp),
-                    onAssetClick = {
-                        viewModel.postEvent(
-                            NavigateDestinations.AssetDetails(
-                                greenWallet = viewModel.greenWallet,
-                                assetId = it,
-                                accountAsset = viewModel.accountAsset.value
+                Column(horizontalAlignment = Alignment.CenterHorizontally) {
+                    GreenAmounts(
+                        amounts = amounts,
+                        session = viewModel.sessionOrNull,
+                        modifier = Modifier.padding(vertical = 8.dp),
+                        onAssetClick = {
+                            viewModel.postEvent(
+                                NavigateDestinations.AssetDetails(
+                                    greenWallet = viewModel.greenWallet,
+                                    assetId = it,
+                                    accountAsset = viewModel.accountAsset.value
+                                )
                             )
+                        })
+
+                    if (isMeldTransaction) {
+                        Text(
+                            text = stringResource(Res.string.id_final_amount_subject_to_network_fees),
+                            style = bodySmall,
+                            color = whiteMedium,
+                            textAlign = TextAlign.Center
                         )
                     }
-                )
-            } else {
-                GreenSpacer(32)
+                }
             }
+            GreenSpacer(32)
 
             val fee by viewModel.fee.collectAsStateWithLifecycle()
             val feeRate by viewModel.feeRate.collectAsStateWithLifecycle()
@@ -277,15 +301,11 @@ fun TransactionScreen(
                 HorizontalDivider()
 
                 GreenColumn(space = 8, padding = 0, modifier = Modifier.padding(vertical = 32.dp)) {
-                    fee?.also {
-                        Detail(label = Res.string.id_network_fees) {
-                            Text(text = it)
-                        }
-                    }
-
-                    feeRate?.also {
-                        Detail(label = Res.string.id_fee_rate) {
-                            Text(text = it)
+                    if (!isMeldTransaction) {
+                        feeRate?.also {
+                            Detail(label = Res.string.id_fee_rate) {
+                                Text(text = it)
+                            }
                         }
                     }
 
@@ -295,13 +315,14 @@ fun TransactionScreen(
                         }
                     }
 
-                    transactionId?.also {
-                        Detail(label = Res.string.id_transaction_id) {
-                            CopyContainer(value = it) {
-                                Text(
-                                    text = it,
-                                    fontFamily = MonospaceFont()
-                                )
+                    if (!isMeldTransaction) {
+                        transactionId?.also {
+                            Detail(label = Res.string.id_transaction_id) {
+                                CopyContainer(value = it) {
+                                    Text(
+                                        text = it, fontFamily = MonospaceFont()
+                                    )
+                                }
                             }
                         }
                     }
@@ -347,6 +368,7 @@ fun TransactionScreen(
             }
 
             val canReplaceByFee by viewModel.canReplaceByFee.collectAsStateWithLifecycle()
+
             Column {
                 if (canReplaceByFee) {
                     HorizontalDivider()
@@ -358,7 +380,7 @@ fun TransactionScreen(
                     }
                 }
 
-                if (!viewModel.account.isLightning) {
+                if (!isMeldTransaction && !viewModel.account.isLightning) {
                     if (canEditNote) {
                         HorizontalDivider()
                         MenuListItem(
@@ -393,7 +415,7 @@ fun TransactionScreen(
                 }
                 val transaction by viewModel.transaction.collectAsStateWithLifecycle()
 
-                if (transaction.isRefundableSwap) {
+                if (transaction.isRefundableSwap && !isMeldTransaction) {
                     HorizontalDivider()
                     MenuListItem(
                         stringResource(Res.string.id_initiate_refund),
@@ -405,7 +427,7 @@ fun TransactionScreen(
 
                 val hasMoreDetails by viewModel.hasMoreDetails.collectAsStateWithLifecycle()
 
-                if (hasMoreDetails) {
+                if (hasMoreDetails && !isMeldTransaction) {
                     HorizontalDivider()
                     MenuListItem(
                         stringResource(Res.string.id_more_details),
@@ -413,8 +435,7 @@ fun TransactionScreen(
                     ) {
                         viewModel.postEvent(
                             NavigateDestinations.TransactionDetails(
-                                greenWallet = viewModel.greenWallet,
-                                transaction = transaction
+                                greenWallet = viewModel.greenWallet, transaction = transaction
                             )
                         )
                     }

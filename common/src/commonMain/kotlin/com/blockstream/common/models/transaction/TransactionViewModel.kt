@@ -2,6 +2,7 @@ package com.blockstream.common.models.transaction
 
 import blockstream_green.common.generated.resources.Res
 import blockstream_green.common.generated.resources.id_received
+import blockstream_green.common.generated.resources.id_receiving
 import blockstream_green.common.generated.resources.id_redeposited
 import blockstream_green.common.generated.resources.id_sent
 import blockstream_green.common.generated.resources.id_swap
@@ -16,6 +17,7 @@ import com.blockstream.common.extensions.previewTransaction
 import com.blockstream.common.extensions.previewWallet
 import com.blockstream.common.gdk.data.AccountAsset
 import com.blockstream.common.gdk.data.Transaction
+import com.blockstream.common.gdk.data.isMeldPending
 import com.blockstream.common.gdk.params.TransactionParams
 import com.blockstream.common.looks.AmountAssetLook
 import com.blockstream.common.looks.transaction.Completed
@@ -108,6 +110,9 @@ abstract class TransactionViewModelAbstract(
 
     @NativeCoroutinesState
     abstract val hasMoreDetails: StateFlow<Boolean>
+    
+    @NativeCoroutinesState
+    abstract val isMeldTransaction: StateFlow<Boolean>
 }
 
 class TransactionViewModel(transaction: Transaction, greenWallet: GreenWallet) :
@@ -171,22 +176,27 @@ class TransactionViewModel(transaction: Transaction, greenWallet: GreenWallet) :
     private val _note: MutableStateFlow<String?> = MutableStateFlow(null)
     override val note: StateFlow<String?> = _note
 
-    override val canEditNote: StateFlow<Boolean> = MutableStateFlow(!account.isLightning && sessionOrNull?.isWatchOnlyValue == false)
+    private val _canEditNote: MutableStateFlow<Boolean> = MutableStateFlow(!account.isLightning && sessionOrNull?.isWatchOnlyValue == false)
+    override val canEditNote: StateFlow<Boolean> = _canEditNote
 
     private val _hasMoreDetails: MutableStateFlow<Boolean> = MutableStateFlow(false)
     override val hasMoreDetails: StateFlow<Boolean> = _hasMoreDetails
+    
+    private val _isMeldTransaction: MutableStateFlow<Boolean> = MutableStateFlow(transaction.isMeldPending())
+    override val isMeldTransaction: StateFlow<Boolean> = _isMeldTransaction
 
     init {
         logger.d { "Transaction $transaction" }
 
         viewModelScope.launch {
+            _status.value = TransactionStatus.create(transaction, session)
             _navData.value = NavData(
                 title = getString(
                     when (transaction.txType) {
                         Transaction.Type.OUT -> Res.string.id_sent
                         Transaction.Type.REDEPOSIT -> Res.string.id_redeposited
                         Transaction.Type.MIXED -> Res.string.id_swap
-                        else -> Res.string.id_received
+                        else -> if(status.value.confirmations > 0) Res.string.id_received else Res.string.id_receiving
                     }
                 ),
                 subtitle = account.name
@@ -333,7 +343,12 @@ class TransactionViewModel(transaction: Transaction, greenWallet: GreenWallet) :
             else -> null
         }
 
-        _canReplaceByFee.value = transaction.canRBF && !transaction.isIn && session.canSendTransaction
+        val isMeldTransaction = transaction.isMeldPending()
+        _isMeldTransaction.value = isMeldTransaction
+        
+        _canReplaceByFee.value = !isMeldTransaction && transaction.canRBF && !transaction.isIn && session.canSendTransaction
+        
+        _canEditNote.value = !isMeldTransaction && !account.isLightning && sessionOrNull?.isWatchOnlyValue == false
 
         _note.value = transaction.memo.takeIf { it.isNotBlank() }
 
@@ -408,6 +423,7 @@ class TransactionViewModelPreview(status: TransactionStatus) : TransactionViewMo
     override val canEditNote: StateFlow<Boolean> = MutableStateFlow(true)
     override val hasMoreDetails: StateFlow<Boolean> = MutableStateFlow(true)
     override val isCloseChannel: StateFlow<Boolean> = MutableStateFlow(false)
+    override val isMeldTransaction: StateFlow<Boolean> = MutableStateFlow(false)
 
     companion object {
         fun previewUnconfirmed() = TransactionViewModelPreview(Unconfirmed())

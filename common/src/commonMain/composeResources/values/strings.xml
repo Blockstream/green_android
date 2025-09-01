@@ -926,6 +926,8 @@
     <string name="id_payments_to_self_are_not">Payments to self are not supported in your lightning account.</string>
     <string name="id_payments_will_fail">Payments will fail!</string>
     <string name="id_pending_confirmation">Pending confirmation</string>
+    <string name="id_processing_payment">Processing payment</string>
+    <string name="id_final_amount_subject_to_network_fees">Final amount is subject to network fees.</string>
     <string name="id_permanent_2fa_account_ideal_for">Permanent 2FA account, ideal for long term hodling, optionally with 3rd emergency key on hardware wallet.</string>
     <string name="id_permanently_block_this_wallet">Permanently Block This Wallet</string>
     <string name="id_personal_electrum_server">Personal Electrum Server</string>

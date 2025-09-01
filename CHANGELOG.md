@@ -7,6 +7,7 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/).
 
 #### Added
 - Multi-select functionality for unarchiving multiple accounts at once in the archived accounts screen
+- Display pending Meld transactions with real-time status updates in transaction list
 
 #### Fixed
 - Buy screen now correctly pre-selects the account when navigating from account details
