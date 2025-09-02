@@ -3,17 +3,24 @@ All notable changes to this project will be documented in this file.
 
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/).
 
-## [Unreleased]
+## [5.0.9] - 2025-09-02
 
 #### Added
 - Multi-select functionality for unarchiving multiple accounts at once in the archived accounts screen
 - Display pending Meld transactions with real-time status updates in transaction list
+- Validate an address in the receive screen for a hardware-watchonly wallet
 
 #### Fixed
 - Buy screen now correctly pre-selects the account when navigating from account details
+- Hide archived accounts from in hardware-watchonly wallets
+- Improve jade login time for hardware-watchonly wallets
 
 #### Changed
+- Restore Lightning channel sweep funds to onchain address
+- Improve connection time for Jade
+- Deprecate SPV options: users who want to self validate should connect to their own electrum server in app settings
 - Reformat Promo component layout for better image positioning
+- Bump GDK to version 0.76.0
 
 ## [5.0.7] - 2025-07-31
 

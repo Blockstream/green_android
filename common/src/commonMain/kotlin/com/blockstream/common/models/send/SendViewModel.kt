@@ -39,7 +39,6 @@ import com.blockstream.common.lightning.lnUrlPayDescription
 import com.blockstream.common.lightning.lnUrlPayImage
 import com.blockstream.common.models.sheets.NoteType
 import com.blockstream.common.navigation.NavigateDestinations
-import com.blockstream.common.navigation.PopTo
 import com.blockstream.common.sideeffects.SideEffects
 import com.blockstream.common.utils.StringHolder
 import com.blockstream.common.utils.UserInput
@@ -70,6 +69,7 @@ import kotlinx.serialization.json.buildJsonObject
 import org.jetbrains.compose.resources.getString
 import saschpe.kase64.base64DecodedBytes
 import kotlin.math.absoluteValue
+import kotlin.time.Duration.Companion.minutes
 
 abstract class SendViewModelAbstract(greenWallet: GreenWallet, accountAssetOrNull: AccountAsset? = null) :
     CreateTransactionViewModelAbstract(greenWallet = greenWallet, accountAssetOrNull = accountAssetOrNull) {
@@ -645,7 +645,7 @@ class SendViewModel(
                 throw Exception("Something went wrong while creating the Transaction")
             }
 
-        }, preAction = {
+        }, timeout = 1.minutes, preAction = {
             onProgress.value = true
             _onProgressSending.value = true
         }, postAction = {
@@ -667,8 +667,9 @@ class SendViewModel(
             if (it.hasMessageOrUrl) {
                 postSideEffect(SideEffects.TransactionSent(it))
             } else {
-                postSideEffect(SideEffects.NavigateToRoot(popTo = PopTo.Transact))
+                postSideEffect(SideEffects.NavigateAfterSendTransaction)
             }
+
             postSideEffect(SideEffects.Snackbar(StringHolder.create(Res.string.id_transaction_sent)))
 
         }, onError = {
