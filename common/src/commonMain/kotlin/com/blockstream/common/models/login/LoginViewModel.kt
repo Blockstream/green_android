@@ -60,6 +60,7 @@ import com.blockstream.common.sideeffects.SideEffects
 import com.blockstream.common.usecases.EnableHardwareWatchOnlyUseCase
 import com.blockstream.common.utils.SetupDevelopmentEnv
 import com.blockstream.common.utils.StringHolder
+import com.blockstream.domain.lightning.LightningNodeIdUseCase
 import com.blockstream.green.data.banner.Banner
 import com.blockstream.green.utils.Loggable
 import com.blockstream.ui.events.Event
@@ -158,6 +159,7 @@ class LoginViewModel constructor(
 
     override val isLoginRequired: Boolean = false
 
+    private val lightningNodeIdUseCase: LightningNodeIdUseCase by inject()
     private val enableHardwareWatchOnlyUseCase: EnableHardwareWatchOnlyUseCase by inject()
     private val setupDevelopmentEnv = SetupDevelopmentEnv() // Only for dev env
 
@@ -977,6 +979,8 @@ class LoginViewModel constructor(
                 session = pair.second,
                 loginCredentials = loginCredentials
             )
+
+            lightningNodeIdUseCase.invoke(wallet = pair.first, session = session)
 
             if (isWatchOnlyUpgrade) {
                 sessionManager.getWalletSessionOrNull(greenWallet)?.also { woSession ->

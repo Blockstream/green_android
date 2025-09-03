@@ -18,6 +18,7 @@ import com.blockstream.common.gdk.data.Network
 import com.blockstream.common.gdk.device.DeviceResolver
 import com.blockstream.common.gdk.device.HardwareWalletInteraction
 import com.blockstream.common.gdk.params.SubAccountParams
+import com.blockstream.domain.lightning.LightningNodeIdUseCase
 import com.blockstream.green.utils.Loggable
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.IO
@@ -26,7 +27,8 @@ import kotlinx.coroutines.withContext
 class CreateAccountUseCase(
     val database: Database,
     val greenKeystore: GreenKeystore,
-    val countly: CountlyBase
+    val countly: CountlyBase,
+    val lightningNodeIdUseCase: LightningNodeIdUseCase,
 ) : Loggable() {
 
     suspend operator fun invoke(
@@ -95,6 +97,9 @@ class CreateAccountUseCase(
                     session.changeGlobalSettings(it.copy(unit = SATOSHI_UNIT))
                 }
             }
+
+            // Save Lightning Node Id
+            lightningNodeIdUseCase.invoke(wallet = greenWallet, session = session)
 
             return session.lightningAccount
         } else {

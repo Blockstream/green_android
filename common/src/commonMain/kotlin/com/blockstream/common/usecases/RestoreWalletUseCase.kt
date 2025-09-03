@@ -13,6 +13,7 @@ import com.blockstream.common.gdk.params.LoginCredentialsParams
 import com.blockstream.common.managers.SessionManager
 import com.blockstream.common.managers.SettingsManager
 import com.blockstream.common.utils.generateWalletName
+import com.blockstream.domain.lightning.LightningNodeIdUseCase
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.IO
 import kotlinx.coroutines.withContext
@@ -25,6 +26,7 @@ class RestoreWalletUseCase(
     private val settingsManager: SettingsManager,
     private val setPinUseCase: SetPinUseCase,
     private val setBiometricsUseCase: SetBiometricsUseCase,
+    private val lightningNodeIdUseCase: LightningNodeIdUseCase
 ) {
 
     suspend operator fun invoke(
@@ -90,6 +92,8 @@ class RestoreWalletUseCase(
                         encryptedData = encryptedData
                     )
                 )
+
+                lightningNodeIdUseCase.invoke(wallet = wallet, session = session)
             }
 
             sessionManager.upgradeOnBoardingSessionToWallet(wallet)

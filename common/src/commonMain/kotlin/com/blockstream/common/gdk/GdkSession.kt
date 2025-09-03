@@ -463,6 +463,10 @@ class GdkSession constructor(
     var xPubHashId: String? = null
         private set
 
+    var lightningNodeId: String? = null
+        get() = lightningSdkOrNull?.nodeInfoStateFlow?.value?.id.takeIf { it.isNotBlank() } ?: field
+        private set
+
     var pendingTransactionParams: CreateTransactionParams? = null
     var pendingTransaction: PendingTransaction? = null
 
@@ -766,6 +770,7 @@ class GdkSession constructor(
 
         _isConnectedState.value = false
         xPubHashId = null
+        lightningNodeId = null
 
         authenticationRequired.clear()
 
@@ -1729,6 +1734,8 @@ class GdkSession constructor(
     ) {
         _isConnectedState.value = true
         xPubHashId = if (isNoBlobWatchOnly && !isHwWatchOnly) loginData.networkHashId else loginData.xpubHashId
+
+        lightningNodeId = wallet?.extras?.lightningNodeId
 
         if (initializeSession) {
             countly.activeWalletStart()
@@ -3306,9 +3313,14 @@ class GdkSession constructor(
             }
         }
 
-    fun supportId() = allAccounts.value.filter {
-        it.isMultisig && it.pointer == 0L || it.isLightning
-    }.joinToString(",") { "${it.network.bip21Prefix}:${if (it.isLightning) lightningSdk.nodeInfoStateFlow.value.id else it.receivingId}" }
+    fun supportId(): String = (allAccounts.value.filter {
+        it.isMultisig && it.pointer == 0L
+    }.map { "${it.network.bip21Prefix}:${it.receivingId}" } + listOfNotNull(
+        lightning?.bip21Prefix?.let { bip21Prefix ->
+            lightningNodeId?.let { "$bip21Prefix:$it" }
+        }
+
+    )).joinToString(",")
 
     internal fun destroy(disconnect: Boolean = true) {
         if (disconnect) {

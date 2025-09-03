@@ -10,6 +10,7 @@ import com.blockstream.common.usecases.SetPinUseCase
 import com.blockstream.domain.banner.GetBannerUseCase
 import com.blockstream.domain.bitcoinpricehistory.ObserveBitcoinPriceHistory
 import com.blockstream.domain.hardware.VerifyAddressUseCase
+import com.blockstream.domain.lightning.LightningNodeIdUseCase
 import com.blockstream.domain.meld.CreateCryptoQuoteUseCase
 import com.blockstream.domain.meld.CreateCryptoWidgetUseCase
 import com.blockstream.domain.meld.DefaultValuesUseCase
@@ -19,12 +20,17 @@ import com.blockstream.domain.navigation.NavigateToWallet
 import com.blockstream.domain.promo.GetPromoUseCase
 import com.blockstream.green.data.dataModule
 import com.blockstream.green.domain.domainModule
+import org.koin.core.module.dsl.singleOf
 import org.koin.dsl.module
 
 //At some point we'll move this to domain module. 
 val commonModule = module {
     includes(dataModule)
     includes(domainModule)
+    singleOf(::RestoreWalletUseCase)
+    single {
+        LightningNodeIdUseCase(get())
+    }
     single {
         NavigateToWallet(get(), get())
     }
@@ -47,9 +53,6 @@ val commonModule = module {
         NewWalletUseCase(get(), get(), get(), get(), get(), get(), get())
     }
     single {
-        RestoreWalletUseCase(get(), get(), get(), get(), get(), get(), get())
-    }
-    single {
         CheckRecoveryPhraseUseCase(get())
     }
     single {
@@ -62,7 +65,7 @@ val commonModule = module {
         EnableHardwareWatchOnlyUseCase(get(), get())
     }
     single {
-        CreateAccountUseCase(get(), get(), get())
+        CreateAccountUseCase(get(), get(), get(), get())
     }
 
     factory {

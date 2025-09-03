@@ -5,7 +5,8 @@ import kotlinx.serialization.Serializable
 
 @Serializable
 data class WalletExtras(
-    val totalBalanceInFiat: Boolean = false
+    val totalBalanceInFiat: Boolean = false,
+    val lightningNodeId: String? = null
 ) : GreenJson<WalletExtras>() {
     override fun kSerializer() = serializer()
 
