@@ -42,14 +42,11 @@ import com.blockstream.compose.theme.headlineSmall
 import com.blockstream.compose.theme.titleMedium
 import com.blockstream.compose.utils.AnimatedNullableVisibility
 import com.blockstream.ui.components.GreenColumn
-import com.blockstream.ui.components.GreenSpacer
 import org.jetbrains.compose.resources.painterResource
 
 @Composable
 fun Promo(
-    viewModel: GreenViewModel,
-    withAnimation: Boolean = false,
-    modifier: Modifier = Modifier
+    viewModel: GreenViewModel, withAnimation: Boolean = false, modifier: Modifier = Modifier
 ) {
     val settings by viewModel.settingsManager.appSettingsStateFlow.collectAsStateWithLifecycle()
     val promoOrNull by viewModel.promo.collectAsStateWithLifecycle()
@@ -61,17 +58,13 @@ fun Promo(
             exit = fadeOut() + shrinkHorizontally(),
         ) { promo ->
             Promo(
-                promo = promo,
-                modifier = modifier,
-                viewModel = viewModel
+                promo = promo, modifier = modifier, viewModel = viewModel
             )
         }
     } else {
         promoOrNull?.also {
             Promo(
-                promo = it,
-                modifier = modifier,
-                viewModel = viewModel
+                promo = it, modifier = modifier, viewModel = viewModel
             )
         }
     }
@@ -79,9 +72,7 @@ fun Promo(
 
 @Composable
 fun Promo(
-    promo: Promo,
-    modifier: Modifier = Modifier,
-    viewModel: GreenViewModel
+    promo: Promo, modifier: Modifier = Modifier, viewModel: GreenViewModel
 ) {
 
     val imageSmall = remember {
@@ -98,16 +89,13 @@ fun Promo(
         }
 
         GreenCard(
-            padding = 0,
-            border = BorderStroke(1.dp, MaterialTheme.colorScheme.outlineVariant),
-            modifier = Modifier.then(modifier)
+            padding = 0, border = BorderStroke(1.dp, MaterialTheme.colorScheme.outlineVariant), modifier = Modifier.then(modifier)
         ) {
 
             IconButton(
                 onClick = {
                     viewModel.postEvent(Events.PromoDismiss)
-                }, modifier = Modifier.padding(top = 2.dp, end = 2.dp)
-                    .align(Alignment.TopEnd).zIndex(100f)
+                }, modifier = Modifier.padding(top = 2.dp, end = 2.dp).align(Alignment.TopEnd).zIndex(100f)
             ) {
                 Icon(
                     painter = painterResource(Res.drawable.x),
@@ -130,9 +118,7 @@ fun ColumnScope.PromoCta(promo: Promo, modifier: Modifier = Modifier, viewModel:
         GreenButton(
             text = ctaSmall,
             size = GreenButtonSize.BIG,
-            modifier = Modifier.fillMaxWidth()
-                .padding(horizontal = 16.dp).padding(top = 16.dp)
-                .then(modifier)
+            modifier = Modifier.fillMaxWidth().padding(horizontal = 16.dp).padding(top = 16.dp).then(modifier)
         ) {
             if (promo.isSmall) {
                 viewModel.postEvent(Events.PromoAction)
@@ -146,9 +132,7 @@ fun ColumnScope.PromoCta(promo: Promo, modifier: Modifier = Modifier, viewModel:
 @Composable
 fun BoxScope.PromoLayout0(promo: Promo, viewModel: GreenViewModel, painter: AsyncImagePainter) {
     GreenColumn(
-        padding = 0,
-        space = 8,
-        modifier = Modifier.padding(
+        padding = 0, space = 8, modifier = Modifier.padding(
             bottom = 16.dp
         )
     ) {
@@ -156,13 +140,9 @@ fun BoxScope.PromoLayout0(promo: Promo, viewModel: GreenViewModel, painter: Asyn
         Row {
 
             GreenColumn(
-                padding = 0, space = 8, modifier = Modifier
-                    .padding(
-                        start = 16.dp,
-                        end = if (promo.imageSmall.isNotBlank()) 0.dp else 36.dp,
-                        top = 16.dp
-                    )
-                    .weight(1f)
+                padding = 0, space = 8, modifier = Modifier.padding(
+                    start = 16.dp, end = if (promo.imageSmall.isNotBlank()) 0.dp else 36.dp, top = 16.dp
+                ).weight(1f)
             ) {
 
                 Text(
@@ -181,10 +161,8 @@ fun BoxScope.PromoLayout0(promo: Promo, viewModel: GreenViewModel, painter: Asyn
                 Image(
                     painter = painter,
                     contentDescription = null,
-                    modifier = Modifier
-                        .height(100.dp)
-                        .align(Alignment.Top)
-                        .padding(end = 16.dp)
+                    modifier = Modifier.height(100.dp).align(Alignment.Top).padding(start = 8.dp, end = 40.dp)
+                        .padding(vertical = 16.dp)
                 )
             }
         }
@@ -200,17 +178,15 @@ fun BoxScope.PromoLayout1(promo: Promo, viewModel: GreenViewModel, painter: Asyn
         space = 8,
     ) {
         GreenColumn(
-            padding = 0,
-            space = 8,
-            modifier = Modifier.padding(16.dp)
+            padding = 0, space = 8, modifier = Modifier.padding(16.dp)
         ) {
 
             if (promo.imageSmall.isNotBlank()) {
                 Image(
                     painter = painter,
                     contentDescription = null,
-                    modifier = Modifier
-                        .align(Alignment.CenterHorizontally)
+                    contentScale = ContentScale.FillWidth,
+                    modifier = Modifier.padding(horizontal = 24.dp, vertical = 8.dp).align(Alignment.CenterHorizontally).fillMaxWidth()
                 )
             }
 
@@ -235,24 +211,14 @@ fun BoxScope.PromoLayout1(promo: Promo, viewModel: GreenViewModel, painter: Asyn
 @Composable
 fun BoxScope.PromoLayout2(promo: Promo, viewModel: GreenViewModel, painter: AsyncImagePainter) {
 
-    Image(
-        painter = painter,
-        contentDescription = null,
-        contentScale = ContentScale.FillWidth,
-        modifier = Modifier.align(Alignment.BottomCenter).fillMaxWidth()
-    )
-
     Column(modifier = Modifier) {
         GreenColumn(
-            space = 10,
-            horizontalAlignment = Alignment.CenterHorizontally,
-            modifier = Modifier.padding(horizontal = 16.dp)
+            space = 10, horizontalAlignment = Alignment.CenterHorizontally, modifier = Modifier.padding(horizontal = 16.dp)
         ) {
 
             promo.overlineSmall?.also {
                 Text(
-                    text = it,
-                    style = bodyMedium, textAlign = TextAlign.Center, modifier = Modifier.fillMaxWidth()
+                    text = it, style = bodyMedium, textAlign = TextAlign.Center, modifier = Modifier.fillMaxWidth()
                 )
             }
 
@@ -269,8 +235,12 @@ fun BoxScope.PromoLayout2(promo: Promo, viewModel: GreenViewModel, painter: Asyn
             }
 
         }
-
-        GreenSpacer(80)
+        Image(
+            modifier = Modifier.padding(horizontal = 24.dp, vertical = 16.dp).fillMaxWidth(),
+            painter = painter,
+            contentDescription = null,
+            contentScale = ContentScale.FillWidth
+        )
 
         PromoCta(promo = promo, modifier = Modifier.padding(bottom = 16.dp), viewModel = viewModel)
     }

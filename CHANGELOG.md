@@ -12,6 +12,9 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/).
 #### Fixed
 - Buy screen now correctly pre-selects the account when navigating from account details
 
+#### Changed
+- Reformat Promo component layout for better image positioning
+
 ## [5.0.7] - 2025-07-31
 
 #### Added
