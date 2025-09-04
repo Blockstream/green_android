@@ -1,6 +1,6 @@
 package com.blockstream.common.gdk.params
 
-import com.blockstream.common.data.HwWatchOnlyCredentials
+import com.blockstream.common.data.MultipleWatchOnlyCredentials
 import com.blockstream.common.gdk.GreenJson
 import com.blockstream.common.gdk.data.Credentials
 import com.blockstream.common.gdk.data.PinData
@@ -29,7 +29,7 @@ data class LoginCredentialsParams @OptIn(ExperimentalSerializationApi::class) co
     @SerialName("core_descriptors")
     val coreDescriptors: List<String>? = null,
     @SerialName("hwWatchOnlyCredentials")
-    val hwWatchOnlyCredentials: HwWatchOnlyCredentials? = null, // this value is not used by GDK, only from the app
+    val multipleWatchOnlyCredentials: MultipleWatchOnlyCredentials? = null, // this value is not used by GDK, only from the app
     @SerialName("slip132_extended_pubkeys")
     val slip132ExtendedPubkeys: List<String>? = null,
 ) : GreenJson<LoginCredentialsParams>() {
@@ -38,10 +38,10 @@ data class LoginCredentialsParams @OptIn(ExperimentalSerializationApi::class) co
     override fun kSerializer() = serializer()
 
     val isWatchOnly
-        get() = !username.isNullOrBlank() || !slip132ExtendedPubkeys.isNullOrEmpty() || !coreDescriptors.isNullOrEmpty() || hwWatchOnlyCredentials != null
+        get() = !username.isNullOrBlank() || !slip132ExtendedPubkeys.isNullOrEmpty() || !coreDescriptors.isNullOrEmpty() || multipleWatchOnlyCredentials != null
 
     fun hwWatchOnlyCredentialsToLoginCredentialsParams(network: String): LoginCredentialsParams? {
-        return hwWatchOnlyCredentials?.credentials?.get(network)?.toLoginCredentials()
+        return multipleWatchOnlyCredentials?.credentials?.get(network)?.toLoginCredentials()
     }
 
     companion object {

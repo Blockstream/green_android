@@ -22,8 +22,8 @@ import com.blockstream.common.data.Denomination
 import com.blockstream.common.data.DeviceIdentifier
 import com.blockstream.common.data.EncryptedData
 import com.blockstream.common.data.GreenWallet
-import com.blockstream.common.data.HwWatchOnlyCredentials
 import com.blockstream.common.data.LogoutReason
+import com.blockstream.common.data.MultipleWatchOnlyCredentials
 import com.blockstream.common.data.Promo
 import com.blockstream.common.data.Redact
 import com.blockstream.common.data.SupportData
@@ -1032,7 +1032,7 @@ open class GreenViewModel constructor(
             val loginData = session.loginWatchOnly(
                 network = network,
                 wallet = null,
-                watchOnlyCredentials = HwWatchOnlyCredentials.fromWatchOnlyCredentials(
+                watchOnlyCredentials = MultipleWatchOnlyCredentials.fromWatchOnlyCredentials(
                     network = network.id,
                     watchOnlyCredentials = watchOnlyCredentials
                 )
@@ -1114,7 +1114,7 @@ open class GreenViewModel constructor(
             session.loginWatchOnly(
                 network = network,
                 wallet = wallet,
-                watchOnlyCredentials = HwWatchOnlyCredentials.fromWatchOnlyCredentials(
+                watchOnlyCredentials = MultipleWatchOnlyCredentials.fromWatchOnlyCredentials(
                     network = network.id,
                     watchOnlyCredentials = watchOnlyCredentials
                 )

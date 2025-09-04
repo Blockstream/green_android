@@ -22,8 +22,8 @@ import com.blockstream.common.data.ApplicationSettings
 import com.blockstream.common.data.CredentialType
 import com.blockstream.common.data.DataState
 import com.blockstream.common.data.GreenWallet
-import com.blockstream.common.data.HwWatchOnlyCredentials
 import com.blockstream.common.data.LogoutReason
+import com.blockstream.common.data.MultipleWatchOnlyCredentials
 import com.blockstream.common.data.Redact
 import com.blockstream.common.data.SetupArgs
 import com.blockstream.common.data.SupportData
@@ -743,7 +743,7 @@ class LoginViewModel constructor(
                     val watchOnlyCredentials = (greenKeystore.decryptData(encryptedData).let {
                         when (loginCredentials.credential_type) {
                             CredentialType.KEYSTORE_PASSWORD -> {
-                                HwWatchOnlyCredentials.fromWatchOnlyCredentials(
+                                MultipleWatchOnlyCredentials.fromWatchOnlyCredentials(
                                     network = loginCredentials.network,
                                     watchOnlyCredentials = WatchOnlyCredentials(
                                         username = greenWallet.watchOnlyUsername ?: "",
@@ -753,11 +753,11 @@ class LoginViewModel constructor(
                             }
 
                             CredentialType.KEYSTORE_HW_WATCHONLY_CREDENTIALS -> {
-                                HwWatchOnlyCredentials.fromByteArray(it)
+                                MultipleWatchOnlyCredentials.fromByteArray(it)
                             }
 
                             else -> {
-                                HwWatchOnlyCredentials.fromWatchOnlyCredentials(
+                                MultipleWatchOnlyCredentials.fromWatchOnlyCredentials(
                                     network = loginCredentials.network,
                                     watchOnlyCredentials = WatchOnlyCredentials.fromByteArray(it)
                                 )
@@ -780,7 +780,7 @@ class LoginViewModel constructor(
             session.loginWatchOnly(
                 wallet = greenWallet,
                 loginCredentials = loginCredentials,
-                watchOnlyCredentials = HwWatchOnlyCredentials.fromWatchOnlyCredentials(
+                watchOnlyCredentials = MultipleWatchOnlyCredentials.fromWatchOnlyCredentials(
                     network = loginCredentials.network,
                     watchOnlyCredentials = watchOnlyCredentials.let {
                         greenWallet.watchOnlyUsername?.takeIf { it.isNotBlank() }?.let { username ->
@@ -848,7 +848,7 @@ class LoginViewModel constructor(
         login(loginCredentials = null, isWatchOnly = true, updateWatchOnlyPassword = !greenWallet.isWatchOnlySingleSig) {
             session.loginWatchOnly(
                 wallet = greenWallet,
-                watchOnlyCredentials = HwWatchOnlyCredentials.fromWatchOnlyCredentials(
+                watchOnlyCredentials = MultipleWatchOnlyCredentials.fromWatchOnlyCredentials(
                     network = greenWallet.activeNetwork,
                     watchOnlyCredentials = WatchOnlyCredentials(
                         username = watchOnlyUsername.value,

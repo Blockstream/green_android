@@ -18,8 +18,8 @@ import com.blockstream.common.data.Denomination
 import com.blockstream.common.data.EnrichedAsset
 import com.blockstream.common.data.ExceptionWithSupportData
 import com.blockstream.common.data.GreenWallet
-import com.blockstream.common.data.HwWatchOnlyCredentials
 import com.blockstream.common.data.LogoutReason
+import com.blockstream.common.data.MultipleWatchOnlyCredentials
 import com.blockstream.common.data.RichWatchOnly
 import com.blockstream.common.data.SupportData
 import com.blockstream.common.database.wallet.LoginCredentials
@@ -1273,12 +1273,12 @@ class GdkSession constructor(
     suspend fun loginWatchOnly(
         wallet: GreenWallet,
         loginCredentials: LoginCredentials? = null,
-        watchOnlyCredentials: HwWatchOnlyCredentials
+        watchOnlyCredentials: MultipleWatchOnlyCredentials
     ) {
         loginWatchOnly(network = prominentNetwork(wallet, loginCredentials), wallet = wallet, watchOnlyCredentials = watchOnlyCredentials)
     }
 
-    suspend fun loginWatchOnly(network: Network, wallet: GreenWallet?, watchOnlyCredentials: HwWatchOnlyCredentials): LoginData {
+    suspend fun loginWatchOnly(network: Network, wallet: GreenWallet?, watchOnlyCredentials: MultipleWatchOnlyCredentials): LoginData {
         return loginWatchOnly(
             network = network,
             wallet = wallet,
@@ -1303,7 +1303,7 @@ class GdkSession constructor(
 
     // WO Login
     private suspend fun loginWatchOnly(network: Network, wallet: GreenWallet?, loginCredentialsParams: LoginCredentialsParams): LoginData {
-        val initNetworks = loginCredentialsParams.hwWatchOnlyCredentials?.credentials?.keys?.map {
+        val initNetworks = loginCredentialsParams.multipleWatchOnlyCredentials?.credentials?.keys?.map {
             networkBy(it)
         } ?: listOf(network)
 
@@ -1373,13 +1373,13 @@ class GdkSession constructor(
 
         // TODO move all to StateFlow
         // Warning, ordering matters for SecurityScreen
-        isHwWatchOnly = walletLoginCredentialsParams.hwWatchOnlyCredentials != null
+        isHwWatchOnly = walletLoginCredentialsParams.multipleWatchOnlyCredentials?.isHwWatchOnly() == true
         _isWatchOnly.value = walletLoginCredentialsParams.isWatchOnly
 
         isNoBlobWatchOnly = isWatchOnlyValue && richWatchOnly == null
         isRichWatchOnly = isWatchOnlyValue && richWatchOnly != null
         isCoreDescriptorWatchOnly =
-            isWatchOnlyValue && (walletLoginCredentialsParams.coreDescriptors != null || walletLoginCredentialsParams.hwWatchOnlyCredentials != null)
+            isWatchOnlyValue && (walletLoginCredentialsParams.coreDescriptors != null || walletLoginCredentialsParams.multipleWatchOnlyCredentials?.isCoreDescriptors() == true)
         isAirgapped = isWatchOnlyValue && wallet?.isHardware ?: false
 
         setupDeviceToSession(device)

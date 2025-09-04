@@ -3,7 +3,7 @@ package com.blockstream.common.usecases
 import com.blockstream.common.crypto.GreenKeystore
 import com.blockstream.common.data.CredentialType
 import com.blockstream.common.data.GreenWallet
-import com.blockstream.common.data.HwWatchOnlyCredentials
+import com.blockstream.common.data.MultipleWatchOnlyCredentials
 import com.blockstream.common.data.WatchOnlyCredentials
 import com.blockstream.common.database.Database
 import com.blockstream.common.extensions.createLoginCredentials
@@ -34,7 +34,7 @@ class EnableHardwareWatchOnlyUseCase(
             // Wait for setup to gets completed so that the active account is set
             session.setupDefaultAccounts().join()
 
-            val hwWatchOnlyCredentials =
+            val multipleWatchOnlyCredentials =
                 session.accounts.value.filter { it.isSinglesig && !it.hidden }.groupBy { it.network }.mapValues {
                     it.value.map {
                         session.getAccount(it).coreDescriptors ?: emptyList()
@@ -42,16 +42,16 @@ class EnableHardwareWatchOnlyUseCase(
                 }.map {
                     it.key.id to WatchOnlyCredentials(coreDescriptors = it.value)
                 }.toMap().let {
-                    HwWatchOnlyCredentials(credentials = it)
+                    MultipleWatchOnlyCredentials(credentials = it)
                 }
 
-            if (hwWatchOnlyCredentials.credentials.isEmpty()) {
+            if (multipleWatchOnlyCredentials.credentials.isEmpty()) {
                 logger.d { "Empty hwWatchOnlyCredentials" }
                 return
             }
 
             val encryptedData = greenKeystore.encryptData(
-                hwWatchOnlyCredentials.toJson().encodeToByteArray()
+                multipleWatchOnlyCredentials.toJson().encodeToByteArray()
             )
 
             logger.d { "Creating HW Watch-only credentials" }
