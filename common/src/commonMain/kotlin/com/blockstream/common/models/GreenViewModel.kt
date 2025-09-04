@@ -240,6 +240,9 @@ open class GreenViewModel constructor(
     private val _isHwWatchOnly = MutableStateFlow(false)
     val isHwWatchOnly = _isHwWatchOnly
 
+    private val _isMultisigWatchOnly = MutableStateFlow(false)
+    val isMultisigWatchOnly = _isMultisigWatchOnly
+
     private val _isQrWatchOnly = MutableStateFlow(false)
     val isQrWatchOnly = _isQrWatchOnly
 
@@ -290,6 +293,8 @@ open class GreenViewModel constructor(
             _isWatchOnly.value = it
             _isHwWatchOnly.value = session.isHwWatchOnly
             _isQrWatchOnly.value = greenWalletOrNull?.isWatchOnlyQr ?: false
+
+            _isMultisigWatchOnly.value = it && !session.isHwWatchOnly
         }?.launchIn(this)
 
         _event.onEach {

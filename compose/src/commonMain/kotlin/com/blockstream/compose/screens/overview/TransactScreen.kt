@@ -39,6 +39,7 @@ fun TransactScreen(viewModel: TransactViewModelAbstract) {
     SetupScreen(viewModel = viewModel, withPadding = false, withBottomInsets = false) {
 
         val transactions by viewModel.transactions.collectAsStateWithLifecycle()
+        val isMultisigWatchOnly by viewModel.isMultisigWatchOnly.collectAsStateWithLifecycle()
         val innerPadding = LocalInnerPadding.current
         val listState = rememberLazyListState()
 
@@ -56,6 +57,7 @@ fun TransactScreen(viewModel: TransactViewModelAbstract) {
             item(key = "ButtonsRow") {
                 TransactionActionButtons(
                     showBuyButton = true,
+                    sendEnabled = !isMultisigWatchOnly,
                     onBuy = { viewModel.buy() },
                     onSend = { viewModel.postEvent(NavigateDestinations.Send(greenWallet = viewModel.greenWallet)) },
                     onReceive = {

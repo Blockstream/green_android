@@ -16,6 +16,7 @@ import com.blockstream.ui.components.GreenRow
 @Composable
 fun TransactionActionButtons(
     showBuyButton: Boolean,
+    sendEnabled: Boolean,
     onBuy: () -> Unit,
     onSend: () -> Unit,
     onReceive: () -> Unit,
@@ -37,6 +38,7 @@ fun TransactionActionButtons(
         GreenActionButton(
             text = Res.string.id_send,
             icon = PhosphorIcons.Regular.ArrowLineUp,
+            enabled = sendEnabled,
             onClick = onSend
         )
 

@@ -17,11 +17,13 @@ fun RowScope.GreenActionButton(
     text: StringResource,
     icon: ImageVector,
     onClick: () -> Unit,
+    enabled: Boolean = true,
     modifier: Modifier = Modifier
 ) {
     GreenCard(
         padding = 24,
         onClick = onClick,
+        enabled = enabled,
         modifier = modifier.weight(1f)
     ) {
         GreenColumn(

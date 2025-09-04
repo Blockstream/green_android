@@ -50,6 +50,7 @@ fun AssetAccountDetailsScreen(
         val totalBalance by viewModel.totalBalance.collectAsStateWithLifecycle()
         val totalBalanceFiat by viewModel.totalBalanceFiat.collectAsStateWithLifecycle()
         val showBuyButton by viewModel.showBuyButton.collectAsStateWithLifecycle()
+        val isMultisigWatchOnly by viewModel.isMultisigWatchOnly.collectAsStateWithLifecycle()
         val hasMoreTransactions by viewModel.hasMoreTransactions.collectAsStateWithLifecycle()
         
         val innerPadding = LocalInnerPadding.current
@@ -83,6 +84,7 @@ fun AssetAccountDetailsScreen(
             item(key = "ButtonsRow") {
                 TransactionActionButtons(
                     showBuyButton = showBuyButton,
+                    sendEnabled = !isMultisigWatchOnly,
                     onBuy = { viewModel.postEvent(AssetAccountDetailsViewModel.LocalEvents.ClickBuy) },
                     onSend = { viewModel.postEvent(AssetAccountDetailsViewModel.LocalEvents.ClickSend) },
                     onReceive = { viewModel.postEvent(AssetAccountDetailsViewModel.LocalEvents.ClickReceive) }
