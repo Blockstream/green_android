@@ -18,7 +18,6 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.platform.testTag
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
@@ -56,6 +55,7 @@ import com.blockstream.compose.utils.SetupScreen
 import com.blockstream.compose.utils.noRippleClickable
 import com.blockstream.ui.components.GreenColumn
 import com.blockstream.ui.navigation.getResult
+import com.blockstream.ui.utils.appTestTag
 import org.jetbrains.compose.resources.painterResource
 import org.jetbrains.compose.resources.stringResource
 
@@ -120,7 +120,7 @@ fun HomeScreen(
 
                                 GreenButton(
                                     stringResource(Res.string.id_get_started),
-                                    modifier = Modifier.fillMaxWidth().testTag("getStarted"),
+                                    modifier = Modifier.fillMaxWidth().appTestTag("get_started"),
                                     size = GreenButtonSize.BIG,
                                     enabled = !onProgress
                                 ) {
@@ -129,7 +129,7 @@ fun HomeScreen(
 
                                 GreenButton(
                                     stringResource(Res.string.id_connect_jade),
-                                    modifier = Modifier.fillMaxWidth().testTag("connectJade"),
+                                    modifier = Modifier.fillMaxWidth().appTestTag("connect_jade"),
                                     size = GreenButtonSize.BIG,
                                     type = GreenButtonType.OUTLINE,
                                     color = GreenButtonColor.GREEN,

@@ -18,6 +18,7 @@ import com.blockstream.compose.theme.bodyLarge
 import com.blockstream.compose.theme.whiteMedium
 import com.blockstream.compose.utils.noRippleClickable
 import com.blockstream.ui.components.GreenRow
+import com.blockstream.ui.utils.appTestTag
 import org.jetbrains.compose.resources.stringResource
 
 @Composable
@@ -26,7 +27,10 @@ fun GreenAccountSelector(
     account: Account,
     onClick: (() -> Unit) = {},
 ) {
-    GreenRow(padding = 0, modifier = modifier) {
+    GreenRow(
+        padding = 0,
+        modifier = modifier.appTestTag("account_selector")
+    ) {
         Text(
             text = stringResource(Res.string.id_account),
             style = bodyLarge,

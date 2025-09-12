@@ -134,13 +134,14 @@ fun BuyScreen(
                     )
 
                     GreenRow(padding = 0, space = 8) {
-                        suggestedAmounts.forEach {
+                        suggestedAmounts.forEachIndexed { index, it ->
                             GreenButton(
                                 text = it,
                                 size = GreenButtonSize.NORMAL,
                                 type = GreenButtonType.OUTLINE,
                                 color = if (it == amount) GreenButtonColor.GREENER else GreenButtonColor.GREEN,
                                 modifier = Modifier.weight(1f),
+                                testTag = "suggested_amount_" + index
                             ) {
                                 viewModel.amount.value = it
                             }

@@ -23,6 +23,7 @@ import com.blockstream.compose.theme.bodyMedium
 import com.blockstream.compose.theme.md_theme_errorContainer
 import com.blockstream.compose.theme.whiteHigh
 import com.blockstream.compose.utils.AnimatedNullableVisibility
+import com.blockstream.ui.utils.appTestTag
 
 @Composable
 fun GreenCard(
@@ -35,6 +36,7 @@ fun GreenCard(
     helperText: String? = null,
     helperContainerColor: Color? = null,
     contentError: (@Composable BoxScope.(error: String) -> Unit)? = null,
+    testTag: String? = null,
     onClick: (() -> Unit)? = null,
     content: @Composable BoxScope.() -> Unit
 ) {
@@ -48,6 +50,7 @@ fun GreenCard(
     ) {
         if (onClick == null) {
             OutlinedCard(
+                modifier = Modifier.appTestTag(testTag),
                 shape = if (helperText == null) CardDefaults.shape else GreenSmallBottom,
                 elevation = elevation,
                 colors = colors,
@@ -62,6 +65,7 @@ fun GreenCard(
             }
         } else {
             OutlinedCard(
+                modifier = Modifier.appTestTag(testTag),
                 onClick = onClick,
                 enabled = enabled,
                 shape = if (helperText == null) CardDefaults.shape else GreenSmallBottom,

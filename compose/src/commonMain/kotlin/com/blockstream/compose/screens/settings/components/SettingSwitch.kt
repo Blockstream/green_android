@@ -6,6 +6,7 @@ import androidx.compose.material3.SwitchDefaults
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
+import com.blockstream.ui.utils.appTestTag
 
 @Composable
 fun SettingSwitch(
@@ -14,6 +15,7 @@ fun SettingSwitch(
     checked: Boolean,
     onCheckedChange: (Boolean) -> Unit,
     modifier: Modifier = Modifier,
+    testTag: String? = null
 ) {
     SettingsItem(
         title = title,
@@ -27,7 +29,8 @@ fun SettingSwitch(
                     uncheckedThumbColor = Color.White,
                     checkedThumbColor = Color.White,
                     uncheckedTrackColor = MaterialTheme.colorScheme.outline
-                )
+                ),
+                modifier = modifier.appTestTag(testTag)
             )
         }
     )

@@ -66,6 +66,7 @@ import com.blockstream.compose.utils.DecimalFormatter
 import com.blockstream.ui.components.GradientEdgeBox
 import com.blockstream.ui.components.GreenRow
 import com.blockstream.ui.components.GreenSpacer
+import com.blockstream.ui.utils.appTestTag
 import com.blockstream.ui.utils.ifTrue
 import org.jetbrains.compose.resources.painterResource
 import org.jetbrains.compose.resources.stringResource
@@ -182,6 +183,7 @@ fun GreenAmountField(
                                 .ifTrue(focusRequester != null) {
                                     it.focusRequester(focusRequester!!)
                                 }
+                                .appTestTag("amount")
                         )
 
                         Box {
@@ -197,7 +199,8 @@ fun GreenAmountField(
                             Text(
                                 // hack to fix height adjustments
                                 text = secondaryValue?.takeIf { it.isNotBlank() } ?: " ",
-                                modifier = Modifier.fillMaxWidth(),
+                                modifier = Modifier.fillMaxWidth()
+                                    .appTestTag("amount_converted"),
                                 maxLines = 1,
                                 style = bodySmall,
                                 textAlign = TextAlign.Center,
@@ -271,7 +274,8 @@ fun GreenAmountField(
                             IconButton(onClick = { onValueChange("") }, enabled = isEditable) {
                                 Icon(
                                     imageVector = PhosphorIcons.Regular.XCircle,
-                                    contentDescription = "Clear"
+                                    contentDescription = "Clear",
+                                    modifier = Modifier.appTestTag("clear")
                                 )
                             }
                         }
@@ -285,6 +289,7 @@ fun GreenAmountField(
                                     onDenominationClick?.invoke()
                                 }
                             }
+                            .appTestTag("amount_denomination")
                     ) {
                         val canBeEdited =
                             isEditable && session?.let { assetId.isPolicyAsset(session = it) } != false && onDenominationClick != null

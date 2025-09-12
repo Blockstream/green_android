@@ -31,6 +31,7 @@ import com.adamglin.phosphoricons.bold.DotsThreeVertical
 import com.blockstream.compose.theme.labelMedium
 import com.blockstream.ui.navigation.NavAction
 import com.blockstream.ui.navigation.NavData
+import com.blockstream.ui.utils.appTestTag
 import org.jetbrains.compose.resources.DrawableResource
 import org.jetbrains.compose.resources.painterResource
 import org.jetbrains.compose.resources.stringResource
@@ -119,7 +120,7 @@ fun ActionMenu(
             actionsMenu.forEach {
                 TextButton(
                     onClick = it.onClick,
-                    modifier = Modifier.align(Alignment.CenterVertically),
+                    modifier = Modifier.align(Alignment.CenterVertically).appTestTag(it.titleRes?.key ?: it.title),
                     enabled = it.enabled,
                     colors = ButtonDefaults.textButtonColors(contentColor = MaterialTheme.colorScheme.onSurface)
                 ) {
@@ -151,7 +152,7 @@ fun ActionMenu(
             }
 
             if (contextMenu.isNotEmpty()) {
-                IconButton(onClick = {
+                IconButton(modifier = Modifier.appTestTag("action_menu"), onClick = {
                     popupState.isContextMenuVisible.value = true
                 }) {
                     Icon(

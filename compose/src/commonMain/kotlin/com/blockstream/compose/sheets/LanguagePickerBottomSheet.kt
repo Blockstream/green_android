@@ -23,6 +23,7 @@ import com.blockstream.common.models.settings.AppSettingsViewModel
 import com.blockstream.common.models.settings.AppSettingsViewModelAbstract
 import com.blockstream.compose.components.GreenBottomSheet
 import com.blockstream.ui.components.GreenRow
+import com.blockstream.ui.utils.appTestTag
 import org.jetbrains.compose.resources.stringResource
 
 @OptIn(ExperimentalMaterial3Api::class)
@@ -54,6 +55,7 @@ fun LanguagePickerBottomSheet(
                             viewModel.postEvent(AppSettingsViewModel.LocalEvents.AutoSave)
                             onDismissRequest()
                         }
+                        .appTestTag(key)
                 ) {
                     Text(
                         text = value ?: stringResource(Res.string.id_system_default),

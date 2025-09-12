@@ -35,6 +35,15 @@ inline fun <T> Modifier.nullConditional(
     }
 }
 
+inline fun <T> Modifier.ifNotNull(
+    value: T?,
+    ifNotNull: T.(Modifier) -> Modifier,
+): Modifier = if (value != null) {
+    then(ifNotNull(value, Modifier))
+} else {
+    this
+}
+
 fun LazyListState.reachedBottom(): Boolean {
     val lastVisibleItem = this.layoutInfo.visibleItemsInfo.lastOrNull()
     return lastVisibleItem?.index != 0 && lastVisibleItem?.index == this.layoutInfo.totalItemsCount - 1

@@ -50,6 +50,7 @@ import com.blockstream.compose.theme.md_theme_outline
 import com.blockstream.compose.theme.whiteHigh
 import com.blockstream.compose.theme.whiteLow
 import com.blockstream.compose.utils.AnimatedNullableVisibility
+import com.blockstream.ui.utils.appTestTag
 import com.blockstream.ui.utils.ifTrue
 import kotlinx.coroutines.launch
 import org.jetbrains.compose.resources.getString
@@ -65,12 +66,20 @@ fun PinButton(
     rowScope: RowScope,
     onClick: (key: Int) -> Unit
 ) {
+    fun pinButtonId(): String {
+        when (key) {
+            -1 -> return "cancel"
+            -2 -> return "shuffle"
+            else -> return digits?.get(key) ?: ""
+        }
+    }
     rowScope.apply {
         Box(
             modifier = Modifier
                 .weight(1f)
                 .aspectRatio(1f, true)
                 .align(Alignment.CenterVertically)
+                .appTestTag(pinButtonId())
         ) {
 
             TextButton(

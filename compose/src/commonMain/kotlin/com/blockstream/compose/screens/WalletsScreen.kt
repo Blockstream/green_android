@@ -124,7 +124,7 @@ fun WalletsScreen(
             }
 
             if (isEmptyWallet == false) {
-                GreenCard(onClick = {
+                GreenCard(testTag = "id_setup_a_new_wallet", onClick = {
                     viewModel.postEvent(NavigateDestinations.GetStarted)
                 }, modifier = Modifier.padding(bottom = 16.dp), padding = 0) {
                     Row(

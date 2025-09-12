@@ -83,6 +83,7 @@ import com.blockstream.ui.components.GreenColumn
 import com.blockstream.ui.components.GreenRow
 import com.blockstream.ui.navigation.LocalInnerPadding
 import com.blockstream.ui.navigation.getResult
+import com.blockstream.ui.utils.appTestTag
 import kotlinx.coroutines.launch
 import org.jetbrains.compose.resources.painterResource
 import org.jetbrains.compose.resources.stringResource
@@ -484,7 +485,8 @@ fun Key(
         enabled = enabled,
         modifier = Modifier
 //            .padding(vertical = 4.dp)
-            .then(modifier),
+            .then(modifier)
+            .appTestTag(key),
         colors = ButtonDefaults.buttonColors(
             contentColor = whiteHigh,
             containerColor = MaterialTheme.colorScheme.inverseSurface,

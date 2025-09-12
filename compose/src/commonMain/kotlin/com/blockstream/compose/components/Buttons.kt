@@ -18,6 +18,9 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.painter.Painter
 import androidx.compose.ui.graphics.vector.ImageVector
+import androidx.compose.ui.platform.testTag
+import androidx.compose.ui.semantics.contentDescription
+import androidx.compose.ui.semantics.semantics
 import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
@@ -48,7 +51,9 @@ import com.blockstream.compose.theme.textHigh
 import com.blockstream.compose.theme.textMedium
 import com.blockstream.compose.theme.whiteMedium
 import com.blockstream.compose.utils.Rotating
+import com.blockstream.compose.utils.compatTestTagsAsResourceId
 import com.blockstream.ui.components.GreenRow
+import com.blockstream.ui.utils.appTestTag
 import org.jetbrains.compose.resources.painterResource
 import org.jetbrains.compose.resources.stringResource
 
@@ -78,8 +83,9 @@ fun GreenButton(
     size: GreenButtonSize = GreenButtonSize.NORMAL,
     icon: ImageVector? = null,
     enabled: Boolean = true,
+    testTag: String? = null,
     onProgress: Boolean = false,
-    onClick: () -> Unit,
+    onClick: () -> Unit
 ) {
 
     val sizedModifier = when (size) {
@@ -112,7 +118,9 @@ fun GreenButton(
         else -> {
             modifier
         }
-    }
+    }.then(Modifier.semantics { contentDescription = "$text Button" }
+        .appTestTag(testTag)
+    )
 
     val contentPadding = when (size) {
         GreenButtonSize.TINY -> {
@@ -285,6 +293,7 @@ fun GreenIconButton(
     icon: Painter,
     color: Color = green,
     contentPadding: PaddingValues = ButtonDefaults.TextButtonContentPadding,
+    testTag: String? = null,
     onClick: () -> Unit
 ) {
     TextButton(modifier = Modifier.then(modifier), contentPadding = contentPadding, onClick = onClick) {
@@ -294,6 +303,7 @@ fun GreenIconButton(
                 contentDescription = null,
                 tint = color,
                 modifier = Modifier.size(20.dp)
+                    .appTestTag(testTag)
             )
 
             Text(text = text, style = labelMedium, color = color)
@@ -316,6 +326,7 @@ fun PasteButton(onClick: () -> Unit) {
     GreenIconButton(
         text = stringResource(Res.string.id_paste),
         icon = painterResource(Res.drawable.clipboard),
+        testTag = "paste",
         onClick = onClick
     )
 }
@@ -326,6 +337,7 @@ fun ScanQrButton(modifier: Modifier = Modifier, onClick: () -> Unit) {
         modifier = modifier,
         text = stringResource(Res.string.id_scan_qr_code),
         icon = painterResource(Res.drawable.qr_code),
+        testTag = "scan_qr",
         onClick = onClick
     )
 }
@@ -336,6 +348,7 @@ fun ZoomButton(onClick: () -> Unit) {
         text = stringResource(Res.string.id_increase_qr_size),
         icon = painterResource(Res.drawable.magnifying_glass_plus),
         color = textMedium,
+        testTag = "increase_qr_size",
         onClick = onClick
     )
 }

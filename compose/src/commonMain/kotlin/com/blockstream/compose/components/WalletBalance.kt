@@ -27,6 +27,7 @@ import com.blockstream.common.models.overview.WalletBalanceViewModel.LocalEvents
 import com.blockstream.compose.theme.textHigh
 import com.blockstream.compose.theme.textMedium
 import com.blockstream.compose.utils.noRippleClickable
+import com.blockstream.ui.utils.appTestTag
 import org.jetbrains.compose.resources.painterResource
 import org.jetbrains.compose.resources.stringResource
 
@@ -40,6 +41,7 @@ fun WalletBalance(modifier: Modifier = Modifier, viewModel: IWalletBalance) {
                 painter = painterResource(if (hideAmounts) Res.drawable.eye_slash else Res.drawable.eye),
                 contentDescription = null,
                 modifier = Modifier
+                    .appTestTag("eye_button")
                     .noRippleClickable {
                         viewModel.postEvent(LocalEvents.ToggleHideAmounts)
                     }
@@ -57,7 +59,8 @@ fun WalletBalance(modifier: Modifier = Modifier, viewModel: IWalletBalance) {
                     text = balancePrimary.takeIf { it.isNotBlank() } ?: " ",
                     color = textHigh,
                     fontSize = 30.sp,
-                    fontWeight = FontWeight.Bold
+                    fontWeight = FontWeight.Bold,
+                    modifier = Modifier.appTestTag("total_balance")
                 )
 //                val balanceSecondary by viewModel.balanceSecondary.collectAsStateWithLifecycle()
 //                Text(text = balanceSecondary.takeIf { it.isNotBlank() } ?: " ",

@@ -13,9 +13,11 @@ import androidx.compose.material3.IconButton
 import androidx.compose.material3.Text
 import androidx.compose.material3.minimumInteractiveComponentSize
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.layout.ContentScale
+import androidx.compose.ui.platform.testTag
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import blockstream_green.common.generated.resources.Res
@@ -47,7 +49,19 @@ fun GreenAsset(
     trailingContent: @Composable (() -> Unit)? = null,
     onClick: (() -> Unit)? = null,
 ) {
-    GreenDataLayout(modifier = modifier, title = title, subtitle = subtitle, onClick = onClick, withPadding = false) {
+    val testTag = remember {
+        if (assetBalance?.asset?.isAnyAsset == true) {
+            if (assetBalance.asset.isAmp) {
+                "any_amp_asset"
+            } else {
+                "any_liquid_asset"
+            }
+        } else {
+            assetBalance?.assetId
+        }
+    }
+
+    GreenDataLayout(modifier = modifier, title = title, subtitle = subtitle, onClick = onClick, testTag = testTag, withPadding = false) {
 
         Row(
             modifier = Modifier.padding(start = 16.dp),
@@ -111,7 +125,10 @@ fun GreenAsset(
             }
 
             if (withEditIcon && onClick != null) {
-                IconButton(onClick = onClick) {
+                IconButton(
+                    onClick = onClick,
+                    modifier = modifier.testTag("edit")
+                ) {
                     Icon(
                         painter = painterResource(Res.drawable.pencil_simple_line),
                         contentDescription = "Edit",

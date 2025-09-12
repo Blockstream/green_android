@@ -81,7 +81,8 @@ fun SetupNewWalletScreen(
                 text = stringResource(Res.string.id_set_up_mobile_wallet),
                 size = GreenButtonSize.BIG,
                 enabled = !onProgress,
-                modifier = Modifier.fillMaxWidth()
+                modifier = Modifier.fillMaxWidth(),
+                testTag = "setup_mobile_wallet"
             ) {
                 viewModel.onSetupNewWallet()
             }
@@ -91,7 +92,8 @@ fun SetupNewWalletScreen(
                 type = GreenButtonType.TEXT,
                 size = GreenButtonSize.BIG,
                 enabled = !onProgress,
-                modifier = Modifier.fillMaxWidth()
+                modifier = Modifier.fillMaxWidth(),
+                testTag = "restore_from_backup"
             ) {
                 viewModel.postEvent(SetupNewWalletViewModel.LocalEvents.RestoreWallet)
             }

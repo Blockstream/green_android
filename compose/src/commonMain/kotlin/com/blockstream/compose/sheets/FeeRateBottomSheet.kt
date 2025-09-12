@@ -37,6 +37,7 @@ import com.blockstream.compose.utils.roundBackground
 import com.blockstream.ui.components.GreenArrow
 import com.blockstream.ui.components.GreenRow
 import com.blockstream.ui.navigation.setResult
+import com.blockstream.ui.utils.appTestTag
 import org.jetbrains.compose.resources.stringResource
 
 @OptIn(ExperimentalMaterial3Api::class)
@@ -82,6 +83,7 @@ fun FeeItem(feePriority: FeePriority, onProgress: Boolean = false, onClick: () -
             horizontalArrangement = Arrangement.SpaceBetween,
             verticalAlignment = Alignment.CenterVertically,
             modifier = Modifier.fillMaxWidth()
+                .appTestTag(feePriority.toString())
         ) {
             Column {
                 GreenRow(padding = 0, space = 6, verticalAlignment = Alignment.CenterVertically) {

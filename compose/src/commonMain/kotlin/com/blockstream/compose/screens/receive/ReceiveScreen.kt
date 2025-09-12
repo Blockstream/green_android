@@ -99,6 +99,7 @@ import com.blockstream.ui.components.GreenRow
 import com.blockstream.ui.navigation.LocalNavigator
 import com.blockstream.ui.navigation.bottomsheet.BottomSheetNavigator
 import com.blockstream.ui.navigation.getResult
+import com.blockstream.ui.utils.appTestTag
 import io.github.alexzhirkevich.qrose.QrCodePainter
 import io.github.alexzhirkevich.qrose.toByteArray
 import kotlinx.coroutines.launch
@@ -372,18 +373,21 @@ fun ReceiveScreen(
 
                             Box(modifier = Modifier.padding(bottom = 8.dp)) {
 
-                                IconButton(
-                                    modifier = Modifier
-                                        .align(Alignment.TopEnd)
-                                        .padding(top = 2.dp, end = 2.dp),
-                                    onClick = {
-                                        viewModel.postEvent(ReceiveViewModel.LocalEvents.GenerateNewAddress)
+                                if (accountAsset?.account?.isLightning == false) {
+                                    IconButton(
+                                        modifier = Modifier
+                                            .align(Alignment.TopEnd)
+                                            .padding(top = 2.dp, end = 2.dp)
+                                            .appTestTag("refresh"),
+                                        onClick = {
+                                            viewModel.postEvent(ReceiveViewModel.LocalEvents.GenerateNewAddress)
+                                        }
+                                    ) {
+                                        Icon(
+                                            painter = painterResource(Res.drawable.arrows_counter_clockwise),
+                                            contentDescription = "Refresh"
+                                        )
                                     }
-                                ) {
-                                    Icon(
-                                        painter = painterResource(Res.drawable.arrows_counter_clockwise),
-                                        contentDescription = "Refresh"
-                                    )
                                 }
 
                                 Column {
@@ -459,7 +463,8 @@ fun ReceiveScreen(
                         text = stringResource(Res.string.id_share),
                         icon = PhosphorIcons.Regular.ShareNetwork,
                         modifier = Modifier.fillMaxWidth(),
-                        enabled = !onProgress
+                        enabled = !onProgress,
+                        testTag = "share_button"
                     ) {
                         scope.launch {
                             viewModel.postEvent(

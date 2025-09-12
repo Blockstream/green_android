@@ -35,6 +35,7 @@ fun GreenDataLayout(
     helperContainerColor: Color? = null,
     withPadding: Boolean = true,
     enabled: Boolean = true,
+    testTag: String? = null,
     onClick: (() -> Unit)? = null,
     content: @Composable BoxScope.() -> Unit
 ) {
@@ -57,6 +58,7 @@ fun GreenDataLayout(
             GreenCard(
                 padding = (if (withPadding) 16 else 0),
                 onClick = onClick,
+                testTag = testTag,
                 enabled = enabled,
                 border = border,
                 helperText = helperText,

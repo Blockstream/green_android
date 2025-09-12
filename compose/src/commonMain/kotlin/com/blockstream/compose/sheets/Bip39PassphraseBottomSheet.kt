@@ -43,6 +43,7 @@ import com.blockstream.compose.utils.TextInputPassword
 import com.blockstream.ui.components.GreenColumn
 import com.blockstream.ui.components.GreenRow
 import com.blockstream.ui.navigation.setResult
+import com.blockstream.ui.utils.appTestTag
 import org.jetbrains.compose.resources.stringResource
 
 @OptIn(ExperimentalMaterial3Api::class)
@@ -72,7 +73,8 @@ fun Bip39PassphraseBottomSheet(
             value = passphrase,
             visualTransformation = if (passwordVisibility.value) VisualTransformation.None else PasswordVisualTransformation(),
             onValueChange = viewModel.passphrase.onValueChange(),
-            modifier = Modifier.fillMaxWidth(),
+            modifier = Modifier.fillMaxWidth()
+                .appTestTag("bip39_passphrase_textfield"),
             singleLine = true,
             keyboardOptions = KeyboardOptions.Default.copy(
                 autoCorrectEnabled = false,
@@ -112,6 +114,7 @@ fun Bip39PassphraseBottomSheet(
                 Switch(
                     checked = isAlwaysAsk,
                     onCheckedChange = viewModel.isAlwaysAsk.onValueChange(),
+                    modifier = Modifier.appTestTag("always_ask_switch")
                 )
             }
         }
@@ -120,7 +123,8 @@ fun Bip39PassphraseBottomSheet(
             GreenButton(
                 text = stringResource(Res.string.id_clear),
                 modifier = Modifier.weight(1f),
-                type = GreenButtonType.OUTLINE
+                type = GreenButtonType.OUTLINE,
+                testTag = "clear_button"
             ) {
                 viewModel.postEvent(Bip39PassphraseViewModel.LocalEvents.Clear)
 
@@ -128,7 +132,8 @@ fun Bip39PassphraseBottomSheet(
 
             GreenButton(
                 text = stringResource(Res.string.id_ok),
-                modifier = Modifier.weight(1f)
+                modifier = Modifier.weight(1f),
+                testTag = "ok_button"
             ) {
                 viewModel.postEvent(Events.Continue)
             }

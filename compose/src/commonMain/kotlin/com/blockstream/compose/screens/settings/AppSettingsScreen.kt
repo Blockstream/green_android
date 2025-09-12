@@ -89,6 +89,7 @@ import com.blockstream.ui.components.GreenColumn
 import com.blockstream.ui.components.GreenRow
 import com.blockstream.ui.components.RichSpan
 import com.blockstream.ui.components.RichText
+import com.blockstream.ui.utils.appTestTag
 import kotlinx.coroutines.launch
 import org.jetbrains.compose.resources.stringResource
 
@@ -155,7 +156,8 @@ fun AppSettingsScreen(
                     title = stringResource(Res.string.id_connect_with_tor),
                     subtitle = stringResource(Res.string.id_less_stable_connection),
                     checked = torEnabled,
-                    onCheckedChange = autoSaveOnBooleanChange(viewModel.torEnabled)
+                    onCheckedChange = autoSaveOnBooleanChange(viewModel.torEnabled),
+                    testTag = "tor_switch"
                 )
 
 
@@ -165,7 +167,8 @@ fun AppSettingsScreen(
                     SettingSwitch(
                         title = stringResource(Res.string.id_connect_through_a_proxy),
                         checked = proxyEnabled,
-                        onCheckedChange = autoSaveOnBooleanChange(viewModel.proxyEnabled)
+                        onCheckedChange = autoSaveOnBooleanChange(viewModel.proxyEnabled),
+                        testTag = "proxy_switch"
                     )
 
                     AnimatedVisibility(visible = proxyEnabled) {
@@ -192,7 +195,8 @@ fun AppSettingsScreen(
                 SettingSwitch(
                     title = stringResource(Res.string.id_remember_hardware_devices),
                     checked = rememberHardwareDevices,
-                    onCheckedChange = autoSaveOnBooleanChange(viewModel.rememberHardwareDevices)
+                    onCheckedChange = autoSaveOnBooleanChange(viewModel.rememberHardwareDevices),
+                    testTag = "remember_devices_switch"
                 )
 
 
@@ -201,7 +205,8 @@ fun AppSettingsScreen(
                 SettingSwitch(
                     title = stringResource(Res.string.id_enable_testnet),
                     checked = testnetEnabled,
-                    onCheckedChange = autoSaveOnBooleanChange(viewModel.testnetEnabled)
+                    onCheckedChange = autoSaveOnBooleanChange(viewModel.testnetEnabled),
+                    testTag = "enable_testnet_switch"
                 )
 
 
@@ -250,7 +255,8 @@ fun AppSettingsScreen(
                                         uncheckedThumbColor = Color.White,
                                         checkedThumbColor = Color.White,
                                         uncheckedTrackColor = MaterialTheme.colorScheme.outline
-                                    )
+                                    ),
+                                    modifier = Modifier.appTestTag("analytics_switch"),
                                 )
                             }
                         }
@@ -264,7 +270,9 @@ fun AppSettingsScreen(
                         title = stringResource(Res.string.id_enable_experimental_features),
                         subtitle = stringResource(Res.string.id_experimental_features_might),
                         checked = experimentalFeaturesEnabled,
-                        onCheckedChange = autoSaveOnBooleanChange(viewModel.experimentalFeaturesEnabled)
+                        onCheckedChange = autoSaveOnBooleanChange(viewModel.experimentalFeaturesEnabled),
+                        testTag = "experimental_switch"
+
                     )
                 }
 
@@ -285,7 +293,8 @@ fun AppSettingsScreen(
                             contentDescription = null,
                             tint = MaterialTheme.colorScheme.onSurface.copy(alpha = 0.6f)
                         )
-                    }
+                    },
+                    modifier = Modifier.appTestTag("language_button"),
                 )
                 
                 if (showLanguagePicker) {
@@ -311,7 +320,8 @@ fun AppSettingsScreen(
                 SettingSwitch(
                     title = stringResource(Res.string.id_personal_electrum_server),
                     checked = electrumNodeEnabled,
-                    onCheckedChange = autoSaveOnBooleanChange(viewModel.electrumNodeEnabled)
+                    onCheckedChange = autoSaveOnBooleanChange(viewModel.electrumNodeEnabled),
+                    testTag = "electrum_switch"
                 )
 
                 AnimatedVisibility(visible = electrumNodeEnabled) {
@@ -369,7 +379,8 @@ fun AppSettingsScreen(
                     title = stringResource(Res.string.id_enhanced_privacy),
                     subtitle = stringResource(Res.string.id_use_secure_display_and_screen),
                     checked = enhancedPrivacyEnabled,
-                    onCheckedChange = autoSaveOnBooleanChange(viewModel.enhancedPrivacyEnabled)
+                    onCheckedChange = autoSaveOnBooleanChange(viewModel.enhancedPrivacyEnabled),
+                    testTag = "enhanced_privacy_switch"
                 )
 
                 AnimatedVisibility(visible = enhancedPrivacyEnabled) {

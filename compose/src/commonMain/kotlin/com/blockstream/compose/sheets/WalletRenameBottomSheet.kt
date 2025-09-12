@@ -32,6 +32,7 @@ import com.blockstream.compose.components.GreenBottomSheet
 import com.blockstream.compose.components.GreenButton
 import com.blockstream.compose.extensions.onTextFieldValueChange
 import com.blockstream.compose.utils.OpenKeyboard
+import com.blockstream.ui.utils.appTestTag
 import org.jetbrains.compose.resources.stringResource
 
 @OptIn(ExperimentalMaterial3Api::class)
@@ -87,7 +88,8 @@ fun WalletRenameBottomSheet(
             },
             modifier = Modifier
                 .fillMaxWidth()
-                .focusRequester(focusRequester),
+                .focusRequester(focusRequester)
+                .appTestTag("wallet_name_textfield"),
             singleLine = true,
             label = { Text(stringResource(Res.string.id_wallet_name)) },
             trailingIcon = {
@@ -98,6 +100,7 @@ fun WalletRenameBottomSheet(
                         .clickable {
                             viewModel.name.value = ""
                         }
+                        .appTestTag("clear_text")
                 )
             }
         )

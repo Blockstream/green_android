@@ -22,6 +22,7 @@ import com.blockstream.compose.theme.labelLarge
 import com.blockstream.compose.theme.whiteMedium
 import com.blockstream.ui.components.GreenColumn
 import com.blockstream.ui.components.GreenRow
+import com.blockstream.ui.utils.appTestTag
 import org.jetbrains.compose.resources.stringResource
 
 @Composable
@@ -71,7 +72,7 @@ fun CountryItem(
     dialCode: String? = null,
     showDialCode: Boolean = false
 ) {
-    GreenRow(padding = 0) {
+    GreenRow(padding = 0, modifier = Modifier.appTestTag(code)) {
 
         Text(
             text = flagText, style = displaySmall

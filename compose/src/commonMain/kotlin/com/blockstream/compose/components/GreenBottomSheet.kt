@@ -31,6 +31,7 @@ import com.blockstream.compose.theme.titleMedium
 import com.blockstream.compose.theme.whiteHigh
 import com.blockstream.compose.theme.whiteMedium
 import com.blockstream.compose.utils.HandleSideEffect
+import com.blockstream.compose.utils.compatTestTagsAsResourceId
 import com.blockstream.ui.components.GreenColumn
 import com.blockstream.ui.navigation.LocalNavigator
 import com.blockstream.ui.navigation.bottomsheet.BottomSheetNavigator
@@ -82,6 +83,7 @@ fun GreenBottomSheet(
                 .ifTrue(withHorizontalPadding) {
                     it.padding(horizontal = 16.dp)
                 }
+                .compatTestTagsAsResourceId()
 
         ) {
 

@@ -42,6 +42,7 @@ import com.blockstream.compose.theme.whiteLow
 import com.blockstream.compose.theme.whiteMedium
 import com.blockstream.ui.components.GreenColumn
 import com.blockstream.ui.components.GreenRow
+import com.blockstream.ui.utils.appTestTag
 import org.jetbrains.compose.resources.stringResource
 import org.jetbrains.compose.ui.tooling.preview.Preview
 
@@ -58,6 +59,7 @@ private fun WalletListRow(
         padding = 0,
         space = 8,
         modifier = Modifier
+            .appTestTag(title)
             .combinedClickable(onClick = {
                 onClick.invoke()
             }, onLongClick = {

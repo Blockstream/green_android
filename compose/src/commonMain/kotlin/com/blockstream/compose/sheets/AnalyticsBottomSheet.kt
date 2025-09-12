@@ -185,7 +185,8 @@ internal fun AnalyticsBottomSheet(
             GreenColumn(padding = 0, space = 8) {
                 GreenButton(
                     text = stringResource(Res.string.id_allow_data_collection),
-                    modifier = Modifier.fillMaxWidth()
+                    modifier = Modifier.fillMaxWidth(),
+                    testTag = "allow_analytics"
                 ) {
                     viewModel.postEvent(AnalyticsViewModel.LocalEvents.ClickDataCollection(true))
                 }
@@ -193,6 +194,7 @@ internal fun AnalyticsBottomSheet(
                 GreenButton(
                     text = stringResource(Res.string.id_dont_collect_data),
                     modifier = Modifier.fillMaxWidth(),
+                    testTag = "deny_analytics",
                     type = GreenButtonType.TEXT
                 ) {
                     viewModel.postEvent(AnalyticsViewModel.LocalEvents.ClickDataCollection(false))

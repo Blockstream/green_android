@@ -51,6 +51,7 @@ fun MeldProvider(
         withPadding = false,
         border = BorderStroke(1.dp, green).takeIf { isChecked },
         enabled = !onProgress,
+        testTag = "exchange_" + quote?.serviceProvider,
         onClick = onClick
     ) {
 

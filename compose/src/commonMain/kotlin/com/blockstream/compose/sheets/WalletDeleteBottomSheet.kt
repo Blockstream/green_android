@@ -47,6 +47,7 @@ fun WalletDeleteBottomSheet(
                 text = stringResource(Res.string.id_remove_wallet),
                 modifier = Modifier.fillMaxWidth(),
                 color = GreenButtonColor.RED,
+                testTag = "remove_wallet"
             ) {
                 viewModel.postEvent(Events.Continue)
             }
@@ -56,6 +57,7 @@ fun WalletDeleteBottomSheet(
                 modifier = Modifier.fillMaxWidth(),
                 type = GreenButtonType.OUTLINE,
                 color = GreenButtonColor.RED,
+                testTag = "remove_wallet"
             ) {
                 isConfirmed = true
             }

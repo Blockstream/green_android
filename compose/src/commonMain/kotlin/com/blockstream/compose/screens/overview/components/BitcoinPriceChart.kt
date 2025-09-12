@@ -55,6 +55,7 @@ import com.blockstream.compose.theme.labelMedium
 import com.blockstream.compose.theme.red
 import com.blockstream.compose.theme.titleSmall
 import com.blockstream.compose.theme.whiteLow
+import com.blockstream.ui.utils.appTestTag
 import com.blockstream.ui.utils.composeIf
 import io.github.koalaplot.core.ChartLayout
 import io.github.koalaplot.core.legend.LegendLocation
@@ -117,7 +118,8 @@ fun BitcoinPriceChart(
         GreenButton(
             text = stringResource(Res.string.id_buy_now),
             onClick = onClickBuyNow,
-            modifier = Modifier.fillMaxWidth(),
+            modifier = Modifier.fillMaxWidth()
+                .appTestTag("buy_now_button"),
             size = GreenButtonSize.BIG,
         )
     }
@@ -164,7 +166,9 @@ private fun BitcoinPrice(startPrice: Float, currentPrice: Float, currency: Strin
                 ) {
                     Text(
                         text = changePercentageInPrice.formatPercentage(),
-                        style = labelMedium.copy(color = trendColor, lineHeight = 16.sp)
+                        style = labelMedium.copy(color = trendColor, lineHeight = 16.sp),
+                        modifier = Modifier.appTestTag("percentage_change_text")
+
                     )
                     Icon(
                         modifier = Modifier.size(16.dp),
@@ -174,7 +178,10 @@ private fun BitcoinPrice(startPrice: Float, currentPrice: Float, currency: Strin
                     )
                 }
 
-                Text(text = currentPrice.formatFiatPrice(currency), style = bodyMedium)
+                Text(text = currentPrice.formatFiatPrice(currency),
+                    style = bodyMedium,
+                    modifier = Modifier.appTestTag("price_value_text")
+                )
             }
         }
     }
@@ -288,6 +295,7 @@ private fun ChartPeriodSelectorItem(
     }
 
     TextButton(
+        modifier = Modifier.appTestTag(period.label),
         onClick = { onChangePeriod(period) },
         colors = ButtonDefaults.textButtonColors()
             .copy(containerColor = containerColor, contentColor = contentColor)

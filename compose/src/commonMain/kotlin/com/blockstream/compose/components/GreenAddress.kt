@@ -20,6 +20,7 @@ import com.blockstream.compose.extensions.colorTextEdges
 import com.blockstream.compose.theme.MonospaceFont
 import com.blockstream.compose.theme.whiteHigh
 import com.blockstream.compose.utils.CopyContainer
+import com.blockstream.ui.utils.appTestTag
 import com.blockstream.ui.utils.ifTrue
 
 @Composable
@@ -45,7 +46,8 @@ fun GreenAddress(
             Text(
                 modifier = Modifier.ifTrue(showCopyIcon) {
                     it.weight(1f) // Make it fill the available space, else copy icon will be out of visible area
-                },
+                }
+                    .appTestTag("address_text"),
                 text = text,
                 fontFamily = MonospaceFont(),
                 textAlign = textAlign,
@@ -59,6 +61,7 @@ fun GreenAddress(
                     contentDescription = "Copy",
                     tint = whiteHigh,
                     modifier = Modifier.align(Alignment.CenterVertically).padding(start = 8.dp)
+                        .appTestTag("copy")
                 )
             }
         }

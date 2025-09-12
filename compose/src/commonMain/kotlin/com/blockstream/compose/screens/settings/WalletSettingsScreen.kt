@@ -123,6 +123,7 @@ import com.blockstream.compose.dialogs.TextDialog
 import com.blockstream.compose.extensions.colorText
 import com.blockstream.compose.screens.jade.JadeQRResult
 import com.blockstream.compose.sideeffects.OpenDialogData
+import com.blockstream.compose.theme.amp_testnet
 import com.blockstream.compose.theme.bodyLarge
 import com.blockstream.compose.theme.bodyMedium
 import com.blockstream.compose.theme.green
@@ -135,6 +136,7 @@ import com.blockstream.ui.components.GreenColumn
 import com.blockstream.ui.components.GreenRow
 import com.blockstream.ui.navigation.LocalInnerPadding
 import com.blockstream.ui.navigation.getResult
+import com.blockstream.ui.utils.appTestTag
 import com.blockstream.ui.utils.bottom
 import com.blockstream.ui.utils.ifTrue
 import com.blockstream.ui.utils.plus
@@ -405,7 +407,8 @@ fun WalletSettingsScreen(
                             painter = painterResource(Res.drawable.sign_out),
                             modifier = Modifier.clickable {
                                 viewModel.postEvent(Logout(LogoutReason.USER_ACTION))
-                            }
+                            },
+                            testTag = "logout"
                         )
                     }
 
@@ -428,7 +431,8 @@ fun WalletSettingsScreen(
                             imageVector = PhosphorIcons.Regular.CaretRight,
                             modifier = Modifier.clickable {
                                 viewModel.postEvent(LocalEvents.DenominationExchangeRate)
-                            }
+                            },
+                            testTag = "denomination"
                         )
                     }
 
@@ -442,7 +446,9 @@ fun WalletSettingsScreen(
                                         greenWallet = viewModel.greenWallet
                                     )
                                 )
-                            })
+                            },
+                            testTag = "archived_accounts"
+                        )
                     }
 
                     WalletSetting.WatchOnly -> {
@@ -451,7 +457,8 @@ fun WalletSettingsScreen(
                             imageVector = PhosphorIcons.Regular.CaretRight,
                             modifier = Modifier.clickable {
                                 viewModel.postEvent(LocalEvents.WatchOnly)
-                            }
+                            },
+                            testTag = "wallet_details"
                         )
                     }
 
@@ -462,7 +469,8 @@ fun WalletSettingsScreen(
                             imageVector = PhosphorIcons.Regular.CaretRight,
                             modifier = Modifier.clickable {
                                 viewModel.postEvent(LocalEvents.AutologoutTimeout)
-                            }
+                            },
+                            testTag = "autologout_timeout"
                         )
                     }
 
@@ -494,7 +502,9 @@ fun WalletSettingsScreen(
                             title = stringResource(Res.string.id_request_recovery_transactions),
                             modifier = Modifier.clickable {
                                 viewModel.postEvent(LocalEvents.RequestRecoveryTransactions)
-                            })
+                            },
+                            testTag = "recovery_transactions"
+                        )
                     }
 
                     WalletSetting.SetupEmailRecovery -> {
@@ -503,7 +513,9 @@ fun WalletSettingsScreen(
                             imageVector = PhosphorIcons.Regular.CaretRight,
                             modifier = Modifier.clickable {
                                 viewModel.postEvent(LocalEvents.SetupEmailRecovery)
-                            })
+                            },
+                            testTag = "recovery_email"
+                        )
                     }
 
                     WalletSetting.ChangePin -> {
@@ -548,7 +560,8 @@ fun WalletSettingsScreen(
                             imageVector = PhosphorIcons.Regular.CaretRight,
                             modifier = Modifier.clickable {
                                 viewModel.postEvent(LocalEvents.PgpKey)
-                            }
+                            },
+                            testTag = "pgp_key"
                         )
                     }
 
@@ -558,7 +571,8 @@ fun WalletSettingsScreen(
                             imageVector = PhosphorIcons.Regular.CaretRight,
                             modifier = Modifier.clickable {
                                 viewModel.postEvent(LocalEvents.TwoFactorAuthentication)
-                            }
+                            },
+                            testTag = "2fa_methods"
                         )
                     }
 
@@ -569,7 +583,8 @@ fun WalletSettingsScreen(
                             imageVector = PhosphorIcons.Regular.CaretRight,
                             modifier = Modifier.clickable {
                                 viewModel.postEvent(LocalEvents.RecoveryPhrase)
-                            }
+                            },
+                            testTag = "recovery_phrase"
                         )
                     }
 
@@ -579,7 +594,8 @@ fun WalletSettingsScreen(
                             subtitle = item.version,
                             modifier = Modifier.clickable {
                                 viewModel.postEvent(NavigateDestinations.About)
-                            }
+                            },
+                            testTag = "app_version"
                         )
                     }
 
@@ -590,7 +606,9 @@ fun WalletSettingsScreen(
                             imageVector = PhosphorIcons.Regular.Copy,
                             modifier = Modifier.clickable {
                                 viewModel.postEvent(LocalEvents.SupportId)
-                            })
+                            },
+                            testTag = "support_id"
+                        )
                     }
 
                     is WalletSetting.TwoFactorMethod -> {
@@ -613,7 +631,8 @@ fun WalletSettingsScreen(
                                         item.method
                                     )
                                 )
-                            }
+                            },
+                            testTag = "2fa_method_" + item.method.name
                         )
                     }
 
@@ -631,7 +650,8 @@ fun WalletSettingsScreen(
                                         isSmsBackup = false
                                     )
                                 )
-                            }
+                            },
+                            testTag = "2fa_lost"
                         )
                     }
 
@@ -642,7 +662,8 @@ fun WalletSettingsScreen(
                             imageVector = PhosphorIcons.Regular.CaretRight,
                             modifier = Modifier.clickable {
                                 viewModel.postEvent(LocalEvents.TwoFactorThreshold)
-                            }
+                            },
+                            testTag = "2fa_threshold"
                         )
                     }
 
@@ -685,7 +706,8 @@ fun WalletSettingsScreen(
                                         item.bucket
                                     )
                                 )
-                            }
+                            },
+                            testTag = "2fa_expiry_" + item.bucket
                         )
                     }
 
@@ -736,7 +758,8 @@ fun WalletSettingsScreen(
                             imageVector = PhosphorIcons.Regular.CaretRight,
                             modifier = Modifier.clickable {
                                 viewModel.postEvent(LocalEvents.CopyAmpId())
-                            }
+                            },
+                            testTag = "amp_account"
                         )
                     }
 
@@ -746,7 +769,8 @@ fun WalletSettingsScreen(
                             imageVector = PhosphorIcons.Regular.CaretRight,
                             modifier = Modifier.clickable {
                                 viewModel.postEvent(LocalEvents.ChooseAccountType(AccountType.AMP_ACCOUNT))
-                            }
+                            },
+                            testTag = "amp_account"
                         )
                     }
 
@@ -756,7 +780,8 @@ fun WalletSettingsScreen(
                             imageVector = PhosphorIcons.Regular.CaretRight,
                             modifier = Modifier.clickable {
                                 viewModel.postEvent(LocalEvents.CreateNewAccount)
-                            }
+                            },
+                            testTag = "create_account"
                         )
                     }
                 }
@@ -771,11 +796,13 @@ fun RadioSetting(
     title: String,
     selected: Boolean,
     enabled: Boolean = true,
+    testTag: String? = null,
     onSelect: () -> Unit = {},
 ) {
     OutlinedCard(
         modifier = Modifier
             .then(modifier)
+            .appTestTag(testTag)
             .clickable(enabled = enabled) { onSelect() }
     ) {
         GreenRow(space = 16, padding = 0, verticalAlignment = Alignment.CenterVertically) {
@@ -810,9 +837,14 @@ fun Setting(
     checked: Boolean? = null,
     isRadio: Boolean = false,
     enabled: Boolean = true,
+    testTag: String? = null,
     onCheckedChange: ((Boolean) -> Unit) = {},
 ) {
-    OutlinedCard(modifier = Modifier.then(modifier)) {
+    OutlinedCard(
+        modifier = Modifier
+            .then(modifier)
+            .appTestTag(testTag)
+    ) {
         GreenRow(space = 8, padding = 0, verticalAlignment = Alignment.Top) {
             GreenColumn(
                 padding = 0, space = 4,
