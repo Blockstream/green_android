@@ -1,3 +1,5 @@
+@file:OptIn(ExperimentalUuidApi::class)
+
 package com.blockstream.common.devices
 
 import android.annotation.SuppressLint
@@ -12,7 +14,6 @@ import android.hardware.usb.UsbDevice
 import android.hardware.usb.UsbManager
 import androidx.core.content.ContextCompat
 import androidx.core.content.IntentCompat
-import com.benasher44.uuid.Uuid
 import com.blockstream.common.di.ApplicationScope
 import com.blockstream.common.extensions.isBonded
 import com.blockstream.common.extensions.isJade
@@ -22,8 +23,9 @@ import com.blockstream.common.managers.SessionManager
 import com.blockstream.green.utils.Loggable
 import com.juul.kable.Peripheral
 import com.juul.kable.PlatformAdvertisement
-import com.juul.kable.peripheral
 import java.lang.ref.WeakReference
+import kotlin.uuid.ExperimentalUuidApi
+import kotlin.uuid.Uuid
 
 class DeviceManagerAndroid constructor(
     scope: ApplicationScope,
@@ -31,7 +33,7 @@ class DeviceManagerAndroid constructor(
     sessionManager: SessionManager,
     bluetoothManager: BluetoothManager,
     val usbManager: UsbManager,
-    supportedBleDevices: List<String>,
+    supportedBleDevices: List<Uuid>,
     val deviceMapper: (
         deviceManager: DeviceManagerAndroid, usbDevice: UsbDevice?, bleService: Uuid?,
         peripheral: Peripheral?,
@@ -99,7 +101,7 @@ class DeviceManagerAndroid constructor(
         if (isJade) {
             super.advertisedDevice(advertisement)
         } else {
-            val peripheral = scope.peripheral(advertisement)
+            val peripheral = Peripheral(advertisement)
             val bleService = advertisement.uuids.firstOrNull()
 
             deviceMapper.invoke(this, null, bleService, peripheral, advertisement.isBonded())

@@ -1,6 +1,7 @@
+@file:OptIn(ExperimentalUuidApi::class)
+
 package com.blockstream.common.extensions
 
-import com.benasher44.uuid.uuid4
 import com.blockstream.common.data.CredentialType
 import com.blockstream.common.data.Denomination
 import com.blockstream.common.data.EnrichedAsset
@@ -26,6 +27,8 @@ import com.blockstream.common.looks.transaction.TransactionLook
 import com.blockstream.common.looks.transaction.TransactionStatus
 import com.blockstream.common.looks.wallet.WalletListLook
 import kotlin.time.Clock
+import kotlin.uuid.ExperimentalUuidApi
+import kotlin.uuid.Uuid
 
 fun previewWallet(
     isHardware: Boolean = false,
@@ -128,7 +131,7 @@ fun previewTransaction() = Transaction(
     feeRate = 0,
     memo = "",
     spvVerified = "",
-    txHash = uuid4().toString(),
+    txHash = Uuid.random().toString(),
     type = "",
     satoshi = mapOf(),
 ).also {

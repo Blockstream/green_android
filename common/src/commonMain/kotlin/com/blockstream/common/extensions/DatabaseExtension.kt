@@ -1,6 +1,7 @@
+@file:OptIn(ExperimentalUuidApi::class)
+
 package com.blockstream.common.extensions
 
-import com.benasher44.uuid.Uuid
 import com.blockstream.common.crypto.GreenKeystore
 import com.blockstream.common.data.CredentialType
 import com.blockstream.common.data.EncryptedData
@@ -10,6 +11,8 @@ import com.blockstream.common.database.wallet.LoginCredentials
 import com.blockstream.common.gdk.data.PinData
 import com.blockstream.common.utils.getSecureRandom
 import kotlin.time.Clock
+import kotlin.uuid.ExperimentalUuidApi
+import kotlin.uuid.Uuid
 
 fun createLoginCredentials(
     walletId: String,
@@ -113,5 +116,5 @@ fun objectId(
     id: Long = Clock.System.now().toEpochMilliseconds()
 ): Uuid {
     val random = getSecureRandom().unsecureRandomLong()
-    return Uuid(id, random)
+    return Uuid.fromLongs(id, random)
 }

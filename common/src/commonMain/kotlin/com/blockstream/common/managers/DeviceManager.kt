@@ -1,6 +1,7 @@
+@file:OptIn(ExperimentalUuidApi::class)
+
 package com.blockstream.common.managers
 
-import com.benasher44.uuid.uuidFrom
 import com.blockstream.common.devices.DeviceState
 import com.blockstream.common.devices.GreenDevice
 import com.blockstream.common.devices.JadeBleDevice
@@ -14,12 +15,11 @@ import com.blockstream.common.extensions.isJade
 import com.blockstream.common.extensions.setupJade
 import com.blockstream.common.extensions.supervisorJob
 import com.blockstream.green.utils.Loggable
-import com.juul.kable.Filter
+import com.juul.kable.Peripheral
 import com.juul.kable.PlatformAdvertisement
 import com.juul.kable.Scanner
 import com.juul.kable.logs.Logging
 import com.juul.kable.logs.SystemLogEngine
-import com.juul.kable.peripheral
 import kotlinx.coroutines.CancellationException
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.delay
@@ -38,6 +38,8 @@ import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.isActive
 import kotlinx.coroutines.launch
 import kotlin.time.Clock
+import kotlin.uuid.ExperimentalUuidApi
+import kotlin.uuid.Uuid
 
 sealed class ScanStatus {
     data object Started : ScanStatus()
@@ -48,7 +50,7 @@ open class DeviceManager constructor(
     val scope: ApplicationScope,
     val sessionManager: SessionManager,
     private val bluetoothManager: BluetoothManager,
-    private val supportedBleDevices: List<String>
+    private val supportedBleDevices: List<Uuid>
 ) {
     private val deviceDiscovery = MutableStateFlow(false)
 
@@ -144,16 +146,12 @@ open class DeviceManager constructor(
         }
 
         val scanner = Scanner {
-            // new filters DSL does not work as expected
-//            filters {
-//                match {
-//                    services = supportedBleDevices.map {
-//                        uuidFrom(it)
-//                    }
-//                }
-//            }
-            filters = supportedBleDevices.map {
-                Filter.Service(uuidFrom(it))
+            filters {
+                supportedBleDevices.forEach {
+                    match {
+                        services = listOf(it)
+                    }
+                }
             }
             conflate()
             logging {
@@ -182,7 +180,8 @@ open class DeviceManager constructor(
         val isJade = advertisement.isJade
 
         if (isJade) {
-            val peripheral = scope.peripheral(advertisement) {
+
+            val peripheral = Peripheral(advertisement) {
                 setupJade(JADE_MTU)
             }
 

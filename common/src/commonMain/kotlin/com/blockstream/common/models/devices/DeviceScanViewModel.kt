@@ -12,7 +12,7 @@ import com.blockstream.common.sideeffects.SideEffects
 import com.blockstream.green.utils.Loggable
 import com.blockstream.ui.navigation.NavAction
 import com.blockstream.ui.navigation.NavData
-import com.juul.kable.ConnectionLostException
+import com.juul.kable.NotConnectedException
 import com.rickclephas.kmp.nativecoroutines.NativeCoroutinesState
 import com.rickclephas.kmp.observableviewmodel.launch
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -183,7 +183,7 @@ class DeviceScanViewModel(
                 greenWallet to device
 
             }, onError = {
-                if (it !is ConnectionLostException) {
+                if (it !is NotConnectedException) {
                     postSideEffect(SideEffects.ErrorSnackbar(it))
                 }
                 _deviceFlow.value = null

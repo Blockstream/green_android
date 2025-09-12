@@ -163,7 +163,6 @@ kotlin {
             api(libs.sqldelight.coroutines.extensions)
             api(libs.kmp.observableviewmodel)
             api(libs.uri.kmp)
-            api(libs.uuid)
             api(libs.multiplatform.settings)
             api(libs.multiplatform.settings.no.arg)
             api(libs.multiplatform.settings.make.observable)

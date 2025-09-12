@@ -164,14 +164,18 @@ class DeviceConnectionManagerAndroid constructor(
                     device.context, bluetoothDevice,
                     { transport: BTChipTransport, hasScreen: Boolean, disconnectEvent: MutableStateFlow<Boolean> ->
                         scope.launch(context = Dispatchers.IO) {
-                            onLedger(
-                                device,
-                                transport,
-                                hasScreen,
-                                disconnectEvent,
-                                interaction
-                            ).also {
-                                continuation.resume(it)
+                            try {
+                                onLedger(
+                                    device,
+                                    transport,
+                                    hasScreen,
+                                    disconnectEvent,
+                                    interaction
+                                ).also {
+                                    continuation.resume(it)
+                                }
+                            } catch (e: Exception) {
+                                continuation.resumeWithException(e)
                             }
                         }
                     }

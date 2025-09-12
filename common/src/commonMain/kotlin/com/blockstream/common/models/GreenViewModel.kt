@@ -1,3 +1,5 @@
+@file:OptIn(ExperimentalUuidApi::class)
+
 package com.blockstream.common.models
 
 import blockstream_green.common.generated.resources.Res
@@ -105,6 +107,7 @@ import org.koin.core.component.KoinComponent
 import org.koin.core.component.inject
 import kotlin.time.Duration
 import kotlin.time.Duration.Companion.minutes
+import kotlin.uuid.ExperimentalUuidApi
 
 open class SimpleGreenViewModel(
     greenWalletOrNull: GreenWallet? = null,

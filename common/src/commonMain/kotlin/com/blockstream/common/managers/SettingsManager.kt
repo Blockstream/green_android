@@ -1,6 +1,7 @@
+@file:OptIn(ExperimentalUuidApi::class)
+
 package com.blockstream.common.managers
 
-import com.benasher44.uuid.uuid4
 import com.blockstream.common.data.ApplicationSettings
 import com.blockstream.common.utils.server
 import com.rickclephas.kmp.nativecoroutines.NativeCoroutinesIgnore
@@ -16,6 +17,8 @@ import kotlin.random.Random
 import kotlin.random.nextLong
 import kotlin.time.Clock
 import kotlin.time.Instant
+import kotlin.uuid.ExperimentalUuidApi
+import kotlin.uuid.Uuid
 
 class SettingsManager constructor(
     private val settings: ObservableSettings,
@@ -94,7 +97,7 @@ class SettingsManager constructor(
 
     fun getCountlyDeviceId(): String {
         return settings[KEY_COUNTLY_DEVICE_ID] ?: run {
-            uuid4().toString().also {
+            Uuid.random().toString().also {
                 settings.putString(KEY_COUNTLY_DEVICE_ID, it)
             }
         }

@@ -1,7 +1,10 @@
+@file:OptIn(ExperimentalUuidApi::class)
+
 package com.blockstream.green.database
 
 import com.blockstream.common.data.GreenWallet
 import com.blockstream.common.extensions.objectId
+import kotlin.uuid.ExperimentalUuidApi
 
 fun roomToDelight(wallet: Wallet): com.blockstream.common.database.wallet.Wallet {
     return com.blockstream.common.database.wallet.Wallet(

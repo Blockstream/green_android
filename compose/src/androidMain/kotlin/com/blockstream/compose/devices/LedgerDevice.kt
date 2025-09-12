@@ -1,8 +1,9 @@
+@file:OptIn(ExperimentalUuidApi::class)
+
 package com.blockstream.compose.devices
 
 import android.content.Context
 import android.hardware.usb.UsbDevice
-import com.benasher44.uuid.Uuid
 import com.blockstream.common.devices.AndroidDevice
 import com.blockstream.common.devices.ConnectionType
 import com.blockstream.common.devices.DeviceBrand
@@ -16,6 +17,8 @@ import com.btchip.comm.BTChipTransport
 import com.btchip.comm.LedgerDeviceBLE
 import com.greenaddress.greenbits.wallets.BTChipHWWallet
 import com.juul.kable.Peripheral
+import kotlin.uuid.ExperimentalUuidApi
+import kotlin.uuid.Uuid
 
 class LedgerDevice constructor(
     context: Context,
@@ -74,7 +77,7 @@ class LedgerDevice constructor(
             bleService: Uuid?,
             peripheral: Peripheral? = null,
             isBonded: Boolean
-        ): LedgerDevice? = if (bleService == LedgerDeviceBLE.SERVICE_UUID) {
+        ): LedgerDevice? = if (bleService.toString() == LedgerDeviceBLE.SERVICE_UUID.toString()) {
             LedgerDevice(
                 context = deviceManager.context,
                 deviceManager = deviceManager,

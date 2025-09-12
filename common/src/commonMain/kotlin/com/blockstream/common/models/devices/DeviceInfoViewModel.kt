@@ -20,7 +20,7 @@ import com.blockstream.ui.events.Event
 import com.blockstream.ui.navigation.NavAction
 import com.blockstream.ui.navigation.NavData
 import com.blockstream.ui.sideeffects.SideEffect
-import com.juul.kable.ConnectionLostException
+import com.juul.kable.NotConnectedException
 import com.rickclephas.kmp.nativecoroutines.NativeCoroutinesState
 import com.rickclephas.kmp.observableviewmodel.launch
 import kotlinx.coroutines.delay
@@ -152,7 +152,7 @@ class DeviceInfoViewModel constructor(deviceId: String) : DeviceInfoViewModelAbs
         }, onError = {
             it.printStackTrace()
 
-            if (it is ConnectionLostException) {
+            if (it is NotConnectedException) {
                 connectDevice()
             } else {
                 postSideEffect(SideEffects.ErrorSnackbar(it))

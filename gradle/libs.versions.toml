@@ -8,7 +8,7 @@ kotlinx-coroutines = "1.10.2"
 kotlinx-datetime = "0.7.1"
 kotlinx-serialization = "1.9.0"
 kotlin-ksp = "2.2.20-2.0.3"
-kable = "0.34.0"
+kable = "0.40.0"
 coil = "3.3.0"
 ktor = "3.3.0"
 phosphorIcon = "1.0.0"
@@ -60,7 +60,6 @@ zendesk = "5.2.0"
 state-keeper = "2.5.0"
 turbine = "1.2.1"
 usb-serial = "0f16336a4e"
-uuid = "0.8.4"
 desugar = "2.1.5"
 zxing-android-embedded = "4.3.0"
 kmp-nativecoroutines = "1.0.0-ALPHA-47"
@@ -177,7 +176,6 @@ uri-kmp = { module = "com.eygraber:uri-kmp", version.ref = "uriKmp" }
 zendesk-support-providers = { module = "com.zendesk:support-providers", version.ref = "zendesk" }
 turbine = { module = "app.cash.turbine:turbine", version.ref = "turbine" }
 usb-serial = { module = "com.github.angelix:UsbSerial", version.ref = "usb-serial" }
-uuid = { module = "com.benasher44:uuid", version.ref = "uuid" }
 zxing-android-embedded = { module = "com.journeyapps:zxing-android-embedded", version.ref = "zxing-android-embedded" }
 compose-ui-tooling-preview = { module = "androidx.compose.ui:ui-tooling-preview", version.ref = "compose-tooling-preview"}
 androidx-activity-compose = { module = "androidx.activity:activity-compose" }

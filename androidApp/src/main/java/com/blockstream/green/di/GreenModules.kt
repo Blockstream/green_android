@@ -1,11 +1,10 @@
-@file:OptIn(ExperimentalEncodingApi::class, ExperimentalEncodingApi::class)
+@file:OptIn(ExperimentalEncodingApi::class, ExperimentalEncodingApi::class, ExperimentalUuidApi::class)
 
 package com.blockstream.green.di
 
 import android.content.Context
 import android.hardware.usb.UsbDevice
 import android.hardware.usb.UsbManager
-import com.benasher44.uuid.Uuid
 import com.blockstream.common.devices.DeviceManagerAndroid
 import com.blockstream.common.fcm.FcmCommon
 import com.blockstream.common.interfaces.DeviceConnectionInterface
@@ -24,6 +23,8 @@ import org.koin.android.ext.koin.androidContext
 import org.koin.dsl.binds
 import org.koin.dsl.module
 import kotlin.io.encoding.ExperimentalEncodingApi
+import kotlin.uuid.ExperimentalUuidApi
+import kotlin.uuid.Uuid
 
 val greenModules = module {
     single {
@@ -43,7 +44,7 @@ val greenModules = module {
             get(),
             get(),
             get(),
-            listOf(LedgerDeviceBLE.SERVICE_UUID.toString(), JadeBleConnection.JADE_SERVICE)
+            listOf(Uuid.parse(LedgerDeviceBLE.SERVICE_UUID.toString()), JadeBleConnection.JADE_SERVICE)
         ) { deviceManagerAndroid: DeviceManagerAndroid, usbDevice: UsbDevice?, bleService: Uuid?, peripheral: Peripheral?, isBonded: Boolean? ->
             usbDevice?.let {
                 TrezorDevice.fromUsbDevice(deviceManager = deviceManagerAndroid, usbDevice = usbDevice)

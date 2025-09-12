@@ -1,3 +1,5 @@
+@file:OptIn(ExperimentalUuidApi::class)
+
 package com.blockstream.common.data
 
 import com.blockstream.common.database.wallet.GetWalletsWithCredentialType
@@ -8,6 +10,7 @@ import com.blockstream.common.extensions.isNotBlank
 import com.blockstream.common.extensions.objectId
 import com.blockstream.common.gdk.GreenJson
 import kotlinx.serialization.Serializable
+import kotlin.uuid.ExperimentalUuidApi
 
 @Serializable
 public data class WalletSerializable(

@@ -1,3 +1,5 @@
+@file:OptIn(ExperimentalApi::class)
+
 package com.blockstream.common.devices
 
 import com.blockstream.common.extensions.tryCatchNull
@@ -8,6 +10,7 @@ import com.blockstream.common.gdk.device.GdkHardwareWallet
 import com.blockstream.common.gdk.device.HardwareConnectInteraction
 import com.blockstream.green.utils.Loggable
 import com.blockstream.jade.firmware.FirmwareUpdateState
+import com.juul.kable.ExperimentalApi
 import com.juul.kable.Peripheral
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers

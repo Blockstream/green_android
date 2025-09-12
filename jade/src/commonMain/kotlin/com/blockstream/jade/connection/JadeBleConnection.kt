@@ -1,3 +1,5 @@
+@file:OptIn(ExperimentalUuidApi::class)
+
 package com.blockstream.jade.connection
 
 import com.blockstream.jade.Loggable
@@ -14,6 +16,8 @@ import kotlinx.coroutines.flow.launchIn
 import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.flow.onEach
 import kotlinx.coroutines.flow.stateIn
+import kotlin.uuid.ExperimentalUuidApi
+import kotlin.uuid.Uuid
 
 /**
  * Low-level BLE backend interface to Jade
@@ -29,7 +33,7 @@ class JadeBleConnection internal constructor(
     override val isUsb: Boolean = false
 
     override val isConnected
-        get() = peripheral.state.value == State.Connected
+        get() = peripheral.state.value is State.Connected
 
     override val disconnectEvent: StateFlow<Boolean>
         get() = peripheral.state.map {
@@ -96,12 +100,12 @@ class JadeBleConnection internal constructor(
     }
 
     companion object : Loggable() {
-        const val JADE_SERVICE = "6e400001-b5a3-f393-e0a9-e50e24dcca9e"
+        val JADE_SERVICE = Uuid.parse("6e400001-b5a3-f393-e0a9-e50e24dcca9e")
 
         private val WriteCharacteristics =
-            characteristicOf(JADE_SERVICE, "6e400002-b5a3-f393-e0a9-e50e24dcca9e")
+            characteristicOf(JADE_SERVICE, Uuid.parse("6e400002-b5a3-f393-e0a9-e50e24dcca9e"))
         private val ObserveCharacteristics =
-            characteristicOf(JADE_SERVICE, "6e400003-b5a3-f393-e0a9-e50e24dcca9e")
+            characteristicOf(JADE_SERVICE, Uuid.parse("6e400003-b5a3-f393-e0a9-e50e24dcca9e"))
 
         const val JADE_MTU = 512
     }
