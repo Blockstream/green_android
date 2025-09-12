@@ -109,6 +109,7 @@ import com.blockstream.common.gdk.params.UpdateSubAccountParams
 import com.blockstream.common.gdk.params.ValidateAddresseesParams
 import com.blockstream.common.interfaces.JadeHttpRequestUrlValidator
 import com.blockstream.common.lightning.AppGreenlightCredentials
+import com.blockstream.common.lightning.ConnectStatus
 import com.blockstream.common.lightning.LightningBridge
 import com.blockstream.common.lightning.LightningManager
 import com.blockstream.common.lightning.expireIn
@@ -1021,10 +1022,12 @@ class GdkSession constructor(
             }
 
             if (!hasLightning) {
-                connectToGreenlight(mnemonic = mnemonic ?: deriveLightningMnemonic(), restoreOnly = false)
+                val connectStatus = connectToGreenlight(mnemonic = mnemonic ?: deriveLightningMnemonic(), restoreOnly = false)
 
-                if (!hasLightning) {
+                if (connectStatus == ConnectStatus.Failed) {
                     throw Exception("Something went wrong while initiating your Lightning account")
+                } else if (connectStatus == ConnectStatus.NoNode) {
+                    throw Exception("Experimental Lightning support is currently unavailable to new users.")
                 }
 
                 // update GreenSessions accounts (use cache)
@@ -1681,19 +1684,19 @@ class GdkSession constructor(
         parentXpubHashId: String? = null,
         restoreOnly: Boolean = true,
         quickResponse: Boolean = false
-    ) {
+    ): ConnectStatus {
         logger.i { "Login into ${lightning?.id}" }
 
         countly.loginLightningStart()
-
-        lightningSdk.connectToGreenlight(
+        
+        val connectStatus = lightningSdk.connectToGreenlight(
             mnemonic = mnemonic,
             parentXpubHashId = parentXpubHashId ?: xPubHashId.takeIf { !isLightningShortcut },
             restoreOnly = restoreOnly,
             quickResponse = quickResponse
         ).also {
-            hasLightning = it == true
-            if (it == null) {
+            hasLightning = it == ConnectStatus.Connect
+            if (it == ConnectStatus.Failed) {
                 _failedNetworksStateFlow.value += listOfNotNull(lightning)
             }
         }
@@ -1703,6 +1706,8 @@ class GdkSession constructor(
         lightningSdk.eventSharedFlow.onEach {
             onLightningEvent(it)
         }.launchIn(scope = scope + parentJob)
+
+        return connectStatus
     }
 
     private suspend fun reLogin(network: Network): LoginData {

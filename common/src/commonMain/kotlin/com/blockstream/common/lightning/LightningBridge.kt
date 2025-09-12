@@ -77,6 +77,10 @@ import kotlinx.coroutines.withTimeout
 import okio.Path.Companion.toPath
 import kotlin.time.Clock
 
+enum class ConnectStatus {
+    Connect, NoNode, Failed
+}
+
 class LightningBridge constructor(
     private val appInfo: AppInfo,
     val workingDir: String,
@@ -166,18 +170,22 @@ class LightningBridge constructor(
         parentXpubHashId: String? = null,
         restoreOnly: Boolean = true,
         quickResponse: Boolean = false
-    ): Boolean? {
+    ): ConnectStatus {
         if (breezSdkOrNull != null) {
-            return true
+            return ConnectStatus.Connect
         }
 
         try {
+
+            // Disable creation of new LN nodes
+            // restoreOnly = restoreOnly
+
             breezSdkOrNull = withTimeout(if (quickResponse) 5000L else 30000L) {
                 connect(
                     req = ConnectRequest(
-                        config = createConfig(greenlightKeys.toGreenlightCredentials()),
+                        config = createConfig(partnerCredentials = greenlightKeys.toGreenlightCredentials()),
                         seed = mnemonicToSeed(mnemonic),
-                        restoreOnly = restoreOnly
+                        restoreOnly = true
                     ),
                     listener = this@LightningBridge
                 )
@@ -197,7 +205,7 @@ class LightningBridge constructor(
 
             updateLspInformation()
 
-            return true
+            return ConnectStatus.Connect
         } catch (e: ConnectException) {
             e.printStackTrace()
 
@@ -205,13 +213,13 @@ class LightningBridge constructor(
             // Failed to initialize the SDK: Failed to connect to Greenlight: status: Internal,
             // message: "Unable to register node: not authorized: an invite code or a partner certificate is require to register a new node (see https://bit.ly/glinvites for details"
             return if (e.message?.lowercase()?.contains("restore only", ignoreCase = true) == true) {
-                false
+                ConnectStatus.NoNode
             } else {
-                null
+                ConnectStatus.Failed
             }
         } catch (e: Exception) {
             e.printStackTrace()
-            return null
+            return ConnectStatus.Failed
         }
     }
 

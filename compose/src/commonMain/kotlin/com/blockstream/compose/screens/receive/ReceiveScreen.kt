@@ -51,6 +51,8 @@ import blockstream_green.common.generated.resources.id_share
 import blockstream_green.common.generated.resources.id_show_lightning_invoice
 import blockstream_green.common.generated.resources.id_show_onchain_address
 import blockstream_green.common.generated.resources.id_verify_on_device
+import blockstream_green.common.generated.resources.seal_check
+import blockstream_green.common.generated.resources.share_network
 import blockstream_green.common.generated.resources.warning
 import com.adamglin.PhosphorIcons
 import com.adamglin.phosphoricons.Regular
