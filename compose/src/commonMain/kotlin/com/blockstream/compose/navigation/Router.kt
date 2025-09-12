@@ -737,7 +737,7 @@ fun Router(
             appBottomSheet<NavigateDestinations.Analytics> {
                 val args = it.toRoute<NavigateDestinations.Analytics>()
                 AnalyticsBottomSheet(
-                    viewModel = viewModel { AnalyticsViewModel() },
+                    viewModel = viewModel { AnalyticsViewModel(isActionRequired = args.isActionRequired) },
                     onDismissRequest = navController.onDismissRequest {
                         args.setResult(true)
                     }

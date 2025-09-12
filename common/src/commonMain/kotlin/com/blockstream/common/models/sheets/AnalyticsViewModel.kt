@@ -7,10 +7,11 @@ import com.blockstream.common.sideeffects.SideEffects
 import com.blockstream.ui.events.Event
 
 abstract class AnalyticsViewModelAbstract : GreenViewModel() {
+    abstract val isActionRequired: Boolean
     abstract val showActionButtons: Boolean
 }
 
-class AnalyticsViewModel : AnalyticsViewModelAbstract() {
+class AnalyticsViewModel(override val isActionRequired: Boolean) : AnalyticsViewModelAbstract() {
     override fun screenName(): String = "Consent"
 
     override val showActionButtons: Boolean = settingsManager.analyticsFeatureEnabled
@@ -44,6 +45,8 @@ class AnalyticsViewModel : AnalyticsViewModelAbstract() {
 }
 
 class AnalyticsViewModelPreview(val show: Boolean) : AnalyticsViewModelAbstract() {
+    override val isActionRequired: Boolean = false
+
     override val showActionButtons = show
 
     companion object {

@@ -184,7 +184,7 @@ class HomeViewModel(isGetStarted: Boolean = false) : HomeViewModelAbstract(isGet
     private fun handleConsentDialog(): Boolean {
         return shouldShowConsentDialog().also {
             if (it) {
-                postSideEffect(SideEffects.NavigateTo(NavigateDestinations.Analytics))
+                postSideEffect(SideEffects.NavigateTo(NavigateDestinations.Analytics(isActionRequired = true)))
             }
         }.let { !it }
     }

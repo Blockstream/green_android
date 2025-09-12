@@ -175,7 +175,7 @@ class AppSettingsViewModel : AppSettingsViewModelAbstract() {
     override val locale: MutableStateFlow<String?> = MutableStateFlow(viewModelScope, localeManager.getLocale())
 
     class LocalEvents {
-        object AnalyticsMoreInfo : Events.EventSideEffect(SideEffects.NavigateTo(NavigateDestinations.Analytics))
+        object AnalyticsMoreInfo : Events.EventSideEffect(SideEffects.NavigateTo(NavigateDestinations.Analytics()))
         object Save : Event
         object AutoSave : Event
         object Cancel : Event

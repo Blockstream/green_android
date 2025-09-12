@@ -71,7 +71,7 @@ internal fun AnalyticsBottomSheet(
         sheetState = rememberModalBottomSheetState(
             skipPartiallyExpanded = true,
             confirmValueChange = {
-                !viewModel.showActionButtons
+                !viewModel.isActionRequired
             }
         ),
         onDismissRequest = onDismissRequest
