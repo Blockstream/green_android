@@ -150,6 +150,7 @@
     <string name="id_authenticator_app">Authenticator app</string>
     <string name="id_authenticator_qr_code">Authenticator QR Code</string>
     <string name="id_authenticator_secret_key">Authenticator secret key</string>
+    <string name="id_auto_logout_time">Auto logout time</string>
     <string name="id_auto_logout_timeout">Auto Logout Timeout</string>
     <string name="id_auto_logout_timeout_expired">Auto logout timeout expired</string>
     <string name="id_autolock_after">Autolock After</string>
@@ -339,6 +340,7 @@
     <string name="id_create_account">Create Account</string>
     <string name="id_create_invoice">Create Invoice</string>
     <string name="id_create_new_account">Create New Account</string>
+    <string name="id_create_a_new_account">Create a New Account</string>
     <string name="id_create_new_wallet">Create New Wallet</string>
     <string name="id_create_temporary_wallet">Create temporary wallet</string>
     <string name="id_create_wallet">Create Wallet</string>
@@ -792,6 +794,7 @@
     <string name="id_migrate_another_wallet">Migrate Another Wallet</string>
     <string name="id_migrating_to_blockstream_app">Migrating to Blockstream App? Have an existing Blockstream App wallet you&apos;d like to import? Let&apos;s go!</string>
     <string name="id_minimum">Minimum</string>
+    <string name="id_min">min</string>
     <string name="id_minute">minute</string>
     <string name="id_minutes">minutes</string>
     <string name="id_mnemonic">Mnemonic</string>
@@ -1239,6 +1242,7 @@
     <string name="id_success">Success</string>
     <string name="id_successfully_sent_your_funds">Successfully sent your funds</string>
     <string name="id_support">Support</string>
+    <string name="id_support_id">Support ID</string>
     <string name="id_support_page">Support Page</string>
     <string name="id_swap">Swap</string>
     <string name="id_swap_is_in_progress">Swap is in progress</string>
@@ -1436,6 +1440,8 @@
     <string name="id_wallet_pockets">Wallet Pockets</string>
     <string name="id_wallet_transactions">Wallet Transactions</string>
     <string name="id_wallets">Wallets</string>
+    <string name="id_wallet_settings">Wallet Settings</string>
+    <string name="id_account_settings">Account Settings</string>
     <string name="id_warning">Warning!</string>
     <string name="id_warning_no_trusted_node_set">Warning: No trusted node set!</string>
     <string name="id_warning_nononion_address">Warning: Non-.onion address detected!</string>

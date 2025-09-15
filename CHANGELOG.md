@@ -16,12 +16,12 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/).
 - Improve jade login time for hardware-watchonly wallets
 
 #### Changed
+- Restructured wallet settings screen with improved sections, labels, and UI elements
 - Restore Lightning channel sweep funds to onchain address
 - Improve connection time for Jade
 - Deprecate SPV options: users who want to self validate should connect to their own electrum server in app settings
 - Reformat Promo component layout for better image positioning
 - Bump GDK to version 0.76.0
-
 ## [5.0.7] - 2025-07-31
 
 #### Added

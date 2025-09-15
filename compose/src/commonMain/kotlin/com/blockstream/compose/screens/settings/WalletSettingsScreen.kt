@@ -33,11 +33,14 @@ import blockstream_green.common.generated.resources.Res
 import blockstream_green.common.generated.resources.box_arrow_down
 import blockstream_green.common.generated.resources.flask_fill
 import blockstream_green.common.generated.resources.id_1d_minutes
+import blockstream_green.common.generated.resources.id_2fa_methods
 import blockstream_green.common.generated.resources.id_2fa_threshold
 import blockstream_green.common.generated.resources.id_a_screen_lock_must_be_enabled
 import blockstream_green.common.generated.resources.id_add_a_pgp_public_key_to_receive
+import blockstream_green.common.generated.resources.id_amp_id
 import blockstream_green.common.generated.resources.id_archived_account
 import blockstream_green.common.generated.resources.id_archived_accounts
+import blockstream_green.common.generated.resources.id_auto_logout_time
 import blockstream_green.common.generated.resources.id_auto_logout_timeout
 import blockstream_green.common.generated.resources.id_backup_recovery_phrase
 import blockstream_green.common.generated.resources.id_biometric_login_is_disabled
@@ -46,6 +49,9 @@ import blockstream_green.common.generated.resources.id_change_pin
 import blockstream_green.common.generated.resources.id_continue
 import blockstream_green.common.generated.resources.id_copy_amp_id
 import blockstream_green.common.generated.resources.id_copy_support_id
+import blockstream_green.common.generated.resources.id_create_a_new_account
+import blockstream_green.common.generated.resources.id_create_new_account
+import blockstream_green.common.generated.resources.id_denomination
 import blockstream_green.common.generated.resources.id_denomination__exchange_rate
 import blockstream_green.common.generated.resources.id_display_values_in_s_and
 import blockstream_green.common.generated.resources.id_enabled
@@ -59,15 +65,18 @@ import blockstream_green.common.generated.resources.id_legacy_script_coins
 import blockstream_green.common.generated.resources.id_lightning
 import blockstream_green.common.generated.resources.id_login_with_biometrics
 import blockstream_green.common.generated.resources.id_logout
+import blockstream_green.common.generated.resources.id_min
 import blockstream_green.common.generated.resources.id_minute
 import blockstream_green.common.generated.resources.id_pgp_key
 import blockstream_green.common.generated.resources.id_recovery_transaction_emails
 import blockstream_green.common.generated.resources.id_recovery_transactions
+import blockstream_green.common.generated.resources.id_rename
 import blockstream_green.common.generated.resources.id_rename_wallet
 import blockstream_green.common.generated.resources.id_request_recovery_transactions
 import blockstream_green.common.generated.resources.id_set_an_email_for_recovery
 import blockstream_green.common.generated.resources.id_set_twofactor_threshold
 import blockstream_green.common.generated.resources.id_support
+import blockstream_green.common.generated.resources.id_support_id
 import blockstream_green.common.generated.resources.id_there_is_already_an_archived
 import blockstream_green.common.generated.resources.id_touch_to_display
 import blockstream_green.common.generated.resources.id_twofactor_authentication
@@ -122,6 +131,7 @@ import com.blockstream.compose.theme.bodyLarge
 import com.blockstream.compose.theme.bodyMedium
 import com.blockstream.compose.theme.red
 import com.blockstream.compose.theme.titleSmall
+import com.blockstream.compose.theme.green
 import com.blockstream.compose.theme.whiteHigh
 import com.blockstream.compose.theme.whiteLow
 import com.blockstream.compose.theme.whiteMedium
@@ -403,15 +413,16 @@ fun WalletSettingsScreen(
                             item.exchange
                         )
                         Setting(
-                            title = stringResource(Res.string.id_denomination__exchange_rate),
+                            title = stringResource(Res.string.id_denomination),
                             subtitleAnnotated = colorText(
                                 text = stringResource(
                                     Res.string.id_display_values_in_s_and, *list.toTypedArray()
                                 ),
                                 coloredTexts = list,
                                 baseColor = whiteMedium,
-                                color = whiteHigh
+                                color = green
                             ),
+                            imageVector = PhosphorIcons.Regular.CaretRight,
                             modifier = Modifier.clickable {
                                 viewModel.postEvent(LocalEvents.DenominationExchangeRate)
                             }
@@ -443,14 +454,13 @@ fun WalletSettingsScreen(
 
                     is WalletSetting.AutoLogoutTimeout -> {
                         Setting(
-                            title = stringResource(Res.string.id_auto_logout_timeout),
-                            subtitle = if (item.timeout == 1) "${item.timeout} ${stringResource(Res.string.id_minute)}" else stringResource(
-                                Res.string.id_1d_minutes,
-                                item.timeout
-                            ),
+                            title = stringResource(Res.string.id_auto_logout_time),
+                            subtitle = "${item.timeout} ${stringResource(Res.string.id_min)}",
+                            imageVector = PhosphorIcons.Regular.CaretRight,
                             modifier = Modifier.clickable {
                                 viewModel.postEvent(LocalEvents.AutologoutTimeout)
-                            })
+                            }
+                        )
                     }
 
                     is WalletSetting.JadeGenuineCheck -> {
@@ -532,7 +542,7 @@ fun WalletSettingsScreen(
                     is WalletSetting.PgpKey -> {
                         Setting(
                             title = stringResource(Res.string.id_pgp_key),
-                            subtitle = if (item.enabled) null else stringResource(Res.string.id_add_a_pgp_public_key_to_receive),
+                            imageVector = PhosphorIcons.Regular.CaretRight,
                             modifier = Modifier.clickable {
                                 viewModel.postEvent(LocalEvents.PgpKey)
                             }
@@ -541,7 +551,7 @@ fun WalletSettingsScreen(
 
                     WalletSetting.TwoFactorAuthentication -> {
                         Setting(
-                            title = stringResource(Res.string.id_twofactor_authentication),
+                            title = stringResource(Res.string.id_2fa_methods),
                             imageVector = PhosphorIcons.Regular.CaretRight,
                             modifier = Modifier.clickable {
                                 viewModel.postEvent(LocalEvents.TwoFactorAuthentication)
@@ -572,7 +582,7 @@ fun WalletSettingsScreen(
 
                     WalletSetting.SupportId -> {
                         Setting(
-                            title = stringResource(Res.string.id_support),
+                            title = stringResource(Res.string.id_support_id),
                             subtitle = stringResource(Res.string.id_copy_support_id),
                             imageVector = PhosphorIcons.Regular.Copy,
                             modifier = Modifier.clickable {
@@ -694,9 +704,11 @@ fun WalletSettingsScreen(
                         )
                     }
 
-                    WalletSetting.RenameWallet -> {
+                    is WalletSetting.RenameWallet -> {
                         Setting(
-                            title = stringResource(Res.string.id_rename_wallet),
+                            title = stringResource(Res.string.id_rename),
+                            subtitle = item.walletName,
+                            imageVector = PhosphorIcons.Regular.CaretRight,
                             modifier = Modifier.clickable {
                                 viewModel.postEvent(RenameWallet(viewModel.greenWallet))
                             }
@@ -705,7 +717,7 @@ fun WalletSettingsScreen(
 
                     is WalletSetting.CopyAmpId -> {
                         Setting(
-                            title = stringResource(Res.string.id_copy_amp_id),
+                            title = stringResource(Res.string.id_amp_id),
                             imageVector = PhosphorIcons.Regular.CaretRight,
                             modifier = Modifier.clickable {
                                 viewModel.postEvent(LocalEvents.CopyAmpId())
@@ -715,9 +727,20 @@ fun WalletSettingsScreen(
 
                     WalletSetting.CreateAmpAccount -> {
                         Setting(
-                            title = stringResource(Res.string.id_generate_amp_id),
+                            title = stringResource(Res.string.id_amp_id),
+                            imageVector = PhosphorIcons.Regular.CaretRight,
                             modifier = Modifier.clickable {
                                 viewModel.postEvent(LocalEvents.ChooseAccountType(AccountType.AMP_ACCOUNT))
+                            }
+                        )
+                    }
+
+                    WalletSetting.CreateNewAccount -> {
+                        Setting(
+                            title = stringResource(Res.string.id_create_a_new_account),
+                            imageVector = PhosphorIcons.Regular.CaretRight,
+                            modifier = Modifier.clickable {
+                                viewModel.postEvent(LocalEvents.CreateNewAccount)
                             }
                         )
                     }

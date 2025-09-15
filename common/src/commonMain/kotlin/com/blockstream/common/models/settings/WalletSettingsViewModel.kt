@@ -30,6 +30,8 @@ import blockstream_green.common.generated.resources.id_spend_your_bitcoin_withou
 import blockstream_green.common.generated.resources.id_twofactor_authentication
 import blockstream_green.common.generated.resources.id_wallet
 import blockstream_green.common.generated.resources.id_wallet_coins_will_require
+import blockstream_green.common.generated.resources.id_wallet_settings
+import blockstream_green.common.generated.resources.id_account_settings
 import blockstream_green.common.generated.resources.id_your_2fa_expires_so_that_if_you
 import blockstream_green.common.generated.resources.id_your_wallet_is_locked_for_a
 import com.blockstream.common.BTC_UNIT
@@ -164,6 +166,7 @@ class WalletSettingsViewModel(
         data object DisableLightning : Event
         data class CreateAccount(val accountType: AccountType, val asset: EnrichedAsset? = null) : Event
         data class CreateLightningAccount(val lightningMnemonic: String) : Event, Redact
+        object CreateNewAccount : Event
     }
 
     class LocalSideEffects {
@@ -354,10 +357,10 @@ class WalletSettingsViewModel(
 
             if (settings != null) {
 
-                list += WalletSetting.Text(getString(Res.string.id_general))
-
+                // Wallet Settings Section
+                list += WalletSetting.Text(getString(Res.string.id_wallet_settings))
                 list += listOf(
-                    WalletSetting.GetSupport,
+                    WalletSetting.RenameWallet(walletName = greenWallet.name),
                     WalletSetting.DenominationExchangeRate(
                         unit = settings.networkUnit(session),
                         currency = settings.pricing.currency,
@@ -368,33 +371,37 @@ class WalletSettingsViewModel(
                 )
 
                 if (!session.isWatchOnlyValue) {
-                    list += WalletSetting.Text(getString(Res.string.id_wallet))
+                    // Account Settings Section
+                    list += WalletSetting.Text(getString(Res.string.id_account_settings))
                     list += listOfNotNull(
                         WalletSetting.Lightning(enabled = session.hasLightning)
                             .takeIf { session.lightning != null && settingsManager.appSettings.experimentalFeatures },
                         WalletSetting.CreateAmpAccount.takeIf { session.accounts.value.find { it.type == AccountType.AMP_ACCOUNT } == null },
                         WalletSetting.CopyAmpId.takeIf { session.accounts.value.any { it.type == AccountType.AMP_ACCOUNT } },
-                        WalletSetting.WatchOnly,
-                        WalletSetting.RenameWallet,
-                        WalletSetting.ArchivedAccounts
                     )
-
+                    
                     val hasMultisig = session.activeBitcoinMultisig != null || session.activeLiquidMultisig != null
-
+                    
                     if (hasMultisig) {
-                        list += WalletSetting.Text(getString(Res.string.id_2fa_account))
                         list += listOf(WalletSetting.TwoFactorAuthentication)
                         session.activeMultisig.firstOrNull()?.also {
                             list += listOf(WalletSetting.PgpKey(enabled = session.getSettings(it)?.pgp.isNotBlank()))
                         }
                     }
+                    
+                    list += listOf(
+                        WalletSetting.ArchivedAccounts,
+                        WalletSetting.CreateNewAccount
+                    )
                 }
             }
 
+            // About Section
             list += WalletSetting.Text(getString(Res.string.id_about))
             list += listOf(
                 WalletSetting.Version(appInfo.versionFlavorDebug),
-                WalletSetting.SupportId
+                WalletSetting.SupportId,
+                WalletSetting.GetSupport
             )
         }
 
@@ -446,6 +453,12 @@ class WalletSettingsViewModel(
 
             is LocalEvents.WatchOnly -> {
                 postSideEffect(SideEffects.NavigateTo(NavigateDestinations.WatchOnly(greenWallet = greenWallet)))
+            }
+
+            is LocalEvents.CreateNewAccount -> {
+                postSideEffect(SideEffects.NavigateTo(
+                    NavigateDestinations.ChooseAccountType(greenWallet = greenWallet)
+                ))
             }
 
             is LocalEvents.SetupEmailRecovery -> {
