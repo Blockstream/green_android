@@ -7,10 +7,12 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Switch
+import androidx.compose.material3.SwitchDefaults
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.painter.Painter
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
@@ -21,7 +23,7 @@ fun GreenSwitch(
     title: String,
     caption: String? = null,
     checked: Boolean,
-    painter: Painter,
+    painter: Painter? = null,
     onCheckedChange: ((Boolean) -> Unit) = {},
 ) {
     GreenRow(
@@ -36,10 +38,12 @@ fun GreenSwitch(
         verticalAlignment = Alignment.CenterVertically
 
     ) {
-        Icon(
-            painter = painter,
-            contentDescription = null,
-        )
+        if (painter != null) {
+            Icon(
+                painter = painter,
+                contentDescription = null,
+            )
+        }
 
         Column(
             modifier = Modifier
@@ -63,7 +67,12 @@ fun GreenSwitch(
 
         Switch(
             checked = checked,
-            onCheckedChange = onCheckedChange
+            onCheckedChange = onCheckedChange,
+            colors = SwitchDefaults.colors(
+                uncheckedThumbColor = Color.White,
+                checkedThumbColor = Color.White,
+                uncheckedTrackColor = MaterialTheme.colorScheme.outline
+            )
         )
     }
 }

@@ -166,7 +166,7 @@ class AppSettingsViewModel : AppSettingsViewModelAbstract() {
         MutableStateFlow(viewModelScope, appSettings.personalTestnetLiquidElectrumServer ?: "")
 
     override val electrumServerGapLimit: MutableStateFlow<String> =
-        MutableStateFlow(viewModelScope, "${appSettings.electrumServerGapLimit ?: ""}")
+        MutableStateFlow(viewModelScope, "${appSettings.electrumServerGapLimit ?: "20"}")
 
     @NativeCoroutinesState
     override val locales = MutableStateFlow(viewModelScope, Locales)
@@ -177,6 +177,7 @@ class AppSettingsViewModel : AppSettingsViewModelAbstract() {
     class LocalEvents {
         object AnalyticsMoreInfo : Events.EventSideEffect(SideEffects.NavigateTo(NavigateDestinations.Analytics))
         object Save : Event
+        object AutoSave : Event
         object Cancel : Event
     }
 
@@ -225,6 +226,11 @@ class AppSettingsViewModel : AppSettingsViewModelAbstract() {
                 postSideEffect(SideEffects.NavigateBack())
             }
 
+            is LocalEvents.AutoSave -> {
+                localeManager.setLocale(locale.value)
+                settingsManager.saveApplicationSettings(getSettings())
+            }
+
             is LocalEvents.Cancel -> {
                 postSideEffect(SideEffects.NavigateBack())
             }
@@ -250,7 +256,7 @@ class AppSettingsViewModel : AppSettingsViewModelAbstract() {
         rememberHardwareDevices = rememberHardwareDevices.value,
         electrumNode = electrumNodeEnabled.value,
         tor = torEnabled.value,
-        electrumServerGapLimit = electrumServerGapLimit.value.takeIf { it.isNotBlank() }?.toIntOrNull(),
+        electrumServerGapLimit = electrumServerGapLimit.value.takeIf { it.isNotBlank() && it != "20" }?.toIntOrNull(),
 
         // use null value as a reset to re-set the default urls and blank as a way to disabled it for a specific network
         personalBitcoinElectrumServer = personalBitcoinElectrumServer.value.takeIf { electrumNodeEnabled.value },

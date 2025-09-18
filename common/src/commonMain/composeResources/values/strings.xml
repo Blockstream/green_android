@@ -1689,4 +1689,8 @@
     <string name="id_data_not_available">Data not available</string>
     <string name="id_some_coins_are_no_longer_2fa_protected">Some coins are no longer 2FA protected.</string>
     <string name="id_onchain_balance">Onchain Balance</string>
+    <string name="id_custom_server_settings">Custom Server Settings</string>
+    <string name="id_reset_to_default">Reset to default</string>
+    <string name="id_help_us_improve">Help Us Improve</string>
+    <string name="id_less_stable_connection">Less stable connection</string>
 </resources>

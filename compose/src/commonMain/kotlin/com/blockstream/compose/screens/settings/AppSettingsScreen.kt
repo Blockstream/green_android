@@ -3,25 +3,28 @@
 package com.blockstream.compose.screens.settings
 
 import androidx.compose.animation.AnimatedVisibility
-import androidx.compose.foundation.background
-import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.imePadding
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.rememberScrollState
+import androidx.compose.foundation.text.KeyboardActions
 import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material3.DropdownMenuItem
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.ExposedDropdownMenuBox
 import androidx.compose.material3.ExposedDropdownMenuDefaults
-import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.Clear
+import androidx.compose.foundation.clickable
+import androidx.compose.material3.OutlinedCard
 import androidx.compose.material3.OutlinedTextField
+import androidx.compose.material3.Switch
+import androidx.compose.material3.SwitchDefaults
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.derivedStateOf
@@ -32,74 +35,61 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.ExperimentalComposeUiApi
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.platform.LocalFocusManager
+import androidx.compose.ui.text.ParagraphStyle
+import androidx.compose.ui.text.SpanStyle
+import androidx.compose.ui.text.input.ImeAction
 import androidx.compose.ui.text.input.KeyboardType
+import androidx.compose.ui.text.style.TextAlign
+import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import blockstream_green.common.generated.resources.Res
-import blockstream_green.common.generated.resources.cloud
-import blockstream_green.common.generated.resources.cpu
-import blockstream_green.common.generated.resources.eye_slash
-import blockstream_green.common.generated.resources.flask_fill
-import blockstream_green.common.generated.resources.funnel
-import blockstream_green.common.generated.resources.id_app_settings
-import blockstream_green.common.generated.resources.id_bitcoin_electrum_server
-import blockstream_green.common.generated.resources.id_cancel
-import blockstream_green.common.generated.resources.id_choose_the_electrum_servers_you
+import blockstream_green.common.generated.resources.id_advanced
 import blockstream_green.common.generated.resources.id_connect_through_a_proxy
 import blockstream_green.common.generated.resources.id_connect_with_tor
-import blockstream_green.common.generated.resources.id_custom_servers_and_validation
 import blockstream_green.common.generated.resources.id_electrum_server_gap_limit
 import blockstream_green.common.generated.resources.id_enable_experimental_features
-import blockstream_green.common.generated.resources.id_enable_limited_usage_data
 import blockstream_green.common.generated.resources.id_enable_testnet
-import blockstream_green.common.generated.resources.id_enable_tls
 import blockstream_green.common.generated.resources.id_enhanced_privacy
-import blockstream_green.common.generated.resources.id_experimental_features_might
-import blockstream_green.common.generated.resources.id_help_blockstream_app_improve
 import blockstream_green.common.generated.resources.id_host_ip
 import blockstream_green.common.generated.resources.id_language
-import blockstream_green.common.generated.resources.id_liquid_electrum_server
-import blockstream_green.common.generated.resources.id_liquid_testnet_electrum_server
-import blockstream_green.common.generated.resources.id_more_info
 import blockstream_green.common.generated.resources.id_number_of_consecutive_empty
 import blockstream_green.common.generated.resources.id_personal_electrum_server
-import blockstream_green.common.generated.resources.id_private_but_less_stable
 import blockstream_green.common.generated.resources.id_remember_hardware_devices
-import blockstream_green.common.generated.resources.id_save
 import blockstream_green.common.generated.resources.id_screen_lock
 import blockstream_green.common.generated.resources.id_system_default
-import blockstream_green.common.generated.resources.id_testnet_electrum_server
-import blockstream_green.common.generated.resources.id_these_settings_apply_for_every
 import blockstream_green.common.generated.resources.id_use_secure_display_and_screen
 import blockstream_green.common.generated.resources.id_your_settings_are_unsavednndo
-import blockstream_green.common.generated.resources.lock_simple
-import blockstream_green.common.generated.resources.test_tube_fill
-import blockstream_green.common.generated.resources.tor
-import blockstream_green.common.generated.resources.users_three
+import blockstream_green.common.generated.resources.id_less_stable_connection
+import blockstream_green.common.generated.resources.id_help_us_improve
+import blockstream_green.common.generated.resources.id_enable_limited_usage_data
+import blockstream_green.common.generated.resources.id_more_info
+import blockstream_green.common.generated.resources.id_experimental_features_might
+import blockstream_green.common.generated.resources.id_custom_server_settings
+import blockstream_green.common.generated.resources.id_reset_to_default
 import com.adamglin.PhosphorIcons
 import com.adamglin.phosphoricons.Regular
-import com.adamglin.phosphoricons.regular.ArrowsOutLineHorizontal
-import com.adamglin.phosphoricons.regular.Translate
+import com.adamglin.phosphoricons.regular.CaretRight
 import com.blockstream.common.data.ScreenLockSetting
 import com.blockstream.common.models.settings.AppSettingsViewModel
 import com.blockstream.common.models.settings.AppSettingsViewModelAbstract
 import com.blockstream.common.utils.StringHolder
 import com.blockstream.compose.LocalDialog
-import com.blockstream.compose.components.GreenButton
-import com.blockstream.compose.components.GreenButtonSize
-import com.blockstream.compose.components.GreenButtonType
-import com.blockstream.compose.extensions.onValueChange
+import com.blockstream.compose.screens.settings.components.PersonalElectrumServerSection
+import com.blockstream.compose.screens.settings.components.SettingSwitch
+import com.blockstream.compose.screens.settings.components.SettingsItem
+import com.blockstream.compose.sheets.LanguagePickerBottomSheet
 import com.blockstream.compose.sideeffects.OpenDialogData
 import com.blockstream.compose.theme.titleLarge
 import com.blockstream.compose.utils.SetupScreen
-import com.blockstream.compose.utils.TextInputClear
 import com.blockstream.compose.utils.TextInputPaste
 import com.blockstream.ui.components.GreenColumn
-import com.blockstream.ui.components.GreenGradient
 import com.blockstream.ui.components.GreenRow
-import com.blockstream.ui.components.GreenSwitch
+import com.blockstream.ui.components.RichSpan
+import com.blockstream.ui.components.RichText
 import kotlinx.coroutines.launch
-import org.jetbrains.compose.resources.painterResource
 import org.jetbrains.compose.resources.stringResource
 
 @OptIn(ExperimentalMaterial3Api::class)
@@ -107,6 +97,23 @@ import org.jetbrains.compose.resources.stringResource
 fun AppSettingsScreen(
     viewModel: AppSettingsViewModelAbstract
 ) {
+    // Helper function to handle value changes and auto-save for Boolean
+    fun autoSaveOnBooleanChange(stateFlow: kotlinx.coroutines.flow.MutableStateFlow<Boolean>): (Boolean) -> Unit = { newValue ->
+        stateFlow.value = newValue
+        viewModel.postEvent(AppSettingsViewModel.LocalEvents.AutoSave)
+    }
+
+    // Helper function to handle value changes and auto-save for String
+    fun autoSaveOnStringChange(stateFlow: kotlinx.coroutines.flow.MutableStateFlow<String>): (String) -> Unit = { newValue ->
+        stateFlow.value = newValue
+        viewModel.postEvent(AppSettingsViewModel.LocalEvents.AutoSave)
+    }
+
+    // Helper function to handle value changes and auto-save for ScreenLockSetting
+    fun autoSaveOnScreenLockChange(stateFlow: kotlinx.coroutines.flow.MutableStateFlow<ScreenLockSetting>): (ScreenLockSetting) -> Unit = { newValue ->
+        stateFlow.value = newValue
+        viewModel.postEvent(AppSettingsViewModel.LocalEvents.AutoSave)
+    }
 
     val dialog = LocalDialog.current
 
@@ -114,7 +121,7 @@ fun AppSettingsScreen(
         if (it is AppSettingsViewModel.LocalSideEffects.UnsavedAppSettings) {
             val openDialogData =
                 OpenDialogData(
-                    title = StringHolder.create(Res.string.id_app_settings),
+                    title = StringHolder.create(Res.string.id_advanced),
                     message = StringHolder.create(
                         Res.string.id_your_settings_are_unsavednndo
                     ),
@@ -134,95 +141,238 @@ fun AppSettingsScreen(
         Box {
             GreenColumn(
                 padding = 0,
-                space = 0,
+                space = 8,
                 modifier = Modifier
                     .fillMaxWidth()
                     .imePadding()
                     .verticalScroll(rememberScrollState())
-                    .padding(bottom = 80.dp)
+                    .padding(horizontal = 16.dp)
+                    .padding(bottom = 16.dp)
             ) {
-                Text(
-                    text = stringResource(Res.string.id_these_settings_apply_for_every),
-                    modifier = Modifier
-                        .padding(horizontal = 16.dp)
-                        .padding(bottom = 8.dp)
+                // Connect with Tor
+                val torEnabled by viewModel.torEnabled.collectAsStateWithLifecycle()
+                SettingSwitch(
+                    title = stringResource(Res.string.id_connect_with_tor),
+                    subtitle = stringResource(Res.string.id_less_stable_connection),
+                    checked = torEnabled,
+                    onCheckedChange = autoSaveOnBooleanChange(viewModel.torEnabled)
                 )
 
-                var languageExpanded by remember { mutableStateOf(false) }
 
-                GreenRow(
-                    space = 16,
-                    padding = 0,
-                    modifier = Modifier
-                        .padding(horizontal = 16.dp, vertical = 6.dp),
-                    verticalAlignment = Alignment.CenterVertically
-                ) {
-
-                    Icon(
-                        imageVector = PhosphorIcons.Regular.Translate,
-                        contentDescription = "Language",
+                // Connect through a proxy
+                Column {
+                    val proxyEnabled by viewModel.proxyEnabled.collectAsStateWithLifecycle()
+                    SettingSwitch(
+                        title = stringResource(Res.string.id_connect_through_a_proxy),
+                        checked = proxyEnabled,
+                        onCheckedChange = autoSaveOnBooleanChange(viewModel.proxyEnabled)
                     )
 
-                    val locales by viewModel.locales.collectAsStateWithLifecycle()
-                    val locale by viewModel.locale.collectAsStateWithLifecycle()
-
-                    // We want to react on tap/press on TextField to show menu
-                    ExposedDropdownMenuBox(
-                        expanded = languageExpanded,
-                        onExpandedChange = { languageExpanded = it },
-                        modifier = Modifier
-                            .fillMaxWidth()
-                    ) {
+                    AnimatedVisibility(visible = proxyEnabled) {
+                        val proxyUrl by viewModel.proxyUrl.collectAsStateWithLifecycle()
                         OutlinedTextField(
-                            // The `menuAnchor` modifier must be passed to the text field for correctness.
+                            value = proxyUrl,
+                            onValueChange = autoSaveOnStringChange(viewModel.proxyUrl),
                             modifier = Modifier
                                 .fillMaxWidth()
-                                .menuAnchor(),
-                            readOnly = true,
-                            value = locale?.let { locales[it] } ?: locale
-                            ?: stringResource(Res.string.id_system_default),
-                            onValueChange = {},
-                            label = { Text(stringResource(Res.string.id_language)) },
-                            trailingIcon = { ExposedDropdownMenuDefaults.TrailingIcon(expanded = languageExpanded) },
-                            colors = ExposedDropdownMenuDefaults.textFieldColors(),
+                                .padding(top = 8.dp),
+                            singleLine = true,
+                            supportingText = { Text(stringResource(Res.string.id_host_ip)) },
+                            isError = proxyUrl.isBlank(),
+                            trailingIcon = {
+                                TextInputPaste(state = viewModel.proxyUrl)
+                            }
                         )
+                    }
+                }
 
-                        ExposedDropdownMenu(
-                            expanded = languageExpanded,
-                            onDismissRequest = { languageExpanded = false },
-                        ) {
-                            locales.forEach {
-                                DropdownMenuItem(
-                                    text = {
-                                        Text(
-                                            it.value ?: stringResource(Res.string.id_system_default)
-                                        )
-                                    },
-                                    onClick = {
-                                        viewModel.locale.value = it.key
-                                        languageExpanded = false
-                                    },
-                                    contentPadding = ExposedDropdownMenuDefaults.ItemContentPadding,
+
+                // Remember hardware devices
+                val rememberHardwareDevices by viewModel.rememberHardwareDevices.collectAsStateWithLifecycle()
+                SettingSwitch(
+                    title = stringResource(Res.string.id_remember_hardware_devices),
+                    checked = rememberHardwareDevices,
+                    onCheckedChange = autoSaveOnBooleanChange(viewModel.rememberHardwareDevices)
+                )
+
+
+                // Enable testnet
+                val testnetEnabled by viewModel.testnetEnabled.collectAsStateWithLifecycle()
+                SettingSwitch(
+                    title = stringResource(Res.string.id_enable_testnet),
+                    checked = testnetEnabled,
+                    onCheckedChange = autoSaveOnBooleanChange(viewModel.testnetEnabled)
+                )
+
+
+                if (viewModel.analyticsFeatureEnabled) {
+                    val analyticsEnabled by viewModel.analyticsEnabled.collectAsStateWithLifecycle()
+                    OutlinedCard {
+                        Box(modifier = Modifier.padding(16.dp)) {
+                            GreenRow(
+                                space = 16,
+                                padding = 0,
+                                modifier = Modifier.fillMaxWidth(),
+                                verticalAlignment = Alignment.CenterVertically
+                            ) {
+                                Column(modifier = Modifier.weight(1f)) {
+                                    Text(
+                                        text = stringResource(Res.string.id_help_us_improve),
+                                        style = MaterialTheme.typography.titleSmall,
+                                        maxLines = 1,
+                                        overflow = TextOverflow.Ellipsis,
+                                        modifier = Modifier.fillMaxWidth()
+                                    )
+                                    
+                                    RichText(
+                                        text = stringResource(Res.string.id_enable_limited_usage_data) + "\n" + stringResource(Res.string.id_more_info),
+                                        spans = listOf(
+                                            RichSpan(
+                                                text = stringResource(Res.string.id_more_info),
+                                                style = SpanStyle(color = MaterialTheme.colorScheme.primary),
+                                                onClick = {
+                                                    viewModel.postEvent(AppSettingsViewModel.LocalEvents.AnalyticsMoreInfo)
+                                                }
+                                            )
+                                        ),
+                                        paragraph = ParagraphStyle(textAlign = TextAlign.Start),
+                                        defaultStyle = MaterialTheme.typography.bodyLarge.copy(
+                                            color = MaterialTheme.colorScheme.onSurface.copy(alpha = 0.6f)
+                                        ),
+                                        modifier = Modifier.fillMaxWidth()
+                                    )
+                                }
+                                
+                                Switch(
+                                    checked = analyticsEnabled,
+                                    onCheckedChange = autoSaveOnBooleanChange(viewModel.analyticsEnabled),
+                                    colors = SwitchDefaults.colors(
+                                        uncheckedThumbColor = Color.White,
+                                        checkedThumbColor = Color.White,
+                                        uncheckedTrackColor = MaterialTheme.colorScheme.outline
+                                    )
                                 )
                             }
                         }
                     }
+                    }
+
+                // Experimental features
+                if (viewModel.experimentalFeatureEnabled) {
+                    val experimentalFeaturesEnabled by viewModel.experimentalFeaturesEnabled.collectAsStateWithLifecycle()
+                    SettingSwitch(
+                        title = stringResource(Res.string.id_enable_experimental_features),
+                        subtitle = stringResource(Res.string.id_experimental_features_might),
+                        checked = experimentalFeaturesEnabled,
+                        onCheckedChange = autoSaveOnBooleanChange(viewModel.experimentalFeaturesEnabled)
+                    )
                 }
 
-                HorizontalDivider(modifier = Modifier.padding(start = 54.dp))
+                // Language
+                var showLanguagePicker by remember { mutableStateOf(false) }
+                val locales by viewModel.locales.collectAsStateWithLifecycle()
+                val locale by viewModel.locale.collectAsStateWithLifecycle()
 
+                SettingsItem(
+                    title = stringResource(Res.string.id_language),
+                    subtitle = locale?.let { locales[it] } ?: stringResource(Res.string.id_system_default),
+                    onClick = {
+                        showLanguagePicker = true
+                    },
+                    rightContent = {
+                        Icon(
+                            imageVector = PhosphorIcons.Regular.CaretRight,
+                            contentDescription = null,
+                            tint = MaterialTheme.colorScheme.onSurface.copy(alpha = 0.6f)
+                        )
+                    }
+                )
+                
+                if (showLanguagePicker) {
+                    LanguagePickerBottomSheet(
+                        viewModel = viewModel,
+                        onDismissRequest = {
+                            showLanguagePicker = false
+                        }
+                    )
+                }
+
+
+                // Custom Server Settings section
+                Text(
+                    text = stringResource(Res.string.id_custom_server_settings),
+                    style = titleLarge,
+                    modifier = Modifier
+                        .padding(top = 16.dp, bottom = 8.dp)
+                )
+
+                val electrumNodeEnabled by viewModel.electrumNodeEnabled.collectAsStateWithLifecycle()
+
+                SettingSwitch(
+                    title = stringResource(Res.string.id_personal_electrum_server),
+                    checked = electrumNodeEnabled,
+                    onCheckedChange = autoSaveOnBooleanChange(viewModel.electrumNodeEnabled)
+                )
+
+                AnimatedVisibility(visible = electrumNodeEnabled) {
+                    PersonalElectrumServerSection(
+                        viewModel = viewModel,
+                        testnetEnabled = testnetEnabled,
+                        autoSaveOnBooleanChange = ::autoSaveOnBooleanChange,
+                        autoSaveOnStringChange = ::autoSaveOnStringChange,
+                    )
+                }
+
+
+                val electrumServerGapLimit by viewModel.electrumServerGapLimit.collectAsStateWithLifecycle()
+                val focusManager = LocalFocusManager.current
+
+                SettingsItem(
+                    title = stringResource(Res.string.id_electrum_server_gap_limit),
+                    subtitle = stringResource(Res.string.id_number_of_consecutive_empty),
+                    content = {
+                        OutlinedTextField(
+                            value = electrumServerGapLimit,
+                            onValueChange = autoSaveOnStringChange(viewModel.electrumServerGapLimit),
+                            modifier = Modifier
+                                .fillMaxWidth(),
+                            singleLine = true,
+                            keyboardOptions = KeyboardOptions.Default.copy(
+                                keyboardType = KeyboardType.Number,
+                                imeAction = ImeAction.Done
+                            ),
+                            keyboardActions = KeyboardActions(
+                                onDone = {
+                                    focusManager.clearFocus()
+                                }
+                            ),
+                            trailingIcon = {
+                                if (electrumServerGapLimit.isNotEmpty() && electrumServerGapLimit != "20") {
+                                    Icon(
+                                        imageVector = Icons.Default.Clear,
+                                        contentDescription = stringResource(Res.string.id_reset_to_default),
+                                        modifier = Modifier.clickable {
+                                            viewModel.electrumServerGapLimit.value = "20"
+                                            viewModel.postEvent(AppSettingsViewModel.LocalEvents.AutoSave)
+                                        }
+                                    )
+                                }
+                            }
+                        )
+                    }
+                )
+
+
+                // Enhanced Privacy (placeholder for SPV verification in the future)
                 val enhancedPrivacyEnabled by viewModel.enhancedPrivacyEnabled.collectAsStateWithLifecycle()
-
-                GreenSwitch(
+                SettingSwitch(
                     title = stringResource(Res.string.id_enhanced_privacy),
-                    caption = stringResource(Res.string.id_use_secure_display_and_screen),
-                    painter = painterResource(Res.drawable.eye_slash),
+                    subtitle = stringResource(Res.string.id_use_secure_display_and_screen),
                     checked = enhancedPrivacyEnabled,
-                    onCheckedChange = viewModel.enhancedPrivacyEnabled.onValueChange()
+                    onCheckedChange = autoSaveOnBooleanChange(viewModel.enhancedPrivacyEnabled)
                 )
 
                 AnimatedVisibility(visible = enhancedPrivacyEnabled) {
-
                     val screenLockSettings = ScreenLockSetting.getStringList().map {
                         stringResource(it)
                     }
@@ -265,6 +415,7 @@ fun AppSettingsScreen(
                                     onClick = {
                                         ScreenLockSetting.byPosition(index).let {
                                             viewModel.screenLockInSeconds.value = it
+                                            viewModel.postEvent(AppSettingsViewModel.LocalEvents.AutoSave)
                                         }
                                         screenLockExpanded = false
                                     },
@@ -272,274 +423,6 @@ fun AppSettingsScreen(
                                 )
                             }
                         }
-                    }
-                }
-
-                HorizontalDivider(modifier = Modifier.padding(start = 54.dp))
-
-                val torEnabled by viewModel.torEnabled.collectAsStateWithLifecycle()
-                GreenSwitch(
-                    title = stringResource(Res.string.id_connect_with_tor),
-                    caption = stringResource(Res.string.id_private_but_less_stable),
-                    checked = torEnabled,
-                    painter = painterResource(Res.drawable.tor),
-                    onCheckedChange = viewModel.torEnabled.onValueChange()
-                )
-
-                HorizontalDivider(modifier = Modifier.padding(start = 54.dp))
-
-                Column {
-
-                    val proxyEnabled by viewModel.proxyEnabled.collectAsStateWithLifecycle()
-                    GreenSwitch(
-                        title = stringResource(Res.string.id_connect_through_a_proxy),
-                        checked = proxyEnabled,
-                        painter = painterResource(Res.drawable.funnel),
-                        onCheckedChange = viewModel.proxyEnabled.onValueChange()
-                    )
-
-                    AnimatedVisibility(visible = proxyEnabled) {
-                        val proxyUrl by viewModel.proxyUrl.collectAsStateWithLifecycle()
-                        OutlinedTextField(
-                            value = proxyUrl,
-                            onValueChange = viewModel.proxyUrl.onValueChange(),
-                            modifier = Modifier
-                                .fillMaxWidth()
-                                .padding(start = 54.dp, end = 16.dp, bottom = 8.dp),
-                            singleLine = true,
-                            supportingText = { Text(stringResource(Res.string.id_host_ip)) },
-                            isError = proxyUrl.isBlank(),
-                            trailingIcon = {
-                                TextInputPaste(state = viewModel.proxyUrl)
-                            }
-                        )
-                    }
-                }
-
-                HorizontalDivider(modifier = Modifier.padding(start = 54.dp))
-
-                val rememberHardwareDevices by viewModel.rememberHardwareDevices.collectAsStateWithLifecycle()
-                GreenSwitch(
-                    title = stringResource(Res.string.id_remember_hardware_devices),
-                    checked = rememberHardwareDevices,
-                    painter = painterResource(Res.drawable.cpu),
-                    onCheckedChange = viewModel.rememberHardwareDevices.onValueChange()
-                )
-
-                HorizontalDivider(modifier = Modifier.padding(start = 54.dp))
-
-                val testnetEnabled by viewModel.testnetEnabled.collectAsStateWithLifecycle()
-                GreenSwitch(
-                    title = stringResource(Res.string.id_enable_testnet),
-                    checked = testnetEnabled,
-                    painter = painterResource(Res.drawable.flask_fill),
-                    onCheckedChange = viewModel.testnetEnabled.onValueChange()
-                )
-
-                HorizontalDivider(modifier = Modifier.padding(start = 54.dp))
-
-                if (viewModel.experimentalFeatureEnabled) {
-                    val experimentalFeaturesEnabled by viewModel.experimentalFeaturesEnabled.collectAsStateWithLifecycle()
-                    Column {
-                        GreenSwitch(
-                            title = stringResource(Res.string.id_enable_experimental_features),
-                            caption = stringResource(Res.string.id_experimental_features_might),
-                            checked = experimentalFeaturesEnabled,
-                            painter = painterResource(Res.drawable.test_tube_fill),
-                            onCheckedChange = viewModel.experimentalFeaturesEnabled.onValueChange()
-                        )
-
-                    }
-                    HorizontalDivider(modifier = Modifier.padding(start = 54.dp))
-                }
-
-                if (viewModel.analyticsFeatureEnabled) {
-                    val analyticsEnabled by viewModel.analyticsEnabled.collectAsStateWithLifecycle()
-                    Column {
-                        GreenSwitch(
-                            title = stringResource(Res.string.id_help_blockstream_app_improve),
-                            caption = stringResource(Res.string.id_enable_limited_usage_data),
-                            checked = analyticsEnabled,
-                            painter = painterResource(Res.drawable.users_three),
-                            onCheckedChange = viewModel.analyticsEnabled.onValueChange()
-                        )
-
-                        GreenButton(
-                            text = stringResource(Res.string.id_more_info),
-                            type = GreenButtonType.TEXT,
-                            size = GreenButtonSize.SMALL,
-                            modifier = Modifier.padding(start = 48.dp, bottom = 8.dp)
-                        ) {
-                            viewModel.postEvent(AppSettingsViewModel.LocalEvents.AnalyticsMoreInfo)
-                        }
-                    }
-                    HorizontalDivider(modifier = Modifier.padding(start = 54.dp))
-                }
-
-                Text(
-                    text = stringResource(Res.string.id_custom_servers_and_validation),
-                    style = titleLarge,
-                    modifier = Modifier
-                        .padding(horizontal = 16.dp)
-                        .padding(top = 24.dp, bottom = 16.dp)
-                )
-
-                val electrumNodeEnabled by viewModel.electrumNodeEnabled.collectAsStateWithLifecycle()
-                val personalElectrumServerTlsEnabled by viewModel.personalElectrumServerTlsEnabled.collectAsStateWithLifecycle()
-
-                GreenSwitch(
-                    title = stringResource(Res.string.id_personal_electrum_server),
-                    caption = stringResource(Res.string.id_choose_the_electrum_servers_you),
-                    checked = electrumNodeEnabled,
-                    painter = painterResource(Res.drawable.cloud),
-                    onCheckedChange = viewModel.electrumNodeEnabled.onValueChange()
-                )
-
-                AnimatedVisibility(visible = electrumNodeEnabled) {
-                    GreenColumn(space = 4, padding = 0) {
-                        val personalBitcoinElectrumServer by viewModel.personalBitcoinElectrumServer.collectAsStateWithLifecycle()
-                        OutlinedTextField(
-                            value = personalBitcoinElectrumServer,
-                            onValueChange = viewModel.personalBitcoinElectrumServer.onValueChange(),
-                            modifier = Modifier
-                                .fillMaxWidth()
-                                .padding(start = 54.dp, end = 16.dp),
-                            singleLine = true,
-                            label = { Text(stringResource(Res.string.id_bitcoin_electrum_server)) },
-                            placeholder = { Text(AppSettingsViewModelAbstract.DEFAULT_BITCOIN_ELECTRUM_URL) },
-                            trailingIcon = {
-                                TextInputPaste(state = viewModel.personalBitcoinElectrumServer)
-                            }
-                        )
-
-                        val personalLiquidElectrumServer by viewModel.personalLiquidElectrumServer.collectAsStateWithLifecycle()
-                        OutlinedTextField(
-                            value = personalLiquidElectrumServer,
-                            onValueChange = viewModel.personalLiquidElectrumServer.onValueChange(),
-                            modifier = Modifier
-                                .fillMaxWidth()
-                                .padding(start = 54.dp, end = 16.dp, bottom = 8.dp),
-                            singleLine = true,
-                            label = { Text(stringResource(Res.string.id_liquid_electrum_server)) },
-                            placeholder = { Text(AppSettingsViewModelAbstract.DEFAULT_LIQUID_ELECTRUM_URL) },
-                            trailingIcon = {
-                                TextInputPaste(state = viewModel.personalLiquidElectrumServer)
-                            }
-                        )
-
-                        if (testnetEnabled) {
-                            val personalTestnetElectrumServer by viewModel.personalTestnetElectrumServer.collectAsStateWithLifecycle()
-                            OutlinedTextField(
-                                value = personalTestnetElectrumServer,
-                                onValueChange = viewModel.personalTestnetElectrumServer.onValueChange(),
-                                modifier = Modifier
-                                    .fillMaxWidth()
-                                    .padding(start = 54.dp, end = 16.dp),
-                                singleLine = true,
-                                label = { Text(stringResource(Res.string.id_testnet_electrum_server)) },
-                                placeholder = { Text(AppSettingsViewModelAbstract.DEFAULT_TESTNET_ELECTRUM_URL) },
-                                trailingIcon = {
-                                    TextInputPaste(state = viewModel.personalTestnetElectrumServer)
-                                }
-                            )
-
-                            val personalTestnetLiquidElectrumServer by viewModel.personalTestnetLiquidElectrumServer.collectAsStateWithLifecycle()
-                            OutlinedTextField(
-                                value = personalTestnetLiquidElectrumServer,
-                                onValueChange = viewModel.personalTestnetLiquidElectrumServer.onValueChange(),
-                                modifier = Modifier
-                                    .fillMaxWidth()
-                                    .padding(start = 54.dp, end = 16.dp, bottom = 8.dp),
-                                singleLine = true,
-                                label = { Text(stringResource(Res.string.id_liquid_testnet_electrum_server)) },
-                                placeholder = { Text(AppSettingsViewModelAbstract.DEFAULT_TESTNET_LIQUID_ELECTRUM_URL) },
-                                trailingIcon = {
-                                    TextInputPaste(state = viewModel.personalTestnetLiquidElectrumServer)
-                                }
-                            )
-                        }
-                    }
-                }
-
-                AnimatedVisibility(visible = electrumNodeEnabled) {
-                    GreenColumn(space = 4, padding = 0) {
-
-                        GreenSwitch(
-                            title = stringResource(Res.string.id_enable_tls),
-                            checked = personalElectrumServerTlsEnabled,
-                            painter = painterResource(Res.drawable.lock_simple),
-                            onCheckedChange = viewModel.personalElectrumServerTlsEnabled.onValueChange(),
-                            modifier = Modifier.padding(start = 42.dp)
-                        )
-                    }
-                }
-
-                HorizontalDivider(modifier = Modifier.padding(start = 54.dp))
-
-                val electrumServerGapLimit by viewModel.electrumServerGapLimit.collectAsStateWithLifecycle()
-
-                GreenRow(
-                    space = 16,
-                    padding = 0,
-                    modifier = Modifier
-                        .padding(horizontal = 16.dp, vertical = 6.dp),
-                    verticalAlignment = Alignment.CenterVertically
-                ) {
-
-                    Icon(
-                        imageVector = PhosphorIcons.Regular.ArrowsOutLineHorizontal,
-                        contentDescription = "Gap Limit",
-                    )
-
-                    OutlinedTextField(
-                        value = electrumServerGapLimit,
-                        onValueChange = viewModel.electrumServerGapLimit.onValueChange(),
-                        modifier = Modifier
-                            .fillMaxWidth(),
-                        singleLine = true,
-                        label = { Text(stringResource(Res.string.id_electrum_server_gap_limit)) },
-                        placeholder = {
-                            Text(
-                                "20",
-                                modifier = Modifier.fillMaxWidth()
-                            )
-                        },
-                        supportingText = {
-                            Text(text = stringResource(Res.string.id_number_of_consecutive_empty))
-                        },
-                        keyboardOptions = KeyboardOptions.Default.copy(
-                            keyboardType = KeyboardType.Number
-                        ),
-                        trailingIcon = {
-                            TextInputClear(state = viewModel.electrumServerGapLimit)
-                        }
-                    )
-                }
-            }
-
-            Column(modifier = Modifier.align(Alignment.BottomCenter)) {
-                GreenGradient()
-
-                Row(
-                    modifier = Modifier
-                        .fillMaxWidth()
-                        .background(MaterialTheme.colorScheme.background)
-                        .padding(horizontal = 16.dp).padding(bottom = 8.dp),
-                    horizontalArrangement = Arrangement.spacedBy(16.dp)
-                ) {
-                    GreenButton(
-                        text = stringResource(Res.string.id_cancel),
-                        modifier = Modifier.weight(1f),
-                        type = GreenButtonType.TEXT
-                    ) {
-                        viewModel.postEvent(AppSettingsViewModel.LocalEvents.Cancel)
-                    }
-
-                    GreenButton(
-                        text = stringResource(Res.string.id_save),
-                        modifier = Modifier.weight(1f)
-                    ) {
-                        viewModel.postEvent(AppSettingsViewModel.LocalEvents.Save)
                     }
                 }
             }
