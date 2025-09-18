@@ -46,7 +46,7 @@ android {
         versionCode = 509
         versionName = "5.0.9"
 
-        setProperty("archivesBaseName", "BlockstreamGreen-v$versionName")
+        base.archivesName = "BlockstreamGreen-v$versionName"
         proguardFiles(getDefaultProguardFile("proguard-android-optimize.txt"), "proguard-rules.pro")
 
         testApplicationId = "com.blockstream.green.test"

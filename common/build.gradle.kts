@@ -240,9 +240,10 @@ task("fetchIosBinaries") {
     doFirst {
         val exists = project.file("src/include").exists() && project.file("src/libs").exists()
         if (!exists) {
-            exec {
+            providers.exec {
+                workingDir = project.projectDir
                 commandLine("./fetch_ios_binaries.sh")
-            }
+            }.result.get()
         } else {
             print("-- Skipped --")
         }

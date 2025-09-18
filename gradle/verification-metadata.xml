@@ -4,7 +4,7 @@
       <verify-metadata>false</verify-metadata>
       <verify-signatures>false</verify-signatures>
       <trusted-artifacts>
-         <trust file="gradle-8.14.3-src.zip"/>
+         <trust file="gradle-9.0.0-src.zip"/>
          <trust file=".*-javadoc[.]jar" regex="true"/>
          <trust file=".*-sources[.]jar" regex="true"/>
          <trust name="^breez-sdk.*" regex="true" reason="Trust Breez artifacts"/>

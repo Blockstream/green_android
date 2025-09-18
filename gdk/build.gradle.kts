@@ -18,13 +18,14 @@ kotlin {
 }
 
 task("fetchAndroidBinaries") {
-    doFirst{
+    doFirst {
         val jniLibs = project.file("src/main/jniLibs")
         if (!jniLibs.exists()) {
             println("GDK: Binaries in ${jniLibs.absolutePath} does not exist. Executing ./fetch_android_binaries.sh")
-            exec {
+            providers.exec {
+                workingDir = project.projectDir
                 commandLine("./fetch_android_binaries.sh")
-            }
+            }.result.get()
         } else {
             println("GDK: Binaries ✔")
         }
