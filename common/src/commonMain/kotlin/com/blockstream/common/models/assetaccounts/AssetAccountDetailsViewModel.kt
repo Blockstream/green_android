@@ -235,10 +235,7 @@ class AssetAccountDetailsViewModel(
         accountAsset: AccountAsset?,
         watchOnly: Boolean
     ): List<NavAction> {
-        if (watchOnly) {
-            return emptyList()
-        }
-
+        
         if (account.isLightning) {
             return listOfNotNull(
                 NavAction(
@@ -260,7 +257,7 @@ class AssetAccountDetailsViewModel(
                 onClick = {
                     postEvent(NavigateDestinations.RenameAccount(greenWallet = greenWallet, account = account))
                 }
-            ),
+            ).takeIf { !watchOnly },
             
             NavAction(
                 title = getString(Res.string.id_watchonly),
@@ -277,7 +274,6 @@ class AssetAccountDetailsViewModel(
                     }
                 }
             ),
-            
             NavAction(
                 title = getString(Res.string.id_archive_account),
                 icon = Res.drawable.box_arrow_down,
@@ -286,7 +282,7 @@ class AssetAccountDetailsViewModel(
                 onClick = {
                     postEvent(Events.ArchiveAccount(account))
                 }
-            )
+            ).takeIf { !watchOnly }
         )
     }
 
