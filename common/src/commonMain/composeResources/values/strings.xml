@@ -670,6 +670,7 @@
     <string name="id_invalid_recovery_phrase">Invalid recovery phrase</string>
     <string name="id_invalid_replacement_fee_rate">Invalid replacement fee rate</string>
     <string name="id_invalid_spv">Invalid SPV</string>
+    <string name="id_invalid_xpub_or_descriptor">The key or descriptor you entered is invalid. Please check and try again.</string>
     <string name="id_invalid_status_check_that_your">Invalid status. Check that your device is unlocked and try again.</string>
     <string name="id_invalid_swap_proposal">Invalid swap proposal</string>
     <string name="id_invalid_twofactor_code">Invalid Two-Factor code</string>
@@ -1696,5 +1697,22 @@
     <string name="id_export_to_file">Export to file</string>
     <string name="id_save_to_files">Save to Files</string>
     <string name="id_psbt_saved_to_files">Psbt saved to Files</string>
-
+    <string name="id_set_up_watchonly_wallet">Set up Watch-only Wallet</string>
+    <string name="id_watchonly_wallet_description">In a watch-only wallet, your private keys remain offline for maximum security. This allows you to safely monitor your balance, history and create addresses on the go.</string>
+    <string name="id_scan_or_paste_xpub_descriptor">Scan or paste your xpub or descriptor to set up your watch-only wallet</string>
+    <string name="id_import_wallet">Import Wallet</string>
+    <string name="id_set_up_with_username_and_password">Set up with username and password</string>
+    <string name="id_set_up_multisig_watchonly">Set up Multisig Watch-only</string>
+    <string name="id_multisig_watchonly_description">Access your multisig shield or 2FA-protected wallet in watch-only mode. Your funds remain secured by multiple signatures while you can monitor balances and generate receive addresses.</string>
+    <string name="id_enter_your_multisig_credentials">Enter your account credentials to access your multisig wallet</string>
+    <string name="id_enter_credentials_to_access_multisig">Enter your credentials to access your multisig wallet in watch-only mode</string>
+    <string name="id_set_up_s_multisig_watchonly">Set up %1$s Multisig Watch-only</string>
+    <string name="id_bitcoin">Bitcoin</string>
+    <string name="id_liquid">Liquid</string>
+    <string name="id_multisig_bitcoin">Multisig Bitcoin</string>
+    <string name="id_multisig_liquid">Multisig Liquid</string>
+    <string name="id_multisig_bitcoin_testnet">Multisig Bitcoin Testnet</string>
+    <string name="id_multisig_liquid_testnet">Multisig Liquid Testnet</string>
+    <string name="id_could_not_extract_descriptor">Could not extract descriptor from JSON file</string>
+    <string name="id_paste_descriptors_placeholder">Paste one or more descriptors, separated by a new line.</string>
 </resources>

@@ -3,7 +3,9 @@ package com.blockstream.compose.components
 import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.animation.fadeIn
 import androidx.compose.animation.fadeOut
+import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.size
 import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.DropdownMenu
 import androidx.compose.material3.DropdownMenuItem
@@ -22,6 +24,7 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.unit.DpOffset
+import androidx.compose.ui.unit.dp
 import com.adamglin.PhosphorIcons
 import com.adamglin.phosphoricons.Bold
 import com.adamglin.phosphoricons.bold.DotsThreeVertical
@@ -114,31 +117,31 @@ fun ActionMenu(
             }
 
             actionsMenu.forEach {
-                if (it.icon == null) {
-                    TextButton(
-                        onClick = it.onClick,
-                        modifier = Modifier.align(Alignment.CenterVertically),
-                        enabled = it.enabled,
-                        colors = ButtonDefaults.textButtonColors(contentColor = MaterialTheme.colorScheme.onSurface)
+                TextButton(
+                    onClick = it.onClick,
+                    modifier = Modifier.align(Alignment.CenterVertically),
+                    enabled = it.enabled,
+                    colors = ButtonDefaults.textButtonColors(contentColor = MaterialTheme.colorScheme.onSurface)
+                ) {
+                    Row(
+                        verticalAlignment = Alignment.CenterVertically,
+                        horizontalArrangement = Arrangement.spacedBy(4.dp)
                     ) {
+                        it.icon?.also { icon ->
+                            Icon(
+                                painter = painterResource(icon),
+                                contentDescription = null,
+                                modifier = Modifier.size(18.dp)
+                            )
+                        }
+                        it.imageVector?.also { imageVector ->
+                            Icon(
+                                imageVector = imageVector,
+                                contentDescription = null,
+                                modifier = Modifier.size(18.dp)
+                            )
+                        }
                         Text(text = it.title ?: stringResource(it.titleRes!!), style = labelMedium)
-                    }
-                } else {
-                    IconButton(onClick = {
-                        it.onClick()
-                    }, enabled = it.enabled) {
-                        it.icon?.also {
-                            Icon(
-                                painter = painterResource(it),
-                                contentDescription = null
-                            )
-                        }
-                        it.imageVector?.also {
-                            Icon(
-                                imageVector = it,
-                                contentDescription = null
-                            )
-                        }
                     }
                 }
             }

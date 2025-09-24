@@ -7,6 +7,7 @@ import com.blockstream.common.usecases.NewWalletUseCase
 import com.blockstream.common.usecases.RestoreWalletUseCase
 import com.blockstream.common.usecases.SetBiometricsUseCase
 import com.blockstream.common.usecases.SetPinUseCase
+import com.blockstream.common.utils.WatchOnlyDetector
 import com.blockstream.domain.banner.GetBannerUseCase
 import com.blockstream.domain.bitcoinpricehistory.ObserveBitcoinPriceHistory
 import com.blockstream.domain.hardware.VerifyAddressUseCase
@@ -23,11 +24,14 @@ import com.blockstream.green.domain.domainModule
 import org.koin.core.module.dsl.singleOf
 import org.koin.dsl.module
 
-//At some point we'll move this to domain module. 
+//At some point we'll move this to domain module.
 val commonModule = module {
     includes(dataModule)
     includes(domainModule)
     singleOf(::RestoreWalletUseCase)
+    single {
+        WatchOnlyDetector(get())
+    }
     single {
         LightningNodeIdUseCase(get())
     }

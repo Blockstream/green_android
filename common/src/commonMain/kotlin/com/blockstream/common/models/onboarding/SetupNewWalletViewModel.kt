@@ -63,9 +63,15 @@ class SetupNewWalletViewModel(greenWalletOrNull: GreenWallet? = null) :
                     NavAction(
                         titleRes = Res.string.id_set_up_watchonly,
                         imageVector = PhosphorIcons.Regular.Eye,
-                        isMenuEntry = true,
+                        isMenuEntry = false,
                     ) {
-                        postSideEffect(SideEffects.NavigateTo(NavigateDestinations.WatchOnlyPolicy))
+                        postSideEffect(SideEffects.NavigateTo(NavigateDestinations.WatchOnlySinglesig(
+                            SetupArgs(
+                                isRestoreFlow = true,
+                                isWatchOnly = true,
+                                isSinglesig = true,
+                            )
+                        )))
                     }
                 )
             )
@@ -105,7 +111,13 @@ class SetupNewWalletViewModel(greenWalletOrNull: GreenWallet? = null) :
             }
 
             is LocalEvents.WatchOnly -> {
-                postSideEffect(SideEffects.NavigateTo(NavigateDestinations.WatchOnlyPolicy))
+                postSideEffect(SideEffects.NavigateTo(NavigateDestinations.WatchOnlySinglesig(
+                    SetupArgs(
+                        isRestoreFlow = true,
+                        isWatchOnly = true,
+                        isSinglesig = true,
+                    )
+                )))
                 countly.watchOnlyWallet()
             }
 

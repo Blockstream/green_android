@@ -52,9 +52,8 @@ import com.blockstream.common.models.onboarding.hardware.UseHardwareDeviceViewMo
 import com.blockstream.common.models.onboarding.phone.AddWalletViewModel
 import com.blockstream.common.models.onboarding.phone.EnterRecoveryPhraseViewModel
 import com.blockstream.common.models.onboarding.phone.PinViewModel
-import com.blockstream.common.models.onboarding.watchonly.WatchOnlyCredentialsViewModel
-import com.blockstream.common.models.onboarding.watchonly.WatchOnlyNetworkViewModel
-import com.blockstream.common.models.onboarding.watchonly.WatchOnlyPolicyViewModel
+import com.blockstream.common.models.onboarding.watchonly.WatchOnlyMultisigViewModel
+import com.blockstream.common.models.onboarding.watchonly.WatchOnlySinglesigViewModel
 import com.blockstream.common.models.overview.AccountOverviewViewModel
 import com.blockstream.common.models.overview.SecurityViewModel
 import com.blockstream.common.models.overview.TransactViewModel
@@ -130,9 +129,8 @@ import com.blockstream.compose.screens.onboarding.hardware.UseHardwareDeviceScre
 import com.blockstream.compose.screens.onboarding.phone.AddWalletScreen
 import com.blockstream.compose.screens.onboarding.phone.EnterRecoveryPhraseScreen
 import com.blockstream.compose.screens.onboarding.phone.PinScreen
-import com.blockstream.compose.screens.onboarding.watchonly.WatchOnlyCredentialsScreen
-import com.blockstream.compose.screens.onboarding.watchonly.WatchOnlyNetworkScreen
-import com.blockstream.compose.screens.onboarding.watchonly.WatchOnlyPolicyScreen
+import com.blockstream.compose.screens.onboarding.watchonly.WatchOnlyMultisigScreen
+import com.blockstream.compose.screens.onboarding.watchonly.WatchOnlySinglesigScreen
 import com.blockstream.compose.screens.overview.AccountOverviewScreen
 import com.blockstream.compose.screens.overview.SecurityScreen
 import com.blockstream.compose.screens.overview.TransactScreen
@@ -259,16 +257,13 @@ fun Router(
                     )
                 })
             }
-            appComposable<NavigateDestinations.WatchOnlyPolicy> {
-                WatchOnlyPolicyScreen(viewModel { WatchOnlyPolicyViewModel() })
+            appComposable<NavigateDestinations.WatchOnlySinglesig> {
+                val args = it.toRoute<NavigateDestinations.WatchOnlySinglesig>()
+                WatchOnlySinglesigScreen(viewModel { WatchOnlySinglesigViewModel(setupArgs = args.setupArgs) })
             }
-            appComposable<NavigateDestinations.WatchOnlyNetwork> {
-                val args = it.toRoute<NavigateDestinations.WatchOnlyNetwork>()
-                WatchOnlyNetworkScreen(viewModel { WatchOnlyNetworkViewModel(setupArgs = args.setupArgs) })
-            }
-            appComposable<NavigateDestinations.WatchOnlyCredentials> {
-                val args = it.toRoute<NavigateDestinations.WatchOnlyCredentials>()
-                WatchOnlyCredentialsScreen(viewModel { WatchOnlyCredentialsViewModel(setupArgs = args.setupArgs) })
+            appComposable<NavigateDestinations.WatchOnlyMultisig> {
+                val args = it.toRoute<NavigateDestinations.WatchOnlyMultisig>()
+                WatchOnlyMultisigScreen(viewModel { WatchOnlyMultisigViewModel(setupArgs = args.setupArgs) })
             }
             appComposable<NavigateDestinations.RecoveryIntro> {
                 val stateKeeperFactory = rememberStateKeeperFactory()
@@ -558,27 +553,6 @@ fun Router(
                 ImportPubKeyScreen(viewModel {
                     ImportPubKeyViewModel(
                         deviceModel = args.deviceModel
-                    )
-                })
-            }
-            appComposable<NavigateDestinations.WatchOnlyPolicy> {
-                WatchOnlyPolicyScreen(viewModel {
-                    WatchOnlyPolicyViewModel()
-                })
-            }
-            appComposable<NavigateDestinations.WatchOnlyNetwork> {
-                val args = it.toRoute<NavigateDestinations.WatchOnlyNetwork>()
-                WatchOnlyNetworkScreen(viewModel {
-                    WatchOnlyNetworkViewModel(
-                        setupArgs = args.setupArgs
-                    )
-                })
-            }
-            appComposable<NavigateDestinations.WatchOnlyCredentials> {
-                val args = it.toRoute<NavigateDestinations.WatchOnlyCredentials>()
-                WatchOnlyCredentialsScreen(viewModel {
-                    WatchOnlyCredentialsViewModel(
-                        setupArgs = args.setupArgs
                     )
                 })
             }

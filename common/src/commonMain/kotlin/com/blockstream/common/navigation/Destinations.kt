@@ -82,14 +82,13 @@ sealed class NavigateDestinations : NavigateDestination() {
     @Serializable
     data object UseHardwareDevice : NavigateDestination(unique = true)
 
-    @Serializable
-    data object WatchOnlyPolicy : NavigateDestination(unique = true)
+
 
     @Serializable
-    data class WatchOnlyNetwork(val setupArgs: SetupArgs) : NavigateDestination(unique = true)
+    data class WatchOnlySinglesig(val setupArgs: SetupArgs) : NavigateDestination(unique = true)
 
     @Serializable
-    data class WatchOnlyCredentials(val setupArgs: SetupArgs) : NavigateDestination(unique = true)
+    data class WatchOnlyMultisig(val setupArgs: SetupArgs) : NavigateDestination(unique = true)
 
     @Serializable
     data class WatchOnlyCredentialsSettings(val greenWallet: GreenWallet, val network: Network) : NavigateDestination()

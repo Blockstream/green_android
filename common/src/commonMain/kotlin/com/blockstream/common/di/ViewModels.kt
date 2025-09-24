@@ -32,9 +32,8 @@ import com.blockstream.common.models.onboarding.hardware.UseHardwareDeviceViewMo
 import com.blockstream.common.models.onboarding.phone.AddWalletViewModel
 import com.blockstream.common.models.onboarding.phone.EnterRecoveryPhraseViewModel
 import com.blockstream.common.models.onboarding.phone.PinViewModel
-import com.blockstream.common.models.onboarding.watchonly.WatchOnlyCredentialsViewModel
-import com.blockstream.common.models.onboarding.watchonly.WatchOnlyNetworkViewModel
-import com.blockstream.common.models.onboarding.watchonly.WatchOnlyPolicyViewModel
+import com.blockstream.common.models.onboarding.watchonly.WatchOnlyMultisigViewModel
+import com.blockstream.common.models.onboarding.watchonly.WatchOnlySinglesigViewModel
 import com.blockstream.common.models.overview.AccountOverviewViewModel
 import com.blockstream.common.models.overview.SecurityViewModel
 import com.blockstream.common.models.overview.TransactViewModel
@@ -85,8 +84,8 @@ val factoryViewModels = module {
     factoryOf(::AppSettingsViewModel)
     factoryOf(::RecoveryIntroViewModel)
     factoryOf(::WalletOverviewViewModel)
-    factoryOf(::WatchOnlyPolicyViewModel)
-    factoryOf(::WatchOnlyCredentialsViewModel)
+    factoryOf(::WatchOnlySinglesigViewModel)
+    factoryOf(::WatchOnlyMultisigViewModel)
     factoryOf(::HomeViewModel)
     factoryOf(::EnterRecoveryPhraseViewModel)
     factoryOf(::PinViewModel)
@@ -106,7 +105,6 @@ val factoryViewModels = module {
     factoryOf(::ArchivedAccountsViewModel)
     factoryOf(::UseHardwareDeviceViewModel)
     factoryOf(::JadeGuideViewModel)
-    factoryOf(::WatchOnlyNetworkViewModel)
     factoryOf(::AddressesViewModel)
     factoryOf(::SignMessageViewModel)
     factoryOf(::WalletNameViewModel)

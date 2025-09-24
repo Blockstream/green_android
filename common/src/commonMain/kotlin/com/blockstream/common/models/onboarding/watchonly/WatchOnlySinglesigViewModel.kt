@@ -6,6 +6,8 @@ import com.blockstream.common.events.Events
 import com.blockstream.common.extensions.launchIn
 import com.blockstream.common.gdk.data.AccountType
 import com.blockstream.common.models.GreenViewModel
+import com.blockstream.common.utils.WatchOnlyDetector
+import com.blockstream.common.utils.WatchOnlyCredentialType
 import com.blockstream.ui.events.Event
 import com.blockstream.ui.sideeffects.SideEffect
 import com.rickclephas.kmp.nativecoroutines.NativeCoroutinesState
@@ -24,15 +26,13 @@ import kotlinx.serialization.json.jsonPrimitive
 import okio.Source
 import okio.buffer
 import okio.use
+import org.koin.core.component.inject
 
-abstract class WatchOnlyCredentialsViewModelAbstract(val setupArgs: SetupArgs) : GreenViewModel() {
-    override fun screenName(): String = "OnBoardWatchOnlyCredentials"
+abstract class WatchOnlySinglesigViewModelAbstract(val setupArgs: SetupArgs) : GreenViewModel() {
+    override fun screenName(): String = "OnBoardWatchOnlySinglesig"
 
     override fun segmentation(): HashMap<String, Any>? =
         setupArgs.let { countly.onBoardingSegmentation(setupArgs = it) }
-
-    @NativeCoroutinesState
-    abstract val isSinglesig: StateFlow<Boolean>
 
     @NativeCoroutinesState
     abstract val isLiquid: StateFlow<Boolean>
@@ -41,36 +41,26 @@ abstract class WatchOnlyCredentialsViewModelAbstract(val setupArgs: SetupArgs) :
     abstract val isLoginEnabled: StateFlow<Boolean>
 
     @NativeCoroutinesState
-    abstract val username: MutableStateFlow<String>
-
-    @NativeCoroutinesState
-    abstract val password: MutableStateFlow<String>
-
-    @NativeCoroutinesState
     abstract val watchOnlyDescriptor: MutableStateFlow<String>
 
     @NativeCoroutinesState
     abstract val isOutputDescriptors: MutableStateFlow<Boolean>
-
-    @NativeCoroutinesState
-    abstract val isRememberMe: MutableStateFlow<Boolean>
 }
 
-class WatchOnlyCredentialsViewModel(setupArgs: SetupArgs) :
-    WatchOnlyCredentialsViewModelAbstract(setupArgs = setupArgs) {
-    override val isSinglesig: MutableStateFlow<Boolean> =
-        MutableStateFlow(viewModelScope, setupArgs.isSinglesig == true)
+class WatchOnlySinglesigViewModel(setupArgs: SetupArgs) :
+    WatchOnlySinglesigViewModelAbstract(setupArgs = setupArgs) {
+
+    private val watchOnlyDetector: WatchOnlyDetector by inject()
+    private var detectedNetwork: String? = null
 
     override val isLiquid: MutableStateFlow<Boolean> =
         MutableStateFlow(viewModelScope, setupArgs.network?.isLiquid == true)
 
-    override val username: MutableStateFlow<String> = MutableStateFlow(viewModelScope, "")
-    override val password: MutableStateFlow<String> = MutableStateFlow(viewModelScope, "")
     override val watchOnlyDescriptor: MutableStateFlow<String> =
         MutableStateFlow(viewModelScope, "")
+
     override val isOutputDescriptors: MutableStateFlow<Boolean> =
         MutableStateFlow(viewModelScope, setupArgs.network?.isLiquid == true)
-    override val isRememberMe: MutableStateFlow<Boolean> = MutableStateFlow(viewModelScope, true)
 
     override val isLoginEnabled: StateFlow<Boolean>
 
@@ -84,27 +74,25 @@ class WatchOnlyCredentialsViewModel(setupArgs: SetupArgs) :
     }
 
     init {
-        watchOnlyDescriptor.onEach {
-            if (it.contains("(")) {
-                isOutputDescriptors.value = true
+        watchOnlyDescriptor.onEach { input ->
+            if (input.isNotBlank()) {
+                val detectionResult = watchOnlyDetector.detect(input)
+
+                if (input.contains("(") || detectionResult.credentialType == WatchOnlyCredentialType.CORE_DESCRIPTORS) {
+                    isOutputDescriptors.value = true
+                }
+
+                detectionResult.network?.also {
+                    detectedNetwork = it
+                }
             }
         }.launchIn(this)
 
         isLoginEnabled = combine(
             watchOnlyDescriptor,
-            username,
-            password,
             onProgress
-        ) { watchOnlyDescriptor, username, password, onProgress ->
-            if (!onProgress) {
-                if (isSinglesig.value) {
-                    watchOnlyDescriptor.isNotBlank()
-                } else {
-                    username.isNotBlank() && password.isNotBlank()
-                }
-            } else {
-                false
-            }
+        ) { descriptor, onProgress ->
+            !onProgress && descriptor.isNotBlank()
         }.stateIn(viewModelScope, SharingStarted.WhileSubscribed(), false)
 
         bootstrap()
@@ -113,10 +101,6 @@ class WatchOnlyCredentialsViewModel(setupArgs: SetupArgs) :
     override suspend fun handleEvent(event: Event) {
         super.handleEvent(event)
         when (event) {
-            is Events.Continue -> {
-                createNewWatchOnlyWallet()
-            }
-
             is LocalEvents.AppendWatchOnlyDescriptor -> {
                 appendWatchOnlyDescriptor(event.value)
             }
@@ -124,36 +108,16 @@ class WatchOnlyCredentialsViewModel(setupArgs: SetupArgs) :
             is LocalEvents.ImportFile -> {
                 importFile(event.source)
             }
+
+            is Events.Continue -> {
+                createSinglesigWatchOnlyWallet()
+            }
         }
     }
 
     private fun appendWatchOnlyDescriptor(vararg value: String) {
         watchOnlyDescriptor.value = watchOnlyDescriptor.value.trimMargin()
-            .let { it + (if (it.isNotBlank()) ",\n" else "") + value.joinToString(",\n") }
-    }
-
-    private fun createNewWatchOnlyWallet() {
-        val watchOnlyDescriptors =
-            watchOnlyDescriptor.value.takeIf { it.isNotBlank() }?.split("|", "\n")
-                ?.map { it.trim().trimIndent().trimMargin() }?.filter { it.isNotBlank() }
-                ?.toSet()
-                ?.toList()
-
-        val watchOnlyCredentials = if (setupArgs.isSinglesig == true) {
-            if (isOutputDescriptors.value || setupArgs.network?.isLiquid == true) {
-                WatchOnlyCredentials(coreDescriptors = watchOnlyDescriptors)
-            } else {
-                WatchOnlyCredentials(slip132ExtendedPubkeys = watchOnlyDescriptors)
-            }
-        } else {
-            WatchOnlyCredentials(username = username.value, password = password.value)
-        }
-
-        createNewWatchOnlyWallet(
-            network = setupArgs.network!!,
-            persistLoginCredentials = isRememberMe.value,
-            watchOnlyCredentials = watchOnlyCredentials,
-        )
+            .let { it + (if (it.isNotBlank()) "\n" else "") + value.joinToString("\n") }
     }
 
     private fun importFile(source: Source) {
@@ -166,7 +130,6 @@ class WatchOnlyCredentialsViewModel(setupArgs: SetupArgs) :
 
                         // Coldcard
                         keys.forEach { key ->
-
                             (json[key] as? JsonObject)?.also { inner ->
                                 // Filter only supported account types
                                 inner["name"]?.jsonPrimitive?.content?.also { name ->
@@ -202,25 +165,37 @@ class WatchOnlyCredentialsViewModel(setupArgs: SetupArgs) :
             appendWatchOnlyDescriptor(*it.toTypedArray())
         })
     }
-}
 
-class WatchOnlyCredentialsViewModelPreview(setupArgs: SetupArgs, isLiquid: Boolean = false) :
-    WatchOnlyCredentialsViewModelAbstract(setupArgs = setupArgs) {
+    private fun createSinglesigWatchOnlyWallet() {
+        val watchOnlyDescriptors =
+            watchOnlyDescriptor.value.takeIf { it.isNotBlank() }?.split("|", "\n")
+                ?.map { it.trim().trimIndent().trimMargin() }?.filter { it.isNotBlank() }
+                ?.toSet()
+                ?.toList()
 
-    override val isSinglesig: StateFlow<Boolean> = MutableStateFlow(true)
-    override val isLiquid: StateFlow<Boolean> = MutableStateFlow(isLiquid)
-    override val isLoginEnabled: StateFlow<Boolean> = MutableStateFlow(false)
-    override val username: MutableStateFlow<String> = MutableStateFlow("")
-    override val password: MutableStateFlow<String> = MutableStateFlow("")
-    override val watchOnlyDescriptor: MutableStateFlow<String> = MutableStateFlow("")
-    override val isOutputDescriptors: MutableStateFlow<Boolean> = MutableStateFlow(isLiquid)
-    override val isRememberMe: MutableStateFlow<Boolean> = MutableStateFlow(false)
-
-    companion object {
-        fun preview(isSinglesig: Boolean = true, isLiquid: Boolean = false) =
-            WatchOnlyCredentialsViewModelPreview(
-                SetupArgs(mnemonic = "neutral inherit learn", isSinglesig = isSinglesig),
-                isLiquid = isLiquid
+        val watchOnlyCredentials = if (isOutputDescriptors.value) {
+            WatchOnlyCredentials(
+                coreDescriptors = watchOnlyDescriptors
             )
+        } else {
+            WatchOnlyCredentials(
+                slip132ExtendedPubkeys = watchOnlyDescriptors
+            )
+        }
+
+        val network = setupArgs.network ?: detectedNetwork?.let {
+            when (it) {
+                com.blockstream.common.gdk.data.Network.ElectrumMainnet -> session.networks.bitcoinElectrum
+                com.blockstream.common.gdk.data.Network.ElectrumTestnet -> session.networks.testnetBitcoinElectrum
+                com.blockstream.common.gdk.data.Network.ElectrumTestnetLiquid -> session.networks.testnetLiquidElectrum
+                else -> session.networks.liquidElectrum
+            }
+        } ?: session.networks.bitcoinElectrum
+
+        createNewWatchOnlyWallet(
+            network = network,
+            persistLoginCredentials = false,
+            watchOnlyCredentials = watchOnlyCredentials
+        )
     }
 }

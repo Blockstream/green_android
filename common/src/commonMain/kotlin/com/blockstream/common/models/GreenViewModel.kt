@@ -1134,6 +1134,16 @@ open class GreenViewModel constructor(
             wallet
         }, timeout = 1.minutes, onSuccess = {
             postSideEffect(SideEffects.NavigateTo(NavigateDestinations.WalletOverview(it)))
+        }, onError = {
+            val error = if (it.message?.contains("decode", ignoreCase = true) == true) {
+                Exception("id_invalid_xpub_or_descriptor")
+            } else {
+                it
+            }
+            if (appInfo.isDebug) {
+                error.printStackTrace()
+            }
+            postSideEffect(SideEffects.ErrorDialog(error = error, supportData = errorReport(error)))
         })
     }
 
