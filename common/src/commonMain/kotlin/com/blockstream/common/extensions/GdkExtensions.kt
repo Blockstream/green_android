@@ -92,7 +92,7 @@ fun List<Account>.filterForAsset(assetId: String, session: GdkSession): List<Acc
         when {
             enrichedAsset?.isAmp == true -> account.type == AccountType.AMP_ACCOUNT
             assetId.isPolicyAsset(session) -> account.network.policyAsset == assetId
-            else -> account.isLiquid && !account.isAmp
+            else -> account.isLiquid
         }
     }
 }
