@@ -183,14 +183,17 @@ fun ChooseAccountTypeScreen(
         }
 
         val isShowingAdvancedOptions by viewModel.isShowingAdvancedOptions.collectAsStateWithLifecycle()
-        GreenButton(
-            text = stringResource(if (isShowingAdvancedOptions) Res.string.id_hide_advanced_options else Res.string.id_show_advanced_options),
-            type = GreenButtonType.TEXT,
-            modifier = Modifier.align(Alignment.CenterHorizontally),
-        ) {
-            viewModel.isShowingAdvancedOptions.toggle()
-        }
+        val hasAdvancedOptions by viewModel.hasAdvancedOptions.collectAsStateWithLifecycle()
 
+        if (hasAdvancedOptions) {
+            GreenButton(
+                text = stringResource(if (isShowingAdvancedOptions) Res.string.id_hide_advanced_options else Res.string.id_show_advanced_options),
+                type = GreenButtonType.TEXT,
+                modifier = Modifier.align(Alignment.CenterHorizontally),
+            ) {
+                viewModel.isShowingAdvancedOptions.toggle()
+            }
+        }
     }
 }
 

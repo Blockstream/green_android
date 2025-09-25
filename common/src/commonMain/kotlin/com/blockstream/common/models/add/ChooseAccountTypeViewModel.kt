@@ -112,6 +112,7 @@ class ChooseAccountTypeViewModel(greenWallet: GreenWallet, initAsset: AssetBalan
                 val list = mutableListOf<AccountTypeLook>()
 
                 val isBitcoin = asset.asset.isBitcoin
+                val isLiquid = asset.asset.isLiquidNetwork(session)
 
                 if (asset.asset.isAmp) {
                     list += AccountTypeLook(AccountType.AMP_ACCOUNT)
@@ -132,19 +133,26 @@ class ChooseAccountTypeViewModel(greenWallet: GreenWallet, initAsset: AssetBalan
                     }
 
                     // Check if multisig networks are available in this session
-                    if ((isBitcoin && session.bitcoinMultisig != null) || (!isBitcoin && session.liquidMultisig != null)) {
+                    if (
+                        (isBitcoin && session.bitcoinMultisig != null && session.allAccounts.value.any { it.isMultisig && it.isBitcoin }) ||
+                        (isLiquid && session.liquidMultisig != null && session.allAccounts.value.any { it.isMultisig && it.isLiquid && !it.isAmp })
+                    ) {
+
                         list += AccountTypeLook(AccountType.STANDARD)
 
-                        list += if (isBitcoin) {
-                            AccountTypeLook(AccountType.TWO_OF_THREE)
-                        } else {
-                            AccountTypeLook(AccountType.AMP_ACCOUNT)
+                        if (isBitcoin) {
+                            list += AccountTypeLook(AccountType.TWO_OF_THREE)
                         }
+
+                        // Move AMP account creation top level
+                        //else {
+                        //    AccountTypeLook(AccountType.AMP_ACCOUNT)
+                        // }
                     }
                 }
 
                 defaultAccountTypes.value = list.filter {
-                    it.accountType == AccountType.BIP84_SEGWIT || it.accountType == AccountType.STANDARD || it.accountType == AccountType.LIGHTNING || (it.accountType == AccountType.AMP_ACCOUNT && asset.asset.isAmp)
+                    it.accountType == AccountType.BIP84_SEGWIT || it.accountType == AccountType.BIP49_SEGWIT_WRAPPED || it.accountType == AccountType.LIGHTNING || (it.accountType == AccountType.AMP_ACCOUNT && asset.asset.isAmp)
                 }
 
                 allAccountTypes.value = list
