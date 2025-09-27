@@ -83,15 +83,13 @@ fun TwoFactorAuthenticationScreen(
         }
 
         Column(modifier = Modifier.fillMaxWidth()) {
-            if (tabs.size > 1) {
-                TabRow(selectedTabIndex = selectedTabIndex) {
-                    tabs.forEachIndexed { index, title ->
-                        Tab(
-                            text = { Text(title) },
-                            selected = selectedTabIndex == index,
-                            onClick = { selectedTabIndex = index }
-                        )
-                    }
+            TabRow(selectedTabIndex = selectedTabIndex) {
+                tabs.forEachIndexed { index, title ->
+                    Tab(
+                        text = { Text(title) },
+                        selected = selectedTabIndex == index,
+                        onClick = { selectedTabIndex = index }
+                    )
                 }
             }
 
