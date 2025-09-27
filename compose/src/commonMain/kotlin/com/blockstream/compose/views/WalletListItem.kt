@@ -40,7 +40,6 @@ import com.blockstream.compose.theme.bodySmall
 import com.blockstream.compose.theme.titleSmall
 import com.blockstream.compose.theme.whiteLow
 import com.blockstream.compose.theme.whiteMedium
-import com.blockstream.ui.components.GreenCircle
 import com.blockstream.ui.components.GreenColumn
 import com.blockstream.ui.components.GreenRow
 import org.jetbrains.compose.resources.stringResource
@@ -89,9 +88,9 @@ private fun WalletListRow(
 //            )
 //        }
 
-        if (isConnected) {
-            GreenCircle(size = 6)
-        }
+//        if (isConnected) {
+//            GreenCircle(size = 6)
+//        }
 
         Icon(
             imageVector = PhosphorIcons.Regular.CaretRight,
