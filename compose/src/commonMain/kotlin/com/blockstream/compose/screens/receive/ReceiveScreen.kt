@@ -51,12 +51,10 @@ import blockstream_green.common.generated.resources.id_share
 import blockstream_green.common.generated.resources.id_show_lightning_invoice
 import blockstream_green.common.generated.resources.id_show_onchain_address
 import blockstream_green.common.generated.resources.id_verify_on_device
-import blockstream_green.common.generated.resources.info
-import blockstream_green.common.generated.resources.seal_check
-import blockstream_green.common.generated.resources.share_network
 import blockstream_green.common.generated.resources.warning
 import com.adamglin.PhosphorIcons
 import com.adamglin.phosphoricons.Regular
+import com.adamglin.phosphoricons.regular.Info
 import com.adamglin.phosphoricons.regular.SealCheck
 import com.adamglin.phosphoricons.regular.ShareNetwork
 import com.blockstream.common.data.AlertType
@@ -590,7 +588,7 @@ fun ReceiveScreen(
                         modifier = Modifier.fillMaxWidth(),
                         type = GreenButtonType.TEXT,
                         color = GreenButtonColor.WHITE,
-                        icon = painterResource(Res.drawable.info),
+                        icon = PhosphorIcons.Regular.Info,
                         size = GreenButtonSize.SMALL,
                         enabled = !onProgress
                     ) {

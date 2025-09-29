@@ -14,6 +14,7 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/).
 - Buy screen now correctly pre-selects the account when navigating from account details
 - Hide archived accounts from in hardware-watchonly wallets
 - Improve jade login time for hardware-watchonly wallets
+- Fix type mismatch in ReceiveScreen by using ImageVector instead of Painter for button icon
 
 #### Changed
 - Restructured wallet settings screen with improved sections, labels, and UI elements
