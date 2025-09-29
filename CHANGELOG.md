@@ -3,6 +3,21 @@ All notable changes to this project will be documented in this file.
 
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/).
 
+
+## [Unreleased]
+
+#### Added
+- Watch-only wallets: Export or share unsigned psbt to a file and import signed psbt (pset support coming soon)
+
+#### Fixed
+- Fix type mismatch in ReceiveScreen by using ImageVector instead of Painter for button icon
+- Show Amp accounts in liquid assets accounts list
+- Show the account details menu in watch-only wallets
+
+#### Changed
+- Updated bluetooth dependencies
+- Redesigned app settings screen with auto-save, language bottom sheet, and improved personal electrum server UI
+
 ## [5.0.9] - 2025-09-02
 
 #### Added
@@ -14,7 +29,6 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/).
 - Buy screen now correctly pre-selects the account when navigating from account details
 - Hide archived accounts from in hardware-watchonly wallets
 - Improve jade login time for hardware-watchonly wallets
-- Fix type mismatch in ReceiveScreen by using ImageVector instead of Painter for button icon
 
 #### Changed
 - Restructured wallet settings screen with improved sections, labels, and UI elements
@@ -23,7 +37,7 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/).
 - Deprecate SPV options: users who want to self validate should connect to their own electrum server in app settings
 - Reformat Promo component layout for better image positioning
 - Bump GDK to version 0.76.0
-- Redesigned app settings screen with auto-save, language bottom sheet, and improved personal electrum server UI
+
 ## [5.0.7] - 2025-07-31
 
 #### Added
