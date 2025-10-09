@@ -359,8 +359,10 @@ class WalletSettingsViewModel(
 
                 // Wallet Settings Section
                 list += WalletSetting.Text(getString(Res.string.id_wallet_settings))
+                if (!greenWallet.isEphemeral) {
+                    list += WalletSetting.RenameWallet(walletName = greenWallet.name)
+                }
                 list += listOf(
-                    WalletSetting.RenameWallet(walletName = greenWallet.name),
                     WalletSetting.DenominationExchangeRate(
                         unit = settings.networkUnit(session),
                         currency = settings.pricing.currency,
