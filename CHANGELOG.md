@@ -19,6 +19,7 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/).
 - Simplified WatchOnlyDetector by removing 2FA support and BCUR decoding logic
 - Updated bluetooth dependencies
 - Redesigned app settings screen with auto-save, language bottom sheet, and improved personal electrum server UI
+- Redesigned 2FA methods screen with improved and simplified design
 
 ## [5.0.9] - 2025-09-02
 

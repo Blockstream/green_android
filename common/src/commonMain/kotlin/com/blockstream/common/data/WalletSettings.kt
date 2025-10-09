@@ -6,8 +6,9 @@ import com.blockstream.ui.events.Event
 sealed class WalletSetting {
     data object Logout : WalletSetting()
     data class Text(val title: String? = null, val message: String? = null) : WalletSetting()
+    data class InfoAlert(val message: String) : WalletSetting()
     data class LearnMore(val event: Event) : WalletSetting()
-    data class ButtonEvent(val title: String, val event: Event) : WalletSetting()
+    data class ButtonEvent(val title: String, val event: Event, val isPrimary: Boolean = false) : WalletSetting()
     data class DenominationExchangeRate(val unit: String, val currency: String, val exchange: String) : WalletSetting()
     data object ArchivedAccounts : WalletSetting()
     data object WatchOnly : WalletSetting()
@@ -40,6 +41,8 @@ sealed class WalletSetting {
     data class TwoFactorThreshold(
         val subtitle: String
     ) : WalletSetting()
+
+    data class LostTwoFactor(val network: Network) : WalletSetting()
 
     data object CopyAmpId : WalletSetting()
 

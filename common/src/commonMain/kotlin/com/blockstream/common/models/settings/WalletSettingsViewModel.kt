@@ -4,32 +4,28 @@ import blockstream_green.common.generated.resources.Res
 import blockstream_green.common.generated.resources.id_12_months_51840_blocks
 import blockstream_green.common.generated.resources.id_15_months_65535_blocks
 import blockstream_green.common.generated.resources.id_2fa_account
+import blockstream_green.common.generated.resources.id_12_months
+import blockstream_green.common.generated.resources.id_15_months
 import blockstream_green.common.generated.resources.id_2fa_expiry
 import blockstream_green.common.generated.resources.id_2fa_methods
 import blockstream_green.common.generated.resources.id_2fa_reset_in_progress
 import blockstream_green.common.generated.resources.id_2fa_threshold
-import blockstream_green.common.generated.resources.id_6_months_25920_blocks
+import blockstream_green.common.generated.resources.id_6_months
 import blockstream_green.common.generated.resources.id_about
 import blockstream_green.common.generated.resources.id_another_2fa_method_is_already
 import blockstream_green.common.generated.resources.id_confirm_via_2fa_that_you
 import blockstream_green.common.generated.resources.id_copied_to_clipboard
 import blockstream_green.common.generated.resources.id_creating_your_s_account
-import blockstream_green.common.generated.resources.id_customize_2fa_expiration_of
 import blockstream_green.common.generated.resources.id_general
 import blockstream_green.common.generated.resources.id_if_you_have_some_coins_on_the
 import blockstream_green.common.generated.resources.id_learn_more
-import blockstream_green.common.generated.resources.id_optimal_if_you_rarely_spend
-import blockstream_green.common.generated.resources.id_optimal_if_you_spend_coins
 import blockstream_green.common.generated.resources.id_recovery_tool
 import blockstream_green.common.generated.resources.id_recovery_transactions
+import blockstream_green.common.generated.resources.id_request_twofactor_reset
 import blockstream_green.common.generated.resources.id_security
 import blockstream_green.common.generated.resources.id_security_change
 import blockstream_green.common.generated.resources.id_set_twofactor_threshold
 import blockstream_green.common.generated.resources.id_settings
-import blockstream_green.common.generated.resources.id_spend_your_bitcoin_without_2fa
-import blockstream_green.common.generated.resources.id_twofactor_authentication
-import blockstream_green.common.generated.resources.id_wallet
-import blockstream_green.common.generated.resources.id_wallet_coins_will_require
 import blockstream_green.common.generated.resources.id_wallet_settings
 import blockstream_green.common.generated.resources.id_account_settings
 import blockstream_green.common.generated.resources.id_your_2fa_expires_so_that_if_you
@@ -44,7 +40,6 @@ import com.blockstream.common.data.Redact
 import com.blockstream.common.data.SetupArgs
 import com.blockstream.common.data.TwoFactorMethod
 import com.blockstream.common.data.TwoFactorSetupAction
-import com.blockstream.common.data.WalletExtras
 import com.blockstream.common.data.WalletSetting
 import com.blockstream.common.devices.DeviceModel
 import com.blockstream.common.events.Events
@@ -229,7 +224,7 @@ class WalletSettingsViewModel(
     private suspend fun updateNavData(greenWallet: GreenWallet, isVisible: Boolean) {
         when (section) {
             WalletSettingsSection.RecoveryTransactions -> Res.string.id_recovery_transactions
-            WalletSettingsSection.TwoFactor -> Res.string.id_twofactor_authentication
+            WalletSettingsSection.TwoFactor -> Res.string.id_2fa_methods
             else -> Res.string.id_settings
         }.also {
             _navData.value = NavData(
@@ -262,11 +257,19 @@ class WalletSettingsViewModel(
                     )
                 }
 
+                network?.also {
+                    list += listOf(
+                        WalletSetting.Text(
+                            title = getString(Res.string.id_request_twofactor_reset)
+                        ),
+                        WalletSetting.LostTwoFactor(network = it)
+                    )
+                }
+
                 if (network?.isBitcoin == true) {
                     list += listOf(
                         WalletSetting.Text(
-                            title = getString(Res.string.id_2fa_threshold),
-                            message = getString(Res.string.id_spend_your_bitcoin_without_2fa)
+                            title = getString(Res.string.id_2fa_threshold)
                         ),
 
                         thresholdFromConfig(twoFactorConfig = twoFactorConfig, isForUserEdit = false).let { threshold ->
@@ -281,20 +284,19 @@ class WalletSettingsViewModel(
 
                 list += listOf(
                     WalletSetting.Text(
-                        title = getString(Res.string.id_2fa_expiry),
-                        message = if (showBuckets) getString(Res.string.id_customize_2fa_expiration_of) else null
+                        title = getString(Res.string.id_2fa_expiry)
                     )
                 )
 
                 if (showBuckets) {
                     list += listOf(
-                        Res.string.id_6_months_25920_blocks to Res.string.id_optimal_if_you_spend_coins,
-                        Res.string.id_12_months_51840_blocks to Res.string.id_wallet_coins_will_require,
-                        Res.string.id_15_months_65535_blocks to Res.string.id_optimal_if_you_rarely_spend,
-                    ).mapIndexed { index, pair ->
+                        Res.string.id_6_months,
+                        Res.string.id_12_months,
+                        Res.string.id_15_months,
+                    ).mapIndexed { index, titleRes ->
                         WalletSetting.TwoFactorBucket(
-                            title = getString(pair.first),
-                            subtitle = getString(pair.second),
+                            title = getString(titleRes),
+                            subtitle = "",
                             enabled = index == network?.csvBuckets?.indexOfOrNull(settings?.csvTime),
                             bucket = network?.csvBuckets?.getOrNull(index) ?: 0
                         )
@@ -302,10 +304,10 @@ class WalletSettingsViewModel(
                 }
 
                 list += listOf(
-                    WalletSetting.Text(
+                    WalletSetting.InfoAlert(
                         message = getString(Res.string.id_your_2fa_expires_so_that_if_you)
                     ),
-                    WalletSetting.ButtonEvent(getString(Res.string.id_recovery_tool), Events.OpenBrowser(Urls.RECOVERY_TOOL))
+                    WalletSetting.ButtonEvent(getString(Res.string.id_recovery_tool), Events.OpenBrowser(Urls.RECOVERY_TOOL), isPrimary = true)
                 )
 
                 if (network?.isBitcoin == true) {

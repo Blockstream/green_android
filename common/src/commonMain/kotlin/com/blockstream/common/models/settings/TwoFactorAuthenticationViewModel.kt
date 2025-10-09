@@ -1,7 +1,7 @@
 package com.blockstream.common.models.settings
 
 import blockstream_green.common.generated.resources.Res
-import blockstream_green.common.generated.resources.id_twofactor_authentication
+import blockstream_green.common.generated.resources.id_2fa_methods
 import com.blockstream.common.data.GreenWallet
 import com.blockstream.common.extensions.previewNetwork
 import com.blockstream.common.extensions.previewWallet
@@ -31,7 +31,7 @@ class TwoFactorAuthenticationViewModel(
     init {
         viewModelScope.launch {
             _navData.value = NavData(
-                title = getString(Res.string.id_twofactor_authentication),
+                title = getString(Res.string.id_2fa_methods),
                 subtitle = greenWallet.name
             )
         }

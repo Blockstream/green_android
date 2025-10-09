@@ -53,7 +53,7 @@ import org.jetbrains.compose.resources.painterResource
 import org.jetbrains.compose.resources.stringResource
 
 enum class GreenButtonSize {
-    NORMAL, SMALL, TINY, BIG
+    NORMAL, SMALL, TINY, BIG, LARGE
 }
 
 enum class GreenButtonType {
@@ -101,6 +101,12 @@ fun GreenButton(
             Modifier
                 .then(modifier)
                 .height(50.dp)
+        }
+
+        GreenButtonSize.LARGE -> {
+            Modifier
+                .then(modifier)
+                .height(56.dp)
         }
 
         else -> {
@@ -193,6 +199,8 @@ fun GreenButton(
                 ButtonDefaults.outlinedButtonColors(contentColor = MaterialTheme.colorScheme.error)
             } else if (enabled && color == GreenButtonColor.WHITE) {
                 ButtonDefaults.outlinedButtonColors(contentColor = textHigh)
+            } else if (enabled && color == GreenButtonColor.GREENER) {
+                ButtonDefaults.outlinedButtonColors(contentColor = MaterialTheme.colorScheme.primary)
             } else {
                 ButtonDefaults.outlinedButtonColors(containerColor = MaterialTheme.colorScheme.surface)
             }

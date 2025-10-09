@@ -50,18 +50,15 @@ import blockstream_green.common.generated.resources.id_continue
 import blockstream_green.common.generated.resources.id_copy_amp_id
 import blockstream_green.common.generated.resources.id_copy_support_id
 import blockstream_green.common.generated.resources.id_create_a_new_account
-import blockstream_green.common.generated.resources.id_create_new_account
 import blockstream_green.common.generated.resources.id_denomination
-import blockstream_green.common.generated.resources.id_denomination__exchange_rate
 import blockstream_green.common.generated.resources.id_display_values_in_s_and
 import blockstream_green.common.generated.resources.id_enabled
 import blockstream_green.common.generated.resources.id_experimental_feature
 import blockstream_green.common.generated.resources.id_experimental_features_might
-import blockstream_green.common.generated.resources.id_generate_amp_id
 import blockstream_green.common.generated.resources.id_genuine_check
 import blockstream_green.common.generated.resources.id_get_support
 import blockstream_green.common.generated.resources.id_i_lost_my_2fa
-import blockstream_green.common.generated.resources.id_legacy_script_coins
+import blockstream_green.common.generated.resources.id_i_lost_my_2fa_method
 import blockstream_green.common.generated.resources.id_lightning
 import blockstream_green.common.generated.resources.id_login_with_biometrics
 import blockstream_green.common.generated.resources.id_logout
@@ -71,15 +68,12 @@ import blockstream_green.common.generated.resources.id_pgp_key
 import blockstream_green.common.generated.resources.id_recovery_transaction_emails
 import blockstream_green.common.generated.resources.id_recovery_transactions
 import blockstream_green.common.generated.resources.id_rename
-import blockstream_green.common.generated.resources.id_rename_wallet
 import blockstream_green.common.generated.resources.id_request_recovery_transactions
 import blockstream_green.common.generated.resources.id_set_an_email_for_recovery
 import blockstream_green.common.generated.resources.id_set_twofactor_threshold
-import blockstream_green.common.generated.resources.id_support
 import blockstream_green.common.generated.resources.id_support_id
 import blockstream_green.common.generated.resources.id_there_is_already_an_archived
 import blockstream_green.common.generated.resources.id_touch_to_display
-import blockstream_green.common.generated.resources.id_twofactor_authentication
 import blockstream_green.common.generated.resources.id_verify_the_authenticity_of
 import blockstream_green.common.generated.resources.id_version
 import blockstream_green.common.generated.resources.id_wallet_details
@@ -88,6 +82,7 @@ import com.adamglin.PhosphorIcons
 import com.adamglin.phosphoricons.Regular
 import com.adamglin.phosphoricons.regular.CaretRight
 import com.adamglin.phosphoricons.regular.Copy
+import com.adamglin.phosphoricons.regular.Info
 import com.blockstream.common.SupportType
 import com.blockstream.common.data.LogoutReason
 import com.blockstream.common.data.SupportData
@@ -117,7 +112,10 @@ import com.blockstream.common.utils.StringHolder
 import com.blockstream.common.utils.getBitcoinOrLiquidUnit
 import com.blockstream.compose.LocalBiometricState
 import com.blockstream.compose.LocalDialog
+import com.blockstream.compose.components.GreenAlert
 import com.blockstream.compose.components.GreenButton
+import com.blockstream.compose.components.GreenButtonColor
+import com.blockstream.compose.components.GreenButtonSize
 import com.blockstream.compose.components.GreenButtonType
 import com.blockstream.compose.components.LearnMoreButton
 import com.blockstream.compose.components.OnProgressStyle
@@ -132,7 +130,6 @@ import com.blockstream.compose.theme.bodyMedium
 import com.blockstream.compose.theme.red
 import com.blockstream.compose.theme.titleSmall
 import com.blockstream.compose.theme.green
-import com.blockstream.compose.theme.whiteHigh
 import com.blockstream.compose.theme.whiteLow
 import com.blockstream.compose.theme.whiteMedium
 import com.blockstream.compose.utils.SetupScreen
@@ -389,6 +386,14 @@ fun WalletSettingsScreen(
                         }
                     }
 
+                    is WalletSetting.InfoAlert -> {
+                        GreenAlert(
+                            message = item.message,
+                            icon = com.adamglin.PhosphorIcons.Regular.Info,
+                            isBlue = true
+                        )
+                    }
+
                     is WalletSetting.LearnMore -> {
                         LearnMoreButton {
                             viewModel.postEvent(item.event)
@@ -614,10 +619,29 @@ fun WalletSettingsScreen(
                         )
                     }
 
+                    is WalletSetting.LostTwoFactor -> {
+                        Setting(
+                            title = stringResource(Res.string.id_i_lost_my_2fa_method),
+                            imageVector = PhosphorIcons.Regular.CaretRight,
+                            modifier = Modifier.clickable {
+                                viewModel.postEvent(
+                                    NavigateDestinations.TwoFactorSetup(
+                                        greenWallet = viewModel.greenWallet,
+                                        network = item.network,
+                                        method = TwoFactorMethod.EMAIL,
+                                        action = TwoFactorSetupAction.RESET,
+                                        isSmsBackup = false
+                                    )
+                                )
+                            }
+                        )
+                    }
+
                     is WalletSetting.TwoFactorThreshold -> {
                         Setting(
                             title = stringResource(Res.string.id_2fa_threshold),
                             subtitle = item.subtitle,
+                            imageVector = PhosphorIcons.Regular.CaretRight,
                             modifier = Modifier.clickable {
                                 viewModel.postEvent(LocalEvents.TwoFactorThreshold)
                             }
@@ -625,46 +649,39 @@ fun WalletSettingsScreen(
                     }
 
                     is WalletSetting.RequestRecovery -> {
-                        Setting(
-                            title = stringResource(Res.string.id_recovery_transactions),
-                            subtitle = stringResource(Res.string.id_legacy_script_coins),
-                            imageVector = PhosphorIcons.Regular.CaretRight,
-                            modifier = Modifier.clickable {
-                                viewModel.postEvent(
-                                    WalletSettings(
-                                        greenWallet = viewModel.greenWallet,
-                                        section = WalletSettingsSection.RecoveryTransactions,
-                                        network = item.network
-                                    )
+                        GreenButton(
+                            text = stringResource(Res.string.id_recovery_transactions),
+                            modifier = Modifier.fillMaxWidth(),
+                            type = GreenButtonType.OUTLINE,
+                            color = GreenButtonColor.GREENER,
+                            size = GreenButtonSize.LARGE
+                        ) {
+                            viewModel.postEvent(
+                                WalletSettings(
+                                    greenWallet = viewModel.greenWallet,
+                                    section = WalletSettingsSection.RecoveryTransactions,
+                                    network = item.network
                                 )
-                            }
-                        )
+                            )
+                        }
                     }
 
                     is WalletSetting.ButtonEvent -> {
                         GreenButton(
                             text = item.title,
                             modifier = Modifier.fillMaxWidth(),
-                            type = GreenButtonType.OUTLINE
+                            type = if (item.isPrimary) GreenButtonType.COLOR else GreenButtonType.OUTLINE,
+                            size = GreenButtonSize.LARGE
                         ) {
                             viewModel.postEvent(item.event)
                         }
                     }
 
                     is WalletSetting.TwoFactorBucket -> {
-                        Setting(
+                        RadioSetting(
                             title = item.title,
-                            subtitle = item.subtitle,
-                            isRadio = true,
-                            checked = item.enabled,
-                            onCheckedChange = {
-                                viewModel.postEvent(
-                                    SetCsvTime(
-                                        item.bucket
-                                    )
-                                )
-                            },
-                            modifier = Modifier.clickable {
+                            selected = item.enabled,
+                            onSelect = {
                                 viewModel.postEvent(
                                     SetCsvTime(
                                         item.bucket
@@ -751,6 +768,39 @@ fun WalletSettingsScreen(
 }
 
 @Composable
+fun RadioSetting(
+    modifier: Modifier = Modifier,
+    title: String,
+    selected: Boolean,
+    enabled: Boolean = true,
+    onSelect: () -> Unit = {},
+) {
+    OutlinedCard(
+        modifier = Modifier
+            .then(modifier)
+            .clickable(enabled = enabled) { onSelect() }
+    ) {
+        GreenRow(space = 16, padding = 0, verticalAlignment = Alignment.CenterVertically) {
+            RadioButton(
+                selected = selected,
+                enabled = enabled,
+                onClick = null,
+                modifier = Modifier.padding(start = 16.dp)
+            )
+
+            Text(
+                text = title,
+                style = titleSmall,
+                modifier = Modifier
+                    .padding(vertical = 24.dp)
+                    .padding(end = 16.dp)
+                    .weight(1f)
+            )
+        }
+    }
+}
+
+@Composable
 fun Setting(
     modifier: Modifier = Modifier,
     title: String,
@@ -783,7 +833,7 @@ fun Setting(
                     overflow = TextOverflow.Ellipsis,
                     modifier = Modifier.fillMaxWidth()
                 )
-                if (subtitle != null) {
+                if (subtitle != null && subtitle.isNotBlank()) {
                     Text(
                         text = subtitle,
                         style = bodyLarge,

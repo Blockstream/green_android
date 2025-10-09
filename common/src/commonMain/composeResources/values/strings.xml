@@ -3,8 +3,10 @@
     <string name="id_1030_minutes">~ 10-30 Minutes</string>
     <string name="id_12_confirmations">1/2 confirmations</string>
     <string name="id_12_months_51840_blocks">12 months (51840 blocks)</string>
+    <string name="id_12_months">12 months</string>
     <string name="id_12_words">12 words</string>
     <string name="id_15_months_65535_blocks">15 months (65535 blocks)</string>
+    <string name="id_15_months">15 months</string>
     <string name="id_1_double_check_all_of_your">1. Double check all of your recovery phrase word by word, are all words correct?\n2. The order of words is important! Make sure you&apos;ve typed the words in the correct order.\n\nIf neither of these tips have helped you, or if you don&apos;t have a 12, 24 or 27 words recovery phrase please check our help center.</string>
     <string name="id_1d_2s_ago">%1$d %2$s ago</string>
     <string name="id_1d_minutes">%1$d minutes</string>
@@ -31,6 +33,7 @@
     <string name="id_4_hours">~ 4 Hours</string>
     <string name="id_5_seconds_minimum">5 seconds minimum</string>
     <string name="id_6_months_25920_blocks">6 months (25920 blocks)</string>
+    <string name="id_6_months">6 months</string>
     <string name="id_a_2of3_account_requires_two_out">A 2of3 account requires two out of three signatures to spend coins. The third signature is from a backup key known only to you. This gives you the security benefits of a standard account, while still allowing you to move your coins independently at any point in time.</string>
     <string name="id_a_funding_fee_of_s_is_applied">A funding fee of %1$s is applied when receiving amounts above your current receive capacity of %2$s</string>
     <string name="id_a_funding_fee_of_s_minimum_s_is">A funding fee of %1$s (minimum %2$s) is applied when receiving amounts above your current receive capacity of %3$s</string>
@@ -443,7 +446,7 @@
     <string name="id_enable_testnet_in_app_settings">Enable testnet in app settings to use Jade</string>
     <string name="id_enable_tls">Enable TLS</string>
     <string name="id_enable_touch_id">Enable Touch ID</string>
-    <string name="id_enable_twofactor_authentication">Enable Two-Factor Authentication to protect your wallet from unauthorized transactions or changes to critical security settings</string>
+    <string name="id_enable_twofactor_authentication">Enable Two-Factor Authentication to add additional protection to your wallet</string>
     <string name="id_enabled">Enabled</string>
     <string name="id_enabled_1s">Enabled: %1$s</string>
     <string name="id_encryption_passphrase">Encryption passphrase</string>
@@ -609,6 +612,7 @@
     <string name="id_i_forgot_my_password">I forgot my password</string>
     <string name="id_i_fund_via_an_onchain_bitcoin">(i) Fund via an onchain bitcoin transaction</string>
     <string name="id_i_lost_my_2fa">I lost my 2FA</string>
+    <string name="id_i_lost_my_2fa_method">I lost my 2FA method</string>
     <string name="id_i_secured_the_mnemonic_and_i">I secured the mnemonic and I have read the ToS</string>
     <string name="id_i_typed_all_my_recovery_phrase">I typed all my recovery phrase why can&apos;t I continue?</string>
     <string name="id_i_understand_amounts_could_be">I understand amounts could be incorrect</string>
@@ -1318,6 +1322,7 @@
     <string name="id_ticker">Ticker</string>
     <string name="id_time_s">Time: %1$s</string>
     <string name="id_tip_we_recommend_you_enable">Tip: We recommend you enable more than one 2FA method. If you only set up one 2FA method and then lose it, you&apos;ll have to wait at least one year until the 2FA expires.</string>
+    <string name="id_we_recommend_you_enable_more">We recommend you enable more than one 2FA method. If you only set up one method and lose it, you&apos;ll have to wait at least one year until 2FA expires.</string>
     <string name="id_tip_you_can_use_the">Tip: You can use the xPub/yPub/zPub to view your watch-only wallet in Blockstream App, or you may import it to another platform. Each account in your wallet has a separate xPub/yPub/zPub.</string>
     <string name="id_to">To</string>
     <string name="id_to_authorize_the_transaction">To authorize the transaction you need to enter your 2FA code.</string>
@@ -1531,7 +1536,7 @@
     <string name="id_youll_need_your_pin_to_log_in">You&apos;ll need your PIN to log in to your wallet. This PIN secures the wallet on this device only.</string>
     <string name="id_youll_need_your_recovery_phrase">You&apos;ll need your recovery phrase to restore this wallet</string>
     <string name="id_youll_see_your_coins_here_when">You&apos;ll see your coins here when you receive funds</string>
-    <string name="id_your_2fa_expires_so_that_if_you">Your 2FA expires, so that if you lose access to your 2FA method, or the Blockstream App service becomes unavailable, you can always recover your bitcoin using this open source tool</string>
+    <string name="id_your_2fa_expires_so_that_if_you">After 2FA expires, you can send funds without your 2FA method or utilize or open source recovery tool.</string>
     <string name="id_your_bitcoin_and_liquid_assets">Your bitcoin and Liquid assets are stored on the blockchain, and can only be spent using the keys stored on Jade.</string>
     <string name="id_your_bluetooth_adapter_is">Your Bluetooth adapter is disabled</string>
     <string name="id_your_current_receive_capacity">Your current receive capacity is %1$s.</string>

@@ -20,7 +20,7 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import blockstream_green.common.generated.resources.Res
 import blockstream_green.common.generated.resources.id_enable_twofactor_authentication
-import blockstream_green.common.generated.resources.id_tip_we_recommend_you_enable
+import blockstream_green.common.generated.resources.id_we_recommend_you_enable_more
 import com.blockstream.common.extensions.indexOfOrNull
 import com.blockstream.common.extensions.previewNetwork
 import com.blockstream.common.extensions.previewWallet
@@ -29,7 +29,11 @@ import com.blockstream.common.models.settings.TwoFactorAuthenticationViewModel
 import com.blockstream.common.models.settings.TwoFactorAuthenticationViewModelAbstract
 import com.blockstream.common.models.settings.WalletSettingsViewModelAbstract
 import com.blockstream.common.models.settings.WalletSettingsViewModelPreview
+import com.adamglin.PhosphorIcons
+import com.adamglin.phosphoricons.Regular
+import com.adamglin.phosphoricons.regular.Warning
 import com.blockstream.compose.GreenPreview
+import com.blockstream.compose.components.GreenAlert
 import com.blockstream.compose.theme.bodyMedium
 import com.blockstream.compose.theme.titleSmall
 import com.blockstream.compose.theme.whiteMedium
@@ -52,10 +56,9 @@ fun TwoFactorAuthenticationScreen(
                 style = titleSmall,
             )
 
-            Text(
-                text = stringResource(Res.string.id_tip_we_recommend_you_enable),
-                style = bodyMedium,
-                color = whiteMedium,
+            GreenAlert(
+                message = stringResource(Res.string.id_we_recommend_you_enable_more),
+                icon = PhosphorIcons.Regular.Warning
             )
         }
 
@@ -74,10 +77,7 @@ fun TwoFactorAuthenticationScreen(
         }
 
         LaunchedEffect(pagerState) {
-            // Collect from the a snapshotFlow reading the currentPage
             snapshotFlow { pagerState.currentPage }.collect { page ->
-                // Do something with each page change, for example:
-                // viewModel.sendPageSelectedEvent(page)
                 selectedTabIndex = pagerState.currentPage
             }
         }
