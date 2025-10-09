@@ -56,7 +56,6 @@ abstract class AbstractScannerViewModel(val isDecodeContinuous: Boolean = false,
 
             if (!isScanComplete) {
                 if ((isDecodeContinuous && scannedText.startsWith(prefix = "ur:", ignoreCase = true)) || bcurPartEmitter != null) {
-
                     if (bcurPartEmitter == null) {
                         viewModelScope.coroutineScope.launch(context = logException(countly)) {
 

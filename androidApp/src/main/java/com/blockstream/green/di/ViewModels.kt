@@ -28,8 +28,6 @@ import com.blockstream.common.models.lightning.RecoverFundsViewModel
 import com.blockstream.common.models.login.Bip39PassphraseViewModel
 import com.blockstream.common.models.login.LoginViewModel
 import com.blockstream.common.models.onboarding.SetupNewWalletViewModel
-import com.blockstream.common.models.onboarding.hardware.UseHardwareDeviceViewModel
-import com.blockstream.common.models.onboarding.phone.AddWalletViewModel
 import com.blockstream.common.models.onboarding.phone.EnterRecoveryPhraseViewModel
 import com.blockstream.common.models.onboarding.phone.PinViewModel
 import com.blockstream.common.models.onboarding.watchonly.WatchOnlyMultisigViewModel
@@ -82,7 +80,6 @@ val viewModels = module {
     viewModelOf(::AboutViewModel)
     viewModelOf(::DemoViewModel)
     viewModelOf(::SetupNewWalletViewModel)
-    viewModelOf(::AddWalletViewModel)
     viewModelOf(::AppSettingsViewModel)
     viewModelOf(::RecoveryIntroViewModel)
     viewModelOf(::WalletOverviewViewModel)
@@ -105,7 +102,6 @@ val viewModels = module {
     viewModelOf(::TwoFactorAuthenticationViewModel)
     viewModelOf(::WalletAssetsViewModel)
     viewModelOf(::ArchivedAccountsViewModel)
-    viewModelOf(::UseHardwareDeviceViewModel)
     viewModelOf(::JadeGuideViewModel)
     viewModelOf(::AddressesViewModel)
     viewModelOf(::SignMessageViewModel)

@@ -14,7 +14,7 @@ import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import blockstream_green.common.generated.resources.Res
 import blockstream_green.common.generated.resources.id_create_a_new_wallet_to_begin
 import blockstream_green.common.generated.resources.id_restore_from_backup
-import blockstream_green.common.generated.resources.id_setup_mobile_wallet
+import blockstream_green.common.generated.resources.id_set_up_mobile_wallet
 import com.blockstream.common.events.Events
 import com.blockstream.common.models.onboarding.SetupNewWalletViewModel
 import com.blockstream.common.models.onboarding.SetupNewWalletViewModelAbstract
@@ -78,7 +78,7 @@ fun SetupNewWalletScreen(
         ) {
 
             GreenButton(
-                text = stringResource(Res.string.id_setup_mobile_wallet),
+                text = stringResource(Res.string.id_set_up_mobile_wallet),
                 size = GreenButtonSize.BIG,
                 enabled = !onProgress,
                 modifier = Modifier.fillMaxWidth()

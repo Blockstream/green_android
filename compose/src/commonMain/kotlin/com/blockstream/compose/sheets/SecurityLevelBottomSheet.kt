@@ -21,12 +21,12 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import blockstream_green.common.generated.resources.Res
-import blockstream_green.common.generated.resources.hardware_keys
+import blockstream_green.common.generated.resources.device_keys
 import blockstream_green.common.generated.resources.id_convenient_spending
 import blockstream_green.common.generated.resources.id_dont_have_one_buy_a_jade
 import blockstream_green.common.generated.resources.id_hardware
-import blockstream_green.common.generated.resources.id_ideal_for_long_term_bitcoin
-import blockstream_green.common.generated.resources.id_ideal_for_small_amounts
+import blockstream_green.common.generated.resources.id_ideal_for_longterm_bitcoin
+import blockstream_green.common.generated.resources.id_ideal_for_small_amounts_of
 import blockstream_green.common.generated.resources.id_keys_stored_on_mobile_device
 import blockstream_green.common.generated.resources.id_keys_stored_on_specialized
 import blockstream_green.common.generated.resources.id_mitigates_common_attacks
@@ -34,12 +34,14 @@ import blockstream_green.common.generated.resources.id_mobile
 import blockstream_green.common.generated.resources.id_security_level
 import blockstream_green.common.generated.resources.id_security_level_
 import blockstream_green.common.generated.resources.id_selected
-import blockstream_green.common.generated.resources.id_setup_hardware_wallet
+import blockstream_green.common.generated.resources.id_set_up_hardware_wallet
 import blockstream_green.common.generated.resources.phone_keys
 import com.adamglin.PhosphorIcons
 import com.adamglin.phosphoricons.Regular
-import com.adamglin.phosphoricons.regular.FastForwardCircle
-import com.adamglin.phosphoricons.regular.Plugs
+import com.adamglin.phosphoricons.regular.Coins
+import com.adamglin.phosphoricons.regular.Key
+import com.adamglin.phosphoricons.regular.Lightning
+import com.adamglin.phosphoricons.regular.Lock
 import com.adamglin.phosphoricons.regular.ShieldCheck
 import com.adamglin.phosphoricons.regular.ShieldChevron
 import com.blockstream.common.models.onboarding.SetupNewWalletViewModel
@@ -56,6 +58,7 @@ import com.blockstream.compose.theme.whiteMedium
 import com.blockstream.ui.components.GreenColumn
 import com.blockstream.ui.components.GreenRow
 import com.blockstream.ui.components.GreenSpacer
+import com.blockstream.ui.utils.ifTrue
 import kotlinx.coroutines.launch
 import org.jetbrains.compose.resources.stringResource
 import org.jetbrains.compose.resources.vectorResource
@@ -135,14 +138,18 @@ fun SecurityLevelBottomSheet(
 
                         Text(
                             text = stringResource(
-                                Res.string.id_security_level_, if (isMobile) "I" else "II"
+                                Res.string.id_security_level_, if (isMobile) "1" else "2"
                             ), style = bodySmall, color = whiteMedium, textAlign = TextAlign.Center
                         )
 
                         Image(
-                            imageVector = vectorResource(if (isMobile) Res.drawable.phone_keys else Res.drawable.hardware_keys),
+                            imageVector = vectorResource(if (isMobile) Res.drawable.phone_keys else Res.drawable.device_keys),
                             contentDescription = null,
-                            modifier = Modifier.height(150.dp)
+                            modifier = Modifier
+                                .height(150.dp)
+                                .ifTrue(!isMobile) {
+                                    it.padding(16.dp)
+                                }
                         )
                     }
 
@@ -151,15 +158,15 @@ fun SecurityLevelBottomSheet(
                     ) {
                         when (isMobile) {
                             true -> listOf(
-                                PhosphorIcons.Regular.Plugs to Res.string.id_ideal_for_small_amounts,
-                                PhosphorIcons.Regular.ShieldCheck to Res.string.id_convenient_spending,
-                                PhosphorIcons.Regular.FastForwardCircle to Res.string.id_keys_stored_on_mobile_device
+                                PhosphorIcons.Regular.Coins to Res.string.id_ideal_for_small_amounts_of,
+                                PhosphorIcons.Regular.Lightning to Res.string.id_convenient_spending,
+                                PhosphorIcons.Regular.Key to Res.string.id_keys_stored_on_mobile_device
                             )
 
                             false -> listOf(
-                                PhosphorIcons.Regular.Plugs to Res.string.id_ideal_for_long_term_bitcoin,
+                                PhosphorIcons.Regular.Lock to Res.string.id_ideal_for_longterm_bitcoin,
                                 PhosphorIcons.Regular.ShieldCheck to Res.string.id_mitigates_common_attacks,
-                                PhosphorIcons.Regular.FastForwardCircle to Res.string.id_keys_stored_on_specialized
+                                PhosphorIcons.Regular.Key to Res.string.id_keys_stored_on_specialized
                             )
                         }.also {
                             it.forEach { (icon, stringRes) ->
@@ -185,7 +192,7 @@ fun SecurityLevelBottomSheet(
                     GreenColumn(padding = 0) {
                         val cta1 = when (isMobile) {
                             true -> stringResource(Res.string.id_selected)
-                            false -> stringResource(Res.string.id_setup_hardware_wallet)
+                            false -> stringResource(Res.string.id_set_up_hardware_wallet)
                         }
 
                         val cta2 = stringResource(Res.string.id_dont_have_one_buy_a_jade)

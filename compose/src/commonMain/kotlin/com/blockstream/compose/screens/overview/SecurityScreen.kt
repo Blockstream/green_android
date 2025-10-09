@@ -160,7 +160,7 @@ fun SecurityScreen(viewModel: SecurityViewModelAbstract) {
                         Text(
                             text = stringResource(
                                 Res.string.id_security_level_,
-                                if (isHardware) "II" else "I"
+                                if (isHardware) "2" else "1"
                             ), color = whiteMedium
                         )
                         Text(

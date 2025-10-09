@@ -162,7 +162,6 @@
     <string name="id_backup_your_mnemonic_before">Faça o backup do mnemônico antes de remover a carteira deste dispositivo.</string>
     <string name="id_be_aware_other_apps_can_read_or">Cuidado, outros aplicativos podem ler ou alterar as informações copiadas para a área de transferência</string>
     <string name="id_be_sure_your_recovery_phrase_is">Certifique-se de ter feito o backup da sua frase de recuperação antes de remover esta carteira.</string>
-    <string name="id_before_you_backup">Backup</string>
     <string name="id_biometric_login_is_disabled">Acesso por biometria desativado</string>
     <string name="id_biometric_login_is_enabled">Acesso por biometria ativado</string>
     <string name="id_biometrics">Biometria</string>
@@ -186,7 +185,6 @@
     <string name="id_blocks_confirmed">blocos confirmados</string>
     <string name="id_blockstream_devices">Dispositivos Blockstream</string>
     <string name="id_blockstream_does_not_have">A Blockstream não tem acesso ao backup da sua carteira e não poderá ajudá-lo caso você o perca</string>
-    <string name="id_blockstream_app_needs_access">A Blockstream App precisa acessar o Bluetooth para se conectar às carteiras físicas. Os dados de localização não são usados ​​ou mantidos pela Blockstream.</string>
     <string name="id_blockstream_app_supports_both">A Blockstream App suporta carteiras da rede Bitcoin e da rede Liquid.</string>
     <string name="id_blockstream_appnsimple_and">Blockstream App:\nSimples e Segura</string>
     <string name="id_blockstream_store">Loja Blockstream</string>

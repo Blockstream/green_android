@@ -22,7 +22,7 @@ import androidx.compose.ui.platform.LocalInspectionMode
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import blockstream_green.common.generated.resources.Res
-import blockstream_green.common.generated.resources.id_backup_recovery_phrase
+import blockstream_green.common.generated.resources.id_back_up_recovery_phrase
 import blockstream_green.common.generated.resources.id_exit_guide
 import blockstream_green.common.generated.resources.id_initialize_and_create_wallet
 import blockstream_green.common.generated.resources.id_note_down_your_recovery_phrase
@@ -115,7 +115,7 @@ fun JadeGuideScreen(
 
                                 when (s) {
                                     0 -> Res.string.id_initialize_and_create_wallet
-                                    1 -> Res.string.id_backup_recovery_phrase
+                                    1 -> Res.string.id_back_up_recovery_phrase
                                     else -> Res.string.id_verify_recovery_phrase
                                 }.also {
                                     Text(

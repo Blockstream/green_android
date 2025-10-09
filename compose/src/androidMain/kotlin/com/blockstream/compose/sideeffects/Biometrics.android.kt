@@ -17,7 +17,7 @@ import blockstream_green.common.generated.resources.id_authentication_error_s
 import blockstream_green.common.generated.resources.id_authentication_failed
 import blockstream_green.common.generated.resources.id_blockstream_app_uses_biometric
 import blockstream_green.common.generated.resources.id_cancel
-import blockstream_green.common.generated.resources.id_login_with_biometrics
+import blockstream_green.common.generated.resources.id_log_in_with_biometrics
 import blockstream_green.common.generated.resources.id_please_activate_at_least_one
 import blockstream_green.common.generated.resources.id_user_authentication
 import blockstream_green.common.generated.resources.id_you_have_to_authenticate_to
@@ -149,7 +149,7 @@ actual class BiometricsState(
 
         loginCredentials.encrypted_data?.let { encryptedData ->
             val promptInfo = BiometricPrompt.PromptInfo.Builder()
-                .setTitle(getString(Res.string.id_login_with_biometrics))
+                .setTitle(getString(Res.string.id_log_in_with_biometrics))
                 .setConfirmationRequired(true)
 
             if (isV4Authentication) {
@@ -284,7 +284,7 @@ actual class BiometricsState(
         }
 
         val promptInfo = BiometricPrompt.PromptInfo.Builder()
-            .setTitle(getString(Res.string.id_login_with_biometrics))
+            .setTitle(getString(Res.string.id_log_in_with_biometrics))
             .setDescription(getString(Res.string.id_blockstream_app_uses_biometric))
             .setNegativeButtonText(getString(Res.string.id_cancel))
             .setConfirmationRequired(true)

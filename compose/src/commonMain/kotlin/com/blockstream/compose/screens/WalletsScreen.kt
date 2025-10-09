@@ -21,7 +21,7 @@ import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import blockstream_green.common.generated.resources.Res
 import blockstream_green.common.generated.resources.id_my_wallets
-import blockstream_green.common.generated.resources.id_setup_a_new_wallet
+import blockstream_green.common.generated.resources.id_set_up_a_new_wallet
 import com.adamglin.PhosphorIcons
 import com.adamglin.phosphoricons.Regular
 import com.adamglin.phosphoricons.regular.CaretRight
@@ -134,7 +134,7 @@ fun WalletsScreen(
                         verticalAlignment = Alignment.CenterVertically
                     ) {
                         Text(
-                            text = stringResource(Res.string.id_setup_a_new_wallet),
+                            text = stringResource(Res.string.id_set_up_a_new_wallet),
                             modifier = Modifier.weight(1f),
                             style = labelMedium
                         )

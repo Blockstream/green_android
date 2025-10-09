@@ -7,8 +7,8 @@ import androidx.compose.ui.text.SpanStyle
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import blockstream_green.common.generated.resources.Res
+import blockstream_green.common.generated.resources.id_in_a_watch_only_wallet_your_private_keys_remain
 import blockstream_green.common.generated.resources.id_learn_more
-import blockstream_green.common.generated.resources.id_watchonly_description
 import com.blockstream.compose.theme.bodyMedium
 import com.blockstream.compose.theme.md_theme_primary
 import com.blockstream.compose.theme.whiteMedium
@@ -18,11 +18,11 @@ import org.jetbrains.compose.resources.stringResource
 
 @Composable
 fun WatchOnlyWalletDescription(onClickLearnMore: () -> Unit) {
-    val description = stringResource(Res.string.id_watchonly_description)
+    val description = stringResource(Res.string.id_in_a_watch_only_wallet_your_private_keys_remain)
     val learnMore = stringResource(Res.string.id_learn_more)
 
     RichText(
-        text = description,
+        text = description + "\n" + stringResource(Res.string.id_learn_more),
         spans = listOf(
             RichSpan(
                 text = learnMore, style = SpanStyle(color = md_theme_primary), onClick = onClickLearnMore

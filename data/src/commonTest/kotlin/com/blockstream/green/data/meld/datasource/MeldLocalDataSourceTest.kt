@@ -11,12 +11,12 @@ class MeldLocalDataSourceTest {
     fun `test cache operations`() {
         val dataSource = MeldLocalDataSource()
         val mockCountries = listOf(
-            Country("US", "United States", "https://example.com/us.png", emptyList()),
-            Country("CA", "Canada", "https://example.com/ca.png", emptyList())
+            Country("US", "United States", emptyList(), "https://example.com/us.png"),
+            Country("CA", "Canada", emptyList(), "https://example.com/ca.png")
         )
-        
+
         assertNull(dataSource.getCachedCountries())
-        
+
         dataSource.saveCountries(mockCountries)
         assertEquals(mockCountries, dataSource.getCachedCountries())
     }

@@ -1,7 +1,7 @@
 package com.blockstream.common.models.recovery
 
 import blockstream_green.common.generated.resources.Res
-import blockstream_green.common.generated.resources.id_before_you_backup
+import blockstream_green.common.generated.resources.id_before_you_back_up
 import com.arkivanov.essenty.statekeeper.StateKeeper
 import com.arkivanov.essenty.statekeeper.StateKeeperDispatcher
 import com.blockstream.common.data.SetupArgs
@@ -75,7 +75,7 @@ class RecoveryIntroViewModel(
 
         viewModelScope.launch {
             _navData.value = NavData(
-                title = getString(Res.string.id_before_you_backup),
+                title = getString(Res.string.id_before_you_back_up),
                 subtitle = greenWalletOrNull?.name
             )
         }

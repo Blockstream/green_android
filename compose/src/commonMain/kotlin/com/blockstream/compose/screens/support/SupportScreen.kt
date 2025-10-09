@@ -26,7 +26,7 @@ import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import blockstream_green.common.generated.resources.Res
 import blockstream_green.common.generated.resources.id_email
-import blockstream_green.common.generated.resources.id_i_understand_that_asking_for_support
+import blockstream_green.common.generated.resources.id_i_understand_that_asking_for
 import blockstream_green.common.generated.resources.id_issue_description
 import blockstream_green.common.generated.resources.id_message
 import blockstream_green.common.generated.resources.id_please_be_as_detailed_as_possible
@@ -147,7 +147,7 @@ fun SupportScreen(
                                     onCheckedChange = viewModel.torAcknowledged.onValueChange()
                                 )
 
-                                Text(stringResource(Res.string.id_i_understand_that_asking_for_support))
+                                Text(stringResource(Res.string.id_i_understand_that_asking_for))
                             }
                         }
                     }

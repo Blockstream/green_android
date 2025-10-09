@@ -25,11 +25,11 @@ import blockstream_green.common.generated.resources.Res
 import blockstream_green.common.generated.resources.file
 import blockstream_green.common.generated.resources.id_import_from_file
 import blockstream_green.common.generated.resources.id_import_wallet
+import blockstream_green.common.generated.resources.id_in_a_watch_only_wallet_your_private_keys_remain
 import blockstream_green.common.generated.resources.id_paste_descriptors_placeholder
 import blockstream_green.common.generated.resources.id_scan_or_paste_xpub_descriptor
 import blockstream_green.common.generated.resources.id_set_up_watchonly_wallet
 import blockstream_green.common.generated.resources.id_set_up_with_username_and_password
-import blockstream_green.common.generated.resources.id_watchonly_wallet_description
 import com.blockstream.common.data.ScanResult
 import com.blockstream.common.events.Events
 import com.blockstream.common.models.onboarding.watchonly.WatchOnlySinglesigViewModel
@@ -41,9 +41,9 @@ import com.blockstream.compose.components.GreenButtonSize
 import com.blockstream.compose.components.GreenButtonType
 import com.blockstream.compose.components.GreenIconButton
 import com.blockstream.compose.components.ScanQrButton
-import com.blockstream.compose.sheets.WatchOnlyNetworkBottomSheet
 import com.blockstream.compose.extensions.onValueChange
 import com.blockstream.compose.managers.rememberPlatformManager
+import com.blockstream.compose.sheets.WatchOnlyNetworkBottomSheet
 import com.blockstream.compose.theme.bodyLarge
 import com.blockstream.compose.theme.displayMedium
 import com.blockstream.compose.theme.whiteMedium
@@ -103,7 +103,7 @@ fun WatchOnlySinglesigScreen(
                 )
 
                 Text(
-                    text = stringResource(Res.string.id_watchonly_wallet_description),
+                    text = stringResource(Res.string.id_in_a_watch_only_wallet_your_private_keys_remain),
                     style = bodyLarge,
                     color = whiteMedium
                 )

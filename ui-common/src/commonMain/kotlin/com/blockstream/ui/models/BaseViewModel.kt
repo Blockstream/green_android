@@ -13,7 +13,9 @@ import com.rickclephas.kmp.observableviewmodel.MutableStateFlow
 import com.rickclephas.kmp.observableviewmodel.ViewModel
 import com.rickclephas.kmp.observableviewmodel.coroutineScope
 import kotlinx.coroutines.channels.Channel
+import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.MutableSharedFlow
+import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.receiveAsFlow
 import kotlinx.coroutines.launch
@@ -42,7 +44,7 @@ abstract class BaseViewModel() : ViewModel(), INavData, IOnProgress, IPostEvent 
     protected val _sideEffect: Channel<SideEffect> = Channel()
 
     @NativeCoroutines
-    val sideEffect = _sideEffect.receiveAsFlow()
+    val sideEffect: Flow<SideEffect> = _sideEffect.receiveAsFlow()
 
     protected val _navData = MutableStateFlow(NavData())
 
@@ -50,10 +52,10 @@ abstract class BaseViewModel() : ViewModel(), INavData, IOnProgress, IPostEvent 
     override val navData: StateFlow<NavData> = _navData
 
     @NativeCoroutinesState
-    override val onProgress = MutableStateFlow(viewModelScope, false)
+    override val onProgress: MutableStateFlow<Boolean> = MutableStateFlow(viewModelScope, false)
 
     @NativeCoroutinesState
-    override val onProgressDescription = MutableStateFlow<String?>(null)
+    override val onProgressDescription: MutableStateFlow<String?> = MutableStateFlow(null)
 
     // Helper method to force the use of MutableStateFlow(viewModelScope)
     @NativeCoroutinesIgnore

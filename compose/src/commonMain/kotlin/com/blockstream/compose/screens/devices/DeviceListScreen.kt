@@ -33,7 +33,7 @@ import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import blockstream_green.common.generated.resources.Res
 import blockstream_green.common.generated.resources.ble
 import blockstream_green.common.generated.resources.blockstream_devices
-import blockstream_green.common.generated.resources.id_blockstream_app_needs_access
+import blockstream_green.common.generated.resources.id_blockstream_needs_access_to
 import blockstream_green.common.generated.resources.id_choose_a_usb_or_bluetooth
 import blockstream_green.common.generated.resources.id_connect_using_usb_or_bluetooth
 import blockstream_green.common.generated.resources.id_connect_via_qr
@@ -311,7 +311,7 @@ fun DeviceListScreen(
                             if (bluetoothState == BluetoothState.LOCATION_SERVICES_DISABLED || bluetoothState == BluetoothState.PERMISSIONS_NOT_GRANTED) {
 
                                 Text(
-                                    stringResource(Res.string.id_blockstream_app_needs_access),
+                                    stringResource(Res.string.id_blockstream_needs_access_to),
                                     color = whiteMedium,
                                     style = bodySmall,
                                     textAlign = TextAlign.Center

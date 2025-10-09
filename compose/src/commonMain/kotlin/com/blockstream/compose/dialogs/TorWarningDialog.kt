@@ -7,7 +7,7 @@ import androidx.compose.material3.TextButton
 import androidx.compose.runtime.Composable
 import blockstream_green.common.generated.resources.Res
 import blockstream_green.common.generated.resources.id_cancel
-import blockstream_green.common.generated.resources.id_do_you_want_to_enable_tor
+import blockstream_green.common.generated.resources.id_do_you_want_to_enable_tor_to
 import blockstream_green.common.generated.resources.id_ok
 import blockstream_green.common.generated.resources.id_warning
 import com.adamglin.PhosphorIcons
@@ -37,7 +37,7 @@ fun TorWarningDialog(
             Text(text = stringResource(Res.string.id_warning))
         },
         text = {
-            Text(text = stringResource(Res.string.id_do_you_want_to_enable_tor))
+            Text(text = stringResource(Res.string.id_do_you_want_to_enable_tor_to))
         },
         confirmButton = {
             TextButton(

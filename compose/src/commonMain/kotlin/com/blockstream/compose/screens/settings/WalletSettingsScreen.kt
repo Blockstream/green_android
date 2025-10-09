@@ -40,9 +40,8 @@ import blockstream_green.common.generated.resources.id_add_a_pgp_public_key_to_r
 import blockstream_green.common.generated.resources.id_amp_id
 import blockstream_green.common.generated.resources.id_archived_account
 import blockstream_green.common.generated.resources.id_archived_accounts
-import blockstream_green.common.generated.resources.id_auto_logout_time
 import blockstream_green.common.generated.resources.id_auto_logout_timeout
-import blockstream_green.common.generated.resources.id_backup_recovery_phrase
+import blockstream_green.common.generated.resources.id_back_up_recovery_phrase
 import blockstream_green.common.generated.resources.id_biometric_login_is_disabled
 import blockstream_green.common.generated.resources.id_biometric_login_is_enabled
 import blockstream_green.common.generated.resources.id_change_pin
@@ -60,9 +59,8 @@ import blockstream_green.common.generated.resources.id_get_support
 import blockstream_green.common.generated.resources.id_i_lost_my_2fa
 import blockstream_green.common.generated.resources.id_i_lost_my_2fa_method
 import blockstream_green.common.generated.resources.id_lightning
-import blockstream_green.common.generated.resources.id_login_with_biometrics
+import blockstream_green.common.generated.resources.id_log_in_with_biometrics
 import blockstream_green.common.generated.resources.id_logout
-import blockstream_green.common.generated.resources.id_min
 import blockstream_green.common.generated.resources.id_minute
 import blockstream_green.common.generated.resources.id_pgp_key
 import blockstream_green.common.generated.resources.id_recovery_transaction_emails
@@ -459,8 +457,8 @@ fun WalletSettingsScreen(
 
                     is WalletSetting.AutoLogoutTimeout -> {
                         Setting(
-                            title = stringResource(Res.string.id_auto_logout_time),
-                            subtitle = "${item.timeout} ${stringResource(Res.string.id_min)}",
+                            title = stringResource(Res.string.id_auto_logout_timeout),
+                            subtitle = "${item.timeout} ${stringResource(Res.string.id_minute)}",
                             imageVector = PhosphorIcons.Regular.CaretRight,
                             modifier = Modifier.clickable {
                                 viewModel.postEvent(LocalEvents.AutologoutTimeout)
@@ -519,7 +517,7 @@ fun WalletSettingsScreen(
 
                     is WalletSetting.LoginWithBiometrics -> {
                         Setting(
-                            title = stringResource(Res.string.id_login_with_biometrics),
+                            title = stringResource(Res.string.id_log_in_with_biometrics),
                             subtitle = stringResource(
                                 if (item.canEnable) {
                                     if (item.enabled) {
@@ -566,7 +564,7 @@ fun WalletSettingsScreen(
 
                     WalletSetting.RecoveryPhrase -> {
                         Setting(
-                            title = stringResource(Res.string.id_backup_recovery_phrase),
+                            title = stringResource(Res.string.id_back_up_recovery_phrase),
                             subtitle = stringResource(Res.string.id_touch_to_display),
                             imageVector = PhosphorIcons.Regular.CaretRight,
                             modifier = Modifier.clickable {

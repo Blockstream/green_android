@@ -1,7 +1,7 @@
 package com.blockstream.common.models.recovery
 
 import blockstream_green.common.generated.resources.Res
-import blockstream_green.common.generated.resources.id_backup_recovery_phrase
+import blockstream_green.common.generated.resources.id_back_up_recovery_phrase
 import blockstream_green.common.generated.resources.id_lightning
 import com.blockstream.common.Urls
 import com.blockstream.common.data.GreenWallet
@@ -65,7 +65,7 @@ class RecoveryPhraseViewModel(
     init {
         viewModelScope.launch {
             _navData.value = NavData(
-                title = getString(Res.string.id_backup_recovery_phrase),
+                title = getString(Res.string.id_back_up_recovery_phrase),
                 subtitle = if (isLightning) getString(Res.string.id_lightning) else null
             )
 

@@ -17,8 +17,8 @@ import androidx.compose.ui.unit.dp
 import blockstream_green.common.generated.resources.Res
 import blockstream_green.common.generated.resources.id_2fa_dispute_in_progress
 import blockstream_green.common.generated.resources.id_2fa_reset_in_progress
+import blockstream_green.common.generated.resources.id_back_up_now
 import blockstream_green.common.generated.resources.id_back_up_your_wallet_now
-import blockstream_green.common.generated.resources.id_backup
 import blockstream_green.common.generated.resources.id_learn_more
 import blockstream_green.common.generated.resources.id_lightning_account
 import blockstream_green.common.generated.resources.id_lightning_service_is_undergoing
@@ -79,7 +79,7 @@ fun GreenAlert(modifier: Modifier = Modifier, alertType: AlertType, viewModel: G
                 title = stringResource(Res.string.id_back_up_your_wallet_now),
                 message = stringResource(Res.string.id_your_recovery_phrase_is_the_only_way),
                 icon = PhosphorIcons.Regular.Warning,
-                primaryButton = stringResource(Res.string.id_backup),
+                primaryButton = stringResource(Res.string.id_back_up_now),
                 onPrimaryClick = {
                     viewModel.postEvent(
                         NavigateDestinations.RecoveryIntro(

@@ -9,9 +9,8 @@ import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import blockstream_green.common.generated.resources.Res
 import blockstream_green.common.generated.resources.id_connect_hardware_wallet
-import blockstream_green.common.generated.resources.id_sign_transaction_via_qr
+import blockstream_green.common.generated.resources.id_sign_transaction
 import com.blockstream.common.models.send.CreateTransactionViewModelAbstract
-
 import com.blockstream.common.models.send.PendingAction
 import com.blockstream.common.models.send.SendConfirmViewModelPreview
 import com.blockstream.common.navigation.NavigateDestinations
@@ -34,7 +33,7 @@ fun GreenConfirmButton(
     if (isWatchOnly && !isSweep) {
         if (viewModel.account.let { !it.isLiquid && !it.isMultisig }) {
             GreenButton(
-                text = stringResource(Res.string.id_sign_transaction_via_qr),
+                text = stringResource(Res.string.id_sign_transaction),
                 enabled = buttonEnabled,
                 size = GreenButtonSize.BIG,
                 modifier = Modifier.fillMaxWidth(),

@@ -43,8 +43,8 @@ android {
     defaultConfig {
         minSdk = libs.versions.androidMinSdk.get().toInt()
         targetSdk = libs.versions.androidTargetSdk.get().toInt()
-        versionCode = 509
-        versionName = "5.0.9"
+        versionCode = 510
+        versionName = "5.1.0"
 
         base.archivesName = "BlockstreamGreen-v$versionName"
         proguardFiles(getDefaultProguardFile("proguard-android-optimize.txt"), "proguard-rules.pro")

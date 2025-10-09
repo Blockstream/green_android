@@ -49,7 +49,6 @@ import com.blockstream.common.models.login.Bip39PassphraseViewModel
 import com.blockstream.common.models.login.LoginViewModel
 import com.blockstream.common.models.onboarding.SetupNewWalletViewModel
 import com.blockstream.common.models.onboarding.hardware.UseHardwareDeviceViewModel
-import com.blockstream.common.models.onboarding.phone.AddWalletViewModel
 import com.blockstream.common.models.onboarding.phone.EnterRecoveryPhraseViewModel
 import com.blockstream.common.models.onboarding.phone.PinViewModel
 import com.blockstream.common.models.onboarding.watchonly.WatchOnlyMultisigViewModel
@@ -126,7 +125,6 @@ import com.blockstream.compose.screens.login.LoginScreen
 import com.blockstream.compose.screens.onboarding.SetupNewWalletScreen
 import com.blockstream.compose.screens.onboarding.hardware.JadeGuideScreen
 import com.blockstream.compose.screens.onboarding.hardware.UseHardwareDeviceScreen
-import com.blockstream.compose.screens.onboarding.phone.AddWalletScreen
 import com.blockstream.compose.screens.onboarding.phone.EnterRecoveryPhraseScreen
 import com.blockstream.compose.screens.onboarding.phone.PinScreen
 import com.blockstream.compose.screens.onboarding.watchonly.WatchOnlyMultisigScreen
@@ -244,9 +242,6 @@ fun Router(
             }
             appComposable<NavigateDestinations.SetupNewWallet> {
                 SetupNewWalletScreen(viewModel { SetupNewWalletViewModel() })
-            }
-            appComposable<NavigateDestinations.AddWallet> {
-                AddWalletScreen(viewModel { AddWalletViewModel() })
             }
             appComposable<NavigateDestinations.ArchivedAccounts> {
                 val args = it.toRoute<NavigateDestinations.ArchivedAccounts>()

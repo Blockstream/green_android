@@ -69,4 +69,5 @@ expect class BottomSheetNavigator() : Navigator<Destination> {
     internal var onDismissRequest: () -> Unit
 
     fun setSheetState(sheetState: SheetState)
+    override fun createDestination(): Destination
 }

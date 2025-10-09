@@ -26,7 +26,7 @@ import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import blockstream_green.common.generated.resources.Res
 import blockstream_green.common.generated.resources.id_output_descriptors
-import blockstream_green.common.generated.resources.id_you_can_use_your_descriptor
+import blockstream_green.common.generated.resources.id_you_can_use_your_descriptor_to
 import blockstream_green.common.generated.resources.qr_code
 import com.adamglin.PhosphorIcons
 import com.adamglin.phosphoricons.Regular
@@ -71,7 +71,7 @@ fun AccountDescriptorScreen(
         ) {
             GreenAlert(
                 title = null,
-                message = stringResource(Res.string.id_you_can_use_your_descriptor),
+                message = stringResource(Res.string.id_you_can_use_your_descriptor_to),
                 isBlue = true,
                 icon = PhosphorIcons.Regular.Info,
                 modifier = Modifier.fillMaxWidth()

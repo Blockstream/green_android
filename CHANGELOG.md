@@ -4,7 +4,7 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/).
 
 
-## [Unreleased]
+## [5.1.0] - 2025-10-09
 
 #### Added
 - Watch-only wallets: Export or share unsigned psbt to a file and import signed psbt (pset support coming soon)

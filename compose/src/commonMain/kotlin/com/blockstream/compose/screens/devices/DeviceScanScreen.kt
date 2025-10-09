@@ -20,7 +20,7 @@ import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import blockstream_green.common.generated.resources.Res
 import blockstream_green.common.generated.resources.generic_device
-import blockstream_green.common.generated.resources.id_blockstream_app_needs_access
+import blockstream_green.common.generated.resources.id_blockstream_needs_access_to
 import blockstream_green.common.generated.resources.id_connect_usb_cable_or_enable
 import blockstream_green.common.generated.resources.id_enable_bluetooth
 import blockstream_green.common.generated.resources.id_enable_location_services
@@ -141,7 +141,7 @@ fun DeviceScanScreen(
             if (bluetoothState == BluetoothState.LOCATION_SERVICES_DISABLED || bluetoothState == BluetoothState.PERMISSIONS_NOT_GRANTED) {
 
                 Text(
-                    stringResource(Res.string.id_blockstream_app_needs_access),
+                    stringResource(Res.string.id_blockstream_needs_access_to),
                     color = whiteMedium,
                     style = bodySmall,
                     textAlign = TextAlign.Center

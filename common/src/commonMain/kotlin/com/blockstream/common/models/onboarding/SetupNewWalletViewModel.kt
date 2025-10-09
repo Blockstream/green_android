@@ -45,8 +45,6 @@ class SetupNewWalletViewModel(greenWalletOrNull: GreenWallet? = null) :
     private var _activeEvent: Event? = null
 
     class LocalEvents {
-        object ClickOnThisDevice : Event
-        object ClickOnHardwareWallet : Event
         object WatchOnly : Event
 
         object SetupMobileWallet : Event
@@ -97,16 +95,6 @@ class SetupNewWalletViewModel(greenWalletOrNull: GreenWallet? = null) :
             }
 
             is LocalEvents.SetupHardwareWallet -> {
-                postSideEffect(SideEffects.NavigateTo(NavigateDestinations.UseHardwareDevice))
-            }
-
-            is LocalEvents.ClickOnThisDevice -> {
-                postSideEffect(SideEffects.NavigateTo(NavigateDestinations.AddWallet))
-                countly.addWallet()
-            }
-
-            is LocalEvents.ClickOnHardwareWallet -> {
-                countly.hardwareWallet()
                 postSideEffect(SideEffects.NavigateTo(NavigateDestinations.UseHardwareDevice))
             }
 

@@ -77,11 +77,7 @@ sealed class NavigateDestinations : NavigateDestination() {
     data object SetupNewWallet : NavigateDestination()
 
     @Serializable
-    data object AddWallet : NavigateDestination(unique = true)
-
-    @Serializable
     data object UseHardwareDevice : NavigateDestination(unique = true)
-
 
 
     @Serializable

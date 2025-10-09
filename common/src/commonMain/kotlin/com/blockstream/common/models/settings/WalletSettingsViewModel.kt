@@ -3,14 +3,12 @@ package com.blockstream.common.models.settings
 import blockstream_green.common.generated.resources.Res
 import blockstream_green.common.generated.resources.id_12_months_51840_blocks
 import blockstream_green.common.generated.resources.id_15_months_65535_blocks
+import blockstream_green.common.generated.resources.id_6_months_25920_blocks
 import blockstream_green.common.generated.resources.id_2fa_account
-import blockstream_green.common.generated.resources.id_12_months
-import blockstream_green.common.generated.resources.id_15_months
 import blockstream_green.common.generated.resources.id_2fa_expiry
 import blockstream_green.common.generated.resources.id_2fa_methods
 import blockstream_green.common.generated.resources.id_2fa_reset_in_progress
 import blockstream_green.common.generated.resources.id_2fa_threshold
-import blockstream_green.common.generated.resources.id_6_months
 import blockstream_green.common.generated.resources.id_about
 import blockstream_green.common.generated.resources.id_another_2fa_method_is_already
 import blockstream_green.common.generated.resources.id_confirm_via_2fa_that_you
@@ -290,9 +288,9 @@ class WalletSettingsViewModel(
 
                 if (showBuckets) {
                     list += listOf(
-                        Res.string.id_6_months,
-                        Res.string.id_12_months,
-                        Res.string.id_15_months,
+                        Res.string.id_6_months_25920_blocks,
+                        Res.string.id_12_months_51840_blocks,
+                        Res.string.id_15_months_65535_blocks,
                     ).mapIndexed { index, titleRes ->
                         WalletSetting.TwoFactorBucket(
                             title = getString(titleRes),

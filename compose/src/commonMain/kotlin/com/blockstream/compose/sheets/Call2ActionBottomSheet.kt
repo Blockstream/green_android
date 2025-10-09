@@ -9,7 +9,7 @@ import androidx.compose.ui.text.style.TextAlign
 import blockstream_green.common.generated.resources.Res
 import blockstream_green.common.generated.resources.id_2fa_isnt_set_up_yetnnyou_can
 import blockstream_green.common.generated.resources.id_enable_2fa
-import blockstream_green.common.generated.resources.id_setup_2fa_now
+import blockstream_green.common.generated.resources.id_set_up_2fa_now
 import com.blockstream.common.gdk.data.Network
 import com.blockstream.common.models.GreenViewModel
 import com.blockstream.common.navigation.NavigateDestinations
@@ -39,7 +39,7 @@ fun Call2ActionBottomSheet(
         )
 
         GreenButton(
-            text = stringResource(Res.string.id_setup_2fa_now),
+            text = stringResource(Res.string.id_set_up_2fa_now),
             modifier = Modifier.fillMaxWidth()
         ) {
             viewModel.postEvent(NavigateDestinations.TwoFactorAuthentication(greenWallet = viewModel.greenWallet, network = network))

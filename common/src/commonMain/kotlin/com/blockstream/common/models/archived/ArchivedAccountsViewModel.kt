@@ -3,7 +3,7 @@ package com.blockstream.common.models.archived
 import blockstream_green.common.generated.resources.Res
 import blockstream_green.common.generated.resources.id_archived_accounts
 import blockstream_green.common.generated.resources.id_unarchive
-import blockstream_green.common.generated.resources.id_d_accounts_unarchived_successfully
+//import blockstream_green.common.generated.resources.id_d_accounts_unarchived_successfully
 import com.blockstream.common.data.DataState
 import com.blockstream.common.data.GreenWallet
 import com.blockstream.common.extensions.hasHistory
@@ -101,9 +101,9 @@ class ArchivedAccountsViewModel(greenWallet: GreenWallet, navigateToRoot: Boolea
                     setActiveAccount(it)
                 }
                 
-                val count = _selectedAccounts.value.size
-                val message = getString(Res.string.id_d_accounts_unarchived_successfully, count)
-                postSideEffect(SideEffects.Snackbar(StringHolder.create(message)))
+                //val count = _selectedAccounts.value.size
+                //val message = getString(Res.string.id_d_accounts_unarchived_successfully, count)
+                //postSideEffect(SideEffects.Snackbar(StringHolder.create(message)))
                 
                 if (navigateToRoot) {
                     postSideEffect(SideEffects.NavigateToRoot())

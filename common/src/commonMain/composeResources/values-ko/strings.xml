@@ -121,7 +121,6 @@
   <string name="id_blocks_confirmed">컨펌된 블록</string>
   <string name="id_blockstream_devices">Blockstream Devices</string>
   <string name="id_blockstream_does_not_have">Blockstream does not have access to your wallet backup and will not be able to help you in case you lose it</string>
-  <string name="id_blockstream_app_needs_access">Blockstream App needs access to Bluetooth in order to connect to hardware wallets. Location data is not used or kept by Blockstream.</string>
   <string name="id_blockstream_app_supports_both">Blockstream App supports both Bitcoin and the Liquid Network. Don\'t worry, you can create another wallet for a different network at any time.</string>
   <string name="id_blockstream_appnsimple_and">Blockstream App:\nSimple and Secure</string>
   <string name="id_blockstream_store">Blockstream Store</string>

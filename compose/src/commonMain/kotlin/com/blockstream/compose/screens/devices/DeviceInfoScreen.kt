@@ -27,7 +27,7 @@ import blockstream_green.common.generated.resources.Res
 import blockstream_green.common.generated.resources.id_continue
 import blockstream_green.common.generated.resources.id_create_a_pin
 import blockstream_green.common.generated.resources.id_enter_and_confirm_a_unique_pin
-import blockstream_green.common.generated.resources.id_setup_your_jade
+import blockstream_green.common.generated.resources.id_set_up_your_jade
 import com.blockstream.common.data.MenuEntry
 import com.blockstream.common.data.MenuEntryList
 import com.blockstream.common.events.Events
@@ -182,7 +182,7 @@ fun DeviceInfoScreen(
                             horizontalAlignment = Alignment.CenterHorizontally
                         ) {
                             Text(
-                                text = stringResource(Res.string.id_setup_your_jade).uppercase(),
+                                text = stringResource(Res.string.id_set_up_your_jade).uppercase(),
                                 style = labelMedium,
                                 color = green,
                                 textAlign = TextAlign.Center

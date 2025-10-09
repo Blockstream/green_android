@@ -4,14 +4,13 @@ import blockstream_green.common.generated.resources.Res
 import blockstream_green.common.generated.resources.id_get_watch_only_information_from
 import blockstream_green.common.generated.resources.id_initiate_oracle_communication
 import blockstream_green.common.generated.resources.id_jade_will_securely_create_and
-import blockstream_green.common.generated.resources.id_qr_pin_unlock
 import blockstream_green.common.generated.resources.id_psbt_saved_to_files
+import blockstream_green.common.generated.resources.id_qr_pin_unlock
 import blockstream_green.common.generated.resources.id_scan_qr_on_device
 import blockstream_green.common.generated.resources.id_scan_qr_on_jade
 import blockstream_green.common.generated.resources.id_scan_qr_with_device
 import blockstream_green.common.generated.resources.id_scan_qr_with_jade
 import blockstream_green.common.generated.resources.id_scan_your_xpub_on_jade
-import blockstream_green.common.generated.resources.id_success
 import blockstream_green.common.generated.resources.id_validate_pin_and_unlock
 import blockstream_green.common.generated.resources.id_validate_the_transaction_details
 import com.blockstream.common.Urls
@@ -582,7 +581,7 @@ class JadeQRViewModel(
                 ),
                 StepInfo(
                     title = Res.string.id_scan_qr_on_jade,
-                    message = Res.string.id_validate_pin_and_unlock,
+                    message = Res.string.id_validate_the_transaction_details,
                     step = 2,
                     isScan = true
                 ),

@@ -2,7 +2,7 @@ package com.blockstream.common.models.exchange
 
 import blockstream_green.common.generated.resources.Res
 import blockstream_green.common.generated.resources.id_buy
-import blockstream_green.common.generated.resources.id_connecting_to_s
+import blockstream_green.common.generated.resources.id_connecting_to_1d
 import blockstream_green.common.generated.resources.id_error
 import blockstream_green.common.generated.resources.id_please_select_your_correct_billing
 import blockstream_green.common.generated.resources.id_select_your_region
@@ -125,7 +125,7 @@ abstract class BuyViewModelAbstract(
             onProgress.value = true
             _onProgressBuy.value = true
             onProgressDescription.value =
-                getString(Res.string.id_connecting_to_s, quote.value?.serviceProvider ?: "")
+                getString(Res.string.id_connecting_to_1d, quote.value?.serviceProvider ?: "")
         }, postAction = {
             onProgress.value = false
             _onProgressBuy.value = false
