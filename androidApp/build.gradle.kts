@@ -93,6 +93,10 @@ android {
 
             // No development PIN for production
             buildConfigField("String", "DEV_PIN_CODE", "null")
+
+            ndk {
+                abiFilters.addAll(listOf("armeabi-v7a", "arm64-v8a"))
+            }
         }
 
         create("productionFDroid") {
@@ -108,6 +112,10 @@ android {
 
             // No development PIN for production
             buildConfigField("String", "DEV_PIN_CODE", "null")
+
+            ndk {
+                abiFilters.addAll(listOf("armeabi-v7a", "arm64-v8a"))
+            }
         }
     }
     applicationVariants.all {
@@ -124,10 +132,6 @@ android {
             isMinifyEnabled = true
             isShrinkResources = true
             matchingFallbacks += listOf("normal")
-
-            ndk {
-                abiFilters += listOf("armeabi-v7a", "arm64-v8a") // includes ARM & x86_64 .so files only, no x86 .so file
-            }
 
             signingConfigs.getByName("release").also {
                 if(it.storeFile != null){
