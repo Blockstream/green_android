@@ -584,19 +584,19 @@ fun ReceiveScreen(
                     }
                 }
 
-                AnimatedVisibility(visible = accountAsset?.account?.isLightning == true) {
-                    GreenButton(
-                        text = stringResource(if (showLightningOnChainAddress) Res.string.id_show_lightning_invoice else Res.string.id_show_onchain_address),
-                        modifier = Modifier.fillMaxWidth(),
-                        type = GreenButtonType.TEXT,
-                        color = GreenButtonColor.WHITE,
-                        icon = PhosphorIcons.Regular.Info,
-                        size = GreenButtonSize.SMALL,
-                        enabled = !onProgress
-                    ) {
-                        viewModel.postEvent(ReceiveViewModel.LocalEvents.ToggleLightning)
-                    }
-                }
+//                AnimatedVisibility(visible = accountAsset?.account?.isLightning == true) {
+//                    GreenButton(
+//                        text = stringResource(if (showLightningOnChainAddress) Res.string.id_show_lightning_invoice else Res.string.id_show_onchain_address),
+//                        modifier = Modifier.fillMaxWidth(),
+//                        type = GreenButtonType.TEXT,
+//                        color = GreenButtonColor.WHITE,
+//                        icon = PhosphorIcons.Regular.Info,
+//                        size = GreenButtonSize.SMALL,
+//                        enabled = !onProgress
+//                    ) {
+//                        viewModel.postEvent(ReceiveViewModel.LocalEvents.ToggleLightning)
+//                    }
+//                }
             }
 
             androidx.compose.animation.AnimatedVisibility(

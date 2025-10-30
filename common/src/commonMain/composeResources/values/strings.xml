@@ -1931,4 +1931,5 @@
     <string name="id_blockstream_app_needs_the_master_blinding">Blockstream App needs the master blinding key from Jade</string>
     <string name="id_login_with_biometrics">Login with Biometrics</string>
     <string name="id_transaction_is_awaiting_conf">Your transaction is awaiting confirmation.</string>
+    <string name="id_the_amount_is_above_your_inbound">The amount is above your inbound liquidity. Please type an amount lower than %1$s (%2$s).</string>
 </resources>

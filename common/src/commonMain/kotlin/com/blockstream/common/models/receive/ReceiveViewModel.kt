@@ -19,6 +19,7 @@ import blockstream_green.common.generated.resources.id_sweep_from_paper_wallet
 import blockstream_green.common.generated.resources.id_the_address_is_valid
 import blockstream_green.common.generated.resources.id_this_amount_is_below_the
 import blockstream_green.common.generated.resources.id_you_cannot_receive_more_than_s
+import blockstream_green.common.generated.resources.id_the_amount_is_above_your_inbound
 import blockstream_green.common.generated.resources.id_you_have_just_received_s
 import blockstream_green.common.generated.resources.lightning_fill
 import blockstream_green.common.generated.resources.note_pencil
@@ -820,16 +821,16 @@ class ReceiveViewModel(greenWallet: GreenWallet, initialAccountAsset: AccountAss
 
                 _amountError.value = if (amount.value.isBlank()) null else {
                     if (balance != null) {
-                        val maxReceivableSatoshi = nodeState.maxReceivableSatoshi()
+                        val inboundLiquidity = nodeState.totalInboundLiquiditySatoshi()
                         val channelMinimum = openChannelFee?.feeSatoshi() ?: 0
-                        if (balance.satoshi > maxReceivableSatoshi) {
+                        if (balance.satoshi > inboundLiquidity) {
                             getString(
-                                Res.string.id_you_cannot_receive_more_than_s,
-                                maxReceivableSatoshi.toAmountLook(
+                                Res.string.id_the_amount_is_above_your_inbound,
+                                inboundLiquidity.toAmountLook(
                                     session = session,
                                     withUnit = true,
                                     denomination = denomination.value.notFiat()
-                                ) ?: "", maxReceivableSatoshi.toAmountLook(
+                                ) ?: "", inboundLiquidity.toAmountLook(
                                     session = session,
                                     withUnit = true,
                                     denomination = Denomination.fiat(session)
