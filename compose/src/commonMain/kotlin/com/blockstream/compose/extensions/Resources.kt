@@ -33,6 +33,7 @@ import blockstream_green.common.generated.resources.id_taproot
 import blockstream_green.common.generated.resources.id_transaction_completed
 import blockstream_green.common.generated.resources.id_transaction_confirmed_ss
 import blockstream_green.common.generated.resources.id_transaction_failed
+import blockstream_green.common.generated.resources.id_unconfirmed
 import blockstream_green.common.generated.resources.id_unknown
 import blockstream_green.common.generated.resources.id_verified
 import blockstream_green.common.generated.resources.id_verifying
@@ -199,7 +200,7 @@ fun TransactionStatus.color() = when (this) {
 
 @Composable
 fun TransactionStatus.title() = when (this) {
-    is Unconfirmed -> stringResource(Res.string.id_transaction_confirmed_ss, "0", confirmationsRequired.toString())
+    is Unconfirmed -> stringResource(Res.string.id_unconfirmed)
     is Confirmed -> stringResource(Res.string.id_transaction_confirmed_ss, confirmations.toString(), confirmationsRequired.toString())
     is Completed -> stringResource(Res.string.id_transaction_completed)
     is Failed -> stringResource(Res.string.id_transaction_failed)

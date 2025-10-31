@@ -1928,4 +1928,5 @@
     <string name="id_blockstream_app_only_supports_one_pin_per">Blockstream App only supports one PIN per network. To set a PIN for this wallet, disable the PIN on your original wallet first.</string>
     <string name="id_blockstream_app_needs_the_master_blinding">Blockstream App needs the master blinding key from Jade</string>
     <string name="id_login_with_biometrics">Login with Biometrics</string>
+    <string name="id_transaction_is_awaiting_conf">Your transaction is awaiting confirmation.</string>
 </resources>

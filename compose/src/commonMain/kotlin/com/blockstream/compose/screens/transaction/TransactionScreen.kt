@@ -61,6 +61,7 @@ import blockstream_green.common.generated.resources.id_transaction_id
 import blockstream_green.common.generated.resources.id_unblinding_data
 import blockstream_green.common.generated.resources.id_view_in_explorer
 import blockstream_green.common.generated.resources.id_your_transaction_failed_s
+import blockstream_green.common.generated.resources.id_transaction_is_awaiting_conf
 import blockstream_green.common.generated.resources.id_your_transaction_was
 import blockstream_green.common.generated.resources.magnifying_glass
 import blockstream_green.common.generated.resources.pencil_simple_line
@@ -196,6 +197,7 @@ fun TransactionScreen(
             val type by viewModel.type.collectAsStateWithLifecycle()
             val isCloseChannel by viewModel.isCloseChannel.collectAsStateWithLifecycle()
             val message: String = when {
+                status is Unconfirmed -> stringResource(Res.string.id_transaction_is_awaiting_conf)
                 status is Failed -> stringResource(
                     Res.string.id_your_transaction_failed_s,
                     (status as Failed).error
