@@ -347,7 +347,7 @@ class RecoverFundsViewModel(
 
                 if (maxReverseSwapAmount < minAmount) {
                     throw Exception(
-                        "id_you_can_empty_your_lightning_account_when|${
+                        "id_you_can_empty_your_lightning|${
                             minAmount.toLong().toAmountLook(
                                 session = session,
                                 denomination = Denomination.SATOSHI,
