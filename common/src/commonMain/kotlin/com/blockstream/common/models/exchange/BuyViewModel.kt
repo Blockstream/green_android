@@ -1,11 +1,14 @@
 package com.blockstream.common.models.exchange
 
 import blockstream_green.common.generated.resources.Res
+import blockstream_green.common.generated.resources.id_amount_too_high
+import blockstream_green.common.generated.resources.id_amount_too_low
 import blockstream_green.common.generated.resources.id_buy
 import blockstream_green.common.generated.resources.id_connecting_to_1d
 import blockstream_green.common.generated.resources.id_error
 import blockstream_green.common.generated.resources.id_please_select_your_correct_billing
 import blockstream_green.common.generated.resources.id_select_your_region
+import blockstream_green.common.generated.resources.id_something_went_wrong
 import blockstream_green.common.generated.resources.id_the_address_is_valid
 import blockstream_green.common.generated.resources.id_verify_address
 import com.blockstream.common.data.DenominatedValue
@@ -322,6 +325,14 @@ class BuyViewModel(greenWallet: GreenWallet, initialAccountAsset: AccountAsset? 
 
     private var updateQuotesJob: Job? = null
 
+    private suspend fun mapMeldErrorToUserFriendly(errorMessage: String?): String {
+        return when (errorMessage) {
+            "INVALID_AMOUNT_TOO_LOW" -> getString(Res.string.id_amount_too_low)
+            "INVALID_AMOUNT_TOO_HIGH" -> getString(Res.string.id_amount_too_high)
+            else ->  getString(Res.string.id_something_went_wrong)
+        }
+    }
+
     private fun updateQuotes(amount: String) {
         updateQuotesJob?.cancel()
         updateQuotesJob = doAsync(
@@ -350,7 +361,9 @@ class BuyViewModel(greenWallet: GreenWallet, initialAccountAsset: AccountAsset? 
                 quotes.value = it ?: emptyList()
                 _error.value = null
             }, onError = {
-                _error.value = it.message
+                viewModelScope.launch {
+                    _error.value = mapMeldErrorToUserFriendly(it.message)
+                }
                 quotes.value = emptyList()
             }
         )

@@ -127,6 +127,8 @@
     <string name="id_amount_must_be_at_most_s">Amount must be at most %1$s</string>
     <string name="id_amount_to_be_refunded">Amount to be refunded</string>
     <string name="id_amount_to_receive">Amount to Receive</string>
+    <string name="id_amount_too_high">Amount too high</string>
+    <string name="id_amount_too_low">Amount too low</string>
     <string name="id_amp">AMP</string>
     <string name="id_amp_account">AMP Account</string>
     <string name="id_amp_accounts_allow_you_to_send">AMP accounts allow you to send, receive, and store managed assets issued on the Liquid Network.</string>
