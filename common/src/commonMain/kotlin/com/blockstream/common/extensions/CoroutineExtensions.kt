@@ -23,7 +23,18 @@ import kotlin.coroutines.EmptyCoroutineContext
 // Log and handle the exception. Prevent unhanded exception crash
 suspend fun <T> tryCatch(context: CoroutineContext = EmptyCoroutineContext, block: suspend () -> T): T? =
     withContext(context = context + logException()) {
-        block()
+        try {
+            block()
+        } catch (e: CancellationException) {
+            // Re-throw cancellation to preserve coroutine cancellation behavior
+            throw e
+        } catch (e: Exception) {
+            e.printStackTrace()
+            KoinPlatformTools.defaultContext().get().getOrNull<CountlyBase>()?.also {
+                it.recordException(e)
+            }
+            null
+        }
     }
 
 fun <T> tryCatchNull(block: () -> T): T? = try {

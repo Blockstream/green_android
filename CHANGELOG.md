@@ -19,6 +19,7 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/).
 - Fix type mismatch in ReceiveScreen by using ImageVector instead of Painter for button icon
 - Show Amp accounts in liquid assets accounts list
 - Show the account details menu in watch-only wallets
+- Fix app crash when pasting or scanning addresses with poor network connectivity
 
 #### Changed
 - Refactored watch-only wallet setup with automatic network and format detection
