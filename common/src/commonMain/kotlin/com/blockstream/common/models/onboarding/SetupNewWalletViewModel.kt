@@ -12,6 +12,7 @@ import com.blockstream.common.crypto.PlatformCipher
 import com.blockstream.common.data.GreenWallet
 import com.blockstream.common.data.SetupArgs
 import com.blockstream.common.events.Events
+import com.blockstream.common.extensions.launchIn
 import com.blockstream.common.models.GreenViewModel
 import com.blockstream.common.navigation.NavigateDestinations
 import com.blockstream.common.sideeffects.SideEffects
@@ -24,6 +25,7 @@ import com.rickclephas.kmp.observableviewmodel.launch
 import kotlinx.coroutines.CompletableDeferred
 import kotlinx.coroutines.CoroutineStart
 import kotlinx.coroutines.async
+import kotlinx.coroutines.flow.onEach
 import org.jetbrains.compose.resources.getString
 import org.koin.core.component.inject
 
@@ -74,6 +76,11 @@ class SetupNewWalletViewModel(greenWalletOrNull: GreenWallet? = null) :
                 )
             )
         }
+
+        onProgress.onEach {
+            _navData.value = _navData.value.copy(isVisible = !it)
+        }.launchIn(this)
+
         bootstrap()
     }
 
@@ -159,7 +166,7 @@ class SetupNewWalletViewModel(greenWalletOrNull: GreenWallet? = null) :
                     it.await()
                 }
             }
-            
+
             onProgressDescription.value = getString(Res.string.id_creating_wallet)
 
             try {
@@ -179,6 +186,10 @@ class SetupNewWalletViewModel(greenWalletOrNull: GreenWallet? = null) :
                     throw e
                 }
             }
+        }, preAction = {
+            onProgress.value = true
+        }, postAction = {
+            onProgress.value = false
         }, onSuccess = { greenWallet ->
             if (greenWallet != null) {
                 postSideEffect(

@@ -4,6 +4,12 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/).
 
 
+## Unreleased
+
+#### Fixed
+- Display user-friendly error messages for amount validation in buy/exchange screen
+- Hide navigation buttons during biometric wallet creation to prevent interaction during setup
+
 ## [5.1.0] - 2025-10-09
 
 #### Added
@@ -13,7 +19,6 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/).
 - Fix type mismatch in ReceiveScreen by using ImageVector instead of Painter for button icon
 - Show Amp accounts in liquid assets accounts list
 - Show the account details menu in watch-only wallets
-- Display user-friendly error messages for amount validation in buy/exchange screen
 
 #### Changed
 - Refactored watch-only wallet setup with automatic network and format detection
