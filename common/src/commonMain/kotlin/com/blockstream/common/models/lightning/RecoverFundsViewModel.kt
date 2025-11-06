@@ -5,7 +5,8 @@ import blockstream_green.common.generated.resources.id_empty_lightning_account
 import blockstream_green.common.generated.resources.id_refund
 import blockstream_green.common.generated.resources.id_refund_initiated
 import blockstream_green.common.generated.resources.id_sweep
-import blockstream_green.common.generated.resources.id_sweep_initiated
+import blockstream_green.common.generated.resources.id_transfer_funds
+import blockstream_green.common.generated.resources.id_your_transaction_was
 import breez_sdk.RecommendedFees
 import breez_sdk.ReverseSwapFeesRequest
 import com.blockstream.common.data.Denomination
@@ -533,8 +534,8 @@ class RecoverFundsViewModel(
             } else {
                 postSideEffect(
                     SideEffects.NavigateBack(
-                        title = StringHolder.create(Res.string.id_sweep),
-                        message = StringHolder.create(Res.string.id_sweep_initiated)
+                        title = StringHolder.create(Res.string.id_transfer_funds),
+                        message = StringHolder.create(Res.string.id_your_transaction_was)
                     )
                 )
             }
