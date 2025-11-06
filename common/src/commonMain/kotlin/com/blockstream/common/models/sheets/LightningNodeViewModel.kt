@@ -68,7 +68,7 @@ class LightningNodeViewModel(greenWallet: GreenWallet) :
         object ShowRecoveryPhrase : Event
         object EmptyAccount : Event
         object RescanSwaps : Event
-        object ShareLogs : Event
+        object ShareDiagnosticData : Event
     }
 
     init {
@@ -161,8 +161,8 @@ class LightningNodeViewModel(greenWallet: GreenWallet) :
                 rescanSwaps()
             }
 
-            is LocalEvents.ShareLogs -> {
-                shareLogs()
+            is LocalEvents.ShareDiagnosticData -> {
+                shareDiagnosticData()
             }
 
             is LocalEvents.EmptyAccount -> {
@@ -188,9 +188,9 @@ class LightningNodeViewModel(greenWallet: GreenWallet) :
         })
     }
 
-    private fun shareLogs() {
+    private fun shareDiagnosticData() {
         doAsync({
-            val file = lightningManager.createLogs(session = session)
+            val file = lightningManager.createDiagnosticData(session = session)
             postSideEffect(SideEffects.ShareFile(file))
         }, onSuccess = {
             postSideEffect(SideEffects.Snackbar(StringHolder.create(Res.string.id_completed)))

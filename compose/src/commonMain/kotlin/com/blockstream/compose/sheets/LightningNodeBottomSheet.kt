@@ -18,7 +18,7 @@ import blockstream_green.common.generated.resources.Res
 import blockstream_green.common.generated.resources.id_empty_lightning_account
 import blockstream_green.common.generated.resources.id_node_info
 import blockstream_green.common.generated.resources.id_rescan_swaps
-import blockstream_green.common.generated.resources.id_share_logs
+import blockstream_green.common.generated.resources.id_share_diagnostic_data
 import blockstream_green.common.generated.resources.id_show_recovery_phrase
 import com.blockstream.common.models.sheets.LightningNodeViewModel
 import com.blockstream.common.models.sheets.LightningNodeViewModelAbstract
@@ -99,12 +99,12 @@ fun LightningNodeBottomSheet(
                         }
 
                         GreenButton(
-                            text = stringResource(Res.string.id_share_logs),
+                            text = stringResource(Res.string.id_share_diagnostic_data),
                             type = GreenButtonType.TEXT,
                             enabled = !onProgress,
                             modifier = Modifier.weight(1f)
                         ) {
-                            viewModel.postEvent(LightningNodeViewModel.LocalEvents.ShareLogs)
+                            viewModel.postEvent(LightningNodeViewModel.LocalEvents.ShareDiagnosticData)
                         }
                     }
                 }

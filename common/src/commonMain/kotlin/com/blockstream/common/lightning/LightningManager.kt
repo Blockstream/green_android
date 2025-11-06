@@ -75,7 +75,7 @@ class LightningManager constructor(
         }
     }
 
-    suspend fun createLogs(session: GdkSession): Path {
+    suspend fun createDiagnosticData(session: GdkSession): Path {
         val fileSystem = platformFileSystem()
         val logDir = "${appConfig.cacheDir}/logs/".toPath()
 
@@ -86,24 +86,13 @@ class LightningManager constructor(
             fileSystem.createDirectories(logDir, mustCreate = true)
         }
 
-        return "${logDir}/greenlight_logs_${Clock.System.now()}.txt".toPath().also {
+        return "${logDir}/greenlight_diagnostic_${Clock.System.now()}.txt".toPath().also {
             withContext(context = Dispatchers.IO) {
                 fileSystem.write(it) {
-
-                    val nodeIds = bridges.map {
-                        it.value.nodeInfoStateFlow.value
-                    }
-
-                    this.writeUtf8("------------------------------------------------------------------\n")
-                    this.writeUtf8("Node IDs: --------------------------------------------------------\n")
-                    this.writeUtf8(nodeIds.joinToString("\n") { it.id })
-                    this.writeUtf8("\nNode Info: -------------------------------------------------------\n")
-                    this.writeUtf8(nodeIds.joinToString("\n") { it.toString() })
-                    this.writeUtf8("\n------------------------------------------------------------------\n")
-                    this.writeUtf8(logs.toString())
                     session.lightningSdk.generateDiagnosticData()?.also {
-                        this.writeUtf8("\nDiagnostic Data: -------------------------------------------------\n")
+                        this.writeUtf8("\nLightning Diagnostic Data: -------------------------------------------------\n")
                         this.writeUtf8(it)
+                        this.writeUtf8("\n------------------------------------------------------------------\n")
                     }
                 }
             }
