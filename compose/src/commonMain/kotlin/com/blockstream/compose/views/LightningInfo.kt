@@ -12,7 +12,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
 import blockstream_green.common.generated.resources.Res
 import blockstream_green.common.generated.resources.id_learn_more
-import blockstream_green.common.generated.resources.id_sweep
+import blockstream_green.common.generated.resources.id_transfer_funds
 import blockstream_green.common.generated.resources.info
 import com.blockstream.common.looks.account.LightningInfoLook
 import com.blockstream.compose.components.GreenButton
@@ -48,7 +48,7 @@ fun LightningInfo(
                 ) {
                     Text(text = it, color = whiteMedium)
                     GreenButton(
-                        text = stringResource(Res.string.id_sweep),
+                        text = stringResource(Res.string.id_transfer_funds),
                         type = GreenButtonType.TEXT,
                         size = GreenButtonSize.SMALL,
                         modifier = Modifier.align(Alignment.End),

@@ -1,8 +1,8 @@
 package com.blockstream.common.looks.account
 
 import blockstream_green.common.generated.resources.Res
-import blockstream_green.common.generated.resources.id_channel_closure_initiated_you
 import blockstream_green.common.generated.resources.id_your_current_receive_capacity
+import blockstream_green.common.generated.resources.id_your_lightning_account_has_onchain
 import breez_sdk.NodeState
 import com.blockstream.common.gdk.GdkSession
 import com.blockstream.common.lightning.isLoading
@@ -22,7 +22,7 @@ data class LightningInfoLook constructor(val sweep: String? = null, val capacity
             val sweep =
                 if (session.isLightningShortcut || nodeState.onchainBalanceSatoshi() == 0L) null else {
                     getString(
-                        Res.string.id_channel_closure_initiated_you,
+                        Res.string.id_your_lightning_account_has_onchain,
                         nodeState.onchainBalanceSatoshi().toAmountLook(session = session) ?: ""
                     )
                 }
