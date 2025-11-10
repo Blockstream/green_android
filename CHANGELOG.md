@@ -27,6 +27,7 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/).
 - Allow export of diagnostic data from lightning node info
 
 #### Fixed
+- Fix crash when converting amounts before session is fully connected
 - Display user-friendly error messages for amount validation in buy/exchange screen
 - Hide navigation buttons during biometric wallet creation to prevent interaction during setup
 - Remove invalid characters from korean translations

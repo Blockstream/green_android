@@ -2698,7 +2698,7 @@ class GdkSession constructor(
         onlyInAcceptableRange: Boolean = true
     ): Balance? = withContext(context = Dispatchers.Default) {
 
-        val network = assetId.networkForAsset(this@GdkSession)?.takeIf { !it.isLightning } ?: defaultNetwork
+        val network = assetId.networkForAsset(this@GdkSession)?.takeIf { !it.isLightning } ?: defaultNetworkOrNull ?: return@withContext null
         val isPolicyAsset = assetId.isPolicyAsset(this@GdkSession)
         val asset = assetId?.let { getAsset(it) }
 
