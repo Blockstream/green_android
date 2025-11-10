@@ -30,6 +30,8 @@ import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.asSharedFlow
 import kotlinx.coroutines.flow.asStateFlow
+import kotlinx.atomicfu.locks.ReentrantLock
+import kotlinx.atomicfu.locks.withLock
 import kotlinx.coroutines.flow.filterNotNull
 import kotlinx.coroutines.flow.launchIn
 import kotlinx.coroutines.flow.onEach
@@ -88,8 +90,18 @@ class SessionManager constructor(
     private val _torProxy: MutableStateFlow<String?> = MutableStateFlow(null)
 
     private val gdkSessions = mutableSetOf<GdkSession>()
-    private val walletSessions = mutableMapOf<String, GdkSession>()
     private var onBoardingSession: GdkSession? = null
+
+    private val walletSessions = object {
+        private val map = mutableMapOf<String, GdkSession>()
+        private val lock = ReentrantLock()
+
+        inline fun <T> withLock(block: (MutableMap<String, GdkSession>) -> T): T {
+            return lock.withLock {
+                block(map)
+            }
+        }
+    }
 
     private var timeoutTimers = mutableListOf<Timer>()
 
@@ -183,7 +195,9 @@ class SessionManager constructor(
                 it.setEphemeralWallet(wallet)
             }
 
-            walletSessions[wallet.id] = it
+            walletSessions.withLock { sessions ->
+                sessions[wallet.id] = it
+            }
         }
     }
 
@@ -191,27 +205,30 @@ class SessionManager constructor(
         wallet?.let { getWalletSessionOrNull(it) } ?: run { getOnBoardingSession() }
 
     fun getWalletSessionOrNull(walletId: String): GdkSession? {
-        return walletSessions[walletId] ?: gdkSessions.find { it.ephemeralWallet?.id == walletId }?.let {
-            return it
-        }
+        return walletSessions.withLock { sessions ->
+            sessions[walletId]
+        } ?: gdkSessions.find { it.ephemeralWallet?.id == walletId }
     }
 
     fun getEphemeralWalletSession(walletHashId: String, isHardware: Boolean = false) =
         gdkSessions.find { it.ephemeralWallet?.xPubHashId == walletHashId && it.ephemeralWallet?.isHardware == isHardware }
 
     fun getWalletIdFromSession(session: GdkSession): String? {
-        return walletSessions.filterValues { it == session }.keys.firstOrNull()
+        return walletSessions.withLock { sessions ->
+            sessions.filterValues { it == session }.keys.firstOrNull()
+        }
     }
 
     fun getSessions(): Set<GdkSession> = gdkSessions
 
     fun destroyWalletSession(wallet: GreenWallet) {
-        walletSessions[wallet.id]?.let {
-            it.destroy()
-            gdkSessions.remove(it)
+        walletSessions.withLock { sessions ->
+            sessions[wallet.id]?.let {
+                it.destroy()
+                gdkSessions.remove(it)
+            }
+            sessions.remove(wallet.id)
         }
-
-        walletSessions.remove(wallet.id)
     }
 
     fun destroyEphemeralSession(gdkSession: GdkSession) {
@@ -219,27 +236,33 @@ class SessionManager constructor(
         gdkSessions.remove(gdkSession)
 
         // Remove from walletSessions
-        gdkSession.ephemeralWallet?.let { walletSessions.remove(it.id) }
+        walletSessions.withLock { sessions ->
+            gdkSession.ephemeralWallet?.let { sessions.remove(it.id) }
+        }
 
         gdkSession.destroy()
     }
 
     private fun getConnectedEphemeralWalletSessions(): List<GdkSession> {
-        return walletSessions.values.filter { it.ephemeralWallet != null && it.isConnected }.toList()
+        return walletSessions.withLock { sessions ->
+            sessions.values.toList()
+        }.filter { it.ephemeralWallet != null && it.isConnected }
     }
 
     fun getConnectedHardwareWalletSessions(): List<GdkSession> {
-        return walletSessions.values.filter { it.isHardwareWallet && it.isConnected }.toList()
+        return walletSessions.withLock { sessions ->
+            sessions.values.toList()
+        }.filter { it.isHardwareWallet && it.isConnected }
     }
 
     fun getNextEphemeralId(): Long = (getConnectedEphemeralWalletSessions().filter { it.ephemeralWallet?.isHardware == false }
         .mapNotNull { it.ephemeralWallet?.ephemeralId }.maxOrNull() ?: 0) + 1
 
     fun getConnectedDevices(): List<GreenDevice> {
-        return walletSessions.values
-            .filter { it.device?.isOffline == false }
+        return walletSessions.withLock { sessions ->
+            sessions.values.toList()
+        }.filter { it.device?.isOffline == false }
             .mapNotNull { it.device }
-            .toList()
     }
 
     // OnBoardingSession waits patiently to be upgraded to a proper wallet session
@@ -257,7 +280,9 @@ class SessionManager constructor(
     // Provide an upgradeSession if not sure if it's a OnBoardingSession
     fun upgradeOnBoardingSessionToWallet(wallet: GreenWallet) {
         onBoardingSession?.let {
-            walletSessions[wallet.id] = it
+            walletSessions.withLock { sessions ->
+                sessions[wallet.id] = it
+            }
             // fire connection change event so that all listeners can track the new session status
             fireConnectionChangeEvent()
             onBoardingSession = null
