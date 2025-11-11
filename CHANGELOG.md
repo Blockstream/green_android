@@ -6,6 +6,9 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/).
 
 ## Unreleased
 
+#### Fixed
+- Fix IndexOutOfBoundsException crash in navigation by upgrading to navigation-compose 2.9.1 (based on Jetpack Navigation 2.9.4) which addresses race condition in predictive back handling
+
 ## [5.1.2] - 2025-10-09
 
 #### Changed
