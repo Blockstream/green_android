@@ -6,9 +6,20 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/).
 
 ## Unreleased
 
+## [5.1.2] - 2025-10-09
+
+#### Changed
+- Improve errors and info messages for lightning in receive, empty account, sweep
+- Bump minimum required jade firmware version to 1.0.37
+- Disable receive onchain for lightning
+- Allow export of diagnostic data from lightning node info
+
 #### Fixed
 - Display user-friendly error messages for amount validation in buy/exchange screen
 - Hide navigation buttons during biometric wallet creation to prevent interaction during setup
+- Remove invalid characters from korean translations
+- Fix unconfirmed transactions labeling in tx details
+- Prevent crash on network errors during address parsing and fee estimation
 
 ## [5.1.0] - 2025-10-09
 

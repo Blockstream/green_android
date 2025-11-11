@@ -26,7 +26,7 @@ import blockstream_green.common.generated.resources.id_new_jade_firmware_availab
 import blockstream_green.common.generated.resources.id_new_jade_firmware_required
 import blockstream_green.common.generated.resources.id_ok
 import blockstream_green.common.generated.resources.id_open
-import blockstream_green.common.generated.resources.id_outdated_hardware_wallet
+import blockstream_green.common.generated.resources.id_jade_firmware_is_outdated
 import blockstream_green.common.generated.resources.id_skip
 import blockstream_green.common.generated.resources.id_success
 import blockstream_green.common.generated.resources.id_the_new_firmware_requires_you
@@ -546,7 +546,7 @@ fun HandleSideEffect(
                             dialog.openDialog(
                                 OpenDialogData(
                                     title = StringHolder.create(Res.string.id_warning),
-                                    message = StringHolder.create(Res.string.id_outdated_hardware_wallet),
+                                    message = StringHolder.create(Res.string.id_jade_firmware_is_outdated),
                                     primaryText = getString(Res.string.id_continue),
                                     secondaryText = getString(Res.string.id_cancel),
                                     onPrimary = {

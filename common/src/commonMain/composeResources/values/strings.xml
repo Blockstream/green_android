@@ -1935,4 +1935,5 @@
     <string name="id_your_lightning_account_has_onchain">Your lightning account has onchain funds. Transfer to an onchain address to make them spendable again.</string>
     <string name="id_transfer_funds">Transfer Funds</string>
     <string name="id_share_diagnostic_data">Share Diagnostic Data</string>
+    <string name="id_jade_firmware_is_outdated">Jade firmware version is outdated. Upgrade to the latest firmware version to continue.</string>
 </resources>

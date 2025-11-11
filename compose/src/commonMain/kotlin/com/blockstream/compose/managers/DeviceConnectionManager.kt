@@ -121,7 +121,7 @@ open class DeviceConnectionManager(
                 if (e is JadeError) {
                     when (e.code) {
                         JadeError.UNSUPPORTED_FIRMWARE_VERSION -> {
-                            throw Exception("id_outdated_hardware_wallet")
+                            throw Exception("id_jade_firmware_is_outdated")
                         }
 
                         JadeError.CBOR_RPC_NETWORK_MISMATCH -> {
