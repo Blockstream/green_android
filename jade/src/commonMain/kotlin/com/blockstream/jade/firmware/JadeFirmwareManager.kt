@@ -101,7 +101,7 @@ class JadeFirmwareManager constructor(
 
     companion object : Loggable() {
         // FIXME: Also we'd then be able to set any new 'supports-swaps' gdk capability to 'true' for Jade.
-        val JADE_MIN_ALLOWED_FW_VERSION = JadeVersion("1.0.37")
+        val JADE_MIN_ALLOWED_FW_VERSION = JadeVersion("1.0.38")
 
         const val JADE_FW_SERVER_HTTPS = "https://jadefw.blockstream.com"
         const val JADE_FW_SERVER_ONION =

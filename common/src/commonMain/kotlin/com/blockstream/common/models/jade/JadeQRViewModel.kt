@@ -451,46 +451,50 @@ class JadeQRViewModel(
                 postSideEffect(SideEffects.NavigateBack())
             }
 
-            else -> {
-                doAsync({
-                    scanResult.bcur?.result?.httpRequest?.also { request ->
-                        logger.d { "Request: $request" }
-                        val httpResponse = session.httpRequest(request.params)
-
-                        httpResponse.jsonObject["body"]?.let {
-                            if (request.isHandshakeInit) {
-                                GreenJson.json.decodeFromJsonElement<HandshakeInit>(it)
-                                    .let { HandshakeInitResponse(params = it) }.toCborHex()
-                            } else if (request.isHandshakeComplete) {
-                                GreenJson.json.decodeFromJsonElement<HandshakeComplete>(it)
-                                    .let { HandshakeCompleteResponse(params = it) }.toCborHex()
-                            } else {
-                                // Set scenario to 2-step pin unlock
-                                _scenario.value = PinUnlockScenarioDuo
-                                GreenJson.json.decodeFromJsonElement<QrData>(it)
-                                    .let { QrDataResponse(method = request.onReply, params = it) }
-                                    .toCborHex()
-                            }
-                        }?.also {
-                            _urParts.value = session.jadePinRequest(it).parts
-                        } ?: run {
-                            throw Exception(httpResponse.jsonObject["error"]?.jsonPrimitive?.content)
-                        }
-                    } ?: run {
-                        // Delay resetScanner to prevent error dialog flooding
-                        viewModelScope.launch {
-                            delay(3000L)
-                            resetScanner()
-                        }
-
-                        throw Exception("QR code is not related to PIN Unlock")
-                    }
-
-                }, onSuccess = {
-                    nextStep()
-                })
+            is JadeQrOperation.PinUnlock -> {
+                pinUnlock(scanResult)
             }
         }
+    }
+
+    private fun pinUnlock(scanResult: ScanResult) {
+        doAsync({
+            scanResult.bcur?.result?.httpRequest?.also { request ->
+                logger.d { "Request: $request" }
+                val httpResponse = session.httpRequest(request.params)
+
+                httpResponse.jsonObject["body"]?.let {
+                    if (request.isHandshakeInit) {
+                        GreenJson.json.decodeFromJsonElement<HandshakeInit>(it)
+                            .let { HandshakeInitResponse(params = it) }.toCborHex()
+                    } else if (request.isHandshakeComplete) {
+                        GreenJson.json.decodeFromJsonElement<HandshakeComplete>(it)
+                            .let { HandshakeCompleteResponse(params = it) }.toCborHex()
+                    } else {
+                        // Set scenario to 2-step pin unlock
+                        _scenario.value = PinUnlockScenarioDuo
+                        GreenJson.json.decodeFromJsonElement<QrData>(it)
+                            .let { QrDataResponse(method = request.onReply, params = it) }
+                            .toCborHex()
+                    }
+                }?.also {
+                    _urParts.value = session.jadePinRequest(it).parts
+                } ?: run {
+                    throw Exception(httpResponse.jsonObject["error"]?.jsonPrimitive?.content)
+                }
+            } ?: run {
+                // Delay resetScanner to prevent error dialog flooding
+                viewModelScope.launch {
+                    delay(3000L)
+                    resetScanner()
+                }
+
+                throw Exception("QR code is not related to PIN Unlock")
+            }
+
+        }, onSuccess = {
+            nextStep()
+        })
     }
 
     private fun decryptLightningMnemonic(scanResult: ScanResult) {

@@ -3347,11 +3347,11 @@ class GdkSession constructor(
         const val LIQUID_ASSETS_TESTNET_KEY = "liquid_assets_testnet"
 
         val BlockstreamWhitelistedUrls = listOf(
-            "https://j8d.io",
-            "https://jadepin.blockstream.com",
-            "http://mrrxtq6tjpbnbm7vh5jt6mpjctn7ggyfy5wegvbeff3x7jrznqawlmid.onion", // onion jadepin
-            "https://jadefw.blockstream.com",
-            "http://vgza7wu4h7osixmrx6e4op5r72okqpagr3w6oupgsvmim4cz3wzdgrad.onion" // onion jadefw
+            "https://j8d.io/",
+            "https://jadepin.blockstream.com/",
+            "http://mrrxtq6tjpbnbm7vh5jt6mpjctn7ggyfy5wegvbeff3x7jrznqawlmid.onion/", // onion jadepin
+            "https://jadefw.blockstream.com/",
+            "http://vgza7wu4h7osixmrx6e4op5r72okqpagr3w6oupgsvmim4cz3wzdgrad.onion/" // onion jadefw
         )
     }
 }
