@@ -16,9 +16,10 @@ class GetBannerUseCase() {
                 // Filter closed banners
                 excludedBanners.contains(it)
             }?.filterNot {
-                // Filter networks
-                (!it.hasNetworks || ((it.networks ?: listOf()).intersect((sessionOrNull?.activeSessions?.map { it.network }
-                    ?: setOf()).toSet()).isNotEmpty()))
+                // Filter networks (get networks from all accounts to also match greenlight)
+                (!it.hasNetworks || ((it.networks ?: listOf()).intersect(
+                    sessionOrNull?.allAccounts?.value?.map { it.networkId }?.toSet() ?: emptySet()
+                ).isNotEmpty()))
             }?.filterNot {
                 // Filter based on screen name
                 (it.screens?.contains(screenName) == true || it.screens?.contains("*") == true)
