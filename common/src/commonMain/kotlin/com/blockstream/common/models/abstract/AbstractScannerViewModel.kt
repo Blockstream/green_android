@@ -91,7 +91,10 @@ abstract class AbstractScannerViewModel(val isDecodeContinuous: Boolean = false,
                         }
                     }
                 } else {
-                    barcodeScannerResult(ScanResult(scannedText))
+                    // launch a new coroutine to avoid blocking the main thread
+                    viewModelScope.coroutineScope.launch(context = logException(countly)) {
+                        barcodeScannerResult(ScanResult(scannedText))
+                    }
                 }
             }
         }
