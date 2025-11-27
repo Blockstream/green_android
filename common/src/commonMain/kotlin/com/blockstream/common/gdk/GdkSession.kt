@@ -107,7 +107,6 @@ import com.blockstream.common.gdk.params.TransactionParams.Companion.TRANSACTION
 import com.blockstream.common.gdk.params.UnspentOutputsPrivateKeyParams
 import com.blockstream.common.gdk.params.UpdateSubAccountParams
 import com.blockstream.common.gdk.params.ValidateAddresseesParams
-import com.blockstream.common.interfaces.JadeHttpRequestUrlValidator
 import com.blockstream.common.lightning.AppGreenlightCredentials
 import com.blockstream.common.lightning.ConnectStatus
 import com.blockstream.common.lightning.LightningBridge
@@ -131,7 +130,6 @@ import com.blockstream.common.utils.randomChars
 import com.blockstream.common.utils.server
 import com.blockstream.common.utils.toAmountLook
 import com.blockstream.common.utils.toHex
-import com.blockstream.green.data.config.AppInfo
 import com.blockstream.green.utils.Loggable
 import com.blockstream.jade.HttpRequestHandler
 import com.rickclephas.kmp.nativecoroutines.NativeCoroutinesIgnore
@@ -177,7 +175,6 @@ typealias AccountId = String
 /* Handles multiple GDK sessions per network */
 class GdkSession constructor(
     private val userAgent: String,
-    private val appInfo: AppInfo,
     private val appConfig: AppConfig,
     private val sessionManager: SessionManager,
     private val lightningManager: LightningManager,
@@ -192,8 +189,6 @@ class GdkSession constructor(
 
     private val scope = createScope(Dispatchers.Default)
     private val parentJob = SupervisorJob()
-
-    var jadeHttpRequestUrlValidator: JadeHttpRequestUrlValidator? = null
 
     val logs: String
         get() = gdk.logs.toString()
@@ -957,7 +952,7 @@ class GdkSession constructor(
             it.jsonPrimitive.content
         } ?: listOf()
 
-        jadeHttpRequestUrlValidator?.also { urlValidator ->
+        sessionManager.httpRequestUrlValidator?.also { urlValidator ->
             val isUrlSafe = urls.filter { it.isNotBlank() }.all { url ->
                 BlockstreamWhitelistedUrls.any { blockstreamUrl ->
                     url.startsWith(blockstreamUrl)

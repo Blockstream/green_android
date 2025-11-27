@@ -27,7 +27,7 @@ class MainViewModel : GreenViewModel(), JadeHttpRequestUrlValidator {
     }
 
     init {
-        sessionManager.httpRequestHandler.jadeHttpRequestUrlValidator = this
+        sessionManager.httpRequestUrlValidator = this
 
         viewModelScope.launch {
             if (settingsManager.isV5Upgraded()) {

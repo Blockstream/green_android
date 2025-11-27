@@ -14,6 +14,7 @@ import com.blockstream.common.gdk.Wally
 import com.blockstream.common.gdk.data.Network
 import com.blockstream.common.gdk.data.TorEvent
 import com.blockstream.common.gdk.params.LoginCredentialsParams
+import com.blockstream.common.interfaces.JadeHttpRequestUrlValidator
 import com.blockstream.common.lightning.LightningBridge
 import com.blockstream.common.lightning.LightningManager
 import com.blockstream.common.utils.Timer
@@ -50,6 +51,8 @@ class SessionManager constructor(
     private val userAgent = "${appInfo.userAgent}_${appInfo.version}_${appInfo.type}"
 
     private var scope: CoroutineScope = CoroutineScope(SupervisorJob() + Dispatchers.Default)
+
+    var httpRequestUrlValidator: JadeHttpRequestUrlValidator? = null
 
     val httpRequestHandler: GdkSession by lazy {
         createSession()
@@ -270,7 +273,6 @@ class SessionManager constructor(
         val session = GdkSession(
             userAgent = userAgent,
             sessionManager = this,
-            appInfo = appInfo,
             appConfig = appConfig,
             lightningManager = lightningManager,
             settingsManager = settingsManager,
