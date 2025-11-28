@@ -4,10 +4,15 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/).
 
 
-## Unreleased
+## [5.1.3] - 2025-11-28
+
+#### Changed
+- Bump Jade minimum version
 
 #### Fixed
-- Fix IndexOutOfBoundsException crash in navigation by upgrading to navigation-compose 2.9.1 (based on Jetpack Navigation 2.9.4) which addresses race condition in predictive back handling
+- Fix IndexOutOfBoundsException crash in navigation library
+- Fix ANR caused by a deadlock
+- Validate all http requests
 
 ## [5.1.2] - 2025-10-09
 

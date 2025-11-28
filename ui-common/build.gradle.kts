@@ -77,6 +77,11 @@ android {
     namespace = "com.blockstream.ui"
     compileSdk = libs.versions.androidCompileSdk.get().toInt()
 
+    defaultConfig {
+        // Ensure androidTest manifests merge with a valid minSdk and avoid minSdk=1 default
+        minSdk = libs.versions.androidMinSdk.get().toInt()
+    }
+
     buildFeatures {
         compose = true
     }
