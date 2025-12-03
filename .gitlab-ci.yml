@@ -4,6 +4,8 @@ stages:
   - test
   - deploy
   - upload
+  - e2e
+
 
 variables:
   GRADLE_USER_HOME: "${CI_PROJECT_DIR}/.gradle"
@@ -334,12 +336,9 @@ sign_google_play:
   cache: []
   tags:
     - k8s # Simple, non-resource intensive jobs
-  script:
-    - apk add libqrencode-tools
 
 gcp_auth:
   extends: .gcp_prep
-  when: manual
   id_tokens:
     GITLAB_OIDC_TOKEN:
       aud: https://gl.blockstream.io
@@ -358,6 +357,9 @@ gcp_auth:
       - .gcp_temp_cred.json
       - .ci_job_jwt_file
     expire_in: 1h
+  rules:
+    - if: $CI_PIPELINE_SOURCE == "schedule"
+    - when: manual
 
 gcp_push_production:
   extends: .gcp_prep
@@ -368,11 +370,9 @@ gcp_push_production:
   before_script:
     - gcloud auth login --cred-file=.gcp_temp_cred.json --update-adc
   script:
-    - apk add libqrencode
     - echo "Uploading gs://$GCS_BUCKET/$APK_NAME"
     - gsutil -m cp -r $CI_PROJECT_DIR/androidApp/build/outputs/apk/productionGoogle/release/*.apk gs://$GCS_BUCKET/$APK_NAME.apk
     - echo "https://storage.googleapis.com/$GCS_BUCKET/$APK_NAME.apk"
-    - qrencode -t UTF8 "https://storage.googleapis.com/$GCS_BUCKET/$APK_NAME.apk"
 
 gcp_push_development:
   extends: .gcp_prep
@@ -383,11 +383,9 @@ gcp_push_development:
   before_script:
     - gcloud auth login --cred-file=.gcp_temp_cred.json --update-adc
   script:
-    - apk add libqrencode
     - echo "Uploading gs://$GCS_BUCKET/$APK_NAME"
     - gsutil -m cp -r $CI_PROJECT_DIR/androidApp/build/outputs/apk/development/release/*.apk gs://$GCS_BUCKET/$APK_NAME.apk
     - echo "https://storage.googleapis.com/$GCS_BUCKET/$APK_NAME.apk"
-    - qrencode -t UTF8 "https://storage.googleapis.com/$GCS_BUCKET/$APK_NAME.apk"
 
 gcp_push_gdk_commit:
   extends: .gcp_prep
@@ -398,11 +396,9 @@ gcp_push_gdk_commit:
   before_script:
     - gcloud auth login --cred-file=.gcp_temp_cred.json --update-adc
   script:
-    - apk add libqrencode
     - echo "Uploading gs://$GCS_BUCKET/$APK_NAME"
     - gsutil -m cp -r $CI_PROJECT_DIR/androidApp/build/outputs/apk/productionGoogle/release/*.apk gs://$GCS_BUCKET/$APK_NAME.apk
     - echo "https://storage.googleapis.com/$GCS_BUCKET/$APK_NAME.apk"
-    - qrencode -t UTF8 "https://storage.googleapis.com/$GCS_BUCKET/$APK_NAME.apk"
 
 gcp_push_xcframework_common:
   extends: .gcp_prep
@@ -413,10 +409,78 @@ gcp_push_xcframework_common:
   before_script:
     - gcloud auth login --cred-file=.gcp_temp_cred.json --update-adc
   script:
-    - apk add libqrencode
     - echo "Uploading gs://$GCS_BUCKET/${XCFRAMEWORK_NAME}_debug.zip"
     - gsutil -m cp -r $CI_PROJECT_DIR/common/build/XCFrameworks/release.zip gs://$GCS_BUCKET/${XCFRAMEWORK_NAME}_debug.zip
     - echo "https://storage.googleapis.com/$GCS_BUCKET/${XCFRAMEWORK_NAME}_debug.zip"
     - echo "Uploading gs://$GCS_BUCKET/${XCFRAMEWORK_NAME}_release.zip"
     - gsutil -m cp -r $CI_PROJECT_DIR/common/build/XCFrameworks/release.zip gs://$GCS_BUCKET/${XCFRAMEWORK_NAME}_release.zip
     - echo "https://storage.googleapis.com/$GCS_BUCKET/${XCFRAMEWORK_NAME}_release.zip"
+
+#####################################
+# E2E Tests
+
+e2e:build:
+  stage: build
+  tags:
+    - cloud
+  retry:
+    max: 2
+    when:
+      - runner_system_failure
+      - unknown_failure
+      - stuck_or_timeout_failure
+  artifacts:
+    name: "$CI_PROJECT_NAME-e2e-$CI_COMMIT_SHORT_SHA"
+    expire_in: 7 days
+    when: on_success
+    paths:
+      - androidApp/build/outputs/apk/development/release/*.apk
+  variables:
+    GIT_SUBMODULE_STRATEGY: recursive
+  script:
+    - cd $CI_PROJECT_DIR
+    - echo $ANDROID_KEYSTORE_BASE64 | base64 -d > keystore.jks
+    - ./gradlew useBlockstreamKeys
+    - ./gradlew assembleDevelopmentRelease
+  rules:
+    - if: $CI_PIPELINE_SOURCE == "schedule"
+    - when: manual
+      allow_failure: true
+
+e2e:upload:
+  stage: e2e
+  image: blockstream/gcloud-docker:27.3-504.0.1
+  tags:
+    - k8s
+  id_tokens:
+    GITLAB_OIDC_TOKEN:
+      aud: https://gl.blockstream.io
+  variables:
+    POOL_ID: gitlab-2f4bb583
+    PROVIDER_ID: gitlab
+    SERVICE_ACCOUNT_EMAIL: green-android-builds-uploader@green-backend.iam.gserviceaccount.com
+    GCS_BUCKET: green-android-builds
+    APK_NAME: $CI_PROJECT_NAME-$CI_COMMIT_SHA-e2e
+  needs:
+    - e2e:build
+  script:
+    - echo ${GITLAB_OIDC_TOKEN} > .ci_job_jwt_file
+    - gcloud iam workload-identity-pools create-cred-config "projects/697214616889/locations/global/workloadIdentityPools/${POOL_ID}/providers/${PROVIDER_ID}"
+      --service-account="${SERVICE_ACCOUNT_EMAIL}"
+      --output-file=.gcp_temp_cred.json
+      --credential-source-file=.ci_job_jwt_file
+    - gcloud auth login --cred-file=.gcp_temp_cred.json --update-adc
+    - echo "Uploading gs://$GCS_BUCKET/$APK_NAME"
+    - gsutil -m cp -r $CI_PROJECT_DIR/androidApp/build/outputs/apk/development/release/*.apk gs://$GCS_BUCKET/$APK_NAME.apk
+    - echo "https://storage.googleapis.com/$GCS_BUCKET/$APK_NAME.apk"
+
+e2e:trigger:
+  stage: e2e
+  trigger:
+    project: blockstream/green/maestro-blockstream
+  variables:
+    UPSTREAM_APK_URL: "https://storage.googleapis.com/green-android-builds/${CI_PROJECT_NAME}-${CI_COMMIT_SHA}-e2e.apk"
+    UPSTREAM_APP_ID: "com.greenaddress.greenbits_android_wallet.dev"
+    UPSTREAM_COMMIT_SHA: $CI_COMMIT_SHA
+  needs:
+    - e2e:upload
