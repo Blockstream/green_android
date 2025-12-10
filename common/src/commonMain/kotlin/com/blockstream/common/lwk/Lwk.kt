@@ -79,6 +79,7 @@ class Lwk(
                         client = AnyClient.fromElectrum(client),
                         timeout = 30.toULong(),
                         mnemonic = mnemonic,
+                        referralId = "blockstream",
                         logging = this@Lwk,
                         polling = true,
                         timeoutAdvance = 10.toULong()

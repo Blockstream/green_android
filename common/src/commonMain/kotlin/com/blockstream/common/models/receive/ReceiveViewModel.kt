@@ -7,6 +7,7 @@ import blockstream_green.common.generated.resources.id_funds_received
 import blockstream_green.common.generated.resources.id_help
 import blockstream_green.common.generated.resources.id_list_of_addresses
 import blockstream_green.common.generated.resources.id_note
+import blockstream_green.common.generated.resources.id_payment_received
 import blockstream_green.common.generated.resources.id_please_hold_on_while_your
 import blockstream_green.common.generated.resources.id_please_wait_until_your_ledger
 import blockstream_green.common.generated.resources.id_receive
@@ -14,7 +15,6 @@ import blockstream_green.common.generated.resources.id_request_amount
 import blockstream_green.common.generated.resources.id_send_more_than_s_and_up_to_s_to
 import blockstream_green.common.generated.resources.id_sweep_from_paper_wallet
 import blockstream_green.common.generated.resources.id_the_address_is_valid
-import blockstream_green.common.generated.resources.id_you_have_just_received_s
 import blockstream_green.common.generated.resources.lightning_fill
 import blockstream_green.common.generated.resources.note_pencil
 import blockstream_green.common.generated.resources.qr_code
@@ -409,15 +409,7 @@ class ReceiveViewModel(greenWallet: GreenWallet, accountAsset: AccountAsset) :
                             SideEffects.Dialog(
                                 title = StringHolder.create(Res.string.id_funds_received),
                                 message = StringHolder(
-                                    string =
-                                        getString(
-                                            Res.string.id_you_have_just_received_s,
-                                            lastInvoicePaid.second?.toAmountLook(
-                                                session = session,
-                                                withUnit = true,
-                                                withGrouping = true
-                                            ) ?: ""
-                                        )
+                                    string = getString(Res.string.id_payment_received)
                                 ),
                                 icon = Res.drawable.lightning_fill
                             )
