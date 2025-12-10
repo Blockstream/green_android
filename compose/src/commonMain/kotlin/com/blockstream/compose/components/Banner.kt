@@ -46,6 +46,7 @@ fun Banner(
         title = banner.title,
         message = banner.message,
         maxLines = 5,
+        isBlue = true,
         icon = if (banner.isWarning) PhosphorIcons.Regular.Warning else null,
         primaryButton = if (banner.link != null) stringResource(Res.string.id_learn_more) else null,
         onPrimaryClick = {

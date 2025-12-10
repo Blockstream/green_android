@@ -1,10 +1,14 @@
 package com.blockstream.compose.screens.send
 
 import androidx.compose.animation.AnimatedVisibility
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material3.HorizontalDivider
@@ -16,6 +20,7 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.navigation.get
@@ -24,10 +29,14 @@ import blockstream_green.common.generated.resources.id_amount
 import blockstream_green.common.generated.resources.id_from
 import blockstream_green.common.generated.resources.id_network_fee
 import blockstream_green.common.generated.resources.id_note
+import blockstream_green.common.generated.resources.id_recipient_receives
 import blockstream_green.common.generated.resources.id_sent_to
 import blockstream_green.common.generated.resources.id_to
+import blockstream_green.common.generated.resources.id_total_fees
 import blockstream_green.common.generated.resources.id_total_spent
+import blockstream_green.common.generated.resources.info
 import blockstream_green.common.generated.resources.id_verify_address_on_device
+import blockstream_green.common.generated.resources.id_you_are_paying_this_lightning_invoice
 import blockstream_green.common.generated.resources.id_your_redeposit_address
 import blockstream_green.common.generated.resources.pencil_simple_line
 import com.blockstream.common.data.GreenWallet
@@ -146,8 +155,19 @@ fun SendConfirmScreen(
                         amountFiat = it.amountExchange,
                         assetId = it.assetId,
                         address = it.address,
+                        addressMaxLines = look?.submarineSwap?.let { 1 },
                         session = viewModel.sessionOrNull,
                         showIcon = true
+                    )
+                }
+
+                look?.submarineSwap?.also {
+                    Text(
+                        text = stringResource(Res.string.id_you_are_paying_this_lightning_invoice),
+                        color = whiteMedium,
+                        style = bodySmall,
+                        textAlign = TextAlign.Center,
+                        modifier = Modifier.align(Alignment.CenterHorizontally)
                     )
                 }
 
@@ -191,29 +211,82 @@ fun SendConfirmScreen(
                 }
             }
 
-            Row {
-                Column {
-                    Text(
-                        stringResource(Res.string.id_network_fee),
-                        color = whiteMedium,
-                        style = labelLarge
-                    )
-                    look?.feeRate?.also {
+            if (look?.submarineSwap != null) {
+                look?.totalFees?.also { totalFees ->
+                    Row(
+                        verticalAlignment = Alignment.CenterVertically
+                    ) {
                         Text(
-                            text = it,
-                            modifier = Modifier.align(Alignment.CenterHorizontally),
+                            stringResource(Res.string.id_total_fees),
                             color = whiteMedium,
-                            style = bodySmall
+                            style = labelLarge
+                        )
+                        IconButton(
+                            onClick = {
+                                viewModel.postEvent(SendConfirmViewModel.LocalEvents.ClickTotalFees)
+                            },
+                            modifier = Modifier.size(24.dp)
+                        ) {
+                            Icon(
+                                painter = painterResource(Res.drawable.info),
+                                contentDescription = null,
+                                tint = whiteMedium,
+                                modifier = Modifier.size(16.dp)
+                            )
+                        }
+
+                        Text(
+                            totalFees,
+                            color = whiteHigh,
+                            style = labelLarge,
+                            modifier = Modifier.weight(1f),
+                            textAlign = TextAlign.End
                         )
                     }
                 }
 
-                Column(horizontalAlignment = Alignment.End, modifier = Modifier.weight(1f)) {
-                    look?.fee?.also {
-                        Text(it, color = whiteHigh, style = labelLarge)
+                look?.recipientReceives?.also { recipientReceives ->
+                    Row {
+                        Text(
+                            stringResource(Res.string.id_recipient_receives),
+                            color = whiteMedium,
+                            style = labelLarge
+                        )
+
+                        Text(
+                            recipientReceives,
+                            color = whiteHigh,
+                            style = labelLarge,
+                            modifier = Modifier.weight(1f),
+                            textAlign = TextAlign.End
+                        )
                     }
-                    look?.feeFiat?.also {
-                        Text(it, color = whiteMedium, style = labelMedium)
+                }
+            } else {
+                Row {
+                    Column {
+                        Text(
+                            stringResource(Res.string.id_network_fee),
+                            color = whiteMedium,
+                            style = labelLarge
+                        )
+                        look?.feeRate?.also {
+                            Text(
+                                text = it,
+                                modifier = Modifier.align(Alignment.CenterHorizontally),
+                                color = whiteMedium,
+                                style = bodySmall
+                            )
+                        }
+                    }
+
+                    Column(horizontalAlignment = Alignment.End, modifier = Modifier.weight(1f)) {
+                        look?.fee?.also {
+                            Text(it, color = whiteHigh, style = labelLarge)
+                        }
+                        look?.feeFiat?.also {
+                            Text(it, color = whiteMedium, style = labelMedium)
+                        }
                     }
                 }
             }

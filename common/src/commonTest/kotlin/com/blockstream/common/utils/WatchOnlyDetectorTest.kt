@@ -55,12 +55,24 @@ class WatchOnlyDetectorTest {
             label: String,
             payload: ByteArray
         ): String? = null
+
+        override fun psbtIsBase64(psbt: String): Boolean {
+            TODO("Not yet implemented")
+        }
+
+        override fun psbtIsBinary(psbt: ByteArray): Boolean {
+            TODO("Not yet implemented")
+        }
+
+        override fun psbtToV0(psbt: String): String {
+            TODO("Not yet implemented")
+        }
     }
 
     @BeforeTest
     fun setup() {
         mockWally = MockWally()
-        detector = WatchOnlyDetector(mockWally, null)
+        detector = WatchOnlyDetector(mockWally)
     }
 
     // Test XPub validation

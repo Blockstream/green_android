@@ -59,12 +59,11 @@ fun TransactScreen(viewModel: TransactViewModelAbstract) {
                     showBuyButton = true,
                     sendEnabled = !isMultisigWatchOnly,
                     onBuy = { viewModel.buy() },
-                    onSend = { viewModel.postEvent(NavigateDestinations.Send(greenWallet = viewModel.greenWallet)) },
+                    onSend = { viewModel.postEvent(NavigateDestinations.SendAddress(greenWallet = viewModel.greenWallet)) },
                     onReceive = {
                         viewModel.postEvent(
-                            NavigateDestinations.Receive(
-                                greenWallet = viewModel.greenWallet,
-                                accountAsset = viewModel.session.activeAccount.value!!.accountAsset
+                            NavigateDestinations.ReceiveChooseAsset(
+                                greenWallet = viewModel.greenWallet
                             )
                         )
                     },

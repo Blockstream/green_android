@@ -69,6 +69,7 @@ class AboutViewModel : AboutViewModelAbstract() {
         object CountlyZeroOffset : Event
         object ResetPromos : Event
         object DeleteEvents : Event
+        object DeleteSwaps : Event
         object CrashReport : Event
         object SendFeedback : Event
     }
@@ -136,6 +137,9 @@ class AboutViewModel : AboutViewModelAbstract() {
         } else if (event is LocalEvents.DeleteEvents) {
             database.deleteEvents()
             postSideEffect(SideEffects.Snackbar(text = StringHolder.create("Events deleted")))
+        } else if (event is LocalEvents.DeleteSwaps) {
+            database.deleteAllSwaps()
+            postSideEffect(SideEffects.Snackbar(text = StringHolder.create("Swaps deleted")))
         } else if (event is LocalEvents.CrashReport) {
             Exception("About Crash Report").also {
                 postSideEffect(SideEffects.ErrorDialog(error = it, supportData = SupportData.create(throwable = it)))

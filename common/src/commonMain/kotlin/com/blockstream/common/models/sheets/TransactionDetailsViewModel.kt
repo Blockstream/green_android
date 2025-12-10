@@ -58,9 +58,8 @@ class TransactionDetailsViewModel(greenWallet: GreenWallet, initialTransaction: 
         }
 
         _transaction.onEach {
-            _data.value = _transaction.value.details(session)
+            _data.value = _transaction.value.details(session = session, database = database)
         }.launchIn(viewModelScope.coroutineScope)
-
 
         bootstrap()
     }

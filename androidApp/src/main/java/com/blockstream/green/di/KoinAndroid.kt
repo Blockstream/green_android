@@ -54,7 +54,7 @@ fun initKoinAndroid(context: Context, doOnStartup: () -> Unit = {}) {
                 }
             } binds (arrayOf(CountlyBase::class, CountlyAndroid::class))
             single {
-                AndroidMigrator(get(), get(), get(), get(), get(), get())
+                AndroidMigrator(get(), get(), get(), get(), get(), get(), get())
             }
             single {
                 QATester(get())

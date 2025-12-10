@@ -2,13 +2,10 @@ package com.blockstream.common.models.receive
 
 import blockstream_green.common.generated.resources.Res
 import blockstream_green.common.generated.resources.at
-import blockstream_green.common.generated.resources.id_a_funding_fee_of_s_s_is_applied
-import blockstream_green.common.generated.resources.id_a_set_up_funding_fee_of_s_s
 import blockstream_green.common.generated.resources.id_address_copied_to_clipboard
 import blockstream_green.common.generated.resources.id_funds_received
 import blockstream_green.common.generated.resources.id_help
 import blockstream_green.common.generated.resources.id_list_of_addresses
-import blockstream_green.common.generated.resources.id_max_limit_s
 import blockstream_green.common.generated.resources.id_note
 import blockstream_green.common.generated.resources.id_please_hold_on_while_your
 import blockstream_green.common.generated.resources.id_please_wait_until_your_ledger
@@ -17,17 +14,12 @@ import blockstream_green.common.generated.resources.id_request_amount
 import blockstream_green.common.generated.resources.id_send_more_than_s_and_up_to_s_to
 import blockstream_green.common.generated.resources.id_sweep_from_paper_wallet
 import blockstream_green.common.generated.resources.id_the_address_is_valid
-import blockstream_green.common.generated.resources.id_this_amount_is_below_the
-import blockstream_green.common.generated.resources.id_you_cannot_receive_more_than_s
-import blockstream_green.common.generated.resources.id_the_amount_is_above_your_inbound
 import blockstream_green.common.generated.resources.id_you_have_just_received_s
 import blockstream_green.common.generated.resources.lightning_fill
 import blockstream_green.common.generated.resources.note_pencil
 import blockstream_green.common.generated.resources.qr_code
 import blockstream_green.common.generated.resources.question
 import blockstream_green.common.generated.resources.text_aa
-import breez_sdk.InputType
-import breez_sdk.LnInvoice
 import com.blockstream.common.AddressType
 import com.blockstream.common.MediaType
 import com.blockstream.common.Urls
@@ -47,17 +39,11 @@ import com.blockstream.common.extensions.previewAccountAsset
 import com.blockstream.common.extensions.previewEnrichedAsset
 import com.blockstream.common.extensions.previewWallet
 import com.blockstream.common.gdk.data.AccountAsset
-import com.blockstream.common.gdk.data.AccountAssetBalance
-import com.blockstream.common.gdk.data.AccountType
 import com.blockstream.common.gdk.data.Address
 import com.blockstream.common.gdk.data.AssetBalance
-import com.blockstream.common.lightning.amountSatoshi
 import com.blockstream.common.lightning.expireIn
-import com.blockstream.common.lightning.feeSatoshi
-import com.blockstream.common.lightning.maxReceivableSatoshi
 import com.blockstream.common.lightning.receiveAmountSatoshi
 import com.blockstream.common.lightning.satoshi
-import com.blockstream.common.lightning.totalInboundLiquiditySatoshi
 import com.blockstream.common.models.GreenViewModel
 import com.blockstream.common.models.receive.ReceiveViewModel.LocalEvents
 import com.blockstream.common.models.sheets.NoteType
@@ -70,7 +56,10 @@ import com.blockstream.common.utils.UserInput
 import com.blockstream.common.utils.formatAuto
 import com.blockstream.common.utils.toAmountLook
 import com.blockstream.common.utils.toAmountLookOrNa
+import com.blockstream.domain.boltz.BoltzUseCase
 import com.blockstream.domain.hardware.VerifyAddressUseCase
+import com.blockstream.domain.receive.GetReceiveAmountUseCase
+import com.blockstream.domain.receive.ReceiveAmountData
 import com.blockstream.green.utils.Loggable
 import com.blockstream.ui.events.Event
 import com.blockstream.ui.navigation.NavAction
@@ -86,7 +75,6 @@ import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.combine
-import kotlinx.coroutines.flow.emptyFlow
 import kotlinx.coroutines.flow.filterNotNull
 import kotlinx.coroutines.flow.launchIn
 import kotlinx.coroutines.flow.onEach
@@ -96,6 +84,7 @@ import kotlinx.serialization.Serializable
 import okio.Path.Companion.toPath
 import org.jetbrains.compose.resources.getString
 import org.koin.core.component.inject
+import org.koin.core.parameter.parametersOf
 import kotlin.time.Clock
 import kotlin.time.Duration.Companion.minutes
 
@@ -113,10 +102,13 @@ abstract class ReceiveViewModelAbstract(greenWallet: GreenWallet, accountAssetOr
     abstract val showRecoveryConfirmation: StateFlow<Boolean>
 
     @NativeCoroutinesState
-    abstract val amount: MutableStateFlow<String>
+    abstract val showSwap: StateFlow<Boolean>
 
     @NativeCoroutinesState
-    abstract val amountError: StateFlow<String?>
+    abstract val isReverseSubmarineSwap: MutableStateFlow<Boolean> // Lightning -> Chain
+
+    @NativeCoroutinesState
+    abstract val amount: MutableStateFlow<String>
 
     @NativeCoroutinesState
     abstract val showAmount: StateFlow<Boolean>
@@ -134,10 +126,7 @@ abstract class ReceiveViewModelAbstract(greenWallet: GreenWallet, accountAssetOr
     abstract val amountCurrency: StateFlow<String>
 
     @NativeCoroutinesState
-    abstract val amountExchange: StateFlow<String>
-
-    @NativeCoroutinesState
-    abstract val maxReceiveAmount: StateFlow<String>
+    abstract val receiveAmountData: StateFlow<ReceiveAmountData>
 
     @NativeCoroutinesState
     abstract val invoiceAmountToReceive: StateFlow<String?>
@@ -170,10 +159,7 @@ abstract class ReceiveViewModelAbstract(greenWallet: GreenWallet, accountAssetOr
     abstract val showLedgerAssetWarning: StateFlow<Boolean>
 
     @NativeCoroutinesState
-    abstract val asset: MutableStateFlow<EnrichedAsset>
-
-    @NativeCoroutinesState
-    abstract val assetAccounts: StateFlow<List<AccountAssetBalance>>
+    abstract val asset: StateFlow<EnrichedAsset>
 
     internal var pendingAction: PendingAction? = null
 
@@ -184,9 +170,13 @@ abstract class ReceiveViewModelAbstract(greenWallet: GreenWallet, accountAssetOr
     }
 }
 
-class ReceiveViewModel(greenWallet: GreenWallet, initialAccountAsset: AccountAsset) :
-    ReceiveViewModelAbstract(greenWallet = greenWallet, accountAssetOrNull = initialAccountAsset) {
+class ReceiveViewModel(greenWallet: GreenWallet, accountAsset: AccountAsset) :
+    ReceiveViewModelAbstract(greenWallet = greenWallet, accountAssetOrNull = accountAsset) {
     internal val verifyAddressUseCase: VerifyAddressUseCase by inject()
+    internal val boltzUseCase: BoltzUseCase by inject()
+    internal val getReceiveAmountUseCase: GetReceiveAmountUseCase by inject {
+        parametersOf(session, accountAsset)
+    }
 
     private val _receiveAddress = MutableStateFlow<String?>(null)
     private val _receiveAddressUri = MutableStateFlow<String?>(null)
@@ -195,19 +185,18 @@ class ReceiveViewModel(greenWallet: GreenWallet, initialAccountAsset: AccountAss
     private val _showLedgerAssetWarning = MutableStateFlow(false)
     private val _showRequestAmount = MutableStateFlow(false)
 
-    private val _amountError = MutableStateFlow<String?>(null)
     private val _note = MutableStateFlow<String?>(null)
     private val _liquidityFee = MutableStateFlow<String?>(null)
     private val _onchainSwapMessage = MutableStateFlow<String?>(null)
     private val _amountCurrency = MutableStateFlow("")
-    private val _amountExchange = MutableStateFlow("")
-    private val _maxReceiveAmount = MutableStateFlow("")
 
     private val _invoiceAmountToReceive = MutableStateFlow<String?>(null)
     private val _invoiceAmountToReceiveFiat = MutableStateFlow<String?>(null)
     private val _invoiceDescription = MutableStateFlow<String?>(null)
     private val _invoiceExpiration = MutableStateFlow<String?>(null)
     private val _invoiceExpirationTimestamp = MutableStateFlow<Long?>(null)
+
+    override val isReverseSubmarineSwap = MutableStateFlow(false)
 
     override val receiveAddress: StateFlow<String?> = _receiveAddress
     override val receiveAddressUri: StateFlow<String?> = _receiveAddressUri
@@ -219,20 +208,27 @@ class ReceiveViewModel(greenWallet: GreenWallet, initialAccountAsset: AccountAss
     override val invoiceExpirationTimestamp = _invoiceExpirationTimestamp
 
     override val amount = MutableStateFlow("")
-    override val amountError = _amountError
     override val note = _note
     override val liquidityFee = _liquidityFee
     override val onchainSwapMessage = _onchainSwapMessage
     override val amountCurrency = _amountCurrency
-    override val amountExchange = _amountExchange
-    override val maxReceiveAmount = _maxReceiveAmount
+    override val receiveAmountData = getReceiveAmountUseCase.invoke(
+        amount = amount,
+        denomination = denomination,
+        isReverseSubmarineSwap = isReverseSubmarineSwap
+    ).stateIn(
+        viewModelScope,
+        SharingStarted.WhileSubscribed(5000L),
+        ReceiveAmountData()
+    )
+
     override val showVerifyOnDevice = _showVerifyOnDevice
     override val showLightningOnChainAddress = _showLightningOnChainAddress
     override val showLedgerAssetWarning = _showLedgerAssetWarning
     override val showAmount = _showRequestAmount
 
     private val _address = MutableStateFlow<Address?>(null)
-    private val _lightningInvoice = MutableStateFlow<LnInvoice?>(null)
+    private val _lightningInvoicePaymentHash = MutableStateFlow<String?>(null)
 
     private val _appConfig: AppConfig by inject()
 
@@ -247,24 +243,23 @@ class ReceiveViewModel(greenWallet: GreenWallet, initialAccountAsset: AccountAss
             false
         )
 
-    override val asset: MutableStateFlow<EnrichedAsset> = MutableStateFlow(initialAccountAsset.asset)
-
-    override val assetAccounts: StateFlow<List<AccountAssetBalance>> =
-        combine(asset, sessionOrNull?.accounts ?: emptyFlow()) { asset, accounts ->
-            accounts.filter { account ->
-                if (asset.isAnyAsset && asset.isAmp) {
-                    account.type == AccountType.AMP_ACCOUNT
-                } else if (asset.assetId.isPolicyAsset(session)) {
-                    account.network.policyAsset == asset.assetId
-                } else {
-                    account.isLiquid && (asset.isAmp == account.isAmp || asset.isAnyAsset)
-                }
-            }.map {
-                AccountAssetBalance(account = it, asset = asset)
+    override val showSwap: StateFlow<Boolean> =
+        combine(
+            this@ReceiveViewModel.accountAsset.filterNotNull(),
+            walletSettingsManager.getWalletSettings(walletId = greenWallet.id),
+        ) { accountAsset, _ ->
+            accountAsset.account.isLiquid && boltzUseCase.isSwapsEnabledUseCase(wallet = greenWallet) && accountAsset.asset.let {
+                it.isLiquidPolicyAsset(
+                    session
+                ) && !it.isAnyAsset && !it.isAmp
             }
         }.stateIn(
-            viewModelScope, SharingStarted.WhileSubscribed(5000L), listOfNotNull(initialAccountAsset.let { AccountAssetBalance.create(it) })
+            viewModelScope,
+            SharingStarted.WhileSubscribed(5000L),
+            false
         )
+
+    override val asset: StateFlow<EnrichedAsset> = MutableStateFlow(accountAsset.asset)
 
     class LocalEvents {
         object CreateAccount : Event
@@ -277,7 +272,6 @@ class ReceiveViewModel(greenWallet: GreenWallet, initialAccountAsset: AccountAss
         object VerifyOnDevice : Event
         object ClearLightningInvoice : Event
         class SetNote(val note: String) : Event
-        class SetRequestAmount(val amount: String?) : Event
         object ClickFundingFeesLearnMore : Events.OpenBrowser(Urls.HELP_FUNDING_FEES)
         object ClickLedgerSupportedAssets : Events.OpenBrowser(Urls.LEDGER_SUPPORTED_ASSETS)
         object ShowRequestAmount : Event
@@ -286,14 +280,18 @@ class ReceiveViewModel(greenWallet: GreenWallet, initialAccountAsset: AccountAss
     private val _generateAddressLock = Mutex()
 
     init {
+        receiveAmountData.filterNotNull().onEach {
+            _isValid.value = it.isValid
+        }.launchIn(this)
+
         combine(
-            accountAsset,
             showLightningOnChainAddress,
             receiveAddress,
             onProgress
-        ) { accountAsset, showLightningOnChainAddress, receiveAddress, onProgress ->
+        ) { showLightningOnChainAddress, receiveAddress, onProgress ->
             _navData.value = NavData(
                 title = getString(Res.string.id_receive),
+                subtitle = accountAsset.account.name,
                 actions = listOfNotNull(
                     NavAction(
                         title = getString(Res.string.id_note),
@@ -305,18 +303,18 @@ class ReceiveViewModel(greenWallet: GreenWallet, initialAccountAsset: AccountAss
                                     NavigateDestinations.Note(
                                         greenWallet = greenWallet,
                                         note = note.value ?: "",
-                                        noteType = if (accountAsset?.account?.isLightning == true) NoteType.Description else NoteType.Note
+                                        noteType = if (accountAsset.account.isLightning) NoteType.Description else NoteType.Note
                                     )
                                 )
                             )
                         }
-                    ).takeIf { accountAsset?.account?.isLightning == true && !showLightningOnChainAddress && receiveAddress == null },
+                    ).takeIf { accountAsset.account?.isLightning == true && !showLightningOnChainAddress && receiveAddress == null },
                     NavAction(
                         title = getString(Res.string.id_help),
                         icon = Res.drawable.question,
                         isMenuEntry = false,
                         onClick = {
-                            postSideEffect(SideEffects.OpenBrowser(if (accountAsset?.account?.isAmp == true) Urls.HELP_AMP_ASSETS else Urls.HELP_RECEIVE_ASSETS))
+                            postSideEffect(SideEffects.OpenBrowser(if (accountAsset.account.isAmp) Urls.HELP_AMP_ASSETS else Urls.HELP_RECEIVE_ASSETS))
                         }
                     ),
 
@@ -325,9 +323,9 @@ class ReceiveViewModel(greenWallet: GreenWallet, initialAccountAsset: AccountAss
                         icon = Res.drawable.text_aa,
                         isMenuEntry = true,
                         onClick = {
-                            postEvent(ReceiveViewModel.LocalEvents.ShowRequestAmount)
+                            postEvent(LocalEvents.ShowRequestAmount)
                         }
-                    ).takeIf { receiveAddress.isNotBlank() && accountAsset?.account?.isLightning == false },
+                    ).takeIf { receiveAddress.isNotBlank() && accountAsset.account.isLightning == false },
                     NavAction(
                         title = getString(Res.string.id_list_of_addresses),
                         icon = Res.drawable.at,
@@ -337,17 +335,15 @@ class ReceiveViewModel(greenWallet: GreenWallet, initialAccountAsset: AccountAss
                                 postEvent(NavigateDestinations.Addresses(greenWallet = greenWallet, accountAsset = it))
                             }
                         }
-                    ).takeIf { receiveAddress.isNotBlank() && accountAsset?.account?.isLightning == false },
+                    ).takeIf { receiveAddress.isNotBlank() && accountAsset.account.isLightning == false },
                     NavAction(
                         title = getString(Res.string.id_sweep_from_paper_wallet),
                         icon = Res.drawable.qr_code,
                         isMenuEntry = true,
                         onClick = {
-                            accountAsset?.also {
-                                postEvent(NavigateDestinations.Sweep(greenWallet = greenWallet, accountAsset = it))
-                            }
+                            postEvent(NavigateDestinations.Sweep(greenWallet = greenWallet, accountAsset = accountAsset))
                         }
-                    ).takeIf { receiveAddress.isNotBlank() && accountAsset?.account?.isLightning == false && !accountAsset.account.isLiquid },
+                    ).takeIf { receiveAddress.isNotBlank() && !accountAsset.account.isLightning && !accountAsset.account.isLiquid },
                 ),
                 backHandlerEnabled = onProgress
             )
@@ -355,48 +351,38 @@ class ReceiveViewModel(greenWallet: GreenWallet, initialAccountAsset: AccountAss
 
         sessionOrNull?.ifConnected {
 
-            accountAsset.filterNotNull().onEach {
-                asset.value = it.asset
-            }.launchIn(this)
-
-            assetAccounts.onEach { assetAccounts ->
-                accountAsset.value = (assetAccounts.find { it.account.id == accountAsset.value?.account?.id }?.accountAsset
-                    ?: assetAccounts.firstOrNull()?.accountAsset)
-            }.launchIn(this)
-
-            combine(accountAsset, showLightningOnChainAddress) { accountAsset, showLightningOnChainAddress ->
+            combine(
+                showLightningOnChainAddress,
+                isReverseSubmarineSwap
+            ) { showLightningOnChainAddress, isReverseSubmarineSwap ->
                 // When toggling between showLightningOnChainAddress clear the receiveAddress
-                if (accountAsset?.account?.isLightning == true && !showLightningOnChainAddress) {
+                if (isReverseSubmarineSwap || (accountAsset.account.isLightning && !showLightningOnChainAddress)) {
                     _receiveAddress.value = null
                     _receiveAddressUri.value = null
                     _address.value = null
                 }
 
                 amount.value = ""
-                _amountError.value = null
                 _note.value = null
                 _showRequestAmount.value = false
 
                 _invoiceAmountToReceive.value = null
+                _invoiceAmountToReceiveFiat.value = null
                 _invoiceDescription.value = null
                 _invoiceExpiration.value = null
             }.launchIn(this)
 
-            accountAsset.onEach {
-                _showLightningOnChainAddress.value = false
-                _liquidityFee.value = null
-
-                if (it == null) {
+            combine(this@ReceiveViewModel.accountAsset, isReverseSubmarineSwap) { accountAsset, isReverseSubmarineSwap ->
+                if (accountAsset == null) {
                     _showLedgerAssetWarning.value = false
                     _showVerifyOnDevice.value = false
 
                     _receiveAddress.value = null
                     _receiveAddressUri.value = null
                     _address.value = null
-                } else {
+                } else if (!isReverseSubmarineSwap) {
                     generateAddress()
                 }
-
             }.launchIn(this)
 
             amount.onEach {
@@ -410,56 +396,33 @@ class ReceiveViewModel(greenWallet: GreenWallet, initialAccountAsset: AccountAss
                 // Support single lightning account, else we have to incorporate account change events
                 val lightningAccount = session.lightningAccount
 
-                combine(session.lightningSdk.lspInfoStateFlow, amount, denomination) { _, _, _ ->
-
-                }.onEach { _ ->
-                    updateAmountExchangeRate()
-                }.launchIn(viewModelScope.coroutineScope)
-
                 denomination
                     .onEach {
                         _amountCurrency.value =
                             it.unit(session, lightningAccount.network.policyAsset)
                     }.launchIn(viewModelScope.coroutineScope)
 
-                combine(session.lightningSdkOrNull?.nodeInfoStateFlow ?: emptyFlow(), denomination) { nodeState, _ ->
-                    nodeState
-                }.onEach {
-                    _maxReceiveAmount.value = it.maxReceivableSatoshi().toAmountLook(
-                        session = session,
-                        assetId = lightningAccount.network.policyAsset,
-                        denomination = denomination.value,
-                        withUnit = true
-                    )?.let {
-                        getString(Res.string.id_max_limit_s, it)
-                    } ?: ""
-
-                    updateAmountExchangeRate()
-                }.launchIn(viewModelScope.coroutineScope)
-
-                session.lastInvoicePaid.filterNotNull().onEach { paidDetails ->
-                    if (paidDetails.paymentHash == _lightningInvoice.value?.paymentHash) {
-                        // Parse the actual Bolt11 invoice
-                        (session.parseInput(paidDetails.bolt11)?.second as? InputType.Bolt11)?.also {
-                            postSideEffect(
-                                SideEffects.Dialog(
-                                    title = StringHolder.create(Res.string.id_funds_received),
-                                    message = StringHolder(
-                                        string =
-                                            getString(
-                                                Res.string.id_you_have_just_received_s,
-                                                it.invoice.amountSatoshi()?.toAmountLook(
-                                                    session = session,
-                                                    withUnit = true,
-                                                    withGrouping = true
-                                                ) ?: ""
-                                            )
-                                    ),
-                                    icon = Res.drawable.lightning_fill
-                                )
+                session.lastInvoicePaid.filterNotNull().onEach { lastInvoicePaid ->
+                    logger.d { "Last invoice paid: $lastInvoicePaid" }
+                    if (lastInvoicePaid.first == _lightningInvoicePaymentHash.value) {
+                        postSideEffect(
+                            SideEffects.Dialog(
+                                title = StringHolder.create(Res.string.id_funds_received),
+                                message = StringHolder(
+                                    string =
+                                        getString(
+                                            Res.string.id_you_have_just_received_s,
+                                            lastInvoicePaid.second?.toAmountLook(
+                                                session = session,
+                                                withUnit = true,
+                                                withGrouping = true
+                                            ) ?: ""
+                                        )
+                                ),
+                                icon = Res.drawable.lightning_fill
                             )
-                            _lightningInvoice.value = null
-                        }
+                        )
+                        _lightningInvoicePaymentHash.value = null
                     }
                 }.launchIn(viewModelScope.coroutineScope)
             }
@@ -591,10 +554,6 @@ class ReceiveViewModel(greenWallet: GreenWallet, initialAccountAsset: AccountAss
                 _note.value = event.note
             }
 
-            is LocalEvents.SetRequestAmount -> {
-                amount.value = event.amount ?: ""
-            }
-
             is LocalEvents.ShowRequestAmount -> {
                 _showRequestAmount.value = true
             }
@@ -615,20 +574,21 @@ class ReceiveViewModel(greenWallet: GreenWallet, initialAccountAsset: AccountAss
 
     private fun verifyAddressOnDevice() {
         _address.value?.let { address ->
-            doAsync({
-                verifyAddressUseCase.invoke(
-                    session = session,
-                    account = account,
-                    address = address
-                )
-            }, mutex = getMutex("verifyAddressOnDevice"), timeout = 1L.minutes,
+            doAsync(
+                {
+                    verifyAddressUseCase.invoke(
+                        session = session,
+                        account = account,
+                        address = address
+                    )
+                }, mutex = getMutex("verifyAddressOnDevice"), timeout = 1L.minutes,
                 preAction = null, postAction = null, onSuccess = {
-                postSideEffect(SideEffects.Snackbar(StringHolder.create(Res.string.id_the_address_is_valid)))
-                postSideEffect(SideEffects.Dismiss)
-            }, onError = {
-                postSideEffect(SideEffects.ErrorDialog(it))
-                postSideEffect(SideEffects.Dismiss)
-            })
+                    postSideEffect(SideEffects.Snackbar(StringHolder.create(Res.string.id_the_address_is_valid)))
+                    postSideEffect(SideEffects.Dismiss)
+                }, onError = {
+                    postSideEffect(SideEffects.ErrorDialog(it))
+                    postSideEffect(SideEffects.Dismiss)
+                })
         }
     }
 
@@ -654,9 +614,10 @@ class ReceiveViewModel(greenWallet: GreenWallet, initialAccountAsset: AccountAss
     private suspend fun updateAddress(address: String) {
         withContext(context = Dispatchers.IO) {
 
-            if (account.isLightning && !showLightningOnChainAddress.value) {
+            if ((isReverseSubmarineSwap.value || account.isLightning) && !showLightningOnChainAddress.value) {
+                val scheme = if (isReverseSubmarineSwap.value) "lightning" else account.network.bip21Prefix
                 Uri.Builder().also {
-                    it.scheme(account.network.bip21Prefix)
+                    it.scheme(scheme)
                     it.opaquePart(address.uppercase()) // bech32 is case insensitive
                 }.toString().also {
                     _receiveAddress.value = it
@@ -671,23 +632,24 @@ class ReceiveViewModel(greenWallet: GreenWallet, initialAccountAsset: AccountAss
                 }.toString()
 
                 val query = Uri.Builder().also {
+
                     if (!amount.value.isBlank()) {
                         it.appendQueryParameter(
                             "amount", UserInput.parseUserInputSafe(
                                 session = session,
                                 input = amount.value,
-                                assetId = account.network.policyAsset,
+                                assetId = asset.value.assetId,
                                 denomination = denomination.value
                             ).getBalance()?.btc
                         )
                     }
 
                     if (account.network.isLiquid) {
-                        it.appendQueryParameter("assetid", accountAsset.value!!.asset.assetId)
+                        it.appendQueryParameter("assetid", this@ReceiveViewModel.accountAsset.value!!.asset.assetId)
                     }
                 }.toString()
 
-                if (amount.value.isNotBlank() || !accountAsset.value?.assetId.isPolicyAsset(session)) {
+                if (amount.value.isNotBlank() || !this@ReceiveViewModel.accountAsset.value?.assetId.isPolicyAsset(session)) {
                     _receiveAddress.value = scheme + query
                 } else {
                     _receiveAddress.value = address
@@ -707,31 +669,72 @@ class ReceiveViewModel(greenWallet: GreenWallet, initialAccountAsset: AccountAss
                 denomination = denomination.value
             ).getBalance()?.satoshi ?: 0
 
-            val response = session.createLightningInvoice(amount, note.value ?: "")
+            if (isReverseSubmarineSwap.value) {
 
-            val receiveAmount = response.receiveAmountSatoshi()
+                val invoice = boltzUseCase.createReverseSubmarineSwapUseCase(
+                    wallet = greenWallet,
+                    session = session,
+                    account = account,
+                    amount = amount,
+                    description = null
+                )
 
-            _invoiceAmountToReceive.value = receiveAmount.toAmountLookOrNa(
-                session = session,
-                assetId = account.network.policyAsset,
-                denomination = denomination.value.takeIf { !it.isFiat } ?: Denomination.default(session),
-                withUnit = true
-            )
+                // Fee is lockup fee + boltz fee + claim fee. We hardcode claim value for 1in 1out tx
+                val fee = (invoice.fee()?.toLong() ?: 0) + 22
 
-            _invoiceAmountToReceiveFiat.value = receiveAmount.toAmountLookOrNa(
-                session = session,
-                assetId = account.network.policyAsset,
-                denomination = Denomination.fiat(session),
-                withUnit = true
-            )
+                val bolt11 = invoice.bolt11Invoice()
 
-            _lightningInvoice.value = response.lnInvoice
+                val receiveAmount = (bolt11.amountMilliSatoshis()?.satoshi() ?: 0) - fee
 
-            updateAddress(response.lnInvoice.bolt11)
+                _invoiceAmountToReceive.value = receiveAmount.toAmountLookOrNa(
+                    session = session,
+                    assetId = account.network.policyAsset,
+                    denomination = denomination.value.takeIf { !it.isFiat } ?: Denomination.default(session),
+                    withUnit = true
+                )
 
-            _invoiceExpirationTimestamp.value = response.lnInvoice.expireIn().toEpochMilliseconds()
-            _invoiceExpiration.value = response.lnInvoice.expireIn().formatAuto()
-            _invoiceDescription.value = response.lnInvoice.description
+                _invoiceAmountToReceiveFiat.value = receiveAmount.toAmountLookOrNa(
+                    session = session,
+                    assetId = account.network.policyAsset,
+                    denomination = Denomination.fiat(session),
+                    withUnit = true
+                )
+
+                _lightningInvoicePaymentHash.value = bolt11.paymentHash()
+
+                updateAddress(bolt11.toString())
+
+                _invoiceExpirationTimestamp.value = bolt11.expireIn().toEpochMilliseconds()
+                _invoiceExpiration.value = bolt11.expireIn().formatAuto()
+                _invoiceDescription.value = bolt11.invoiceDescription()
+
+            } else {
+                val response = session.createLightningInvoice(amount, note.value ?: "")
+
+                val receiveAmount = response.receiveAmountSatoshi()
+
+                _invoiceAmountToReceive.value = receiveAmount.toAmountLookOrNa(
+                    session = session,
+                    assetId = account.network.policyAsset,
+                    denomination = denomination.value.takeIf { !it.isFiat } ?: Denomination.default(session),
+                    withUnit = true
+                )
+
+                _invoiceAmountToReceiveFiat.value = receiveAmount.toAmountLookOrNa(
+                    session = session,
+                    assetId = account.network.policyAsset,
+                    denomination = Denomination.fiat(session),
+                    withUnit = true
+                )
+
+                _lightningInvoicePaymentHash.value = response.lnInvoice.paymentHash
+
+                updateAddress(response.lnInvoice.bolt11)
+
+                _invoiceExpirationTimestamp.value = response.lnInvoice.expireIn().toEpochMilliseconds()
+                _invoiceExpiration.value = response.lnInvoice.expireIn().formatAuto()
+                _invoiceDescription.value = response.lnInvoice.description
+            }
         }, onSuccess = {
 
         })
@@ -776,153 +779,6 @@ class ReceiveViewModel(greenWallet: GreenWallet, initialAccountAsset: AccountAss
         })
     }
 
-    private fun updateAmountExchangeRate() {
-        // Convert between BTC / Fiat
-        doAsync({
-            val balance = amount.value.takeIf { it.isNotBlank() }?.let {
-                UserInput.parseUserInputSafe(
-                    session = session,
-                    input = it,
-                    assetId = accountAsset.value!!.asset.assetId,
-                    denomination = denomination.value
-                ).getBalance()
-            }
-
-            (balance?.let {
-                "≈ " + it.toAmountLook(
-                    session = session,
-                    assetId = accountAsset.value!!.asset.assetId,
-                    denomination = Denomination.exchange(
-                        session = session,
-                        denomination = denomination.value
-                    ),
-                    withUnit = true,
-                    withGrouping = true,
-                    withMinimumDigits = false
-                )
-            } ?: "").also {
-                _amountExchange.value = it
-            }
-
-            if (accountAsset.value?.account?.isLightning == true) {
-                val nodeState = session.lightningSdk.nodeInfoStateFlow.value
-
-                val openChannelFee = balance?.satoshi?.let {
-                    if (it > nodeState.totalInboundLiquiditySatoshi()) session.lightningSdk.openChannelFee(
-                        it
-                    ) else null
-                }
-
-                _isValid.value = balance != null && (balance.satoshi >= 0 &&
-                        balance.satoshi <= nodeState.maxReceivableSatoshi() &&
-                        (balance.satoshi <= nodeState.totalInboundLiquiditySatoshi() || (balance.satoshi > (openChannelFee?.feeSatoshi()
-                            ?: 0)))
-                        )
-
-                _amountError.value = if (amount.value.isBlank()) null else {
-                    if (balance != null) {
-                        val inboundLiquidity = nodeState.totalInboundLiquiditySatoshi()
-                        val channelMinimum = openChannelFee?.feeSatoshi() ?: 0
-                        if (balance.satoshi > inboundLiquidity) {
-                            getString(
-                                Res.string.id_the_amount_is_above_your_inbound,
-                                inboundLiquidity.toAmountLook(
-                                    session = session,
-                                    withUnit = true,
-                                    denomination = denomination.value.notFiat()
-                                ) ?: "", inboundLiquidity.toAmountLook(
-                                    session = session,
-                                    withUnit = true,
-                                    denomination = Denomination.fiat(session)
-                                ) ?: ""
-                            )
-                        } else if (balance.satoshi <= channelMinimum) {
-                            getString(
-                                Res.string.id_this_amount_is_below_the,
-                                channelMinimum.toAmountLook(
-                                    session = session,
-                                    withUnit = true,
-                                    denomination = denomination.value.notFiat()
-                                ) ?: "", channelMinimum.toAmountLook(
-                                    session = session,
-                                    withUnit = true,
-                                    denomination = Denomination.fiat(session)
-                                ) ?: ""
-                            )
-                        } else {
-                            null
-                        }
-                    } else {
-                        null
-                    }
-                }
-
-                val isSetupChannel = nodeState.totalInboundLiquiditySatoshi() == 0L
-
-                val channelFee = openChannelFee?.feeSatoshi()?.toAmountLook(
-                    session = session,
-                    assetId = account.network.policyAsset,
-                    denomination = denomination.value.notFiat(),
-                    withUnit = true
-                ) ?: "-"
-
-                val channelFeeFiat = openChannelFee?.feeSatoshi()?.toAmountLook(
-                    session = session,
-                    assetId = account.network.policyAsset,
-                    denomination = Denomination.fiat(session),
-                    withUnit = true
-                ) ?: "-"
-
-                _liquidityFee.value = when {
-                    amount.value.isBlank() || _amountError.value != null -> {
-                        null
-                    }
-
-                    isSetupChannel -> {
-                        getString(
-                            Res.string.id_a_set_up_funding_fee_of_s_s,
-                            channelFee,
-                            channelFeeFiat
-                        )
-                    }
-
-                    (balance?.satoshi ?: 0) > nodeState.totalInboundLiquiditySatoshi() -> {
-
-                        val inboundLiquidity = nodeState.totalInboundLiquiditySatoshi().toAmountLookOrNa(
-                            session = session,
-                            assetId = session.lightningAccount.network.policyAsset,
-                            denomination = denomination.value.notFiat(),
-                            withUnit = true
-                        )
-
-                        val inboundLiquidityFiat = nodeState.totalInboundLiquiditySatoshi().toAmountLook(
-                            session = session,
-                            assetId = session.lightningAccount.network.policyAsset,
-                            denomination = Denomination.fiat(session),
-                            withUnit = true
-                        ) ?: ""
-
-                        getString(
-                            Res.string.id_a_funding_fee_of_s_s_is_applied,
-                            channelFee,
-                            channelFeeFiat,
-                            inboundLiquidity,
-                            inboundLiquidityFiat
-                        )
-                    }
-
-                    else -> null
-                }
-            }
-
-        }, preAction = null, postAction = null, onSuccess = { }, onError = {
-            _amountExchange.value = ""
-            _isValid.value = false
-            _amountError.value = null
-            _liquidityFee.value = null
-        })
-    }
-
     private suspend fun createQRImageAndShare(address: String, data: ByteArray?) {
         if (data != null) {
             val fileSystem = platformFileSystem()
@@ -947,7 +803,7 @@ class ReceiveViewModel(greenWallet: GreenWallet, initialAccountAsset: AccountAss
         ).getBalance().let {
             DenominatedValue(
                 balance = it,
-                assetId = accountAsset.value?.assetId,
+                assetId = this@ReceiveViewModel.accountAsset.value?.assetId,
                 denomination = denomination.value
             )
         }
@@ -965,22 +821,21 @@ class ReceiveViewModel(greenWallet: GreenWallet, initialAccountAsset: AccountAss
 class ReceiveViewModelPreview() :
     ReceiveViewModelAbstract(greenWallet = previewWallet(), accountAssetOrNull = previewAccountAsset(isLightning = true)) {
 
-    override val showRecoveryConfirmation: StateFlow<Boolean> = MutableStateFlow(true)
-
+    override val showRecoveryConfirmation: StateFlow<Boolean> = MutableStateFlow(false)
+    override val showSwap: StateFlow<Boolean> = MutableStateFlow(true)
+    override val isReverseSubmarineSwap = MutableStateFlow(true)
     override val receiveAddress: StateFlow<String?> =
         MutableStateFlow("lightning:LNBC1bc1qaqtq80759n35gk6ftc57vh7du83nwvt5lgkznubc1qaqtq80759n35gkh7du83nwvt5lgkznubc1qaqtq80759n35gkh7du83nwvt5lgkznubc1qaqtq80759n35gk6ftc57vh7du83nwvt5lgkznubc1qaqtq80759n35gk6ftc57vh7du83nwvt5lgkznu")
     override val receiveAddressUri: StateFlow<String?> =
         MutableStateFlow("lightning:LNBC1bc1qaqtq80759n35gk6ftc57vh7du83nwvt5lgkznubc1qaqtq80759n35gkh7du83nwvt5lgkznubc1qaqtq80759n35gkh7du83nwvt5lgkznubc1qaqtq80759n35gk6ftc57vh7du83nwvt5lgkznubc1qaqtq80759n35gk6ftc57vh7du83nwvt5lgkznu")
     override val amount: MutableStateFlow<String> = MutableStateFlow("")
-    override val amountError: StateFlow<String?> = MutableStateFlow(null)
     override val note = MutableStateFlow("")
     override val liquidityFee: StateFlow<String?> =
         MutableStateFlow("A funding fee of %1 (%2) is applied when receiving amounts above your current receive capacity %3 (%4)")
     override val onchainSwapMessage: StateFlow<String?> =
         MutableStateFlow("Send more than %s and up to %s to this address. A minimum setup fee of %s will be applied on the received amount.\n\nThis address can be used only once.")
     override val amountCurrency: StateFlow<String> = MutableStateFlow("")
-    override val amountExchange: StateFlow<String> = MutableStateFlow("")
-    override val maxReceiveAmount: StateFlow<String> = MutableStateFlow("")
+    override val receiveAmountData: StateFlow<ReceiveAmountData> = MutableStateFlow(ReceiveAmountData())
     override val invoiceAmountToReceive: MutableStateFlow<String?> = MutableStateFlow("123 sats")
     override val invoiceAmountToReceiveFiat: MutableStateFlow<String?> = MutableStateFlow("1.23 USD")
     override val invoiceDescription: MutableStateFlow<String?> = MutableStateFlow("Invoice Description")
@@ -990,8 +845,7 @@ class ReceiveViewModelPreview() :
     override val showLightningOnChainAddress: StateFlow<Boolean> = MutableStateFlow(false)
     override val showAmount: StateFlow<Boolean> = MutableStateFlow(false)
     override val showLedgerAssetWarning: StateFlow<Boolean> = MutableStateFlow(false)
-    override val asset: MutableStateFlow<EnrichedAsset> = MutableStateFlow(previewEnrichedAsset())
-    override val assetAccounts: StateFlow<List<AccountAssetBalance>> = MutableStateFlow(emptyList())
+    override val asset: StateFlow<EnrichedAsset> = MutableStateFlow(previewEnrichedAsset())
 
     companion object {
         fun preview() = ReceiveViewModelPreview()

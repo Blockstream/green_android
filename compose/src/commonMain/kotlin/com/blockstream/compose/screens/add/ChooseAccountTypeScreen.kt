@@ -141,20 +141,22 @@ fun ChooseAccountTypeScreen(
         val asset by viewModel.asset.collectAsStateWithLifecycle()
         GreenAsset(
             modifier = Modifier.padding(bottom = 16.dp),
-            assetBalance = asset, session = viewModel.sessionOrNull, title = stringResource(
-                resource = Res.string.id_asset
-            ), withEditIcon = viewModel.allowAssetSelection
-        ) {
-            if (viewModel.allowAssetSelection) {
-                scope.launch {
-                    viewModel.postEvent(
-                        NavigateDestinations.Assets.create(
-                            viewModel = viewModel
+            assetBalance = asset,
+            session = viewModel.sessionOrNull,
+            title = stringResource(resource = Res.string.id_asset),
+            withEditIcon = viewModel.allowAssetSelection,
+            onClick = {
+                if (viewModel.allowAssetSelection) {
+                    scope.launch {
+                        viewModel.postEvent(
+                            NavigateDestinations.Assets.create(
+                                viewModel = viewModel
+                            )
                         )
-                    )
+                    }
                 }
             }
-        }
+        )
 
         val accountTypes by viewModel.accountTypes.collectAsStateWithLifecycle()
         Column(modifier = Modifier.weight(1f)) {

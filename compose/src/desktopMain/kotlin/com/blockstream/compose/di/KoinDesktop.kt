@@ -13,7 +13,7 @@ import com.blockstream.common.lightning.BreezNotification
 import com.blockstream.common.managers.BluetoothManager
 import com.blockstream.common.managers.DeviceManager
 import com.blockstream.green.data.config.AppInfo
-import com.blockstream.green.data.notifications.models.NotificationData
+import com.blockstream.green.data.notifications.models.MeldNotificationData
 import org.koin.dsl.module
 
 fun initKoinDesktop(appConfig: AppConfig, appInfo: AppInfo, doOnStartup: () -> Unit = {}) {
@@ -108,7 +108,7 @@ fun initKoinDesktop(appConfig: AppConfig, appInfo: AppInfo, doOnStartup: () -> U
                     }
 
                     override fun showBuyTransactionNotification(
-                        notificationData: NotificationData
+                        meldNotificationData: MeldNotificationData
                     ) {
                         //no-op
                     }

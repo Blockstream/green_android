@@ -31,15 +31,22 @@ kotlin {
     sourceSets {
         commonMain {
             dependencies {
+                /**  --- Modules  --- */
                 api(project(":utils"))
                 api(project(":network"))
 
+                /**  --- Kotlin  --- */
                 implementation(libs.kotlinx.serialization.core)
                 implementation(libs.kotlinx.serialization.json)
 
+                /**  --- Koin  --- */
                 api(project.dependencies.platform(libs.koin.bom))
                 api(libs.koin.core)
 
+                /**  --- LWK  --- */
+                api(libs.lwk)
+
+                /**  --- Utils  --- */
                 api(libs.ksoup.entites) // html entities
             }
         }

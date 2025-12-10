@@ -1,22 +1,24 @@
 [versions]
-filekit-core = "0.11.0"
-filekit-dialogs = "0.11.0"
+filekit-core = "0.12.0"
+filekit-dialogs = "0.12.0"
 jvm = "17"
 accompanistPermissions = "0.37.3"
-constraintlayoutComposeMultiplatform = "0.6.0"
-kotlin = "2.2.20"
+constraintlayoutComposeMultiplatform = "0.6.1"
+kotlin = "2.2.21"
 kotlinMultiplatformAppdirs = "2.0.0"
+kotlinRetry = "2.0.2"
 kotlinx-coroutines = "1.10.2"
 kotlinx-datetime = "0.7.1"
 kotlinx-serialization = "1.9.0"
-kotlin-ksp = "2.2.20-2.0.3"
+kotlin-ksp = "2.3.0"
 kable = "0.40.0"
 coil = "3.3.0"
 ktor = "3.3.0"
+lwk = "0.12.8"
 phosphorIcon = "1.0.0"
 compose-rebugger = "1.0.1"
 tuulbox-coroutines = "8.0.3"
-android-gradle-plugin = "8.13.0"
+android-gradle-plugin = "8.13.1"
 androidCompileSdk = "36"
 androidTargetSdk = "36"
 androidMinSdk = "24"
@@ -84,6 +86,7 @@ koalaplot = "0.9.1"
 [libraries]
 filekit-dialogs = { module = "io.github.vinceglb:filekit-dialogs", version.ref = "filekit-dialogs" }
 filekit-core = { module = "io.github.vinceglb:filekit-core", version.ref = "filekit-core" }
+kotlin-retry = { module = "com.michael-bull.kotlin-retry:kotlin-retry", version.ref = "kotlinRetry" }
 lifecycle-viewmodel-compose = { module = "org.jetbrains.androidx.lifecycle:lifecycle-viewmodel-compose", version.ref = "compose-lifecycle" }
 androidx-lifecycle-runtime-compose = { module = "org.jetbrains.androidx.lifecycle:lifecycle-runtime-compose", version.ref = "compose-lifecycle" }
 accompanist-permissions = { module = "com.google.accompanist:accompanist-permissions", version.ref = "accompanistPermissions" }
@@ -106,6 +109,7 @@ ktor-client-okhttp = { module = "io.ktor:ktor-client-okhttp", version.ref = "kto
 ktor-client-cio = { module = "io.ktor:ktor-client-cio", version.ref = "ktor" }
 ktor-client-darwin = { module = "io.ktor:ktor-client-darwin", version.ref = "ktor" }
 ktor-client-java = { module = "io.ktor:ktor-client-java", version.ref = "ktor" }
+lwk = { module = "com.blockstream:lwk", version.ref = "lwk" }
 phosphor-icon = { module = "com.adamglin:phosphor-icon", version.ref = "phosphorIcon" }
 compose-rebugger = { module = "io.github.theapache64:rebugger", version.ref = "compose-rebugger" }
 tuulbox-coroutines = { module = "com.juul.tuulbox:coroutines", version.ref = "tuulbox-coroutines" }
@@ -208,3 +212,4 @@ kmp-nativecoroutines = { id = "com.rickclephas.kmp.nativecoroutines", version.re
 googleServices = { id = "com.google.gms.google-services", version.ref = "google-services" }
 compose-hotReload = { id = "org.jetbrains.compose.hot-reload", version.ref = "compose-hot-reload" }
 android-kotlin-multiplatform-library = { id = "com.android.kotlin.multiplatform.library", version.ref = "android-gradle-plugin" }
+android-lint = { id = "com.android.lint", version.ref = "android-gradle-plugin" }

@@ -107,3 +107,7 @@
 -keep class breez_sdk.** { *; }
 -keepclassmembers class * extends technology.breez.* { public *; }
 -keepclassmembers class * extends breez_sdk.** { public *; }
+
+# LWK
+-keep class lwk.** { *; }
+-keepclassmembers class * extends lwk.** { public *; }

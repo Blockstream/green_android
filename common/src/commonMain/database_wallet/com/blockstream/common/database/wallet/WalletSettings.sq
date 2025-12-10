@@ -1,0 +1,21 @@
+CREATE TABLE IF NOT EXISTS `walletSettings` (
+    `wallet_id` TEXT NOT NULL,
+    `key` TEXT NOT NULL,
+    `data` TEXT NOT NULL,
+     PRIMARY KEY(`wallet_id`, `key`),
+     FOREIGN KEY(`wallet_id`)
+     REFERENCES `wallet`(`id`) ON UPDATE NO ACTION ON DELETE CASCADE
+ );
+
+getWalletSettings:
+SELECT * FROM walletSettings WHERE wallet_id = ?;
+
+getWalletSetting:
+SELECT * FROM walletSettings WHERE wallet_id = ? AND key = ?;
+
+setWalletSetting:
+INSERT OR REPLACE INTO walletSettings(wallet_id, key, data)
+VALUES (?, ?, ?);
+
+deleteWalletSetting:
+DELETE FROM walletSettings WHERE wallet_id = ? AND key = ?;

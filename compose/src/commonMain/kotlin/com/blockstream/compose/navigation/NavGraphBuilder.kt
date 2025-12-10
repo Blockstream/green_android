@@ -11,26 +11,9 @@ import androidx.navigation.compose.composable
 import androidx.navigation.compose.dialog
 import com.blockstream.common.AddressInputType
 import com.blockstream.common.SupportType
-import com.blockstream.common.data.DenominatedValue
-import com.blockstream.common.data.Denomination
-import com.blockstream.common.data.GreenWallet
-import com.blockstream.common.data.LnUrlAuthRequestDataSerializable
-import com.blockstream.common.data.LnUrlWithdrawRequestSerializable
-import com.blockstream.common.data.MenuEntryList
-import com.blockstream.common.data.Promo
-import com.blockstream.common.data.SetupArgs
-import com.blockstream.common.data.SupportData
-import com.blockstream.common.data.TwoFactorMethod
-import com.blockstream.common.data.TwoFactorSetupAction
+import com.blockstream.common.data.*
 import com.blockstream.common.devices.DeviceModel
-import com.blockstream.common.gdk.data.Account
-import com.blockstream.common.gdk.data.AccountAsset
-import com.blockstream.common.gdk.data.AccountAssetBalanceList
-import com.blockstream.common.gdk.data.AssetBalance
-import com.blockstream.common.gdk.data.AssetBalanceList
-import com.blockstream.common.gdk.data.Network
-import com.blockstream.common.gdk.data.Transaction
-import com.blockstream.common.gdk.data.TwoFactorReset
+import com.blockstream.common.gdk.data.*
 import com.blockstream.common.looks.transaction.TransactionConfirmLook
 import com.blockstream.common.models.jade.JadeQrOperation
 import com.blockstream.common.models.settings.WalletSettingsSection
@@ -78,7 +61,10 @@ val AppTypeMap = mapOf(
     typeOf<AccountAssetBalanceList>() to CustomNavType.create<AccountAssetBalanceList>(),
     typeOf<AssetBalanceList>() to CustomNavType.create<AssetBalanceList>(),
     typeOf<MenuEntryList>() to CustomNavType.create<MenuEntryList>(),
-    typeOf<QuotesResponse>() to CustomNavType.create<QuotesResponse>()
+    typeOf<QuotesResponse>() to CustomNavType.create<QuotesResponse>(),
+    typeOf<EnrichedAsset>() to CustomNavType.create<EnrichedAsset>(),
+    typeOf<EnrichedAssetList>() to CustomNavType.create<EnrichedAssetList>(),
+    typeOf<AccountAssetList>() to CustomNavType.create<AccountAssetList>()
 )
 
 inline fun <reified T : Any> NavGraphBuilder.appComposable(noinline content: @Composable (AnimatedContentScope.(NavBackStackEntry) -> Unit)) {

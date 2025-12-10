@@ -38,10 +38,8 @@ import blockstream_green.common.generated.resources.id_next
 import blockstream_green.common.generated.resources.id_recipient_address
 import blockstream_green.common.generated.resources.id_set_custom_fee_rate
 import blockstream_green.common.generated.resources.pencil_simple_line
-import com.blockstream.common.AddressInputType
 import com.blockstream.common.data.DenominatedValue
 import com.blockstream.common.data.FeePriority
-import com.blockstream.common.data.ScanResult
 import com.blockstream.common.events.Events
 import com.blockstream.common.extensions.isNotBlank
 import com.blockstream.common.gdk.data.AccountAssetBalance
@@ -79,12 +77,6 @@ import org.jetbrains.compose.resources.stringResource
 fun SendScreen(
     viewModel: SendViewModelAbstract
 ) {
-
-    NavigateDestinations.Camera.getResult<ScanResult> {
-        viewModel.address.value = it.result
-        viewModel.postEvent(CreateTransactionViewModelAbstract.LocalEvents.SetAddressInputType(AddressInputType.SCAN))
-    }
-
     NavigateDestinations.AssetsAccounts.getResult<AccountAssetBalance> {
         viewModel.postEvent(Events.SetAccountAsset(it.accountAsset))
     }
@@ -129,7 +121,6 @@ fun SendScreen(
         }
     }
 
-    val errorAddress by viewModel.errorAddress.collectAsStateWithLifecycle()
     val accountAssetBalance by viewModel.accountAssetBalance.collectAsStateWithLifecycle()
     val onProgressSending by viewModel.onProgressSending.collectAsStateWithLifecycle()
 
@@ -157,52 +148,34 @@ fun SendScreen(
             ) {
                 Banner(viewModel)
 
-                val address by viewModel.address.collectAsStateWithLifecycle()
                 GreenTextField(
                     title = stringResource(Res.string.id_recipient_address),
-                    value = address,
-                    onValueChange = {
-                        viewModel.postEvent(CreateTransactionViewModelAbstract.LocalEvents.SetAddressInputType(AddressInputType.PASTE))
-                        viewModel.address.value = it
-                    },
+                    value = viewModel.address,
+                    onValueChange = { },
                     singleLine = false,
+                    enabled = false,
                     maxLines = 4,
-                    error = errorAddress,
-                    onQrClick = {
-                        viewModel.postEvent(
-                            NavigateDestinations.Camera(
-                                isDecodeContinuous = true,
-                                parentScreenName = viewModel.screenName()
-                            )
-                        )
-                    }
                 )
 
-                val isAccountEdit by viewModel.isAccountEdit.collectAsStateWithLifecycle()
                 AnimatedNullableVisibility(value = accountAssetBalance) {
                     GreenAccountAsset(
                         accountAssetBalance = it,
                         session = viewModel.sessionOrNull,
                         title = stringResource(if (accountAssetBalance?.account?.isLightning == true) Res.string.id_lightning_account else Res.string.id_account__asset),
-                        withEditIcon = isAccountEdit,
-                        onClick = if (isAccountEdit) {
-                            {
-                                viewModel.postEvent(SendViewModel.LocalEvents.ClickAssetsAccounts)
-                            }
-                        } else null
                     )
                 }
 
                 val amount by viewModel.amount.collectAsStateWithLifecycle()
                 val amountHint by viewModel.amountHint.collectAsStateWithLifecycle()
                 val amountExchange by viewModel.amountExchange.collectAsStateWithLifecycle()
+                val showAmount by viewModel.showAmount.collectAsStateWithLifecycle()
                 val denomination by viewModel.denomination.collectAsStateWithLifecycle()
                 val errorAmount by viewModel.errorAmount.collectAsStateWithLifecycle()
                 val isAmountLocked by viewModel.isAmountLocked.collectAsStateWithLifecycle()
                 val isSendAll by viewModel.isSendAll.collectAsStateWithLifecycle()
-                val supportsSendAll by viewModel.supportsSendAll.collectAsStateWithLifecycle()
+                val supportsSendAll = viewModel.supportsSendAll
 
-                AnimatedNullableVisibility(value = accountAssetBalance) {
+                AnimatedVisibility(visible = showAmount && accountAssetBalance != null) {
                     GreenAmountField(
                         value = amount,
                         onValueChange = {
@@ -210,7 +183,7 @@ fun SendScreen(
                             viewModel.amount.value = it
                         },
                         secondaryValue = amountExchange,
-                        assetId = it.assetId,
+                        assetId = accountAssetBalance?.assetId,
                         session = viewModel.sessionOrNull,
                         isAmountLocked = isAmountLocked,
                         helperText = errorAmount,

@@ -33,8 +33,7 @@ import kotlin.uuid.Uuid
 fun previewWallet(
     isHardware: Boolean = false,
     isWatchOnly: Boolean = false,
-    isEphemeral: Boolean = false,
-    hasLightningShortcut: Boolean = false
+    isEphemeral: Boolean = false
 ): GreenWallet {
     return WalletSerializable(
         id = objectId().toString(),
@@ -58,8 +57,7 @@ fun previewWallet(
     ).let {
         GreenWallet(
             wallet = it,
-            ephemeralIdOrNull = if (isEphemeral) 1 else null,
-            hasLightningShortcut = hasLightningShortcut
+            ephemeralIdOrNull = if (isEphemeral) 1 else null
         )
     }
 }

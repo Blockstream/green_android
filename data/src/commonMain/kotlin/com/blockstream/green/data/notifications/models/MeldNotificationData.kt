@@ -4,7 +4,7 @@ import kotlinx.serialization.Serializable
 import kotlinx.serialization.json.Json
 
 @Serializable
-data class NotificationData(
+data class MeldNotificationData(
     val accountId: String,
     val eventId: String,
     val profileId: String,
@@ -12,15 +12,15 @@ data class NotificationData(
     val eventType: String,
     val timestamp: String,
     val version: String,
-    val type: NotificationType? = null,
+    val type: MeldNotificationType? = null,
     val title: String? = null,
     val body: String? = null
 ) {
-    companion object {
-        fun create(data: Map<String, String>): NotificationData {
+    companion object Companion {
+        fun create(data: Map<String, String>): MeldNotificationData {
             val json = Json { ignoreUnknownKeys = true }
 
-            return NotificationData(
+            return MeldNotificationData(
                 accountId = data["accountId"] ?: "",
                 eventId = data["eventId"] ?: "",
                 profileId = data["profileId"] ?: "",
@@ -28,7 +28,7 @@ data class NotificationData(
                 eventType = data["eventType"] ?: "",
                 timestamp = data["timestamp"] ?: "",
                 version = data["version"] ?: "",
-                type = NotificationType.valueOfOrUnknown(data["type"]),
+                type = MeldNotificationType.valueOfOrUnknown(data["type"]),
                 title = data["title"],
                 body = data["body"]
             )

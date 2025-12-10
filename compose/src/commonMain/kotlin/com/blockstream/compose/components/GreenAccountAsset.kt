@@ -1,18 +1,8 @@
 package com.blockstream.compose.components
 
 import androidx.compose.foundation.Image
-import androidx.compose.foundation.layout.Arrangement
-import androidx.compose.foundation.layout.Box
-import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.Row
-import androidx.compose.foundation.layout.fillMaxWidth
-import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.layout.size
-import androidx.compose.material3.Checkbox
-import androidx.compose.material3.Icon
-import androidx.compose.material3.IconButton
-import androidx.compose.material3.Text
-import androidx.compose.material3.minimumInteractiveComponentSize
+import androidx.compose.foundation.layout.*
+import androidx.compose.material3.*
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -34,13 +24,7 @@ import com.blockstream.common.utils.StringHolder
 import com.blockstream.compose.GreenPreview
 import com.blockstream.compose.extensions.assetIcon
 import com.blockstream.compose.extensions.policyIcon
-import com.blockstream.compose.theme.bodyMedium
-import com.blockstream.compose.theme.labelLarge
-import com.blockstream.compose.theme.labelMedium
-import com.blockstream.compose.theme.titleSmall
-import com.blockstream.compose.theme.whiteHigh
-import com.blockstream.compose.theme.whiteLow
-import com.blockstream.compose.theme.whiteMedium
+import com.blockstream.compose.theme.*
 import com.blockstream.ui.components.GreenColumn
 import com.blockstream.ui.utils.ifTrue
 import org.jetbrains.compose.resources.painterResource
@@ -61,9 +45,18 @@ fun GreenAccountAsset(
     withArrow: Boolean = false,
     selectable: Boolean = false,
     isSelected: Boolean = false,
+    helperText: String? = null,
+    isError: Boolean = false,
     onClick: (() -> Unit)? = null,
 ) {
-    GreenDataLayout(modifier = modifier, title = title, onClick = onClick, withPadding = false) {
+    GreenDataLayout(
+        modifier = modifier,
+        title = title,
+        onClick = onClick,
+        withPadding = false,
+        helperText = helperText,
+        helperContainerColor = if(isError) md_theme_errorContainer else null,
+    ) {
 
         Row(
             modifier = Modifier.padding(start = if(selectable) 8.dp else 16.dp),
@@ -76,7 +69,7 @@ fun GreenAccountAsset(
                     modifier = Modifier.padding(end = 8.dp)
                 )
             }
-            
+
             if (withAssetIcon) {
                 Box {
                     Image(

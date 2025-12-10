@@ -12,28 +12,31 @@ import com.blockstream.common.gdk.params.CreateTransactionParams
 import com.blockstream.common.utils.feeRateWithUnit
 import com.blockstream.common.utils.toAmountLook
 import com.blockstream.common.utils.toAmountLookOrNa
+import com.blockstream.green.data.lwk.NormalSubmarineSwap
 import kotlinx.serialization.Serializable
 import kotlin.math.absoluteValue
 
 @Serializable
 data class TransactionConfirmLook(
-    val from: AccountAsset? = null,
-    val to: AccountAsset? = null,
+    val from: AccountAsset? = null, val to: AccountAsset? = null,
 
     val isRedeposit: Boolean = false,
 
     val utxos: List<UtxoView>? = null,
 
-    val amount: String? = null,
-    val amountFiat: String? = null,
+    val amount: String? = null, val amountFiat: String? = null,
 
-    val fee: String? = null,
-    val feeFiat: String? = null,
-    val feeRate: String? = null,
-    val feeAssetId: String? = null,
+    val submarineSwap: NormalSubmarineSwap? = null,
 
-    val total: String? = null,
-    val totalFiat: String? = null
+    val serviceFee: String? = null, val serviceFeeFiat: String? = null, val serviceFeeAssetId: String? = null,
+
+    val fee: String? = null, val feeFiat: String? = null, val feeRate: String? = null, val feeAssetId: String? = null,
+
+    val totalFees: String? = null, val totalFeesFiat: String? = null,
+
+    val recipientReceives: String? = null, val recipientReceivesFiat: String? = null,
+
+    val total: String? = null, val totalFiat: String? = null
 ) : GreenJson<TransactionConfirmLook>() {
     override fun kSerializer() = serializer()
 
@@ -52,35 +55,133 @@ data class TransactionConfirmLook(
             var amountFiat: String? = null
             var utxos: List<UtxoView>? = null
 
-            if (!isAddressVerificationOnDevice && params.from != null && params.to != null) {
-                // Find the assetId from params
-                params.addresseesAsParams?.firstOrNull()?.let {
-                    val assetId = it.assetId ?: BTC_POLICY_ASSET
-                    transaction.satoshi[assetId]?.absoluteValue?.let { it to assetId }
-                }?.also {
-                    amount = it.first.toAmountLook(
+            var serviceFee: String? = null
+            var serviceFeeFiat: String? = null
+            var serviceFeeAssetId: String? = null
+
+            var totalFees: String? = null
+            var totalFeesFiat: String? = null
+            var recipientReceives: String? = null
+            var recipientReceivesFiat: String? = null
+
+            when {
+                !isAddressVerificationOnDevice && params.from != null && params.to != null -> {
+                    // Find the assetId from params
+                    params.addresseesAsParams?.firstOrNull()?.let {
+                        val assetId = it.assetId ?: BTC_POLICY_ASSET
+                        transaction.satoshi[assetId]?.absoluteValue?.let { it to assetId }
+                    }?.also {
+                        amount = it.first.toAmountLook(
+                            session = session,
+                            assetId = it.second,
+                            withUnit = true,
+                            withGrouping = true,
+                            withMinimumDigits = isAddressVerificationOnDevice,
+                            denomination = if (isAddressVerificationOnDevice) Denomination.BTC else denomination
+                        )
+                        amountFiat = it.first.toAmountLook(
+                            session = session,
+                            assetId = it.second,
+                            withUnit = true,
+                            withGrouping = true,
+                            denomination = Denomination.fiat(session)
+                        )
+                    }
+                }
+
+                params.submarineSwap != null -> {
+                    val satoshi = params.submarineSwap.let { it.satoshi - it.serviceFee }
+
+                    val amount = satoshi.toAmountLook(
                         session = session,
-                        assetId = it.second,
+                        assetId = account.network.policyAssetOrNull,
                         withUnit = true,
                         withGrouping = true,
                         withMinimumDigits = isAddressVerificationOnDevice,
                         denomination = if (isAddressVerificationOnDevice) Denomination.BTC else denomination
                     )
-                    amountFiat = it.first.toAmountLook(
+                    val amountExchange = satoshi.toAmountLook(
                         session = session,
-                        assetId = it.second,
+                        assetId = account.network.policyAssetOrNull,
                         withUnit = true,
                         withGrouping = true,
                         denomination = Denomination.fiat(session)
                     )
+
+                    utxos = listOf(
+                        UtxoView(
+                            address = params.submarineSwap.bolt11Invoice,
+                            assetId = account.network.policyAssetOrNull,
+                            satoshi = satoshi,
+                            amount = amount,
+                            amountExchange = amountExchange
+                        )
+                    )
+
+                    serviceFee = params.submarineSwap.serviceFee.toAmountLook(
+                        session = session,
+                        assetId = account.network.policyAsset,
+                        withUnit = true,
+                        withGrouping = true,
+                        withMinimumDigits = true,
+                        denomination = if (isAddressVerificationOnDevice) Denomination.BTC else denomination
+                    )
+
+                    serviceFeeFiat = params.submarineSwap.serviceFee.takeIf { it > 0 }.toAmountLook(
+                        session = session,
+                        assetId = account.network.policyAsset,
+                        withUnit = true,
+                        withGrouping = true,
+                        withMinimumDigits = true,
+                        denomination = Denomination.fiat(session)
+                    )
+
+                    serviceFeeAssetId = account.network.policyAssetOrNull
+
+                    val totalFeeSatoshi = params.submarineSwap.serviceFee + (transaction.fee ?: 0)
+                    totalFees = totalFeeSatoshi.toAmountLook(
+                        session = session,
+                        assetId = account.network.policyAsset,
+                        withUnit = true,
+                        withGrouping = true,
+                        withMinimumDigits = true,
+                        denomination = if (isAddressVerificationOnDevice) Denomination.BTC else denomination
+                    )
+                    totalFeesFiat = totalFeeSatoshi.toAmountLook(
+                        session = session,
+                        assetId = account.network.policyAsset,
+                        withUnit = true,
+                        withGrouping = true,
+                        withMinimumDigits = true,
+                        denomination = Denomination.fiat(session)
+                    )
+
+                    recipientReceives = params.submarineSwap.recipientReceivesSatoshi.toAmountLook(
+                        session = session,
+                        assetId = account.network.policyAsset,
+                        withUnit = true,
+                        withGrouping = true,
+                        withMinimumDigits = true,
+                        denomination = if (isAddressVerificationOnDevice) Denomination.BTC else denomination
+                    )
+                    recipientReceivesFiat = params.submarineSwap.recipientReceivesSatoshi.toAmountLook(
+                        session = session,
+                        assetId = account.network.policyAsset,
+                        withUnit = true,
+                        withGrouping = true,
+                        withMinimumDigits = true,
+                        denomination = Denomination.fiat(session)
+                    )
                 }
-            } else {
-                utxos = transaction.utxoViews(
-                    session = session,
-                    denomination = denomination,
-                    isAddressVerificationOnDevice = isAddressVerificationOnDevice,
-                    showChangeOutputs = isAddressVerificationOnDevice && session.device?.isLedger == true
-                )
+
+                else -> {
+                    utxos = transaction.utxoViews(
+                        session = session,
+                        denomination = denomination,
+                        isAddressVerificationOnDevice = isAddressVerificationOnDevice,
+                        showChangeOutputs = isAddressVerificationOnDevice && session.device?.isLedger == true
+                    )
+                }
             }
 
             val fee = transaction.fee?.toAmountLook(
@@ -103,8 +204,7 @@ data class TransactionConfirmLook(
 
             val feeRate = transaction.feeRate?.feeRateWithUnit()
 
-            val totalPolicy = (transaction.satoshi[account.network.policyAsset]
-                ?: 0).absoluteValue + (transaction.fee ?: 0)
+            val totalPolicy = (transaction.satoshi[account.network.policyAsset] ?: 0).absoluteValue + (transaction.fee ?: 0)
 
             val total = if (isRedeposit) fee else totalPolicy.toAmountLookOrNa(
                 session = session,
@@ -131,12 +231,20 @@ data class TransactionConfirmLook(
                 amount = amount,
                 amountFiat = amountFiat,
                 utxos = utxos,
+                submarineSwap = params.submarineSwap,
+                serviceFee = serviceFee,
+                serviceFeeFiat = serviceFeeFiat,
+                serviceFeeAssetId = serviceFeeAssetId,
                 fee = fee,
                 feeFiat = feeFiat,
                 feeRate = feeRate,
                 feeAssetId = account.network.policyAssetOrNull,
+                totalFees = totalFees,
+                totalFeesFiat = totalFeesFiat,
+                recipientReceives = recipientReceives,
+                recipientReceivesFiat = recipientReceivesFiat,
                 total = total,
-                totalFiat = totalFiat
+                totalFiat = totalFiat,
             )
         }
     }

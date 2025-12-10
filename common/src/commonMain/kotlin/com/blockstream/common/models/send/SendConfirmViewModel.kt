@@ -71,6 +71,7 @@ class SendConfirmViewModel constructor(
     class LocalEvents {
         object Note : Event
         object VerifyOnDevice : Event
+        object ClickTotalFees : Event
     }
 
     init {
@@ -179,6 +180,21 @@ class SendConfirmViewModel constructor(
 
             is LocalEvents.VerifyOnDevice -> {
                 verifyAddressOnDevice()
+            }
+
+            is LocalEvents.ClickTotalFees -> {
+                _transactionConfirmLook.value?.let { look ->
+                    postSideEffect(
+                        SideEffects.NavigateTo(
+                            NavigateDestinations.SwapFees(
+                                serviceFee = look.serviceFee ?: "",
+                                networkFee = look.fee ?: "",
+                                totalFees = look.totalFees ?: "",
+                                totalFeesFiat = look.totalFeesFiat
+                            )
+                        )
+                    )
+                }
             }
         }
     }

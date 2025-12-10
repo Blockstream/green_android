@@ -1,13 +1,16 @@
 package com.blockstream.gms.services
 
+import com.blockstream.common.extensions.tryCatchNull
 import com.blockstream.common.fcm.FcmCommon
 import com.blockstream.common.lightning.BreezNotification
 import com.blockstream.green.data.config.AppInfo
-import com.blockstream.green.data.notifications.models.NotificationData
-import com.blockstream.green.data.notifications.models.NotificationType
+import com.blockstream.green.data.notifications.models.BoltzNotificationSimple
+import com.blockstream.green.data.notifications.models.MeldNotificationData
+import com.blockstream.green.data.notifications.models.MeldNotificationType
 import com.blockstream.green.utils.Loggable
 import com.google.firebase.messaging.FirebaseMessagingService
 import com.google.firebase.messaging.RemoteMessage
+import kotlinx.serialization.json.Json
 import org.koin.core.component.KoinComponent
 import org.koin.core.component.inject
 
@@ -15,14 +18,21 @@ class FirebaseMessagingService : FirebaseMessagingService(), KoinComponent {
 
     val fcm: FcmCommon by inject()
     val appInfo: AppInfo by inject()
+    val json: Json by inject()
 
     override fun onMessageReceived(remoteMessage: RemoteMessage) {
         logger.d { "Received message: ${remoteMessage.data}" }
         val data = remoteMessage.data
 
+        if (data.isEmpty()) return
 
-        if (data.isNotEmpty()) {
 
+        if (data["type"] == "BOLTZ_EVENT") {
+            tryCatchNull {
+                val boltzNotificationData = BoltzNotificationSimple.create(json, data)
+                fcm.handleBoltzPushNotification(boltzNotificationData)
+            }
+        } else {
             val notificationType = data["notification_type"]
 
             // Breez Notification
@@ -45,8 +55,9 @@ class FirebaseMessagingService : FirebaseMessagingService(), KoinComponent {
                 //we don't have any other notification types
                 //so for now lets just show it as-is
                 //add notification types for other types
-                val notification = NotificationData.create(remoteMessage.data)
-                if (notification.type == NotificationType.MELD_TRANSACTION) {
+                val notification = MeldNotificationData.create(remoteMessage.data)
+
+                if (notification.type == MeldNotificationType.MELD_TRANSACTION) {
                     fcm.showBuyTransactionNotification(notification)
                 }
             }

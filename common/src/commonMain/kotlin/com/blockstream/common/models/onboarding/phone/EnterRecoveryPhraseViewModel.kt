@@ -1,16 +1,6 @@
 package com.blockstream.common.models.onboarding.phone
 
-import blockstream_green.common.generated.resources.Res
-import blockstream_green.common.generated.resources.id_enter_your_12_24_or_27_words
-import blockstream_green.common.generated.resources.id_enter_your_24_or_27_words
-import blockstream_green.common.generated.resources.id_enter_your_27_words_recovery
-import blockstream_green.common.generated.resources.id_help
-import blockstream_green.common.generated.resources.id_invalid_mnemonic_continue
-import blockstream_green.common.generated.resources.id_recovery_phrase_check
-import blockstream_green.common.generated.resources.id_restoring_your_wallet
-import blockstream_green.common.generated.resources.id_well_done_you_can_continue
-import blockstream_green.common.generated.resources.id_well_done_you_can_continue_with
-import blockstream_green.common.generated.resources.question
+import blockstream_green.common.generated.resources.*
 import com.arkivanov.essenty.statekeeper.StateKeeper
 import com.arkivanov.essenty.statekeeper.StateKeeperDispatcher
 import com.blockstream.common.crypto.BiometricsException
@@ -26,8 +16,8 @@ import com.blockstream.common.models.GreenViewModel
 import com.blockstream.common.navigation.NavigateDestinations
 import com.blockstream.common.sideeffects.SideEffects
 import com.blockstream.common.usecases.CheckRecoveryPhraseUseCase
-import com.blockstream.common.usecases.RestoreWalletUseCase
 import com.blockstream.common.utils.randomChars
+import com.blockstream.domain.wallet.RestoreWalletUseCase
 import com.blockstream.green.utils.Loggable
 import com.blockstream.ui.events.Event
 import com.blockstream.ui.navigation.NavAction
@@ -40,11 +30,7 @@ import com.rickclephas.kmp.observableviewmodel.launch
 import kotlinx.coroutines.CompletableDeferred
 import kotlinx.coroutines.CoroutineStart
 import kotlinx.coroutines.async
-import kotlinx.coroutines.flow.MutableStateFlow
-import kotlinx.coroutines.flow.StateFlow
-import kotlinx.coroutines.flow.combine
-import kotlinx.coroutines.flow.launchIn
-import kotlinx.coroutines.flow.onEach
+import kotlinx.coroutines.flow.*
 import kotlinx.serialization.Serializable
 import org.jetbrains.compose.resources.getString
 import org.koin.core.component.inject

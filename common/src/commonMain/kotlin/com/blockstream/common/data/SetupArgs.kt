@@ -24,7 +24,7 @@ data class SetupArgs constructor(
     val xpub: String? = null,
     val page: Int = 1,
     val isShowRecovery: Boolean = false,
-    val isLightning: Boolean = false,
+    val isLightningDerived: Boolean = false,
     val popTo: PopTo? = null
 ) : GreenJson<SetupArgs>(), Redact {
 

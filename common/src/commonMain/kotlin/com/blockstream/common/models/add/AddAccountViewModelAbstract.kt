@@ -12,7 +12,7 @@ import com.blockstream.common.looks.AccountTypeLook
 import com.blockstream.common.models.GreenViewModel
 import com.blockstream.common.navigation.PopTo
 import com.blockstream.common.sideeffects.SideEffects
-import com.blockstream.common.usecases.CreateAccountUseCase
+import com.blockstream.domain.account.CreateAccountUseCase
 import com.blockstream.green.utils.Loggable
 import com.blockstream.ui.sideeffects.SideEffect
 import com.rickclephas.kmp.observableviewmodel.coroutineScope
@@ -51,7 +51,7 @@ abstract class AddAccountViewModelAbstract(greenWallet: GreenWallet, val assetId
         doAsync({
             createAccountUseCase(
                 session = session,
-                greenWallet = greenWallet,
+                wallet = greenWallet,
                 accountType = accountType,
                 accountName = accountName,
                 network = network,

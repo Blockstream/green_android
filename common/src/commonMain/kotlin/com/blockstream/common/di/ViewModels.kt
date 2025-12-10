@@ -12,12 +12,7 @@ import com.blockstream.common.models.addresses.SignMessageViewModel
 import com.blockstream.common.models.archived.ArchivedAccountsViewModel
 import com.blockstream.common.models.camera.CameraViewModel
 import com.blockstream.common.models.demo.DemoViewModel
-import com.blockstream.common.models.devices.DeviceInfoViewModel
-import com.blockstream.common.models.devices.DeviceListViewModel
-import com.blockstream.common.models.devices.DeviceScanViewModel
-import com.blockstream.common.models.devices.ImportPubKeyViewModel
-import com.blockstream.common.models.devices.JadeGenuineCheckViewModel
-import com.blockstream.common.models.devices.JadeGuideViewModel
+import com.blockstream.common.models.devices.*
 import com.blockstream.common.models.exchange.AccountExchangeViewModel
 import com.blockstream.common.models.exchange.OnOffRampsViewModel
 import com.blockstream.common.models.home.HomeViewModel
@@ -32,11 +27,7 @@ import com.blockstream.common.models.onboarding.phone.EnterRecoveryPhraseViewMod
 import com.blockstream.common.models.onboarding.phone.PinViewModel
 import com.blockstream.common.models.onboarding.watchonly.WatchOnlyMultisigViewModel
 import com.blockstream.common.models.onboarding.watchonly.WatchOnlySinglesigViewModel
-import com.blockstream.common.models.overview.AccountOverviewViewModel
-import com.blockstream.common.models.overview.SecurityViewModel
-import com.blockstream.common.models.overview.TransactViewModel
-import com.blockstream.common.models.overview.WalletAssetsViewModel
-import com.blockstream.common.models.overview.WalletOverviewViewModel
+import com.blockstream.common.models.overview.*
 import com.blockstream.common.models.promo.PromoViewModel
 import com.blockstream.common.models.receive.ReceiveViewModel
 import com.blockstream.common.models.receive.RequestAmountViewModel
@@ -44,27 +35,9 @@ import com.blockstream.common.models.recovery.RecoveryCheckViewModel
 import com.blockstream.common.models.recovery.RecoveryIntroViewModel
 import com.blockstream.common.models.recovery.RecoveryPhraseViewModel
 import com.blockstream.common.models.recovery.RecoveryWordsViewModel
-import com.blockstream.common.models.send.BumpViewModel
-import com.blockstream.common.models.send.DenominationViewModel
-import com.blockstream.common.models.send.FeeViewModel
-import com.blockstream.common.models.send.RedepositViewModel
-import com.blockstream.common.models.send.SendConfirmViewModel
-import com.blockstream.common.models.send.SendViewModel
-import com.blockstream.common.models.send.SweepViewModel
-import com.blockstream.common.models.settings.AppSettingsViewModel
-import com.blockstream.common.models.settings.DenominationExchangeRateViewModel
-import com.blockstream.common.models.settings.TwoFactorAuthenticationViewModel
-import com.blockstream.common.models.settings.TwoFactorSetupViewModel
-import com.blockstream.common.models.settings.WalletSettingsViewModel
-import com.blockstream.common.models.settings.WatchOnlyCredentialsSettingsViewModel
-import com.blockstream.common.models.settings.WatchOnlyViewModel
-import com.blockstream.common.models.sheets.AnalyticsViewModel
-import com.blockstream.common.models.sheets.AssetDetailsViewModel
-import com.blockstream.common.models.sheets.JadeFirmwareUpdateViewModel
-import com.blockstream.common.models.sheets.LightningNodeViewModel
-import com.blockstream.common.models.sheets.NoteViewModel
-import com.blockstream.common.models.sheets.RecoveryHelpViewModel
-import com.blockstream.common.models.sheets.TransactionDetailsViewModel
+import com.blockstream.common.models.send.*
+import com.blockstream.common.models.settings.*
+import com.blockstream.common.models.sheets.*
 import com.blockstream.common.models.support.SupportViewModel
 import com.blockstream.common.models.transaction.TransactionViewModel
 import com.blockstream.common.models.twofactor.ReEnable2FAViewModel
@@ -149,7 +122,7 @@ val factoryViewModels = module {
         AccountExchangeViewModel(get(), getOrNull())
     }
     factory {
-        SendViewModel(get(), getOrNull(), getOrNull(), getOrNull())
+        SendViewModel(get(), get(), get(), get())
     }
     factory {
         SimpleGreenViewModel(getOrNull(), getOrNull(), getOrNull())

@@ -352,7 +352,7 @@ class TransactionViewModel(transaction: Transaction, greenWallet: GreenWallet) :
 
         _note.value = transaction.memo.takeIf { it.isNotBlank() }
 
-        _hasMoreDetails.value = transaction.details(session).isNotEmpty()
+        _hasMoreDetails.value = transaction.details(session = session, database = database).isNotEmpty()
     }
 
     private fun setNote(note: String) {

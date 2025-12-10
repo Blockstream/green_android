@@ -2,14 +2,12 @@ package com.blockstream.common.models.send
 
 import blockstream_green.common.generated.resources.Res
 import blockstream_green.common.generated.resources.id_add_note
-import blockstream_green.common.generated.resources.id_address_was_filled_by_a_payment
 import blockstream_green.common.generated.resources.id_limits_s__s
 import blockstream_green.common.generated.resources.id_payment_requested_by_s
 import blockstream_green.common.generated.resources.id_send
 import blockstream_green.common.generated.resources.id_transaction_sent
 import blockstream_green.common.generated.resources.note_pencil
 import com.blockstream.common.AddressInputType
-import com.blockstream.common.BTC_POLICY_ASSET
 import com.blockstream.common.TransactionSegmentation
 import com.blockstream.common.TransactionType
 import com.blockstream.common.data.DenominatedValue
@@ -24,17 +22,14 @@ import com.blockstream.common.extensions.isBlank
 import com.blockstream.common.extensions.isNotBlank
 import com.blockstream.common.extensions.isPolicyAsset
 import com.blockstream.common.extensions.launchIn
+import com.blockstream.common.extensions.previewAccountAsset
 import com.blockstream.common.extensions.previewWallet
 import com.blockstream.common.extensions.startsWith
 import com.blockstream.common.extensions.tryCatch
 import com.blockstream.common.gdk.data.AccountAsset
-import com.blockstream.common.gdk.data.AccountAssetBalance
-import com.blockstream.common.gdk.data.AccountAssetBalanceList
 import com.blockstream.common.gdk.data.Network
 import com.blockstream.common.gdk.data.PendingTransaction
-import com.blockstream.common.gdk.params.AddressParams
 import com.blockstream.common.gdk.params.CreateTransactionParams
-import com.blockstream.common.gdk.params.toJsonElement
 import com.blockstream.common.lightning.lnUrlPayDescription
 import com.blockstream.common.lightning.lnUrlPayImage
 import com.blockstream.common.models.sheets.NoteType
@@ -46,124 +41,87 @@ import com.blockstream.common.utils.feeRateWithUnit
 import com.blockstream.common.utils.getStringFromId
 import com.blockstream.common.utils.ifNotNull
 import com.blockstream.common.utils.toAmountLook
+import com.blockstream.domain.boltz.BoltzUseCase
+import com.blockstream.domain.send.SendUseCase
 import com.blockstream.green.data.banner.Banner
 import com.blockstream.green.utils.Loggable
 import com.blockstream.ui.events.Event
 import com.blockstream.ui.navigation.NavAction
 import com.blockstream.ui.navigation.NavData
-import com.rickclephas.kmp.nativecoroutines.NativeCoroutinesState
+import com.rickclephas.kmp.observableviewmodel.launch
 import com.rickclephas.kmp.observableviewmodel.stateIn
 import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.GlobalScope
+import kotlinx.coroutines.IO
+import kotlinx.coroutines.async
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.flow.filterNotNull
-import kotlinx.coroutines.flow.flatMapLatest
 import kotlinx.coroutines.flow.flowOf
 import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.flow.merge
 import kotlinx.coroutines.flow.onEach
-import kotlinx.serialization.json.buildJsonObject
+import kotlinx.coroutines.withTimeout
 import org.jetbrains.compose.resources.getString
+import org.koin.core.component.inject
 import saschpe.kase64.base64DecodedBytes
 import kotlin.math.absoluteValue
 import kotlin.time.Duration.Companion.minutes
 
-abstract class SendViewModelAbstract(greenWallet: GreenWallet, accountAssetOrNull: AccountAsset? = null) :
-    CreateTransactionViewModelAbstract(greenWallet = greenWallet, accountAssetOrNull = accountAssetOrNull) {
+abstract class SendViewModelAbstract(greenWallet: GreenWallet, accountAsset: AccountAsset) :
+    CreateTransactionViewModelAbstract(greenWallet = greenWallet, accountAssetOrNull = accountAsset) {
     override fun screenName(): String = "Send"
 
     override fun segmentation(): HashMap<String, Any>? {
         return countly.sessionSegmentation(session = session)
     }
 
-    @NativeCoroutinesState
-    abstract val errorAddress: StateFlow<String?>
+    abstract val address: String
 
-    @NativeCoroutinesState
     abstract val errorAmount: StateFlow<String?>
 
-    @NativeCoroutinesState
     abstract val errorGeneric: StateFlow<String?>
 
-    @NativeCoroutinesState
-    abstract val assetsAndAccounts: StateFlow<List<AccountAssetBalance>?>
-
-    @NativeCoroutinesState
-    abstract val isAccountEdit: StateFlow<Boolean>
-
-    @NativeCoroutinesState
-    abstract val address: MutableStateFlow<String>
-
-    @NativeCoroutinesState
     abstract val amount: MutableStateFlow<String>
 
-    @NativeCoroutinesState
     abstract val amountExchange: StateFlow<String>
 
-    @NativeCoroutinesState
     abstract val amountHint: StateFlow<String?>
 
-    @NativeCoroutinesState
+    abstract val showAmount: StateFlow<Boolean>
+
     abstract val isAmountLocked: StateFlow<Boolean>
 
-    @NativeCoroutinesState
     abstract val isSendAll: MutableStateFlow<Boolean>
 
-    @NativeCoroutinesState
-    abstract val supportsSendAll: StateFlow<Boolean>
+    abstract val supportsSendAll: Boolean
 
-    @NativeCoroutinesState
     abstract val description: StateFlow<String?>
 
-    @NativeCoroutinesState
     abstract val metadataDomain: StateFlow<String?>
 
-    @NativeCoroutinesState
     abstract val metadataImage: StateFlow<ByteArray?>
 
-    @NativeCoroutinesState
     abstract val metadataDescription: StateFlow<String?>
 
-    @NativeCoroutinesState
     abstract val isNoteEditable: StateFlow<Boolean>
 }
 
 class SendViewModel(
     greenWallet: GreenWallet,
-    initAddress: String? = null,
-    addressType: AddressInputType? = null,
-    initialAccountAsset: AccountAsset? = null
-) : SendViewModelAbstract(greenWallet = greenWallet, accountAssetOrNull = initialAccountAsset) {
+    override val address: String,
+    addressType: AddressInputType,
+    accountAsset: AccountAsset
+) : SendViewModelAbstract(greenWallet = greenWallet, accountAsset = accountAsset) {
+    internal val boltzUseCase: BoltzUseCase by inject()
+    internal val sendUseCase: SendUseCase by inject()
 
-    private val _supportsSendAll: MutableStateFlow<Boolean> = MutableStateFlow(false)
-    override val supportsSendAll: StateFlow<Boolean> = _supportsSendAll.asStateFlow()
+    override val supportsSendAll: Boolean = !accountAsset.account.isLightning
 
     override val isSendAll: MutableStateFlow<Boolean> = MutableStateFlow(false)
-    private val assetId: MutableStateFlow<String?> = MutableStateFlow(null)
-
-    override val assetsAndAccounts = _network.flatMapLatest { network ->
-        combine(assetId, _denomination, network?.let {
-            session.accountAsset
-        } ?: flowOf(null)) { _, _, accountAssets ->
-            accountAssets
-        }
-    }.map {
-        ifNotNull(it, _network.value) { accountAssets, network ->
-            accountAssets.filter { aa -> aa.account.network.isSameNetwork(network) && assetId.value.let { it == null || it == aa.assetId } }
-        }?.mapNotNull {
-            AccountAssetBalance.createIfBalance(
-                accountAsset = it,
-                session = session,
-                denomination = denomination.value
-            )
-        }
-    }.stateIn(viewModelScope, SharingStarted.Eagerly, null)
-
-    private val _errorAddress: MutableStateFlow<String?> = MutableStateFlow(null)
-    override val errorAddress: StateFlow<String?> = _errorAddress.asStateFlow()
 
     private val _errorAmount: MutableStateFlow<String?> = MutableStateFlow(null)
     override val errorAmount: StateFlow<String?> = _errorAmount.asStateFlow()
@@ -171,13 +129,11 @@ class SendViewModel(
     private val _errorGeneric: MutableStateFlow<String?> = MutableStateFlow(null)
     override val errorGeneric: StateFlow<String?> = _errorGeneric.asStateFlow()
 
-    override val address: MutableStateFlow<String> = MutableStateFlow(initAddress ?: "")
-
     override val amount: MutableStateFlow<String> = MutableStateFlow("")
 
     override val amountExchange: StateFlow<String> = amount.map { amount ->
         session.ifConnected {
-            accountAsset.value?.assetId?.takeIf { it.isPolicyAsset(session) }?.let { assetId ->
+            accountAsset.assetId.takeIf { it.isPolicyAsset(session) }?.let { assetId ->
                 UserInput.parseUserInputSafe(
                     session = session,
                     input = amount,
@@ -203,6 +159,9 @@ class SendViewModel(
     private val _isAmountLocked: MutableStateFlow<Boolean> = MutableStateFlow(false)
     override val isAmountLocked: StateFlow<Boolean> = _isAmountLocked.asStateFlow()
 
+    private val _showAmount: MutableStateFlow<Boolean> = MutableStateFlow(false)
+    override val showAmount: StateFlow<Boolean> = _showAmount.asStateFlow()
+
     private val _description: MutableStateFlow<String?> = MutableStateFlow(null)
     override val description: StateFlow<String?> = _description
 
@@ -218,19 +177,17 @@ class SendViewModel(
     private val _isNoteEditable: MutableStateFlow<Boolean> = MutableStateFlow(false)
     override val isNoteEditable: StateFlow<Boolean> = _isNoteEditable
 
-    override val isAccountEdit: StateFlow<Boolean> = combine(assetsAndAccounts, accountAsset) { assetsAndAccounts, accountAsset ->
-        assetsAndAccounts?.isNotEmpty() == true && accountAsset?.account?.isLightning != true
-    }.stateIn(viewModelScope, SharingStarted.WhileSubscribed(), true)
-
     class LocalEvents {
         object ToggleIsSendAll : Event
         object SendLightningTransaction : Event
-        object ClickAssetsAccounts : Event
         object Note : Event
     }
 
+    private var addressNetwork: MutableStateFlow<Network?> = MutableStateFlow(null)
+
     init {
         _addressInputType = addressType
+        _network.value = accountAsset.account.network
 
         isNoteEditable.onEach { isEditable ->
             _navData.value = NavData(
@@ -249,7 +206,6 @@ class SendViewModel(
         combine(isNoteEditable, onProgressSending) { isNoteEditable, onProgressSending ->
             _navData.value = NavData(
                 title = getString(Res.string.id_send),
-                subtitle = greenWallet.name,
                 actions = listOfNotNull(
                     (NavAction(
                         title = getString(Res.string.id_add_note),
@@ -265,30 +221,16 @@ class SendViewModel(
 
         session.ifConnected {
 
-            sessionManager.pendingUri.filterNotNull().onEach {
-                sessionManager.pendingUri.value = null
-                address.value = it
-                postSideEffect(SideEffects.Snackbar(StringHolder.create(Res.string.id_address_was_filled_by_a_payment)))
-            }.launchIn(this)
+            var isSwapsEnabled = false
 
-            // When changing between accounts, reset isSendAll flag
-            accountAsset.onEach {
-                isSendAll.value = false
-                _supportsSendAll.value = it?.account?.isLightning == false
-            }.launchIn(this)
-
-            // When changing between same network but different asset
-            combine(accountAsset.map {
-                it?.assetId
-            }, _network) { _, _ ->
-                amount.value = ""
-            }.launchIn(this)
+            viewModelScope.launch {
+                isSwapsEnabled = boltzUseCase.isSwapsEnabledUseCase(wallet = greenWallet)
+                addressNetwork.value = tryCatch { session.parseInput(address)?.first }
+            }
 
             combine(
-                address,
+                addressNetwork.filterNotNull(),
                 _feeEstimation,
-                session.accountAsset,
-                accountAsset,
                 amount,
                 isSendAll,
                 _feePriorityPrimitive,
@@ -296,43 +238,19 @@ class SendViewModel(
                     flowOf(Unit),
                     session.accountsAndBalanceUpdated
                 ), // set initial value, watch for wallet balance updates, especially on wallet startup like bip39 uris
-            ) { arr ->
-                val address = arr[0] as String
+            ) {
+                // Prefer account network as this can be a swap
+                val accountNetwork = accountAsset.account.network
 
-                if (address.isBlank()) {
-                    // Clear all errors and amount
-                    amount.value = ""
-                    _isAmountLocked.value = false
-                    _error.value = null
-                }
+                _showFeeSelector.value =
+                    (accountNetwork.isBitcoin || (accountNetwork.isLiquid && getFeeRate(FeePriority.High()) > accountNetwork.defaultFee))
 
-                val network =
-                    address.takeIf { it.isNotBlank() }?.let { session.parseInput(it)?.first }
-                        .also { network ->
-                            if (network == null && address.isNotBlank()) {
-                                _error.value = "id_invalid_address"
-                            }
-                        }
+                _showAmount.value = !isSwapsEnabled || !(addressNetwork.value?.isLightning == true && accountAsset.account.network.isLiquid)
 
-                _showFeeSelector.value = (address.isNotBlank()
-                        && accountAsset.value != null
-                        && (network?.isBitcoin == true || (network?.isLiquid == true && getFeeRate(FeePriority.High()) > network.defaultFee)))
-
-                // Check if the current AccountAsset operates on the same network only.
-                // That way we preserve the asset from previous action
-                if (network != null && (accountAsset.value?.let { !it.account.network.isSameNetwork(network) } != false)) {
-                    accountAsset.value = findAccountAsset(network, assetId = assetId.value ?: network.policyAsset)
-                }
-
-                // Prefer the real network from the account
-                _network.value = network?.let { accountAsset.value?.account?.network } ?: network
-            }.onEach {
                 createTransactionParams.value = tryCatch(context = Dispatchers.Default) { createTransactionParams() }
             }.launchIn(this)
 
             error.onEach {
-                _errorAddress.value =
-                    it.takeIf { listOf("id_invalid_address", "id_invoice_expired").contains(it) }?.let { getStringFromId(it) }
                 _errorAmount.value = it.takeIf {
                     listOf(
                         "id_invalid_amount",
@@ -344,11 +262,18 @@ class SendViewModel(
                         "id_amount_below_minimum_allowed"
                     ).startsWith(it)
                 }?.let { getStringFromId(it) }
-                _errorGeneric.value = it.takeIf { _errorAmount.value.isNullOrBlank() && _errorAddress.value.isNullOrBlank() }?.let {
+                _errorGeneric.value = it.takeIf { _errorAmount.value.isNullOrBlank() }?.let {
                     getStringFromId(it)
                 }
             }.launchIn(this)
         }
+
+        // In case onProgress goes to false from another doAsync while onProgressSending is still true
+        onProgress.onEach {
+            if (!it && _onProgressSending.value) {
+                onProgress.value = _onProgressSending.value
+            }
+        }.launchIn(this)
 
         bootstrap()
     }
@@ -357,16 +282,6 @@ class SendViewModel(
         super.handleEvent(event)
 
         when (event) {
-            is LocalEvents.ClickAssetsAccounts -> {
-                postSideEffect(
-                    SideEffects.NavigateTo(
-                        NavigateDestinations.AssetsAccounts(
-                            greenWallet = greenWallet,
-                            assetsAccounts = AccountAssetBalanceList(assetsAndAccounts.value ?: listOf())
-                        )
-                    )
-                )
-            }
 
             is LocalEvents.ToggleIsSendAll -> {
                 isSendAll.value = isSendAll.value.let { isSendAll ->
@@ -402,54 +317,16 @@ class SendViewModel(
     }
 
     override suspend fun createTransactionParams(): CreateTransactionParams? {
-        if (address.value.isBlank() || _network.value == null) {
-            return null
-        }
-
-        return (if (accountAsset.value?.account?.network?.isLightning == true) {
-            val satoshi = UserInput.parseUserInputSafe(
-                session = session,
-                input = amount.value,
-                denomination = denomination.value
-            ).getBalance(onlyInAcceptableRange = false)?.satoshi
-
-            AddressParams(
-                address = address.value,
-                satoshi = satoshi ?: 0
-            ).let { params ->
-                CreateTransactionParams(
-                    addressees = listOf(params).toJsonElement(),
-                    utxos = mapOf(BTC_POLICY_ASSET to listOf(buildJsonObject {
-                        // a hack to re-create params when balance changes
-                        session.accountAssets(account).value.policyAsset
-                    }))
-                )
-            }
-        } else {
-            val isGreedy = isSendAll.value
-            val satoshi = if (isGreedy) 0 else UserInput.parseUserInputSafe(
-                session = session,
-                input = amount.value,
-                assetId = accountAsset.value?.assetId,
-                denomination = denomination.value
-            ).getBalance(onlyInAcceptableRange = false)?.satoshi
-
-            val unspentOutputs = accountAsset.value?.account?.let { session.getUnspentOutputs(it) }
-
-            AddressParams(
-                address = address.value,
-                satoshi = satoshi ?: 0,
-                isGreedy = isGreedy,
-                assetId = accountAsset.value?.assetId?.takeIf { account.network.isLiquid }
-            ).let { params ->
-                CreateTransactionParams(
-                    from = accountAsset.value,
-                    addressees = listOf(params).toJsonElement(),
-                    feeRate = getFeeRate(),
-                    utxos = unspentOutputs?.unspentOutputs
-                )
-            }
-        })
+        return sendUseCase.prepareTransactionUseCase(
+            greenWallet = greenWallet,
+            session = session,
+            accountAsset = accountAsset.value!!,
+            address = address,
+            amount = amount.value,
+            denomination = denomination.value,
+            isSendAll = isSendAll.value,
+            feeRate = getFeeRate()
+        )
     }
 
     override fun createTransaction(
@@ -467,7 +344,10 @@ class SendViewModel(
                 return@doAsync null
             }
 
+            val isSwap = addressNetwork.value?.isLightning == true && accountAsset.value?.account?.network?.isLiquid == true
+
             accountAsset.value?.let { accountAsset ->
+
                 val network = accountAsset.account.network
 
                 val tx = session.createTransaction(network, params)
@@ -483,20 +363,13 @@ class SendViewModel(
                 _description.value = tx.memo
 
                 tx.addressees.firstOrNull()?.also { addressee ->
-                    _isAmountLocked.value = addressee.isAmountLocked == true
-
-                    addressee.bip21Params?.assetId?.let { assetId ->
-                        this.assetId.value = assetId
-                        this.accountAsset.value = findAccountAsset(network = network, assetId = assetId)
-                    } ?: kotlin.run {
-                        assetId.value = null
-                    }
+                    _isAmountLocked.value = addressee.isAmountLocked == true || isSwap
 
                     _metadataDomain.value = addressee.domain?.let { getString(Res.string.id_payment_requested_by_s, it) }
                     _metadataImage.value = addressee.metadata.lnUrlPayImage()
                     _metadataDescription.value = addressee.metadata.lnUrlPayDescription()
 
-                    _amountHint.value = if (addressee.isAmountLocked == false) {
+                    _amountHint.value = if (!addressee.isAmountLocked) {
                         ifNotNull(
                             addressee.minAmount,
                             addressee.maxAmount
@@ -513,7 +386,7 @@ class SendViewModel(
                         }
                     } else null
 
-                    if (addressee.bip21Params?.hasAmount == true || addressee.isGreedy == true || addressee.isAmountLocked == true) {
+                    if (addressee.bip21Params?.hasAmount == true || addressee.isGreedy == true || addressee.isAmountLocked == true || isSwap) {
                         val assetId = addressee.assetId ?: account.network.policyAsset
 
                         if (!assetId.isPolicyAsset(account.network) && denomination.value.isFiat) {
@@ -638,21 +511,24 @@ class SendViewModel(
         doAsync({
             countly.startSendTransaction()
             countly.startFailedTransaction()
-
-            createTransactionParams.value?.let {
-                session.sendLightningTransaction(params = session.createTransaction(_network.value!!, it), comment = note.value)
-            } ?: run {
-                throw Exception("Something went wrong while creating the Transaction")
-            }
+            
+            GlobalScope.async(context = Dispatchers.IO) {
+                withTimeout(1.minutes) {
+                    createTransactionParams.value?.let {
+                        session.sendLightningTransaction(params = session.createTransaction(_network.value!!, it), comment = note.value)
+                    } ?: run {
+                        throw Exception("Something went wrong while creating the Transaction")
+                    }
+                }
+            }.await()
 
         }, timeout = 1.minutes, preAction = {
-            onProgress.value = true
             _onProgressSending.value = true
+            onProgress.value = true
         }, postAction = {
-            (it == null).also {
-                _onProgressSending.value = it
-                onProgress.value = it
-            }
+            val isSuccess = it == null
+            _onProgressSending.value = isSuccess
+            onProgress.value = isSuccess
         }, onSuccess = {
             countly.endSendTransaction(
                 session = session,
@@ -702,77 +578,27 @@ class SendViewModel(
         amount.value = denominatedValue.asInput ?: ""
     }
 
-    private fun checkAccountAsset(
-        accountAsset: AccountAsset,
-        network: Network,
-        assetId: String = network.policyAsset
-    ): AccountAsset? = accountAsset.takeIf {
-        it.account.network.isSameNetwork(network) && it.assetId == assetId && it.balance(session) > 0
-    }
-
-    private fun findAccountAsset(network: Network, assetId: String = network.policyAsset): AccountAsset? {
-        val accountsAndAssets = session.accountAsset.value
-
-        // Check current selected
-        return (accountAsset.value?.let {
-            checkAccountAsset(it, network = network, assetId = assetId)
-        } ?:
-        // Check current selected account, with assetId
-        accountsAndAssets.find {
-            it.account.id == accountAsset.value?.account?.id && it.assetId == assetId
-        }?.let {
-            checkAccountAsset(it, network = network, assetId = assetId)
-        } ?:
-        // Check active account
-        sessionOrNull?.activeAccount?.value?.let {
-            checkAccountAsset(it.accountAsset, network = network, assetId = assetId)
-        } ?:
-        // Check active account, with assetId
-        accountsAndAssets.find {
-            it.account.id == session.activeAccount.value?.id && it.assetId == assetId
-        }?.let {
-            checkAccountAsset(it, network = network, assetId = assetId)
-        } ?:
-        // Find first proper account
-        accountsAndAssets.find {
-            checkAccountAsset(it, network = network, assetId = assetId) != null
-        }) ?:
-        // Find first account of same network no matter the balance
-        session.accounts.value.find {
-            it.network.isSameNetwork(network)
-        }?.let {
-            AccountAsset.fromAccountAsset(it, assetId, session)
-        }
-    }
-
     companion object : Loggable() {
         val DustLimit = 546
     }
 }
 
 class SendViewModelPreview(greenWallet: GreenWallet, isLightning: Boolean = false) :
-    SendViewModelAbstract(greenWallet = greenWallet, accountAssetOrNull = null) {
-    override val isAccountEdit: StateFlow<Boolean> = MutableStateFlow(true)
-    override val errorAddress: StateFlow<String?> = MutableStateFlow(null)
+    SendViewModelAbstract(greenWallet = greenWallet, accountAsset = previewAccountAsset(isLightning = isLightning)) {
     override val errorAmount: StateFlow<String?> = MutableStateFlow(null)
     override val errorGeneric: StateFlow<String?> = MutableStateFlow(null)
-    override val assetsAndAccounts: StateFlow<List<AccountAssetBalance>?> =
-        MutableStateFlow(listOf())
-//    override val accountAssetBalance: StateFlow<AccountAssetBalance?> =
-//        MutableStateFlow(previewAccountAsset().let {
-//            AccountAssetBalance(account = it.account, asset = it.asset)
-//        })
 
     private val base64Png =
         "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"
 
-    override val address: MutableStateFlow<String> = MutableStateFlow("address")
+    override val address: String = "address"
     override val amount: MutableStateFlow<String> = MutableStateFlow("0.1")
     override val amountExchange: StateFlow<String> = MutableStateFlow("0.1 USD")
     override val amountHint: StateFlow<String?> = MutableStateFlow(null)
+    override val showAmount: StateFlow<Boolean> = MutableStateFlow(true)
     override val isAmountLocked: StateFlow<Boolean> = MutableStateFlow(false)
     override val isSendAll: MutableStateFlow<Boolean> = MutableStateFlow(false)
-    override val supportsSendAll: StateFlow<Boolean> = MutableStateFlow(true)
+    override val supportsSendAll: Boolean = true
     override val metadataDomain: StateFlow<String?> = MutableStateFlow("id_payment_requested_by_s|blockstream.com")
     override val metadataImage: StateFlow<ByteArray?> = MutableStateFlow(base64Png.base64DecodedBytes)
     override val metadataDescription: StateFlow<String?> = MutableStateFlow("Metadata Description")

@@ -125,9 +125,9 @@ import com.blockstream.compose.screens.jade.JadeQRResult
 import com.blockstream.compose.sideeffects.OpenDialogData
 import com.blockstream.compose.theme.bodyLarge
 import com.blockstream.compose.theme.bodyMedium
+import com.blockstream.compose.theme.green
 import com.blockstream.compose.theme.red
 import com.blockstream.compose.theme.titleSmall
-import com.blockstream.compose.theme.green
 import com.blockstream.compose.theme.whiteLow
 import com.blockstream.compose.theme.whiteMedium
 import com.blockstream.compose.utils.SetupScreen

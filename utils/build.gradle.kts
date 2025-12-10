@@ -4,19 +4,12 @@ plugins {
 }
 
 kotlin {
+    jvmToolchain(libs.versions.jvm.get().toInt())
+
     androidLibrary {
         namespace = "com.blockstream.green.utils"
         compileSdk = libs.versions.androidCompileSdk.get().toInt()
         minSdk = libs.versions.androidMinSdk.get().toInt()
-
-        withHostTestBuilder {
-        }
-
-        withDeviceTestBuilder {
-            sourceSetTreeName = "test"
-        }.configure {
-            instrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
-        }
     }
 
     jvm()
@@ -31,12 +24,6 @@ kotlin {
 
         commonTest.dependencies {
             implementation(libs.kotlin.test)
-        }
-
-        getByName("androidDeviceTest").dependencies {
-            implementation(libs.androidx.runner)
-            implementation(libs.androidx.core)
-            implementation(libs.androidx.junit)
         }
     }
 }

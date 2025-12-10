@@ -2,7 +2,6 @@ package com.blockstream.common.models.overview
 
 import com.blockstream.common.data.Denomination
 import com.blockstream.common.data.GreenWallet
-import com.blockstream.common.data.WalletExtras
 import com.blockstream.common.extensions.launchIn
 import com.blockstream.common.models.GreenViewModel
 import com.blockstream.common.utils.toAmountLook
@@ -96,12 +95,10 @@ open class WalletBalanceViewModel(greenWallet: GreenWallet) :
                 }
 
             if (!greenWallet.isEphemeral) {
-                greenWallet.also {
-                    session.walletTotalBalanceDenominationStateFlow.value.isFiat.also { isFiat ->
-                        it.extras = it.extras?.copy(totalBalanceInFiat = isFiat) ?: WalletExtras(totalBalanceInFiat = isFiat)
-                    }
-                    database.updateWallet(it)
-                }
+                walletSettingsManager.setTotalBalanceInFiat(
+                    walletId = greenWallet.id,
+                    enabled = session.walletTotalBalanceDenominationStateFlow.value.isFiat
+                )
             }
         })
     }

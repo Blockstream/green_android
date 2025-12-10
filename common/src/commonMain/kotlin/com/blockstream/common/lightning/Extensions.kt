@@ -35,6 +35,7 @@ import com.blockstream.common.utils.hostname
 import kotlinx.datetime.TimeZone
 import kotlinx.datetime.periodUntil
 import kotlinx.serialization.json.Json
+import lwk.Bolt11Invoice
 import kotlin.io.encoding.Base64
 import kotlin.time.Clock
 import kotlin.time.Instant
@@ -50,6 +51,9 @@ fun ReceivePaymentResponse.receiveAmountSatoshi() = lnInvoice.receiveAmountSatos
 fun LnInvoice.amountSatoshi() = this.amountMsat?.satoshi()
 fun LnInvoice.receiveAmountSatoshi(openingFeeParams: OpeningFeeParams?) =
     (this.amountMsat?.satoshi() ?: 0L) - (openingFeeParams?.minMsat?.satoshi() ?: 0L)
+
+fun Bolt11Invoice.expireIn() = Instant.fromEpochSeconds((this.timestamp() + this.expiryTime()).toLong())
+fun Bolt11Invoice.timeUntilExpiration() = expireIn().periodUntil(Clock.System.now(), TimeZone.currentSystemDefault())
 
 fun LnInvoice.expireIn() = Instant.fromEpochSeconds((this.timestamp + this.expiry).toLong())
 fun LnInvoice.timeUntilExpiration() = expireIn().periodUntil(Clock.System.now(), TimeZone.currentSystemDefault())

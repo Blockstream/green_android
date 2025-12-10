@@ -5,8 +5,10 @@ import com.blockstream.common.data.GreenWallet
 import com.blockstream.common.di.ApplicationScope
 import com.blockstream.common.fcm.FcmCommon
 import com.blockstream.common.lightning.BreezNotification
-import com.blockstream.green.data.notifications.models.NotificationData
+import com.blockstream.green.data.notifications.models.BoltzNotificationSimple
+import com.blockstream.green.data.notifications.models.MeldNotificationData
 import com.blockstream.green.utils.Loggable
+import com.blockstream.green.work.BoltzWork
 import com.blockstream.green.work.LightningWork
 import com.blockstream.green.work.MeldPendingTransactionsWorker
 import org.koin.core.component.inject
@@ -25,6 +27,12 @@ class FcmAndroid constructor(
         LightningWork.create(walletId, breezNotification, context)
     }
 
+    override fun scheduleBoltzBackgroundJob(
+        boltzNotificationData: BoltzNotificationSimple
+    ) {
+        BoltzWork.create(boltzNotificationData, context)
+    }
+
     override suspend fun showOpenWalletNotification(
         wallet: GreenWallet,
         breezNotification: BreezNotification
@@ -33,13 +41,23 @@ class FcmAndroid constructor(
         notificationManager.createOpenWalletNotification(context, wallet)
     }
 
+    override suspend fun showSwapReceiveNotification(wallet: GreenWallet) {
+        logger.d { "showSwapReceiveNotification $wallet" }
+        notificationManager.createSwapPaymentReceiveNotification(context, wallet)
+    }
+
+    override suspend fun showSwapSendNotification(wallet: GreenWallet) {
+        logger.d { "showSwapSendNotification $wallet" }
+        notificationManager.createSwapSendReceiveNotification(context, wallet)
+    }
+
     override suspend fun showLightningPaymentNotification(
         wallet: GreenWallet,
         paymentHash: String,
         satoshi: Long,
     ) {
         logger.d { "showPaymentNotification $wallet" }
-        notificationManager.createPaymentNotification(context, wallet, paymentHash, satoshi)
+        notificationManager.createLightningPaymentNotification(context, wallet, paymentHash, satoshi)
     }
 
     override fun showDebugNotification(
@@ -60,11 +78,11 @@ class FcmAndroid constructor(
     }
 
     override fun showBuyTransactionNotification(
-        notificationData: NotificationData
+        meldNotificationData: MeldNotificationData
     ) {
-        notificationManager.createBuyTransactionNotification(context, notificationData)
-        
-        notificationData.payload?.externalCustomerId?.let { externalCustomerId ->
+        notificationManager.createBuyTransactionNotification(context, meldNotificationData)
+
+        meldNotificationData.payload?.externalCustomerId?.let { externalCustomerId ->
             scheduleMeldBackgroundJob(externalCustomerId)
         }
     }

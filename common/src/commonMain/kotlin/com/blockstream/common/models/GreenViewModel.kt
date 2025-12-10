@@ -2,15 +2,7 @@
 
 package com.blockstream.common.models
 
-import blockstream_green.common.generated.resources.Res
-import blockstream_green.common.generated.resources.id_account_has_been_archived
-import blockstream_green.common.generated.resources.id_auto_logout_timeout_expired
-import blockstream_green.common.generated.resources.id_could_not_recognized_qr_code
-import blockstream_green.common.generated.resources.id_could_not_recognized_the_uri
-import blockstream_green.common.generated.resources.id_swap_is_in_progress
-import blockstream_green.common.generated.resources.id_unstable_internet_connection
-import blockstream_green.common.generated.resources.id_you_dont_have_a_lightning
-import blockstream_green.common.generated.resources.id_your_device_was_disconnected
+import blockstream_green.common.generated.resources.*
 import breez_sdk.InputType
 import com.blockstream.common.AddressInputType
 import com.blockstream.common.CountlyBase
@@ -18,20 +10,7 @@ import com.blockstream.common.ViewModelView
 import com.blockstream.common.ZendeskSdk
 import com.blockstream.common.crypto.GreenKeystore
 import com.blockstream.common.crypto.PlatformCipher
-import com.blockstream.common.data.CredentialType
-import com.blockstream.common.data.DenominatedValue
-import com.blockstream.common.data.Denomination
-import com.blockstream.common.data.DeviceIdentifier
-import com.blockstream.common.data.EncryptedData
-import com.blockstream.common.data.GreenWallet
-import com.blockstream.common.data.LogoutReason
-import com.blockstream.common.data.MultipleWatchOnlyCredentials
-import com.blockstream.common.data.Promo
-import com.blockstream.common.data.Redact
-import com.blockstream.common.data.SupportData
-import com.blockstream.common.data.TwoFactorResolverData
-import com.blockstream.common.data.WatchOnlyCredentials
-import com.blockstream.common.data.toSerializable
+import com.blockstream.common.data.*
 import com.blockstream.common.database.Database
 import com.blockstream.common.database.wallet.LoginCredentials
 import com.blockstream.common.devices.ConnectionType
@@ -58,16 +37,13 @@ import com.blockstream.common.gdk.data.Network
 import com.blockstream.common.gdk.device.DeviceResolver
 import com.blockstream.common.gdk.device.GdkHardwareWallet
 import com.blockstream.common.gdk.device.HardwareWalletInteraction
-import com.blockstream.common.managers.BluetoothManager
-import com.blockstream.common.managers.NotificationManager
-import com.blockstream.common.managers.PromoManager
-import com.blockstream.common.managers.SessionManager
-import com.blockstream.common.managers.SettingsManager
+import com.blockstream.common.managers.*
 import com.blockstream.common.navigation.NavigateDestination
 import com.blockstream.common.navigation.NavigateDestinations
 import com.blockstream.common.sideeffects.SideEffects
 import com.blockstream.common.utils.StringHolder
 import com.blockstream.common.utils.generateWalletName
+import com.blockstream.domain.account.RemoveAccountUseCase
 import com.blockstream.domain.banner.GetBannerUseCase
 import com.blockstream.domain.promo.GetPromoUseCase
 import com.blockstream.green.data.banner.Banner
@@ -84,27 +60,13 @@ import com.rickclephas.kmp.nativecoroutines.NativeCoroutines
 import com.rickclephas.kmp.nativecoroutines.NativeCoroutinesState
 import com.rickclephas.kmp.observableviewmodel.MutableStateFlow
 import com.rickclephas.kmp.observableviewmodel.coroutineScope
-import kotlinx.coroutines.CompletableDeferred
-import kotlinx.coroutines.Deferred
-import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.Job
-import kotlinx.coroutines.flow.Flow
-import kotlinx.coroutines.flow.MutableStateFlow
-import kotlinx.coroutines.flow.StateFlow
-import kotlinx.coroutines.flow.asStateFlow
-import kotlinx.coroutines.flow.combine
-import kotlinx.coroutines.flow.drop
-import kotlinx.coroutines.flow.flowOf
-import kotlinx.coroutines.flow.onEach
-import kotlinx.coroutines.isActive
-import kotlinx.coroutines.launch
-import kotlinx.coroutines.runBlocking
+import kotlinx.coroutines.*
+import kotlinx.coroutines.flow.*
 import kotlinx.coroutines.sync.Mutex
 import kotlinx.coroutines.sync.withLock
-import kotlinx.coroutines.withContext
-import kotlinx.coroutines.withTimeout
 import org.koin.core.component.KoinComponent
 import org.koin.core.component.inject
+import kotlin.text.isBlank
 import kotlin.time.Duration
 import kotlin.time.Duration.Companion.minutes
 import kotlin.uuid.ExperimentalUuidApi
@@ -139,12 +101,14 @@ open class GreenViewModel constructor(
     FirmwareInteraction {
     val appInfo: AppInfo by inject()
     protected val database: Database by inject()
+    protected val walletSettingsManager: WalletSettingsManager by inject()
     protected val countly: CountlyBase by inject()
     protected val promoManager: PromoManager by inject()
     val sessionManager: SessionManager by inject()
     val settingsManager: SettingsManager by inject()
     protected val getBannerUseCase: GetBannerUseCase by inject()
     protected val getPromoUseCase: GetPromoUseCase by inject()
+    protected val removeAccountUseCase: RemoveAccountUseCase by inject()
     protected val applicationScope: ApplicationScope by inject()
     protected val greenKeystore: GreenKeystore by inject()
     val zendeskSdk: ZendeskSdk by inject()
@@ -746,12 +710,7 @@ open class GreenViewModel constructor(
     internal fun removeAccount(account: Account) {
         if (account.isLightning) {
             doAsync({
-                database.deleteLoginCredentials(
-                    greenWallet.id,
-                    CredentialType.KEYSTORE_GREENLIGHT_CREDENTIALS
-                )
-                database.deleteLoginCredentials(greenWallet.id, CredentialType.LIGHTNING_MNEMONIC)
-                session.removeAccount(account)
+                removeAccountUseCase(session = session, wallet = greenWallet, account = account)
             }, onSuccess = {
                 // Update active account from Session if it was archived
                 // setActiveAccount(session.activeAccount.value!!)
@@ -847,7 +806,7 @@ open class GreenViewModel constructor(
 
                             postSideEffect(
                                 SideEffects.NavigateTo(
-                                    NavigateDestinations.Send(
+                                    NavigateDestinations.SendAddress(
                                         greenWallet = greenWallet,
                                         address = data,
                                         addressType = if (isQr) AddressInputType.SCAN else AddressInputType.BIP21

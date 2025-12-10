@@ -1,34 +1,35 @@
 package com.blockstream.common.di
 
 import com.blockstream.common.usecases.CheckRecoveryPhraseUseCase
-import com.blockstream.common.usecases.CreateAccountUseCase
 import com.blockstream.common.usecases.EnableHardwareWatchOnlyUseCase
-import com.blockstream.common.usecases.NewWalletUseCase
-import com.blockstream.common.usecases.RestoreWalletUseCase
 import com.blockstream.common.usecases.SetBiometricsUseCase
 import com.blockstream.common.usecases.SetPinUseCase
 import com.blockstream.common.utils.WatchOnlyDetector
+import com.blockstream.domain.account.accountModule
 import com.blockstream.domain.banner.GetBannerUseCase
 import com.blockstream.domain.bitcoinpricehistory.ObserveBitcoinPriceHistory
+import com.blockstream.domain.boltz.boltzModule
 import com.blockstream.domain.hardware.VerifyAddressUseCase
 import com.blockstream.domain.lightning.LightningNodeIdUseCase
-import com.blockstream.domain.meld.CreateCryptoQuoteUseCase
-import com.blockstream.domain.meld.CreateCryptoWidgetUseCase
-import com.blockstream.domain.meld.DefaultValuesUseCase
-import com.blockstream.domain.meld.GetLastSuccessfulPurchaseExchange
-import com.blockstream.domain.meld.MeldUseCase
+import com.blockstream.domain.meld.*
 import com.blockstream.domain.navigation.NavigateToWallet
 import com.blockstream.domain.promo.GetPromoUseCase
+import com.blockstream.domain.receive.receiveModule
+import com.blockstream.domain.send.sendModule
+import com.blockstream.domain.wallet.walletModule
 import com.blockstream.green.data.dataModule
 import com.blockstream.green.domain.domainModule
-import org.koin.core.module.dsl.singleOf
 import org.koin.dsl.module
 
 //At some point we'll move this to domain module.
 val commonModule = module {
     includes(dataModule)
     includes(domainModule)
-    singleOf(::RestoreWalletUseCase)
+    includes(boltzModule)
+    includes(sendModule)
+    includes(receiveModule)
+    includes(walletModule)
+    includes(accountModule)
     single {
         WatchOnlyDetector(get())
     }
@@ -54,9 +55,6 @@ val commonModule = module {
         MeldUseCase(get(), get(), get())
     }
     single {
-        NewWalletUseCase(get(), get(), get(), get(), get(), get(), get())
-    }
-    single {
         CheckRecoveryPhraseUseCase(get())
     }
     single {
@@ -68,14 +66,9 @@ val commonModule = module {
     single {
         EnableHardwareWatchOnlyUseCase(get(), get())
     }
-    single {
-        CreateAccountUseCase(get(), get(), get(), get())
-    }
-
     factory {
         ObserveBitcoinPriceHistory(get())
     }
-
     factory {
         GetLastSuccessfulPurchaseExchange(get())
     }

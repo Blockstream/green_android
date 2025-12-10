@@ -6,6 +6,9 @@ import com.blockstream.common.gdk.GreenJson
 import kotlinx.serialization.Serializable
 
 @Serializable
+data class AccountAssetList constructor(val list: List<AccountAsset>)
+
+@Serializable
 data class AccountAsset constructor(
     val account: Account,
     val asset: EnrichedAsset

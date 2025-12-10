@@ -40,11 +40,11 @@ abstract class RecoveryPhraseViewModelAbstract(
 }
 
 class RecoveryPhraseViewModel(
-    isLightning: Boolean,
+    isLightningDerived: Boolean,
     providedCredentials: Credentials?,
     greenWallet: GreenWallet?
 ) :
-    RecoveryPhraseViewModelAbstract(isLightning = isLightning, greenWallet = greenWallet) {
+    RecoveryPhraseViewModelAbstract(isLightning = isLightningDerived, greenWallet = greenWallet) {
 
     private val _mnemonic = MutableStateFlow("")
     override val mnemonic: StateFlow<String> = _mnemonic
@@ -66,11 +66,11 @@ class RecoveryPhraseViewModel(
         viewModelScope.launch {
             _navData.value = NavData(
                 title = getString(Res.string.id_back_up_recovery_phrase),
-                subtitle = if (isLightning) getString(Res.string.id_lightning) else null
+                subtitle = if (isLightningDerived) getString(Res.string.id_lightning) else null
             )
 
             (providedCredentials
-                ?: session.ifConnectedSuspend { (if (isLightning) Credentials(mnemonic = session.deriveLightningMnemonic()) else session.getCredentials()) })?.also { credentials ->
+                ?: session.ifConnectedSuspend { (if (isLightningDerived) Credentials(mnemonic = session.deriveLightningMnemonic()) else session.getCredentials()) })?.also { credentials ->
                 _mnemonic.value = credentials.mnemonic ?: ""
                 _mnemonicWords.value = credentials.mnemonic?.split(" ") ?: listOf()
                 _passphrase.value = credentials.bip39Passphrase

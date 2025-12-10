@@ -282,5 +282,74 @@ class Database(driverFactory: DriverFactory, val settingsManager: SettingsManage
         localDB.eventsQueries.deleteEvents()
     }
 
+    suspend fun getWalletSettings(walletId: String) = io {
+        walletDB.walletSettingsQueries.getWalletSettings(wallet_id = walletId).executeAsList()
+    }
+
+    fun getWalletSettingsFlow(walletId: String) = walletDB.walletSettingsQueries.getWalletSettings(wallet_id = walletId).asFlow().map {
+        io {
+            it.executeAsList()
+        }
+    }
+
+    suspend fun getWalletSetting(walletId: String, key: String) = io {
+        walletDB.walletSettingsQueries.getWalletSetting(wallet_id = walletId, key = key).executeAsOneOrNull()
+    }
+
+    fun getWalletSettingFlow(walletId: String, key: String) =
+        walletDB.walletSettingsQueries.getWalletSetting(wallet_id = walletId, key = key).asFlow().map {
+            it.executeAsOneOrNull()
+        }
+
+    suspend fun setWalletSetting(walletId: String, key: String, data: String) = io {
+        walletDB.walletSettingsQueries.setWalletSetting(wallet_id = walletId, key = key, data_ = data)
+    }
+
+    suspend fun deleteWalletSetting(walletId: String, key: String) = io {
+        walletDB.walletSettingsQueries.deleteWalletSetting(wallet_id = walletId, key = key)
+    }
+
+    suspend fun getPendingSwaps(xPubHashId: String) = io {
+        walletDB.boltzSwapsQueries.getPendingSwaps(xpub_hash_id = xPubHashId).executeAsList()
+    }
+
+    suspend fun getSwap(id: String) = io {
+        walletDB.boltzSwapsQueries.getSwap(id = id).executeAsOneOrNull()
+    }
+
+    suspend fun getSwapFromTxHash(txHash: String) = io {
+        walletDB.boltzSwapsQueries.getSwapFromTxHash(tx_hash = txHash).executeAsOneOrNull()
+    }
+
+    suspend fun getSwapFromInvoice(invoice: String, xPubHashId: String) = io {
+        walletDB.boltzSwapsQueries.getSwapFromInvoice(invoice = invoice, xpub_hash_id = xPubHashId).executeAsOneOrNull()
+    }
+
+    fun getPendingSwapsFlow(xPubHashId: String) = walletDB.boltzSwapsQueries.getPendingSwaps(xpub_hash_id = xPubHashId).asFlow().map {
+        io {
+            it.executeAsList()
+        }
+    }
+
+    suspend fun setSwap(id: String, walletId: String, xPubHashId: String, invoice: String? = null, data: String) = io {
+        walletDB.boltzSwapsQueries.setSwap(id = id, wallet_id = walletId, xpub_hash_id = xPubHashId, invoice = invoice, data_ = data)
+    }
+
+    suspend fun setSwapComplete(id: String) = io {
+        walletDB.boltzSwapsQueries.setSwapComplete(id = id)
+    }
+
+    suspend fun setSwapTxHash(id: String, txHash: String) = io {
+        walletDB.boltzSwapsQueries.setSwapTxHash(id = id, tx_hash = txHash)
+    }
+
+    suspend fun deleteSwap(id: String) = io {
+        walletDB.boltzSwapsQueries.deleteSwap(id = id)
+    }
+
+    suspend fun deleteAllSwaps() = io {
+        walletDB.boltzSwapsQueries.deleteAllSwaps()
+    }
+
     companion object : Loggable()
 }

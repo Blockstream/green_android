@@ -20,19 +20,19 @@ data class LightningInfoLook constructor(val sweep: String? = null, val capacity
             }
 
             val sweep =
-                if (session.isLightningShortcut || nodeState.onchainBalanceSatoshi() == 0L) null else {
+                if (nodeState.onchainBalanceSatoshi() > 0) {
                     getString(
                         Res.string.id_your_lightning_account_has_onchain,
                         nodeState.onchainBalanceSatoshi().toAmountLook(session = session) ?: ""
                     )
-                }
+                } else null
 
-            val capacity = if (nodeState.totalInboundLiquiditySatoshi() == 0L) null else {
+            val capacity = if (nodeState.totalInboundLiquiditySatoshi() > 0) {
                 getString(
                     Res.string.id_your_current_receive_capacity,
                     nodeState.totalInboundLiquiditySatoshi().toAmountLook(session = session) ?: ""
                 )
-            }
+            } else null
 
             return LightningInfoLook(sweep = sweep, capacity = capacity)
         }

@@ -70,7 +70,7 @@ fun GetWalletsWithCredentialType.toGreenWallet(): GreenWallet {
         extras = extras,
         order = order
     )
-    return GreenWallet(wallet = wallet, hasLightningShortcut = credential_type == CredentialType.LIGHTNING_MNEMONIC)
+    return GreenWallet(wallet = wallet)
 }
 
 enum class WalletIcon { REGULAR, WATCH_ONLY, TESTNET, BIP39, HARDWARE, LIGHTNING, QR }
@@ -78,8 +78,7 @@ enum class WalletIcon { REGULAR, WATCH_ONLY, TESTNET, BIP39, HARDWARE, LIGHTNING
 @Serializable
 data class GreenWallet constructor(
     var wallet: WalletSerializable,
-    val ephemeralIdOrNull: Long? = null,
-    val hasLightningShortcut: Boolean = false
+    val ephemeralIdOrNull: Long? = null
 ) : GreenJson<GreenWallet>() {
     override fun kSerializer() = serializer()
 
@@ -149,6 +148,7 @@ data class GreenWallet constructor(
     val isHardware
         get() = wallet.is_hardware
 
+    @Deprecated("Lightning shortcut is deprecated")
     var isLightning
         get() = wallet.is_lightning
         set(value) {
@@ -174,7 +174,7 @@ data class GreenWallet constructor(
         get() = ephemeralIdOrNull ?: 0L
 
     val isBip39Ephemeral
-        get() = isEphemeral && !isHardware && !isLightning
+        get() = isEphemeral && !isHardware
 
     val ephemeralBip39Name
         get() = "BIP39 #${ephemeralId}"
@@ -186,7 +186,6 @@ data class GreenWallet constructor(
             isTestnet -> WalletIcon.TESTNET
             isBip39Ephemeral -> WalletIcon.BIP39
             isHardware -> WalletIcon.HARDWARE
-            isLightning -> WalletIcon.LIGHTNING
             else -> WalletIcon.REGULAR
         }
 

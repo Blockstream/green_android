@@ -41,11 +41,13 @@ fun GreenAsset(
     assetBalance: AssetBalance? = null,
     session: GdkSession? = null,
     title: String? = null,
+    subtitle: String? = null,
     selectText: String? = null,
     withEditIcon: Boolean = false,
+    trailingContent: @Composable (() -> Unit)? = null,
     onClick: (() -> Unit)? = null,
 ) {
-    GreenDataLayout(modifier = modifier, title = title, onClick = onClick, withPadding = false) {
+    GreenDataLayout(modifier = modifier, title = title, subtitle = subtitle, onClick = onClick, withPadding = false) {
 
         Row(
             modifier = Modifier.padding(start = 16.dp),
@@ -102,6 +104,8 @@ fun GreenAsset(
                                 BalanceDetails(assetBalance.balance, assetBalance.balanceExchange)
                             })
                         }
+
+                        trailingContent?.invoke()
                     }
                 }
             }

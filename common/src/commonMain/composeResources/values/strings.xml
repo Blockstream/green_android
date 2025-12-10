@@ -69,6 +69,9 @@
     <string name="id_account_settings">Account Settings</string>
     <string name="id_account_transfer">Account Transfer</string>
     <string name="id_account_type">Account Type</string>
+    <string name="id_account_type_2fa_protected">Account: 2FA Protected</string>
+    <string name="id_account_type_amp">Account: AMP</string>
+    <string name="id_account_type_standard">Account: Standard</string>
     <string name="id_accounts">Accounts</string>
     <string name="id_accounts_summary">Accounts summary</string>
     <string name="id_action_canceled">Action canceled</string>
@@ -126,7 +129,6 @@
     <string name="id_amount_must_be_at_least_s">Amount must be at least %1$s</string>
     <string name="id_amount_must_be_at_most_s">Amount must be at most %1$s</string>
     <string name="id_amount_to_be_refunded">Amount to be refunded</string>
-    <string name="id_amount_to_receive">Amount to Receive</string>
     <string name="id_amount_too_high">Amount too high</string>
     <string name="id_amount_too_low">Amount too low</string>
     <string name="id_amp">AMP</string>
@@ -617,6 +619,7 @@
     <string name="id_feedback">Feedback</string>
     <string name="id_fees_are_collected_by_bitcoin">Fees are collected by bitcoin miners, not Blockstream.</string>
     <string name="id_fees_are_not_collected_by">Fees are not collected by Blockstream, but by Bitcoin miners, Liquid functionaries, and Lightning nodes, who include or secure transactions onto the blockchain, granting 24/7 worldwide service availability.\n\nBecause blockchain space, or lightning network liquidity, is limited, network operators will give priority to transactions paying higher fees, especially in periods of intense traffic.</string>
+    <string name="id_fees_are_not_collected_by_short">Fees are not collected by Blockstream, but by Bitcoin miners, Liquid functionaries, and Lightning nodes that process your transaction.</string>
     <string name="id_fees_are_too_low">Fees are too low</string>
     <string name="id_fetching_new_firmware">Fetching new firmware</string>
     <string name="id_filters">Filters</string>
@@ -641,7 +644,7 @@
     <string name="id_for_most_users">For most users</string>
     <string name="id_format_is_not_supported_or_no">Format is not supported or no data was found.</string>
     <string name="id_found_via_bluetooth">Found via Bluetooth</string>
-    <string name="id_from">FROM</string>
+    <string name="id_from">From</string>
     <string name="id_fully_airgapped_with_qr">Fully air-gapped with QR</string>
     <string name="id_funding_transaction_id">Funding Transaction Id</string>
     <string name="id_funds_received">Funds Received!</string>
@@ -837,6 +840,7 @@
     <string name="id_legacy_segwit_bip49">Legacy SegWit (BIP49)</string>
     <string name="id_lets_get_you_set_up">Let&apos;s get you set up.</string>
     <string name="id_lightning">Lightning</string>
+    <string name="id_swaps">Swaps</string>
     <string name="id_lightning_account">Lightning Account</string>
     <string name="id_lightning_account_shortcut">Lightning Account Shortcut</string>
     <string name="id_lightning_disabled_successfully">Lightning disabled successfully</string>
@@ -847,6 +851,8 @@
     <string name="id_lightning_network_account">Lightning Network account powered by Greenlight. Portable onto your own CLN node.</string>
     <string name="id_lightning_network_not_enabled">Lightning Network not enabled</string>
     <string name="id_lightning_notifications">Lightning Notifications</string>
+    <string name="id_lightning_ready">Lightning Ready</string>
+    <string name="id_swaps_notifications">Swaps Notifications</string>
     <string name="id_lightning_service_is_undergoing">Lightning service is undergoing maintenance, but it will be back soon.</string>
     <string name="id_lightning_shortcut">Lightning shortcut</string>
     <string name="id_lightning_shortcut_activated">Lightning Shortcut Activated</string>
@@ -907,6 +913,7 @@
     <string name="id_manual_restore">Manual Restore</string>
     <string name="id_market">Market</string>
     <string name="id_max_limit_s">Max Limit: %1$s</string>
+    <string name="id_min_limit_s">Min Limit: %1$s</string>
     <string name="id_max_payable_amount">Max Payable Amount</string>
     <string name="id_max_payment_amount">Max Payment Amount</string>
     <string name="id_max_receivable_amount">Max Receivable Amount</string>
@@ -1072,6 +1079,7 @@
     <string name="id_payment_hash">Payment Hash</string>
     <string name="id_payment_preimage">Payment Preimage</string>
     <string name="id_payment_received">Payment received</string>
+    <string name="id_payment_sent">Payment sent</string>
     <string name="id_payment_request_of">Payment request of</string>
     <string name="id_payment_requested_by_s">Payment requested by %1$s</string>
     <string name="id_payments_to_self_are_not">Payments to self are not supported in your lightning account.</string>
@@ -1556,6 +1564,7 @@
     <string name="id_total_assets">Total Assets</string>
     <string name="id_total_balance">Total Balance</string>
     <string name="id_total_bitcoin_balance">Total Bitcoin Balance</string>
+    <string name="id_total_fees">Total Fees</string>
     <string name="id_total_spent">Total Spent</string>
     <string name="id_total_with_fee">Total with Fee</string>
     <string name="id_touch_id">Touch ID</string>
@@ -1936,4 +1945,15 @@
     <string name="id_transfer_funds">Transfer Funds</string>
     <string name="id_share_diagnostic_data">Share Diagnostic Data</string>
     <string name="id_jade_firmware_is_outdated">Jade firmware version is outdated. Upgrade to the latest firmware version to continue.</string>
+    <string name="id_payer_sends">Payer Sends</string>
+    <string name="id_you_will_receive_liquid_bitcoin">You will receive Liquid bitcoin via Lightning invoice.</string>
+    <string name="id_you_are_paying_this_lightning_invoice">You are paying this Lightning invoice with Liquid bitcoin</string>
+    <string name="id_no_amount_less_invoices_supported">No amount-less invoices supported</string>
+    <string name="id_swap_id">Swap ID</string>
+    <string name="id_network_fee_and_swap_fee">Network fee and Swap fee</string>
+    <string name="id_includes_swap_and_lightning_routing">Includes service and Lightning routing.</string>
+    <string name="id_liquid_onchain">Liquid on-chain</string>
+    <string name="id_miner_fee_to_send_lbtc_on_liquid">Miner fee to send L-BTC on Liquid.</string>
+    <string name="id_service_fee">Service Fee</string>
+    <string name="id_amount_you_will_receive">Amount you will Receive</string>
 </resources>

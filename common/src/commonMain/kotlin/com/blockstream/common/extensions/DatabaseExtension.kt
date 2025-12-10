@@ -45,9 +45,6 @@ val List<LoginCredentials>.biometricsMnemonic
 val List<LoginCredentials>.passwordPinData
     get() = find { it.credential_type == CredentialType.PASSWORD_PINDATA }
 
-val List<LoginCredentials>.lightningCredentials
-    get() = find { it.credential_type == CredentialType.KEYSTORE_GREENLIGHT_CREDENTIALS }
-
 val List<LoginCredentials>.lightningMnemonic
     get() = find { it.credential_type == CredentialType.LIGHTNING_MNEMONIC }
 
@@ -75,6 +72,20 @@ fun LoginCredentials.lightningMnemonic(
 ): String? {
     return try {
         if (credential_type != CredentialType.LIGHTNING_MNEMONIC) throw Exception("credential_type is not LIGHTNING_MNEMONIC")
+        greenKeystore.decryptData(encrypted_data!!).decodeToString()
+    } catch (e: Exception) {
+        e.printStackTrace()
+        onError.invoke(e)
+        null
+    }
+}
+
+fun LoginCredentials.boltzMnemonic(
+    greenKeystore: GreenKeystore,
+    onError: ((exception: Exception) -> Unit) = {}
+): String? {
+    return try {
+        if (credential_type != CredentialType.BOLTZ_MNEMONIC) throw Exception("credential_type is not BOLTZ_MNEMONIC")
         greenKeystore.decryptData(encrypted_data!!).decodeToString()
     } catch (e: Exception) {
         e.printStackTrace()

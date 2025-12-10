@@ -1,32 +1,31 @@
-package com.blockstream.common.usecases
+package com.blockstream.domain.wallet
 
 import com.blockstream.common.CountlyBase
-import com.blockstream.common.crypto.GreenKeystore
 import com.blockstream.common.crypto.PlatformCipher
-import com.blockstream.common.data.CredentialType
 import com.blockstream.common.data.GreenWallet
 import com.blockstream.common.data.SetupArgs
 import com.blockstream.common.database.Database
-import com.blockstream.common.extensions.createLoginCredentials
 import com.blockstream.common.gdk.GdkSession
 import com.blockstream.common.gdk.params.LoginCredentialsParams
 import com.blockstream.common.managers.SessionManager
 import com.blockstream.common.managers.SettingsManager
+import com.blockstream.common.managers.WalletSettingsManager
+import com.blockstream.common.usecases.SetBiometricsUseCase
+import com.blockstream.common.usecases.SetPinUseCase
 import com.blockstream.common.utils.generateWalletName
 import com.blockstream.domain.lightning.LightningNodeIdUseCase
-import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.IO
-import kotlinx.coroutines.withContext
 
 class RestoreWalletUseCase(
-    private val greenKeystore: GreenKeystore,
     private val database: Database,
     private val countly: CountlyBase,
     private val sessionManager: SessionManager,
     private val settingsManager: SettingsManager,
+    private val walletSettingsManager: WalletSettingsManager,
     private val setPinUseCase: SetPinUseCase,
     private val setBiometricsUseCase: SetBiometricsUseCase,
-    private val lightningNodeIdUseCase: LightningNodeIdUseCase
+    private val lightningNodeIdUseCase: LightningNodeIdUseCase,
+    private val saveDerivedLightningMnemonicUseCase: SaveDerivedLightningMnemonicUseCase,
+    private val saveDerivedBoltzMnemonicUseCase: SaveDerivedBoltzMnemonicUseCase
 ) {
 
     suspend operator fun invoke(
@@ -66,32 +65,21 @@ class RestoreWalletUseCase(
             database.insertWallet(wallet)
 
             if (session.hasLightning) {
-                session.lightningSdk.appGreenlightCredentials?.also { credentials ->
-                    val encryptedData =
-                        greenKeystore.encryptData(credentials.toJson().encodeToByteArray())
+                // Used in Lightning
+                saveDerivedLightningMnemonicUseCase.invoke(session = session, wallet = wallet)
+            }
 
-                    val loginCredentials = createLoginCredentials(
-                        walletId = wallet.id,
-                        network = session.lightning!!.id,
-                        credentialType = CredentialType.KEYSTORE_GREENLIGHT_CREDENTIALS,
-                        encryptedData = encryptedData
-                    )
+            // Used in Swaps
+            saveDerivedBoltzMnemonicUseCase.invoke(session = session, wallet = wallet)
 
-                    database.replaceLoginCredential(loginCredentials)
-                }
+            val liquidAddress = session.accounts.value.firstOrNull { it.isLiquid }?.let {
+                session.getReceiveAddressAsString(it)
+            }
 
-                val encryptedData = withContext(context = Dispatchers.IO) {
-                    greenKeystore.encryptData(session.deriveLightningMnemonic().encodeToByteArray())
-                }
+            session.initLwkIfNeeded(wallet = wallet, restoreSwapsAddress = liquidAddress)
 
-                database.replaceLoginCredential(
-                    createLoginCredentials(
-                        walletId = wallet.id,
-                        network = session.lightning!!.id,
-                        credentialType = CredentialType.LIGHTNING_MNEMONIC,
-                        encryptedData = encryptedData
-                    )
-                )
+            if (session.hasLightning) {
+                walletSettingsManager.setLightningEnabled(walletId = wallet.id, true)
 
                 lightningNodeIdUseCase.invoke(wallet = wallet, session = session)
             }

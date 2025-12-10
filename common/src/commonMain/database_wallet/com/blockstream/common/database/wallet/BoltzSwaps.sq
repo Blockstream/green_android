@@ -1,0 +1,44 @@
+import kotlin.Boolean;
+
+CREATE TABLE IF NOT EXISTS `boltzSwaps` (
+    `id` TEXT NOT NULL,
+    `wallet_id` TEXT NOT NULL,
+    `xpub_hash_id` TEXT NOT NULL,
+    `invoice` TEXT DEFAULT NULL,
+    `tx_hash` TEXT DEFAULT NULL,
+    `is_pending` INTEGER AS Boolean NOT NULL DEFAULT 1,
+    `data` TEXT NOT NULL,
+     PRIMARY KEY(`id`)
+);
+
+CREATE INDEX IF NOT EXISTS index_boltzSwaps_invoice ON boltzSwaps(`invoice`);
+CREATE INDEX IF NOT EXISTS index_boltzSwaps_xpub_hash_id ON boltzSwaps(`xpub_hash_id`);
+CREATE INDEX IF NOT EXISTS index_boltzSwaps_tx_hash ON boltzSwaps(`tx_hash`);
+
+getPendingSwaps:
+SELECT * FROM boltzSwaps WHERE xpub_hash_id = ? AND is_pending = 1;
+
+getSwap:
+SELECT * FROM boltzSwaps WHERE id = ?;
+
+getSwapFromTxHash:
+SELECT * FROM boltzSwaps WHERE tx_hash = ?;
+
+getSwapFromInvoice:
+SELECT * FROM boltzSwaps WHERE invoice = ? AND xpub_hash_id = ?;
+
+setSwap:
+INSERT OR REPLACE INTO boltzSwaps(id, wallet_id, xpub_hash_id, invoice, data)
+VALUES (?, ?, ?, ?, ?);
+
+setSwapComplete:
+UPDATE boltzSwaps SET is_pending = 0 WHERE id = ?;
+
+setSwapTxHash:
+UPDATE boltzSwaps SET tx_hash = ? WHERE id = ?;
+
+deleteSwap:
+DELETE FROM boltzSwaps WHERE id = ?;
+
+deleteAllSwaps:
+DELETE FROM boltzSwaps;

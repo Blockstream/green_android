@@ -13,17 +13,20 @@ import com.blockstream.common.gdk.getWally
 import com.blockstream.common.gdk.params.InitConfig
 import com.blockstream.common.lightning.GreenlightKeys
 import com.blockstream.common.lightning.LightningManager
+import com.blockstream.common.lwk.LwkManager
 import com.blockstream.common.managers.AssetManager
 import com.blockstream.common.managers.LifecycleManager
 import com.blockstream.common.managers.PromoManager
 import com.blockstream.common.managers.SessionManager
 import com.blockstream.common.managers.SettingsManager
+import com.blockstream.common.managers.WalletSettingsManager
 import com.blockstream.green.data.config.AppInfo
 import kotlinx.coroutines.MainScope
 import okio.internal.commonToUtf8String
 import org.koin.core.KoinApplication
 import org.koin.core.context.startKoin
 import org.koin.core.module.Module
+import org.koin.core.module.dsl.singleOf
 import org.koin.core.parameter.parametersOf
 import org.koin.dsl.module
 import kotlin.io.encoding.Base64
@@ -36,7 +39,6 @@ fun initKoin(appInfo: AppInfo, appConfig: AppConfig, doOnStartup: () -> Unit = {
     val koinApplication = startKoin {
         modules(
             module {
-
                 single {
                     appInfo
                 }
@@ -79,9 +81,6 @@ private fun commonModules(appConfig: AppConfig): List<Module> {
         }
         single {
             AssetManager
-        }
-        single {
-            SessionManager(get(), get(), get(), get(), get(), get(), get(), get(), get())
         }
         single {
             LifecycleManager(get(), get())
@@ -127,6 +126,9 @@ private fun commonModules(appConfig: AppConfig): List<Module> {
 
             LightningManager(greenlightKeys, get(), get(), get(), get(), get())
         }
+        singleOf(::WalletSettingsManager)
+        singleOf(::SessionManager)
+        singleOf(::LwkManager)
 
         // Set minSeverity to Global Logger
         Logger.setMinSeverity(if (appConfig.isDebug) Severity.Debug else Severity.Info)

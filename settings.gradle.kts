@@ -36,7 +36,7 @@ include(
     ":data",
     ":utils",
     ":network",
-    ":domain",
+    ":domain"
 )
 
 // Determine if the build is running in a CI environment

@@ -5,19 +5,21 @@ import com.blockstream.common.crypto.GreenKeystore
 import com.blockstream.common.data.GreenWallet
 import com.blockstream.common.database.Database
 import com.blockstream.common.di.ApplicationScope
+import com.blockstream.common.extensions.launchSafe
 import com.blockstream.common.extensions.lightningMnemonic
 import com.blockstream.common.extensions.logException
 import com.blockstream.common.lightning.BreezNotification
 import com.blockstream.common.lightning.satoshi
 import com.blockstream.common.managers.SessionManager
 import com.blockstream.common.utils.randomChars
+import com.blockstream.domain.boltz.GetWalletFromSwapUseCase
 import com.blockstream.green.data.config.AppInfo
-import com.blockstream.green.data.notifications.models.NotificationData
+import com.blockstream.green.data.notifications.models.BoltzNotificationSimple
+import com.blockstream.green.data.notifications.models.MeldNotificationData
 import com.blockstream.green.utils.Loggable
 import com.rickclephas.kmp.nativecoroutines.NativeCoroutinesIgnore
 import kotlinx.coroutines.flow.filter
 import kotlinx.coroutines.flow.firstOrNull
-import kotlinx.coroutines.launch
 import kotlinx.coroutines.withTimeoutOrNull
 import org.koin.core.component.KoinComponent
 import org.koin.core.component.inject
@@ -26,6 +28,8 @@ abstract class FcmCommon constructor(val applicationScope: ApplicationScope) : K
     private val database: Database by inject()
     private val greenKeystore: GreenKeystore by inject()
     private val sessionManager: SessionManager by inject()
+
+    private val getWalletFromSwapUseCase: GetWalletFromSwapUseCase by inject()
     private val appInfo: AppInfo by inject()
 
     private var _token: String? = null
@@ -41,6 +45,20 @@ abstract class FcmCommon constructor(val applicationScope: ApplicationScope) : K
     abstract fun scheduleLightningBackgroundJob(
         walletId: String,
         breezNotification: BreezNotification
+    )
+
+    abstract fun scheduleBoltzBackgroundJob(
+        boltzNotificationData: BoltzNotificationSimple
+    )
+
+    @NativeCoroutinesIgnore
+    abstract suspend fun showSwapReceiveNotification(
+        wallet: GreenWallet
+    )
+
+    @NativeCoroutinesIgnore
+    abstract suspend fun showSwapSendNotification(
+        wallet: GreenWallet
     )
 
     @NativeCoroutinesIgnore
@@ -62,7 +80,7 @@ abstract class FcmCommon constructor(val applicationScope: ApplicationScope) : K
     )
 
     abstract fun showBuyTransactionNotification(
-        notificationData: NotificationData
+        meldNotificationData: MeldNotificationData
     )
 
     @NativeCoroutinesIgnore
@@ -138,8 +156,29 @@ abstract class FcmCommon constructor(val applicationScope: ApplicationScope) : K
         }
     }
 
+    fun handleBoltzPushNotification(notification: BoltzNotificationSimple) {
+        applicationScope.launchSafe {
+
+            val (_, wallet) = getWalletFromSwapUseCase(swapId = notification.id)
+
+            if (wallet != null) {
+                when (notification.status) {
+                    "invoice.settled" -> {
+                        showSwapReceiveNotification(wallet = wallet)
+                    }
+
+                    "invoice.paid" -> {
+                        showSwapSendNotification(wallet = wallet)
+                    }
+                }
+            }
+
+            scheduleBoltzBackgroundJob(notification)
+        }
+    }
+
     fun handleLightningPushNotification(xpubHashId: String, breezNotification: BreezNotification) {
-        applicationScope.launch(context = logException()) {
+        applicationScope.launchSafe(context = logException()) {
             database.getMainnetWalletWithXpubHashId(xpubHashId)?.also { wallet ->
 
                 val mnemonic =

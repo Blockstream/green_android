@@ -80,10 +80,14 @@ fun AssetsBottomSheet(
                     .padding(top = 16.dp)
             ) {
                 data.forEach { assetBalance ->
-                    GreenAsset(assetBalance = assetBalance, session = viewModel.sessionOrNull) {
-                        NavigateDestinations.Assets.setResult(assetBalance)
-                        onDismissRequest()
-                    }
+                    GreenAsset(
+                        assetBalance = assetBalance,
+                        session = viewModel.sessionOrNull,
+                        onClick = {
+                            NavigateDestinations.Assets.setResult(assetBalance)
+                            onDismissRequest()
+                        }
+                    )
                 }
             }
 

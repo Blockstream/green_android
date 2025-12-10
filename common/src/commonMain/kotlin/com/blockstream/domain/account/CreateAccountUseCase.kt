@@ -1,4 +1,4 @@
-package com.blockstream.common.usecases
+package com.blockstream.domain.account
 
 import com.blockstream.common.CountlyBase
 import com.blockstream.common.SATOSHI_UNIT
@@ -8,7 +8,6 @@ import com.blockstream.common.data.GreenWallet
 import com.blockstream.common.data.toLoginCredentials
 import com.blockstream.common.database.Database
 import com.blockstream.common.extensions.cleanup
-import com.blockstream.common.extensions.createLoginCredentials
 import com.blockstream.common.extensions.hasHistory
 import com.blockstream.common.extensions.richWatchOnly
 import com.blockstream.common.gdk.GdkSession
@@ -18,22 +17,23 @@ import com.blockstream.common.gdk.data.Network
 import com.blockstream.common.gdk.device.DeviceResolver
 import com.blockstream.common.gdk.device.HardwareWalletInteraction
 import com.blockstream.common.gdk.params.SubAccountParams
+import com.blockstream.common.managers.WalletSettingsManager
 import com.blockstream.domain.lightning.LightningNodeIdUseCase
+import com.blockstream.domain.wallet.SaveDerivedLightningMnemonicUseCase
 import com.blockstream.green.utils.Loggable
-import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.IO
-import kotlinx.coroutines.withContext
 
 class CreateAccountUseCase(
-    val database: Database,
-    val greenKeystore: GreenKeystore,
-    val countly: CountlyBase,
-    val lightningNodeIdUseCase: LightningNodeIdUseCase,
+    private val database: Database,
+    private val greenKeystore: GreenKeystore,
+    private val walletSettingsManager: WalletSettingsManager,
+    private val countly: CountlyBase,
+    private val lightningNodeIdUseCase: LightningNodeIdUseCase,
+    private val saveDerivedLightningMnemonicUseCase: SaveDerivedLightningMnemonicUseCase
 ) : Loggable() {
 
     suspend operator fun invoke(
         session: GdkSession,
-        greenWallet: GreenWallet,
+        wallet: GreenWallet,
         accountType: AccountType,
         network: Network,
         accountName: String? = null,
@@ -46,39 +46,14 @@ class CreateAccountUseCase(
 
             session.initLightningIfNeeded(mnemonic = mnemonic)
 
-            if (!greenWallet.isEphemeral && !session.isHardwareWallet) {
-                // Persist Lightning
-                session.lightningSdk.appGreenlightCredentials?.also {
-                    val encryptedData =
-                        greenKeystore.encryptData(it.toJson().encodeToByteArray())
-
-                    val loginCredentials = createLoginCredentials(
-                        walletId = greenWallet.id,
-                        network = network.id,
-                        credentialType = CredentialType.KEYSTORE_GREENLIGHT_CREDENTIALS,
-                        encryptedData = encryptedData
-                    )
-
-                    database.replaceLoginCredential(loginCredentials)
-                }
-            }
 
             // Save Lightning mnemonic
-            if (!greenWallet.isEphemeral) {
-                val encryptedData = withContext(context = Dispatchers.IO) {
-                    (mnemonic ?: session.deriveLightningMnemonic()).let {
-                        greenKeystore.encryptData(it.encodeToByteArray())
-                    }
-                }
+            if (!wallet.isEphemeral) {
+                walletSettingsManager.setLightningEnabled(walletId = wallet.id, true)
 
-                database.replaceLoginCredential(
-                    createLoginCredentials(
-                        walletId = greenWallet.id,
-                        network = network.id,
-                        credentialType = CredentialType.LIGHTNING_MNEMONIC,
-                        encryptedData = encryptedData
-                    )
-                )
+                saveDerivedLightningMnemonicUseCase.invoke(session = session, wallet = wallet, mnemonic = mnemonic)
+
+                session.initLwkIfNeeded(wallet = wallet, mnemonic = mnemonic)
             }
 
 //                if (appInfo.isDevelopmentOrDebug) {
@@ -99,7 +74,7 @@ class CreateAccountUseCase(
             }
 
             // Save Lightning Node Id
-            lightningNodeIdUseCase.invoke(wallet = greenWallet, session = session)
+            lightningNodeIdUseCase.invoke(wallet = wallet, session = session)
 
             return session.lightningAccount
         } else {
@@ -108,18 +83,18 @@ class CreateAccountUseCase(
             if (!session.hasActiveNetwork(network) && !session.failedNetworks.value.contains(network)) {
                 session.initNetworkIfNeeded(
                     network = network,
-                    hardwareWalletResolver = DeviceResolver.createIfNeeded(
+                    hardwareWalletResolver = DeviceResolver.Companion.createIfNeeded(
                         session.gdkHwWallet,
                         hwInteraction
                     )
                 ) { }
 
                 // Update rich watch only credentials if needed
-                database.getLoginCredential(greenWallet.id, CredentialType.RICH_WATCH_ONLY)
+                database.getLoginCredential(wallet.id, CredentialType.RICH_WATCH_ONLY)
                     ?.richWatchOnly(greenKeystore)?.also {
                         session.updateRichWatchOnly(it).toLoginCredentials(
                             session = session,
-                            greenWallet = greenWallet,
+                            greenWallet = wallet,
                             greenKeystore = greenKeystore
                         ).also {
                             database.replaceLoginCredential(it)
@@ -159,7 +134,7 @@ class CreateAccountUseCase(
                 session.createAccount(
                     network = network,
                     params = params,
-                    hardwareWalletResolver = DeviceResolver.createIfNeeded(
+                    hardwareWalletResolver = DeviceResolver.Companion.createIfNeeded(
                         session.gdkHwWallet,
                         hwInteraction
                     )

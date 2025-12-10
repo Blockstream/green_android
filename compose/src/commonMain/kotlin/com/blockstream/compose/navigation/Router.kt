@@ -59,6 +59,8 @@ import com.blockstream.common.models.overview.TransactViewModel
 import com.blockstream.common.models.overview.WalletAssetsViewModel
 import com.blockstream.common.models.overview.WalletOverviewViewModel
 import com.blockstream.common.models.promo.PromoViewModel
+import com.blockstream.common.models.receive.ReceiveChooseAccountViewModel
+import com.blockstream.common.models.receive.ReceiveChooseAssetViewModel
 import com.blockstream.common.models.receive.ReceiveViewModel
 import com.blockstream.common.models.recovery.RecoveryCheckViewModel
 import com.blockstream.common.models.recovery.RecoveryIntroViewModel
@@ -68,6 +70,9 @@ import com.blockstream.common.models.send.BumpViewModel
 import com.blockstream.common.models.send.DenominationViewModel
 import com.blockstream.common.models.send.FeeViewModel
 import com.blockstream.common.models.send.RedepositViewModel
+import com.blockstream.common.models.send.SendAddressViewModel
+import com.blockstream.common.models.send.SendChooseAccountViewModel
+import com.blockstream.common.models.send.SendChooseAssetViewModel
 import com.blockstream.common.models.send.SendConfirmViewModel
 import com.blockstream.common.models.send.SendViewModel
 import com.blockstream.common.models.send.SweepViewModel
@@ -135,6 +140,8 @@ import com.blockstream.compose.screens.overview.TransactScreen
 import com.blockstream.compose.screens.overview.WalletAssetsScreen
 import com.blockstream.compose.screens.overview.WalletOverviewScreen
 import com.blockstream.compose.screens.promo.PromoScreen
+import com.blockstream.compose.screens.receive.ReceiveChooseAccountScreen
+import com.blockstream.compose.screens.receive.ReceiveChooseAssetScreen
 import com.blockstream.compose.screens.receive.ReceiveScreen
 import com.blockstream.compose.screens.recovery.RecoveryCheckScreen
 import com.blockstream.compose.screens.recovery.RecoveryIntroScreen
@@ -142,6 +149,9 @@ import com.blockstream.compose.screens.recovery.RecoveryPhraseScreen
 import com.blockstream.compose.screens.recovery.RecoveryWordsScreen
 import com.blockstream.compose.screens.send.BumpScreen
 import com.blockstream.compose.screens.send.RedepositScreen
+import com.blockstream.compose.screens.send.SendAddressScreen
+import com.blockstream.compose.screens.send.SendChooseAccountScreen
+import com.blockstream.compose.screens.send.SendChooseAssetScreen
 import com.blockstream.compose.screens.send.SendConfirmScreen
 import com.blockstream.compose.screens.send.SendScreen
 import com.blockstream.compose.screens.send.SweepScreen
@@ -174,6 +184,7 @@ import com.blockstream.compose.sheets.FeeRateBottomSheet
 import com.blockstream.compose.sheets.JadeFirmwareUpdateBottomSheet
 import com.blockstream.compose.sheets.LightningNodeBottomSheet
 import com.blockstream.compose.sheets.MainMenuBottomSheet
+import com.blockstream.compose.sheets.SwapFeesBottomSheet
 import com.blockstream.compose.sheets.MeldCountriesBottomSheet
 import com.blockstream.compose.sheets.MenuBottomSheetView
 import com.blockstream.compose.sheets.NewJadeConnectedBottomSheet
@@ -282,7 +293,7 @@ fun Router(
                 val args = it.toRoute<NavigateDestinations.RecoveryPhrase>()
                 RecoveryPhraseScreen(viewModel {
                     RecoveryPhraseViewModel(
-                        isLightning = args.setupArgs.isLightning,
+                        isLightningDerived = args.setupArgs.isLightningDerived,
                         providedCredentials = args.setupArgs.credentials,
                         greenWallet = args.setupArgs.greenWallet
                     )
@@ -436,7 +447,48 @@ fun Router(
                 ReceiveScreen(viewModel {
                     ReceiveViewModel(
                         greenWallet = args.greenWallet,
-                        initialAccountAsset = args.accountAsset
+                        accountAsset = args.accountAsset
+                    )
+                })
+            }
+            appComposable<NavigateDestinations.ReceiveChooseAsset> {
+                val args = it.toRoute<NavigateDestinations.ReceiveChooseAsset>()
+                ReceiveChooseAssetScreen(viewModel {
+                    ReceiveChooseAssetViewModel(
+                        greenWallet = args.greenWallet
+                    )
+                })
+            }
+            appComposable<NavigateDestinations.ReceiveChooseAccount> {
+                val args = it.toRoute<NavigateDestinations.ReceiveChooseAccount>()
+                ReceiveChooseAccountScreen(viewModel {
+                    ReceiveChooseAccountViewModel(
+                        greenWallet = args.greenWallet,
+                        accounts = args.accounts.list,
+                    )
+                })
+            }
+            appComposable<NavigateDestinations.SendChooseAsset> {
+                val args = it.toRoute<NavigateDestinations.SendChooseAsset>()
+                SendChooseAssetScreen(viewModel {
+                    SendChooseAssetViewModel(
+                        greenWallet = args.greenWallet,
+                        address = args.address,
+                        addressType = args.addressType,
+                        assets = args.assets.list
+                    )
+                })
+            }
+            appComposable<NavigateDestinations.SendChooseAccount> {
+                val args = it.toRoute<NavigateDestinations.SendChooseAccount>()
+                SendChooseAccountScreen(viewModel {
+                    SendChooseAccountViewModel(
+                        greenWallet = args.greenWallet,
+                        address = args.address,
+                        addressType = args.addressType,
+                        asset = args.asset,
+                        accounts = args.accounts.list,
+                        // initialAccountAsset = args.accounts.list.firstOrNull()?.accountAsset
                     )
                 })
             }
@@ -444,6 +496,17 @@ fun Router(
                 val args = it.toRoute<NavigateDestinations.Send>()
                 SendScreen(viewModel {
                     SendViewModel(
+                        greenWallet = args.greenWallet,
+                        address = args.address,
+                        addressType = args.addressType,
+                        accountAsset = args.accountAsset
+                    )
+                })
+            }
+            appComposable<NavigateDestinations.SendAddress> {
+                val args = it.toRoute<NavigateDestinations.SendAddress>()
+                SendAddressScreen(viewModel {
+                    SendAddressViewModel(
                         greenWallet = args.greenWallet,
                         initAddress = args.address,
                         addressType = args.addressType,
@@ -874,7 +937,7 @@ fun Router(
                     viewModel = viewModel {
                         AssetAccountDetailsViewModel(
                             greenWallet = args.greenWallet,
-                            accountAssetOrNull = args.accountAsset
+                            accountAsset = args.accountAsset
                         )
                     }
                 )
@@ -1063,6 +1126,16 @@ fun Router(
                             greenWallet = args.greenWallet
                         )
                     },
+                    onDismissRequest = navController.onDismissRequest()
+                )
+            }
+            appBottomSheet<NavigateDestinations.SwapFees> {
+                val args = it.toRoute<NavigateDestinations.SwapFees>()
+                SwapFeesBottomSheet(
+                    serviceFee = args.serviceFee,
+                    networkFee = args.networkFee,
+                    totalFees = args.totalFees,
+                    totalFeesFiat = args.totalFeesFiat,
                     onDismissRequest = navController.onDismissRequest()
                 )
             }

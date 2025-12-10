@@ -11,8 +11,8 @@ import com.blockstream.common.models.GreenViewModel
 import com.blockstream.common.navigation.NavigateDestinations
 import com.blockstream.common.sideeffects.SideEffects
 import com.blockstream.common.usecases.CheckRecoveryPhraseUseCase
-import com.blockstream.common.usecases.NewWalletUseCase
-import com.blockstream.common.usecases.RestoreWalletUseCase
+import com.blockstream.domain.wallet.NewWalletUseCase
+import com.blockstream.domain.wallet.RestoreWalletUseCase
 import com.blockstream.green.utils.Loggable
 import com.blockstream.ui.events.Event
 import com.rickclephas.kmp.nativecoroutines.NativeCoroutinesState

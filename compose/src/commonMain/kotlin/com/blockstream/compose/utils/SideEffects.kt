@@ -334,7 +334,7 @@ fun HandleSideEffect(
                         } else {
                             NavigateDestinations.Login(
                                 greenWallet = greenWallet,
-                                autoLoginWallet = !greenWallet.isLightning
+                                autoLoginWallet = true
                             )
                         }).also { destination ->
                             navigator.navigate(destination) {

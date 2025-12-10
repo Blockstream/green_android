@@ -40,6 +40,7 @@ import com.adamglin.phosphoricons.Regular
 import com.adamglin.phosphoricons.regular.Bug
 import com.adamglin.phosphoricons.regular.Copy
 import com.adamglin.phosphoricons.regular.Fire
+import com.adamglin.phosphoricons.regular.Swap
 import com.blockstream.common.SupportType
 import com.blockstream.common.data.SupportData
 import com.blockstream.common.models.about.AboutViewModel
@@ -147,6 +148,12 @@ fun AboutScreen(
                             iconRes = Res.drawable.eye,
                             onClick = {
                                 viewModel.postEvent(AboutViewModel.LocalEvents.DeleteEvents)
+                            }
+                        ), MenuEntry(
+                            title = "Delete Swaps",
+                            imageVector = PhosphorIcons.Regular.Swap,
+                            onClick = {
+                                viewModel.postEvent(AboutViewModel.LocalEvents.DeleteSwaps)
                             }
                         ), MenuEntry(
                             title = "Create Crash Report",

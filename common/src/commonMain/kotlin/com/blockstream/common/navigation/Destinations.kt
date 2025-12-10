@@ -4,6 +4,7 @@ import com.blockstream.common.AddressInputType
 import com.blockstream.common.SupportType
 import com.blockstream.common.data.DenominatedValue
 import com.blockstream.common.data.EnrichedAsset
+import com.blockstream.common.data.EnrichedAssetList
 import com.blockstream.common.data.GreenWallet
 import com.blockstream.common.data.LnUrlAuthRequestDataSerializable
 import com.blockstream.common.data.LnUrlWithdrawRequestSerializable
@@ -16,6 +17,7 @@ import com.blockstream.common.devices.DeviceModel
 import com.blockstream.common.gdk.data.Account
 import com.blockstream.common.gdk.data.AccountAsset
 import com.blockstream.common.gdk.data.AccountAssetBalanceList
+import com.blockstream.common.gdk.data.AccountAssetList
 import com.blockstream.common.gdk.data.AssetBalance
 import com.blockstream.common.gdk.data.AssetBalanceList
 import com.blockstream.common.gdk.data.Network
@@ -278,6 +280,14 @@ sealed class NavigateDestinations : NavigateDestination() {
     data class LightningNode(val greenWallet: GreenWallet) : NavigateDestination()
 
     @Serializable
+    data class SwapFees(
+        val serviceFee: String,
+        val networkFee: String,
+        val totalFees: String,
+        val totalFeesFiat: String?
+    ) : NavigateDestination()
+
+    @Serializable
     data class TransactionDetails(val greenWallet: GreenWallet, val transaction: com.blockstream.common.gdk.data.Transaction) :
         NavigateDestination()
 
@@ -317,7 +327,47 @@ sealed class NavigateDestinations : NavigateDestination() {
     ) : NavigateDestination()
 
     @Serializable
+    data class Receive constructor(val greenWallet: GreenWallet, val accountAsset: AccountAsset) : NavigateDestination()
+
+    @Serializable
+    data class ReceiveChooseAsset(
+        val greenWallet: GreenWallet,
+        val accountAsset: AccountAsset? = null
+    ) : NavigateDestination()
+
+    @Serializable
+    data class ReceiveChooseAccount(
+        val greenWallet: GreenWallet,
+        val accounts: AccountAssetList
+    ) : NavigateDestination()
+
+    @Serializable
+    data class SendChooseAsset(
+        val greenWallet: GreenWallet,
+        val address: String,
+        val addressType: AddressInputType,
+        val assets: EnrichedAssetList
+    ) : NavigateDestination()
+
+    @Serializable
+    data class SendChooseAccount(
+        val greenWallet: GreenWallet,
+        val address: String,
+        val addressType: AddressInputType,
+        val asset: EnrichedAsset,
+        val accounts: AccountAssetBalanceList
+    ) : NavigateDestination()
+
+    @Serializable
     data class Send(
+        val greenWallet: GreenWallet,
+        val address: String,
+        val addressType: AddressInputType,
+        val accountAsset: AccountAsset
+    ) : NavigateDestination()
+
+    @Serializable
+    data class SendAddress(
         val greenWallet: GreenWallet,
         val address: String? = null,
         val addressType: AddressInputType? = null,
@@ -335,7 +385,7 @@ sealed class NavigateDestinations : NavigateDestination() {
     data class SendConfirm(
         val greenWallet: GreenWallet,
         val accountAsset: AccountAsset,
-        val denomination: com.blockstream.common.data.Denomination?
+        val denomination: com.blockstream.common.data.Denomination? = null
     ) : NavigateDestination()
 
     @Serializable
@@ -345,9 +395,6 @@ sealed class NavigateDestinations : NavigateDestination() {
         val isSendAll: Boolean = false,
         val address: String? = null,
     ) : NavigateDestination()
-
-    @Serializable
-    data class Receive(val greenWallet: GreenWallet, val accountAsset: AccountAsset) : NavigateDestination()
 
     @Serializable
     data class Addresses(val greenWallet: GreenWallet, val accountAsset: AccountAsset) : NavigateDestination()

@@ -20,6 +20,9 @@ import kotlinx.serialization.SerialName
 import kotlinx.serialization.Serializable
 
 @Serializable
+data class EnrichedAssetList(val list: List<EnrichedAsset>)
+
+@Serializable
 data class EnrichedAsset constructor(
     @SerialName("asset_id")
     val assetId: String,

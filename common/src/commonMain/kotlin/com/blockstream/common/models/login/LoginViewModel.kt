@@ -37,7 +37,6 @@ import com.blockstream.common.extensions.hwWatchOnlyCredentials
 import com.blockstream.common.extensions.isConnectionError
 import com.blockstream.common.extensions.isNotAuthorized
 import com.blockstream.common.extensions.launchIn
-import com.blockstream.common.extensions.lightningCredentials
 import com.blockstream.common.extensions.lightningMnemonic
 import com.blockstream.common.extensions.logException
 import com.blockstream.common.extensions.mnemonic
@@ -52,7 +51,6 @@ import com.blockstream.common.gdk.data.Credentials
 import com.blockstream.common.gdk.data.TorEvent
 import com.blockstream.common.gdk.device.DeviceResolver
 import com.blockstream.common.gdk.params.LoginCredentialsParams
-import com.blockstream.common.lightning.AppGreenlightCredentials
 import com.blockstream.common.managers.DeviceManager
 import com.blockstream.common.models.GreenViewModel
 import com.blockstream.common.navigation.NavigateDestinations
@@ -61,6 +59,7 @@ import com.blockstream.common.usecases.EnableHardwareWatchOnlyUseCase
 import com.blockstream.common.utils.SetupDevelopmentEnv
 import com.blockstream.common.utils.StringHolder
 import com.blockstream.domain.lightning.LightningNodeIdUseCase
+import com.blockstream.domain.wallet.SaveDerivedBoltzMnemonicUseCase
 import com.blockstream.green.data.banner.Banner
 import com.blockstream.green.utils.Loggable
 import com.blockstream.ui.events.Event
@@ -140,9 +139,6 @@ abstract class LoginViewModelAbstract(
     abstract val passwordCredentials: StateFlow<DataState<LoginCredentials>>
 
     @NativeCoroutinesState
-    abstract val lightningCredentials: StateFlow<DataState<LoginCredentials>>
-
-    @NativeCoroutinesState
     abstract val lightningMnemonic: StateFlow<DataState<LoginCredentials>>
 
     @NativeCoroutinesState
@@ -159,6 +155,7 @@ class LoginViewModel constructor(
 
     override val isLoginRequired: Boolean = false
 
+    private val saveDerivedBoltzMnemonicUseCase: SaveDerivedBoltzMnemonicUseCase by inject()
     private val lightningNodeIdUseCase: LightningNodeIdUseCase by inject()
     private val enableHardwareWatchOnlyUseCase: EnableHardwareWatchOnlyUseCase by inject()
     private val setupDevelopmentEnv = SetupDevelopmentEnv() // Only for dev env
@@ -199,7 +196,6 @@ class LoginViewModel constructor(
     private val _pinCredentials: MutableStateFlow<DataState<LoginCredentials>> = MutableStateFlow(viewModelScope, DataState.Loading)
     private val _mnemonicCredentials: MutableStateFlow<DataState<LoginCredentials>> = MutableStateFlow(viewModelScope, DataState.Loading)
     private val _passwordCredentials: MutableStateFlow<DataState<LoginCredentials>> = MutableStateFlow(viewModelScope, DataState.Loading)
-    private val _lightningCredentials: MutableStateFlow<DataState<LoginCredentials>> = MutableStateFlow(viewModelScope, DataState.Loading)
     private val _lightningMnemonic: MutableStateFlow<DataState<LoginCredentials>> = MutableStateFlow(viewModelScope, DataState.Loading)
 
     @NativeCoroutinesState
@@ -222,9 +218,6 @@ class LoginViewModel constructor(
 
     @NativeCoroutinesState
     override val passwordCredentials: StateFlow<DataState<LoginCredentials>> = _passwordCredentials
-
-    @NativeCoroutinesState
-    override val lightningCredentials: StateFlow<DataState<LoginCredentials>> = _lightningCredentials
 
     @NativeCoroutinesState
     override val lightningMnemonic: StateFlow<DataState<LoginCredentials>> = _lightningMnemonic
@@ -336,7 +329,6 @@ class LoginViewModel constructor(
                 _pinCredentials.value = DataState.successOrEmpty(it.pinPinData)
                 _mnemonicCredentials.value = DataState.successOrEmpty(it.mnemonic)
                 _passwordCredentials.value = DataState.successOrEmpty(it.passwordPinData)
-                _lightningCredentials.value = DataState.successOrEmpty(it.lightningCredentials)
                 _lightningMnemonic.value = DataState.successOrEmpty(it.lightningMnemonic)
 
                 if (handleFirstTime) {
@@ -613,11 +605,19 @@ class LoginViewModel constructor(
                     postSideEffect(SideEffects.ErrorSnackbar(it))
                 }
 
+                val derivedBoltzMnemonic = database.getLoginCredential(
+                    id = greenWallet.id,
+                    credentialType = CredentialType.BOLTZ_MNEMONIC
+                )?.lightningMnemonic(greenKeystore) {
+                    postSideEffect(SideEffects.ErrorSnackbar(it))
+                }
+
                 session.loginWithDevice(
                     wallet = greenWallet,
                     device = device,
                     hardwareWalletResolver = DeviceResolver(gdkHardwareWallet, this),
                     derivedLightningMnemonic = derivedLightningMnemonic,
+                    derivedBoltzMnemonic = derivedBoltzMnemonic,
                     isSmartDiscovery = !isWatchOnlyUpgrade,
                     hwInteraction = this
                 )
@@ -640,18 +640,6 @@ class LoginViewModel constructor(
         // If Wallet Hash ID is empty (from migration) do a one-time wallet restore to make a real account discovery
         val isRestore = greenWallet.xPubHashId.isEmpty()
 
-        val appGreenlightCredentials = try {
-            lightningCredentials.data().takeIf { !isBip39Login }?.encrypted_data?.let { ed ->
-                // No need to decrypt them as we use them just as a flag.
-                // TODO move to a flag implementation
-                AppGreenlightCredentials(emptyList(), emptyList())
-                // greenKeystore.decryptData(ed).let { AppGreenlightCredentials.fromJsonString(it.decodeToString()) }
-            }
-        } catch (e: Exception) {
-            e.printStackTrace()
-            null
-        }
-
         login(loginCredentials) {
             // if bip39 passphrase, don't initialize the session as we need to re-connect || initializeSession = bip39Passphrase.isNullOrBlank())
             session.loginWithWallet(
@@ -662,72 +650,12 @@ class LoginViewModel constructor(
                         greenKeystore
                     ) else null,
                 loginCredentials = loginCredentials,
-                appGreenlightCredentials = appGreenlightCredentials,
                 isRestore = isRestore,
+                isLightningEnabled = !isBip39Login && walletSettingsManager.isLightningEnabled(walletId = greenWallet.id),
                 initializeSession = !isBip39Login
             )
         }
     }
-
-//    private fun loginWithMnemonic(mnemonic: String? = null, loginCredentials: LoginCredentials) {
-//
-//        val appGreenlightCredentials = try {
-//            lightningCredentials.data().takeIf { !isBip39Login }?.encrypted_data?.let { ed ->
-//                // No need to decrypt them as we use them just as a flag.
-//                // TODO move to a flag implementation
-//                AppGreenlightCredentials(emptyList(), emptyList())
-//                // greenKeystore.decryptData(ed).let { AppGreenlightCredentials.fromJsonString(it.decodeToString()) }
-//            }
-//        } catch (e: Exception) {
-//            e.printStackTrace()
-//            null
-//        }
-//
-//        login(loginCredentials) {
-//            // if bip39 passphrase, don't initialize the session as we need to re-connect || initializeSession = bip39Passphrase.isNullOrBlank())
-//            session.loginWithWallet(
-//                wallet = greenWallet,
-//                mnemonic = loginCredentials.mnemonic(greenKeystore)!!,
-//                loginCredentials = loginCredentials,
-//                appGreenlightCredentials = appGreenlightCredentials,
-//                initializeSession = !isBip39Login
-//            )
-//        }
-//    }
-//
-//    private fun loginWithPin(pin: String, loginCredentials: LoginCredentials) {
-//        if(isEmergencyRecoveryPhrase.value){
-//            emergencyRecoveryPhrase(pin = pin, loginCredentials = loginCredentials)
-//            return
-//        }
-//
-//        // If Wallet Hash ID is empty (from migration) do a one-time wallet restore to make a real account discovery
-//        val isRestore = greenWallet.xPubHashId.isEmpty()
-//
-//        val appGreenlightCredentials = try {
-//            lightningCredentials.data().takeIf { !isBip39Login }?.encrypted_data?.let { ed ->
-//                // No need to decrypt them as we use them just as a flag.
-//                // TODO move to a flag implementation
-//                AppGreenlightCredentials(emptyList(), emptyList())
-//                // greenKeystore.decryptData(ed).let { AppGreenlightCredentials.fromJsonString(it.decodeToString()) }
-//            }
-//        } catch (e: Exception) {
-//            e.printStackTrace()
-//            null
-//        }
-//
-//        login(loginCredentials) {
-//            // if bip39 passphrase, don't initialize the session as we need to re-connect || initializeSession = bip39Passphrase.isNullOrBlank())
-//            session.loginWithWallet(
-//                wallet = greenWallet,
-//                pin = pin,
-//                loginCredentials = loginCredentials,
-//                appGreenlightCredentials = appGreenlightCredentials,
-//                isRestore = isRestore,
-//                initializeSession = !isBip39Login
-//            )
-//        }
-//    }
 
     private fun loginWatchOnlyWithLoginCredentials(loginCredentials: LoginCredentials) {
         _initialAction.value = true
@@ -870,6 +798,15 @@ class LoginViewModel constructor(
             countly.loginWalletStart()
 
             logInMethod.invoke(session)
+
+            // Enable Swaps for old wallets
+            if (!greenWallet.isHardware && !isBip39Login && database.getLoginCredential(
+                    id = greenWallet.id,
+                    credentialType = CredentialType.BOLTZ_MNEMONIC
+                ) == null
+            ) {
+                saveDerivedBoltzMnemonicUseCase(session = session, wallet = greenWallet)
+            }
 
             // Migrate - add walletHashId
             if (greenWallet.xPubHashId != session.xPubHashId && !session.isHwWatchOnly) {
@@ -1080,7 +1017,6 @@ class LoginViewModelPreview(
     override val mnemonicCredentials: StateFlow<DataState<LoginCredentials>> = MutableStateFlow(viewModelScope, DataState.Empty)
     override val passwordCredentials: StateFlow<DataState<LoginCredentials>> =
         MutableStateFlow(viewModelScope, if (withPasswprdCredentials) DataState.Success(previewLoginCredentials()) else DataState.Empty)
-    override val lightningCredentials: StateFlow<DataState<LoginCredentials>> = MutableStateFlow(viewModelScope, DataState.Empty)
     override val lightningMnemonic: StateFlow<DataState<LoginCredentials>> = MutableStateFlow(viewModelScope, DataState.Empty)
     override val showRestoreWithRecovery = MutableStateFlow(viewModelScope, false)
 

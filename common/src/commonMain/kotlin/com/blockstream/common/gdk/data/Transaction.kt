@@ -4,6 +4,7 @@ import blockstream_green.common.generated.resources.Res
 import blockstream_green.common.generated.resources.id_address
 import blockstream_green.common.generated.resources.id_amount
 import com.blockstream.common.BTC_POLICY_ASSET
+import com.blockstream.common.database.Database
 import com.blockstream.common.gdk.GdkSession
 import com.blockstream.common.gdk.GreenJson
 import com.blockstream.common.utils.StringHolder
@@ -291,11 +292,20 @@ data class Transaction constructor(
         )
     }
 
-    suspend fun details(session: GdkSession): List<Pair<StringHolder, StringHolder>> = extras?.map {
+    suspend fun details(session: GdkSession, database: Database): List<Pair<StringHolder, StringHolder>> = extras?.map {
         StringHolder.create(it.first) to StringHolder.create(it.second)
     } ?: run {
-//        listOf("id_transaction_id" to txHash) +
         buildList<Pair<StringHolder, StringHolder>> {
+            // TODO Show swap id
+            /*
+            database.getSwapFromTxHash(txHash = txHash)?.also {
+                add(StringHolder.create(Res.string.id_swap_id) to StringHolder(string = it.id))
+                it.invoice?.also { invoice ->
+                    add(StringHolder.create(Res.string.id_invoice) to StringHolder(string = invoice))
+                }
+            }
+             */
+
             utxoViews.takeIf { it.size > 1 }?.forEach { utxo ->
                 utxo.address?.also {
                     add(

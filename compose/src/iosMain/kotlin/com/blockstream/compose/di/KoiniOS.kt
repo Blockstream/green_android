@@ -15,16 +15,11 @@ import com.blockstream.common.managers.DeviceManager.Companion.JADE
 import com.blockstream.common.managers.NotificationManager
 import com.blockstream.compose.managers.DeviceConnectionManager
 import com.blockstream.green.data.config.AppInfo
-import com.blockstream.green.data.notifications.models.NotificationData
+import com.blockstream.green.data.notifications.models.MeldNotificationData
 import kotlinx.cinterop.ExperimentalForeignApi
 import org.koin.dsl.binds
 import org.koin.dsl.module
-import platform.Foundation.NSApplicationSupportDirectory
-import platform.Foundation.NSBundle
-import platform.Foundation.NSCachesDirectory
-import platform.Foundation.NSFileManager
-import platform.Foundation.NSURL
-import platform.Foundation.NSUserDomainMask
+import platform.Foundation.*
 
 @OptIn(ExperimentalForeignApi::class)
 fun startKoin(doOnStartup: () -> Unit = {}) {
@@ -94,7 +89,7 @@ fun startKoin(doOnStartup: () -> Unit = {}) {
 
                     }
 
-                    override fun showBuyTransactionNotification(notificationData: NotificationData) {
+                    override fun showBuyTransactionNotification(meldNotificationData: MeldNotificationData) {
                         //no-op
                     }
 

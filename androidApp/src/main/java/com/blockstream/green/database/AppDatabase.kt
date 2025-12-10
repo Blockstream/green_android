@@ -10,7 +10,6 @@ import com.blockstream.common.data.DeviceIdentifier
 import com.blockstream.common.data.EncryptedData
 import com.blockstream.common.gdk.JsonConverter.Companion.JsonDeserializer
 import com.blockstream.common.gdk.data.PinData
-import com.blockstream.green.utils.isDevelopmentFlavor
 
 @Database(
     entities = [Wallet::class, LoginCredentials::class],
@@ -44,10 +43,6 @@ abstract class AppDatabase : RoomDatabase() {
             builder.addMigrations(MIGRATION_3_4).build()
             builder.addMigrations(MIGRATION_4_5).build()
             builder.addMigrations(MIGRATION_5_6).build()
-
-            if (isDevelopmentFlavor) {
-                // builder.fallbackToDestructiveMigration()
-            }
 
             return builder.build()
         }

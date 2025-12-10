@@ -24,6 +24,7 @@ import blockstream_green.common.generated.resources.Res
 import blockstream_green.common.generated.resources.id_transactions
 import blockstream_green.common.generated.resources.id_your_transactions_will_be_shown
 import com.blockstream.common.events.Events
+import com.blockstream.common.extensions.isNotBlank
 import com.blockstream.common.models.assetaccounts.AssetAccountDetailsViewModel
 import com.blockstream.common.models.assetaccounts.AssetAccountDetailsViewModelAbstract
 import com.blockstream.compose.components.GreenTransaction
@@ -33,6 +34,7 @@ import com.blockstream.compose.extensions.itemsSpaced
 import com.blockstream.compose.screens.assetaccounts.components.AssetOverview
 import com.blockstream.compose.theme.bodyMedium
 import com.blockstream.compose.utils.SetupScreen
+import com.blockstream.compose.views.LightningInfo
 import com.blockstream.ui.navigation.LocalInnerPadding
 import com.blockstream.ui.utils.bottom
 import com.blockstream.ui.utils.plus
@@ -44,14 +46,15 @@ fun AssetAccountDetailsScreen(
     viewModel: AssetAccountDetailsViewModelAbstract
 ) {
     SetupScreen(viewModel = viewModel, withPadding = false, withBottomInsets = false) {
-        
-        val asset by viewModel.asset.collectAsStateWithLifecycle()
+
+        val asset = viewModel.asset
         val transactions by viewModel.transactions.collectAsStateWithLifecycle()
         val totalBalance by viewModel.totalBalance.collectAsStateWithLifecycle()
         val totalBalanceFiat by viewModel.totalBalanceFiat.collectAsStateWithLifecycle()
-        val showBuyButton by viewModel.showBuyButton.collectAsStateWithLifecycle()
-        val isMultisigWatchOnly by viewModel.isMultisigWatchOnly.collectAsStateWithLifecycle()
+        val showBuyButton = viewModel.showBuyButton
+        val isSendEnabled by viewModel.isSendEnabled.collectAsStateWithLifecycle()
         val hasMoreTransactions by viewModel.hasMoreTransactions.collectAsStateWithLifecycle()
+        val lightningInfo by viewModel.lightningInfo.collectAsStateWithLifecycle()
         
         val innerPadding = LocalInnerPadding.current
         val listState: LazyListState = rememberLazyListState()
@@ -84,11 +87,19 @@ fun AssetAccountDetailsScreen(
             item(key = "ButtonsRow") {
                 TransactionActionButtons(
                     showBuyButton = showBuyButton,
-                    sendEnabled = !isMultisigWatchOnly,
+                    sendEnabled = isSendEnabled,
                     onBuy = { viewModel.postEvent(AssetAccountDetailsViewModel.LocalEvents.ClickBuy) },
                     onSend = { viewModel.postEvent(AssetAccountDetailsViewModel.LocalEvents.ClickSend) },
                     onReceive = { viewModel.postEvent(AssetAccountDetailsViewModel.LocalEvents.ClickReceive) }
                 )
+            }
+
+            lightningInfo?.takeIf { it.sweep.isNotBlank() }?.also { lightningInfo ->
+                item(key = "LightningInfo") {
+                    LightningInfo(lightningInfoLook = lightningInfo, showCapacity = false, onSweepClick = {
+                        viewModel.clickLightningSweep()
+                    })
+                }
             }
 
             item(key = "TransactionsHeader") {

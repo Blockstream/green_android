@@ -75,6 +75,9 @@ abstract class CreateTransactionViewModelAbstract(
     }
 
     internal val _network: MutableStateFlow<Network?> = MutableStateFlow(null)
+    internal val accountNetwork: StateFlow<Network?> = combine(_network, accountAsset) { network, accountAsset ->
+        accountAsset?.account?.network ?: network
+    }.stateIn(viewModelScope, SharingStarted.WhileSubscribed(5000), null)
 
     internal val _feePriority: MutableStateFlow<FeePriority> = MutableStateFlow(FeePriority.Low())
 
@@ -156,7 +159,7 @@ abstract class CreateTransactionViewModelAbstract(
 
     override fun bootstrap() {
         session.ifConnected {
-            _network.onEach {
+            accountNetwork.onEach {
                 if (it == null) {
                     _feeEstimation.value = null
                 } else {
@@ -334,7 +337,7 @@ abstract class CreateTransactionViewModelAbstract(
                     else -> FeeBlockLow
                 }.let { index ->
                     _feeEstimation.value?.getOrNull(index)
-                } ?: _network.value?.defaultFee?.coerceAtLeast(
+                } ?: accountNetwork.value?.defaultFee?.coerceAtLeast(
                     _feeEstimation.value?.getOrNull(0) ?: 0
                 )
                 ?: 0
@@ -442,7 +445,13 @@ abstract class CreateTransactionViewModelAbstract(
                             isSendAll = transaction.isSendAll,
                             isBump = transaction.isBump(),
                             twoFactorResolver = this
-                        )
+                        ).also {
+                            params.submarineSwap?.swapId?.also { swapId ->
+                                it.txHash?.also { txHash ->
+                                    database.setSwapTxHash(swapId, txHash)
+                                }
+                            }
+                        }
                     }
                 } else {
                     ProcessedTransactionDetails(signedTransaction = transaction.transaction ?: "")
@@ -482,7 +491,7 @@ abstract class CreateTransactionViewModelAbstract(
                     transactionSegmentation = segmentation,
                     withMemo = note.value.isNotBlank()
                 )
-
+                
                 session.pendingTransaction = null // clear pending transaction
                 postSideEffect(SideEffects.Snackbar(StringHolder.create(Res.string.id_transaction_sent)))
                 postSideEffect(SideEffects.NavigateAfterSendTransaction)

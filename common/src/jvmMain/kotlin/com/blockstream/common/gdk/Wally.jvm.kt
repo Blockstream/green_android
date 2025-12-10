@@ -66,5 +66,17 @@ actual fun getWally(): Wally {
             TODO("Not yet implemented")
         }
 
+        override fun psbtIsBase64(psbt: String): Boolean {
+            TODO("Not yet implemented")
+        }
+
+        override fun psbtIsBinary(psbt: ByteArray): Boolean {
+            TODO("Not yet implemented")
+        }
+
+        override fun psbtToV0(psbt: String): String {
+            TODO("Not yet implemented")
+        }
+
     }
 }

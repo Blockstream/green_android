@@ -119,7 +119,7 @@ fun WalletOverviewMenuDialog(viewModel: WalletOverviewViewModelAbstract, onDismi
 //                        onDismissRequest()
 //                    }
 
-                    if (viewModel.sessionOrNull?.isWatchOnlyValue == false && !viewModel.greenWallet.isLightning) {
+                    if (viewModel.sessionOrNull?.isWatchOnlyValue == false) {
                         MenuHeader(text = stringResource(Res.string.id_accounts))
 
                         MenuItem(

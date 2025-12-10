@@ -1,10 +1,8 @@
 package com.blockstream.compose.screens.receive
 
 import androidx.compose.animation.AnimatedVisibility
-import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
@@ -16,13 +14,19 @@ import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.LinearProgressIndicator
+import androidx.compose.material3.SegmentedButton
+import androidx.compose.material3.SegmentedButtonDefaults
+import androidx.compose.material3.SingleChoiceSegmentedButtonRow
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
+import kotlinx.coroutines.delay
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.focus.FocusRequester
 import androidx.compose.ui.graphics.painter.Painter
@@ -33,30 +37,25 @@ import androidx.navigation.get
 import blockstream_green.common.generated.resources.Res
 import blockstream_green.common.generated.resources.arrows_counter_clockwise
 import blockstream_green.common.generated.resources.id_account_address
+import blockstream_green.common.generated.resources.id_account_type_2fa_protected
+import blockstream_green.common.generated.resources.id_account_type_amp
+import blockstream_green.common.generated.resources.id_account_type_standard
 import blockstream_green.common.generated.resources.id_address
 import blockstream_green.common.generated.resources.id_amount
-import blockstream_green.common.generated.resources.id_amount_to_receive
 import blockstream_green.common.generated.resources.id_asset
 import blockstream_green.common.generated.resources.id_confirm
 import blockstream_green.common.generated.resources.id_create_new_account
-import blockstream_green.common.generated.resources.id_description
-import blockstream_green.common.generated.resources.id_expiration
 import blockstream_green.common.generated.resources.id_ledger_supports_a_limited_set
-import blockstream_green.common.generated.resources.id_lightning_invoice
-import blockstream_green.common.generated.resources.id_onchain_address
+import blockstream_green.common.generated.resources.id_payer_sends
 import blockstream_green.common.generated.resources.id_please_verify_that_the_address
 import blockstream_green.common.generated.resources.id_qr_code
 import blockstream_green.common.generated.resources.id_request_amount
 import blockstream_green.common.generated.resources.id_share
-import blockstream_green.common.generated.resources.id_show_lightning_invoice
-import blockstream_green.common.generated.resources.id_show_onchain_address
 import blockstream_green.common.generated.resources.id_verify_on_device
-import blockstream_green.common.generated.resources.seal_check
-import blockstream_green.common.generated.resources.share_network
+import blockstream_green.common.generated.resources.id_you_will_receive_liquid_bitcoin
 import blockstream_green.common.generated.resources.warning
 import com.adamglin.PhosphorIcons
 import com.adamglin.phosphoricons.Regular
-import com.adamglin.phosphoricons.regular.Info
 import com.adamglin.phosphoricons.regular.SealCheck
 import com.adamglin.phosphoricons.regular.ShareNetwork
 import com.blockstream.common.data.AlertType
@@ -66,22 +65,17 @@ import com.blockstream.common.data.MenuEntry
 import com.blockstream.common.data.MenuEntryList
 import com.blockstream.common.events.Events
 import com.blockstream.common.extensions.isNotBlank
-import com.blockstream.common.gdk.data.AccountAsset
-import com.blockstream.common.gdk.data.AccountAssetBalance
-import com.blockstream.common.gdk.data.AccountAssetBalanceList
 import com.blockstream.common.gdk.data.AssetBalance
 import com.blockstream.common.models.receive.ReceiveViewModel
 import com.blockstream.common.models.receive.ReceiveViewModelAbstract
 import com.blockstream.common.navigation.NavigateDestinations
 import com.blockstream.common.sideeffects.SideEffects
-import com.blockstream.compose.components.GreenAccountSelector
 import com.blockstream.compose.components.GreenAddress
 import com.blockstream.compose.components.GreenAlert
 import com.blockstream.compose.components.GreenAmountField
 import com.blockstream.compose.components.GreenAsset
 import com.blockstream.compose.components.GreenButton
 import com.blockstream.compose.components.GreenButtonColor
-import com.blockstream.compose.components.GreenButtonSize
 import com.blockstream.compose.components.GreenButtonType
 import com.blockstream.compose.components.GreenCard
 import com.blockstream.compose.components.GreenQR
@@ -94,13 +88,11 @@ import com.blockstream.compose.theme.bodyMedium
 import com.blockstream.compose.theme.green20
 import com.blockstream.compose.theme.labelMedium
 import com.blockstream.compose.theme.orange
-import com.blockstream.compose.theme.titleSmall
-import com.blockstream.compose.theme.whiteHigh
-import com.blockstream.compose.theme.whiteLow
 import com.blockstream.compose.theme.whiteMedium
-import com.blockstream.compose.utils.AlphaPulse
 import com.blockstream.compose.utils.AnimatedNullableVisibility
 import com.blockstream.compose.utils.SetupScreen
+import com.blockstream.compose.sheets.LightningInvoiceBottomSheet
+import com.blockstream.compose.screens.receive.components.LightningReadyBadge
 import com.blockstream.ui.components.GreenColumn
 import com.blockstream.ui.components.GreenGradient
 import com.blockstream.ui.components.GreenRow
@@ -118,19 +110,6 @@ import org.jetbrains.compose.resources.stringResource
 fun ReceiveScreen(
     viewModel: ReceiveViewModelAbstract
 ) {
-
-    NavigateDestinations.ReviewAddAccount.getResult<AccountAsset> {
-        viewModel.postEvent(Events.SetAccountAsset(it))
-    }
-
-    NavigateDestinations.Assets.getResult<AssetBalance> {
-        viewModel.asset.value = it.asset
-    }
-
-    NavigateDestinations.Accounts.getResult<AccountAssetBalance> {
-        viewModel.accountAsset.value = it.accountAsset
-    }
-
     NavigateDestinations.Denomination.getResult<DenominatedValue> {
         viewModel.postEvent(Events.SetDenominatedValue(it))
     }
@@ -149,12 +128,12 @@ fun ReceiveScreen(
     val showRequestAmount by viewModel.showAmount.collectAsStateWithLifecycle()
     val receiveAddress by viewModel.receiveAddress.collectAsStateWithLifecycle()
     val receiveAddressUri by viewModel.receiveAddressUri.collectAsStateWithLifecycle()
-    val onchainSwapMessage by viewModel.onchainSwapMessage.collectAsStateWithLifecycle()
     val denomination by viewModel.denomination.collectAsStateWithLifecycle()
     val showLightningOnChainAddress by viewModel.showLightningOnChainAddress.collectAsStateWithLifecycle()
     val showLedgerAssetWarning by viewModel.showLedgerAssetWarning.collectAsStateWithLifecycle()
     val buttonEnabled by viewModel.buttonEnabled.collectAsStateWithLifecycle()
-    val assetAccounts by viewModel.assetAccounts.collectAsStateWithLifecycle()
+    val isReverseSubmarineSwap by viewModel.isReverseSubmarineSwap.collectAsStateWithLifecycle()
+    val showSwap by viewModel.showSwap.collectAsStateWithLifecycle()
 
     val scope = rememberCoroutineScope()
     val bottomSheetNavigator = LocalNavigator.current.navigatorProvider[BottomSheetNavigator::class]
@@ -184,16 +163,37 @@ fun ReceiveScreen(
     val focusRequester = remember { FocusRequester() }
 
     val amount by viewModel.amount.collectAsStateWithLifecycle()
-    val maxReceiveAmount by viewModel.maxReceiveAmount.collectAsStateWithLifecycle()
-    val amountExchange by viewModel.amountExchange.collectAsStateWithLifecycle()
-    val amountError by viewModel.amountError.collectAsStateWithLifecycle()
-    val liquidityFee by viewModel.liquidityFee.collectAsStateWithLifecycle()
+    val receiveAmountData by viewModel.receiveAmountData.collectAsStateWithLifecycle()
     val showRecoveryConfirmation by viewModel.showRecoveryConfirmation.collectAsStateWithLifecycle()
 
-    LaunchedEffect(showRequestAmount) {
-        if (showRequestAmount && amount.isBlank()) {
+    var showLightningInvoiceBottomSheet by remember { mutableStateOf(false) }
+
+    val isLightningOrSwap = (accountAsset?.account?.isLightning == true && !showLightningOnChainAddress) || isReverseSubmarineSwap
+
+    LaunchedEffect(receiveAddress, isLightningOrSwap) {
+        if (isLightningOrSwap && receiveAddress.isNotBlank()) {
+            showLightningInvoiceBottomSheet = true
+        }
+    }
+
+    LaunchedEffect(showRequestAmount, isReverseSubmarineSwap, receiveAddress) {
+        if ((showRequestAmount || (isReverseSubmarineSwap && receiveAddress == null)) && amount.isBlank()) {
             focusRequester.requestFocus()
         }
+    }
+
+    if (showLightningInvoiceBottomSheet) {
+        LightningInvoiceBottomSheet(
+            viewModel = viewModel,
+            onDismissRequest = {
+                showLightningInvoiceBottomSheet = false
+                viewModel.postEvent(ReceiveViewModel.LocalEvents.ClearLightningInvoice)
+                scope.launch {
+                    delay(100)
+                    focusRequester.requestFocus()
+                }
+            }
+        )
     }
 
     SetupScreen(
@@ -255,37 +255,25 @@ fun ReceiveScreen(
                         }
                     }
 
+                    val accountTypeSubtitle = accountAsset?.account?.let { account ->
+                        when {
+                            account.isLightning -> null
+                            account.isAmp -> stringResource(Res.string.id_account_type_amp)
+                            account.isMultisig -> stringResource(Res.string.id_account_type_2fa_protected)
+                            account.isLiquid -> stringResource(Res.string.id_account_type_standard)
+                            else -> null
+                        }
+                    }
+
                     GreenAsset(
                         assetBalance = AssetBalance.create(asset),
                         session = viewModel.sessionOrNull,
                         title = stringResource(Res.string.id_asset),
-                        withEditIcon = true,
-                        onClick = {
-                            scope.launch {
-                                viewModel.postEvent(
-                                    NavigateDestinations.Assets.create(
-                                        viewModel = viewModel
-                                    )
-                                )
-                            }
-                        }
+                        subtitle = accountTypeSubtitle,
+                        trailingContent = if (showSwap) {
+                            { LightningReadyBadge() }
+                        } else null
                     )
-
-                    accountAsset?.account?.takeIf { assetAccounts.size > 1 }?.also {
-                        GreenAccountSelector(
-                            account = it,
-                            modifier = Modifier.padding(top = 16.dp, start = 4.dp, bottom = 8.dp),
-                            onClick = {
-                                viewModel.postEvent(
-                                    NavigateDestinations.Accounts(
-                                        greenWallet = viewModel.greenWallet,
-                                        accounts = AccountAssetBalanceList(assetAccounts),
-                                        withAsset = false
-                                    )
-                                )
-                            }
-                        )
-                    }
                 }
 
                 if (accountAsset == null && !viewModel.session.isWatchOnlyValue) {
@@ -294,20 +282,47 @@ fun ReceiveScreen(
                     }
                 }
 
-                AnimatedVisibility(visible = accountAsset?.account?.isLightning == true && !showLightningOnChainAddress || showRequestAmount) {
+                AnimatedVisibility(showSwap) {
+
+                    Column {
+                        Text(
+                            text = stringResource(Res.string.id_payer_sends),
+                            style = bodyLarge,
+                            color = whiteMedium,
+                            modifier = Modifier.padding(start = 4.dp, bottom = 2.dp)
+                        )
+
+                        val options = listOf("Liquid", "Lightning")
+                        SingleChoiceSegmentedButtonRow(modifier = Modifier.fillMaxWidth()) {
+                            options.forEachIndexed { index, label ->
+                                SegmentedButton(
+                                    shape = SegmentedButtonDefaults.itemShape(index = index, count = options.size),
+                                    onClick = {
+                                        viewModel.isReverseSubmarineSwap.value = index == 1
+                                    },
+                                    selected = (index == 1) == isReverseSubmarineSwap
+                                ) {
+                                    Text(label)
+                                }
+                            }
+                        }
+                    }
+                }
+
+                AnimatedVisibility(visible = (accountAsset?.account?.isLightning == true && !showLightningOnChainAddress) || showRequestAmount || (isReverseSubmarineSwap && receiveAddress == null)) {
 
                     GreenColumn(padding = 0, space = 8) {
 
                         GreenAmountField(
                             value = amount,
                             onValueChange = viewModel.amount.onValueChange(),
-                            secondaryValue = amountExchange,
-                            assetId = viewModel.accountAsset.value?.assetId,
+                            secondaryValue = receiveAmountData.exchange,
+                            assetId = accountAsset?.assetId,
                             session = viewModel.sessionOrNull,
-                            title = if (accountAsset?.account?.isLightning == false) stringResource(
+                            title = if (showRequestAmount) stringResource(
                                 Res.string.id_request_amount
                             ) else stringResource(Res.string.id_amount),
-                            helperText = amountError,
+                            helperText = receiveAmountData.error,
                             enabled = !onProgress,
                             denomination = denomination,
                             focusRequester = focusRequester,
@@ -315,27 +330,12 @@ fun ReceiveScreen(
                             onEditClick = {
                                 viewModel.postEvent(ReceiveViewModel.LocalEvents.ClearLightningInvoice)
                             },
-                            footerContent = {
-                                if (accountAsset?.account?.isLightning == true) {
-                                    Row(
-                                        modifier = Modifier.padding(horizontal = 2.dp),
-                                        horizontalArrangement = Arrangement.spacedBy(8.dp)
-                                    ) {
-                                        Text(
-                                            text = maxReceiveAmount,
-                                            textAlign = TextAlign.Start,
-                                            modifier = Modifier.weight(1f),
-                                            style = bodyMedium,
-                                            color = whiteLow
-                                        )
-                                    }
-                                }
-                            },
                             onDenominationClick = {
                                 viewModel.postEvent(Events.SelectDenomination)
-                            })
+                            }
+                        )
 
-                        AnimatedNullableVisibility(liquidityFee) {
+                        AnimatedNullableVisibility(receiveAmountData.liquidityFee) {
                             GreenCard(
                                 padding = 0, colors = CardDefaults.elevatedCardColors(
                                     containerColor = green20
@@ -358,22 +358,12 @@ fun ReceiveScreen(
                     }
                 }
 
-                if (receiveAddress.isNotBlank() || accountAsset?.account?.isLightning == false) {
+                if (!isLightningOrSwap && (receiveAddress.isNotBlank() || accountAsset?.account?.isLightning == false)) {
 
                     Column {
 
-                        val addressTitle = if (accountAsset?.account?.isLightning == true) {
-                            if (showLightningOnChainAddress) {
-                                Res.string.id_onchain_address
-                            } else {
-                                Res.string.id_lightning_invoice
-                            }
-                        } else {
-                            Res.string.id_account_address
-                        }
-
                         Text(
-                            stringResource(addressTitle),
+                            stringResource(Res.string.id_account_address),
                             style = labelMedium,
                             modifier = Modifier.padding(start = 4.dp, bottom = 2.dp)
                         )
@@ -382,20 +372,18 @@ fun ReceiveScreen(
 
                             Box(modifier = Modifier.padding(bottom = 8.dp)) {
 
-                                if (accountAsset?.account?.isLightning == false) {
-                                    IconButton(
-                                        modifier = Modifier
-                                            .align(Alignment.TopEnd)
-                                            .padding(top = 2.dp, end = 2.dp),
-                                        onClick = {
-                                            viewModel.postEvent(ReceiveViewModel.LocalEvents.GenerateNewAddress)
-                                        }
-                                    ) {
-                                        Icon(
-                                            painter = painterResource(Res.drawable.arrows_counter_clockwise),
-                                            contentDescription = "Refresh"
-                                        )
+                                IconButton(
+                                    modifier = Modifier
+                                        .align(Alignment.TopEnd)
+                                        .padding(top = 2.dp, end = 2.dp),
+                                    onClick = {
+                                        viewModel.postEvent(ReceiveViewModel.LocalEvents.GenerateNewAddress)
                                     }
+                                ) {
+                                    Icon(
+                                        painter = painterResource(Res.drawable.arrows_counter_clockwise),
+                                        contentDescription = "Refresh"
+                                    )
                                 }
 
                                 Column {
@@ -418,30 +406,11 @@ fun ReceiveScreen(
                                             address = receiveAddress ?: "",
                                             textAlign = TextAlign.Center,
                                             showCopyIcon = true,
-                                            maxLines = if (accountAsset?.account?.isLightning == true && !showLightningOnChainAddress) 1 else 6,
+                                            maxLines = 6,
                                             onCopyClick = {
                                                 viewModel.postEvent(ReceiveViewModel.LocalEvents.CopyAddress)
                                             }
                                         )
-
-                                        if (accountAsset?.account?.isLightning == true && showLightningOnChainAddress && onchainSwapMessage != null) {
-                                            AlphaPulse {
-                                                GreenCard(
-                                                    padding = 8,
-                                                    colors = CardDefaults.elevatedCardColors(
-                                                        containerColor = green20
-                                                    )
-                                                ) {
-                                                    Text(
-                                                        onchainSwapMessage ?: "",
-                                                        style = bodyMedium,
-                                                        color = whiteMedium,
-                                                        textAlign = TextAlign.Center,
-                                                        modifier = Modifier.fillMaxWidth()
-                                                    )
-                                                }
-                                            }
-                                        }
 
                                         val showVerifyOnDevice by viewModel.showVerifyOnDevice.collectAsStateWithLifecycle()
                                         AnimatedVisibility(visible = showVerifyOnDevice) {
@@ -472,66 +441,6 @@ fun ReceiveScreen(
                         }
                     }
                 }
-
-                GreenColumn(padding = 0) {
-                    val invoiceAmountToReceive by viewModel.invoiceAmountToReceive.collectAsStateWithLifecycle()
-                    val invoiceAmountToReceiveFiat by viewModel.invoiceAmountToReceiveFiat.collectAsStateWithLifecycle()
-
-                    invoiceAmountToReceive?.also {
-                        Column {
-                            Text(
-                                stringResource(Res.string.id_amount_to_receive),
-                                style = labelMedium,
-                                color = whiteMedium
-                            )
-                            Row(verticalAlignment = Alignment.CenterVertically) {
-                                Text(
-                                    it,
-                                    style = titleSmall,
-                                    color = whiteHigh,
-                                    modifier = Modifier.weight(1f)
-                                )
-                                invoiceAmountToReceiveFiat?.also {
-                                    Text(text = it, style = labelMedium, color = whiteLow)
-                                }
-                            }
-                        }
-                    }
-
-                    val invoiceDescription by viewModel.invoiceDescription.collectAsStateWithLifecycle()
-                    invoiceDescription?.also {
-                        Column {
-                            Text(
-                                stringResource(Res.string.id_description),
-                                style = labelMedium,
-                                color = whiteMedium
-                            )
-
-                            Text(
-                                it,
-                                style = bodyLarge,
-                                color = whiteHigh,
-                            )
-                        }
-                    }
-
-                    val invoiceExpiration by viewModel.invoiceExpiration.collectAsStateWithLifecycle()
-                    invoiceExpiration?.also {
-                        Column {
-                            Text(
-                                stringResource(Res.string.id_expiration),
-                                style = labelMedium,
-                                color = whiteMedium
-                            )
-
-                            Text(
-                                it,
-                                style = bodyLarge,
-                                color = whiteHigh,
-                            )
-                        }
-                    }
-                }
             }
 
             GreenGradient(modifier = Modifier.align(Alignment.BottomCenter), size = 24)
@@ -545,7 +454,7 @@ fun ReceiveScreen(
                     .padding(horizontal = 24.dp)
                     .padding(bottom = 8.dp)
             ) {
-                AnimatedVisibility(visible = receiveAddress.isNotBlank()) {
+                AnimatedVisibility(visible = !isLightningOrSwap && receiveAddress.isNotBlank()) {
                     GreenButton(
                         text = stringResource(Res.string.id_share),
                         icon = PhosphorIcons.Regular.ShareNetwork,
@@ -574,13 +483,25 @@ fun ReceiveScreen(
                     }
                 }
 
-                AnimatedVisibility(visible = accountAsset?.account?.isLightning == true && !showLightningOnChainAddress && receiveAddress.isNullOrBlank()) {
-                    GreenButton(
-                        text = stringResource(Res.string.id_confirm),
-                        modifier = Modifier.fillMaxWidth(),
-                        enabled = buttonEnabled
-                    ) {
-                        viewModel.postEvent(ReceiveViewModel.LocalEvents.CreateInvoice)
+                AnimatedVisibility(visible = (isReverseSubmarineSwap || accountAsset?.account?.isLightning == true) && !showLightningOnChainAddress && receiveAddress.isNullOrBlank()) {
+
+                    Column {
+                        if (isReverseSubmarineSwap) {
+                            Text(
+                                text = stringResource(Res.string.id_you_will_receive_liquid_bitcoin),
+                                style = bodyMedium,
+                                modifier = Modifier.fillMaxWidth(),
+                                textAlign = TextAlign.Center
+                            )
+                        }
+
+                        GreenButton(
+                            text = stringResource(Res.string.id_confirm),
+                            modifier = Modifier.fillMaxWidth(),
+                            enabled = buttonEnabled
+                        ) {
+                            viewModel.postEvent(ReceiveViewModel.LocalEvents.CreateInvoice)
+                        }
                     }
                 }
 

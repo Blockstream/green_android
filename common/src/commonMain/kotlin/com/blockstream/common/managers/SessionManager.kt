@@ -17,6 +17,7 @@ import com.blockstream.common.gdk.params.LoginCredentialsParams
 import com.blockstream.common.interfaces.JadeHttpRequestUrlValidator
 import com.blockstream.common.lightning.LightningBridge
 import com.blockstream.common.lightning.LightningManager
+import com.blockstream.common.lwk.LwkManager
 import com.blockstream.common.utils.Timer
 import com.blockstream.green.data.config.AppInfo
 import com.blockstream.green.utils.Loggable
@@ -42,8 +43,10 @@ class SessionManager constructor(
     private val appConfig: AppConfig,
     private val lifecycleManager: LifecycleManager,
     private val lightningManager: LightningManager,
+    private val lwkManager: LwkManager,
     private val settingsManager: SettingsManager,
     private val assetManager: AssetManager,
+    private val walletSettingsManager: WalletSettingsManager,
     private var countly: CountlyBase,
     private val gdk: Gdk,
     private val wally: Wally
@@ -146,12 +149,12 @@ class SessionManager constructor(
         }
 
         connectionChangeEvent.onEach {
-            getConnectedEphemeralWalletSessions().filter { it.ephemeralWallet?.isLightning == false && it.ephemeralWallet?.isHardware == true }
+            getConnectedEphemeralWalletSessions().filter { it.ephemeralWallet?.isHardware == true }
                 .mapNotNull { it.ephemeralWallet }.let {
                     _hardwareWallets.value = it
                 }
 
-            getConnectedEphemeralWalletSessions().filter { it.ephemeralWallet?.isLightning == false && it.ephemeralWallet?.isHardware == false }
+            getConnectedEphemeralWalletSessions().filter { it.ephemeralWallet?.isHardware == false }
                 .mapNotNull { it.ephemeralWallet }.let {
                     _ephemeralWallets.value = it
                 }
@@ -275,8 +278,10 @@ class SessionManager constructor(
             sessionManager = this,
             appConfig = appConfig,
             lightningManager = lightningManager,
+            lwkManager = lwkManager,
             settingsManager = settingsManager,
             assetManager = assetManager,
+            walletSettingsManager = walletSettingsManager,
             gdk = gdk,
             wally = wally,
             countly = countly

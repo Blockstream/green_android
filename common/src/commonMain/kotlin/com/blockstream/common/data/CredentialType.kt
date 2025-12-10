@@ -12,7 +12,8 @@ enum class CredentialType(val value: Long) {
     RICH_WATCH_ONLY(8),
     KEYSTORE_MNEMONIC(9), // not used
     BIOMETRICS_MNEMONIC(10), // Keystore based with user presence
-    KEYSTORE_HW_WATCHONLY_CREDENTIALS(11);
+    KEYSTORE_HW_WATCHONLY_CREDENTIALS(11),
+    BOLTZ_MNEMONIC(12);
 
     companion object {
         fun byPosition(position: Long): CredentialType {

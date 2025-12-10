@@ -58,10 +58,10 @@ import blockstream_green.common.generated.resources.id_swap_was_successfully_exe
 import blockstream_green.common.generated.resources.id_the_transaction_was
 import blockstream_green.common.generated.resources.id_total_spent
 import blockstream_green.common.generated.resources.id_transaction_id
+import blockstream_green.common.generated.resources.id_transaction_is_awaiting_conf
 import blockstream_green.common.generated.resources.id_unblinding_data
 import blockstream_green.common.generated.resources.id_view_in_explorer
 import blockstream_green.common.generated.resources.id_your_transaction_failed_s
-import blockstream_green.common.generated.resources.id_transaction_is_awaiting_conf
 import blockstream_green.common.generated.resources.id_your_transaction_was
 import blockstream_green.common.generated.resources.magnifying_glass
 import blockstream_green.common.generated.resources.pencil_simple_line
@@ -232,8 +232,6 @@ fun TransactionScreen(
                         style = headlineSmall
                     )
                 }
-
-
 
                 createdAt?.also {
                     Text(text = it, style = bodyMedium, color = whiteMedium)

@@ -6,8 +6,6 @@ import kotlinx.serialization.Serializable
 @Serializable
 data class UtxoView constructor(
     val address: String? = null,
-//    val isBlinded: Boolean? = null,
-//    val isConfidential: Boolean? = null,
     val assetId: String? = null,
     val satoshi: Long? = null,
     val amount: String? = null,

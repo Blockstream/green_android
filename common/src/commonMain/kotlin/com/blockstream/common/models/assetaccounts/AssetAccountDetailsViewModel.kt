@@ -19,6 +19,8 @@ import com.blockstream.common.extensions.ifConnected
 import com.blockstream.common.gdk.data.Account
 import com.blockstream.common.gdk.data.AccountAsset
 import com.blockstream.common.gdk.data.AccountBalance
+import com.blockstream.common.lightning.onchainBalanceSatoshi
+import com.blockstream.common.looks.account.LightningInfoLook
 import com.blockstream.common.looks.transaction.TransactionLook
 import com.blockstream.common.models.GreenViewModel
 import com.blockstream.common.navigation.NavigateDestinations
@@ -28,16 +30,18 @@ import com.blockstream.green.utils.Loggable
 import com.blockstream.ui.events.Event
 import com.blockstream.ui.navigation.NavAction
 import com.blockstream.ui.navigation.NavData
-import com.rickclephas.kmp.nativecoroutines.NativeCoroutinesState
 import com.rickclephas.kmp.observableviewmodel.coroutineScope
 import com.rickclephas.kmp.observableviewmodel.launch
 import com.rickclephas.kmp.observableviewmodel.stateIn
 import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.combine
+import kotlinx.coroutines.flow.emptyFlow
 import kotlinx.coroutines.flow.filter
+import kotlinx.coroutines.flow.flowOf
 import kotlinx.coroutines.flow.launchIn
 import kotlinx.coroutines.flow.map
+import kotlinx.coroutines.flow.merge
 import kotlinx.coroutines.flow.onEach
 import org.jetbrains.compose.resources.getString
 
@@ -46,34 +50,41 @@ abstract class AssetAccountDetailsViewModelAbstract(
 ) : GreenViewModel(greenWalletOrNull = greenWallet, accountAssetOrNull = accountAssetOrNull) {
     override fun screenName(): String = "AssetAccountDetails"
 
-    @NativeCoroutinesState
-    abstract val asset: StateFlow<EnrichedAsset?>
+    abstract val asset: EnrichedAsset
 
-    @NativeCoroutinesState
     abstract val accountBalance: StateFlow<AccountBalance>
 
-    @NativeCoroutinesState
     abstract val transactions: StateFlow<DataState<List<TransactionLook>>>
 
-    @NativeCoroutinesState
     abstract val totalBalance: StateFlow<String>
 
-    @NativeCoroutinesState
     abstract val totalBalanceFiat: StateFlow<String?>
 
-    @NativeCoroutinesState
-    abstract val showBuyButton: StateFlow<Boolean>
+    abstract val showBuyButton: Boolean
 
-    @NativeCoroutinesState
+    abstract val isSendEnabled: StateFlow<Boolean>
+
     abstract val hasMoreTransactions: StateFlow<Boolean>
-    
-    @NativeCoroutinesState
+
     abstract val accounts: StateFlow<List<Account>>
+
+    abstract val lightningInfo: StateFlow<LightningInfoLook?>
+
+    fun clickLightningSweep() {
+        postSideEffect(
+            SideEffects.NavigateTo(
+                NavigateDestinations.RecoverFunds(
+                    greenWallet = greenWallet,
+                    amount = session.lightningSdk.nodeInfoStateFlow.value.onchainBalanceSatoshi()
+                )
+            )
+        )
+    }
 }
 
 class AssetAccountDetailsViewModel(
-    greenWallet: GreenWallet, accountAssetOrNull: AccountAsset
-) : AssetAccountDetailsViewModelAbstract(greenWallet = greenWallet, accountAssetOrNull = accountAssetOrNull) {
+    greenWallet: GreenWallet, accountAsset: AccountAsset
+) : AssetAccountDetailsViewModelAbstract(greenWallet = greenWallet, accountAssetOrNull = accountAsset) {
 
     class LocalEvents {
         object ClickBuy : Event
@@ -82,17 +93,14 @@ class AssetAccountDetailsViewModel(
         object LoadMoreTransactions : Event
     }
 
-    override val asset: StateFlow<EnrichedAsset?> =
-        accountAsset.map { it?.asset }.stateIn(viewModelScope, SharingStarted.WhileSubscribed(), accountAsset.value?.asset)
+    override val asset: EnrichedAsset = accountAsset.asset
 
-    override val accountBalance: StateFlow<AccountBalance> = session.accountsAndBalanceUpdated.map {
+    override val accountBalance: StateFlow<AccountBalance> = merge(flowOf(Unit), session.accountsAndBalanceUpdated).map {
         AccountBalance.create(account = account, session = session)
     }.stateIn(viewModelScope, SharingStarted.WhileSubscribed(), AccountBalance.create(account = account))
 
-    override val showBuyButton: StateFlow<Boolean> = accountAsset.map {
-        it?.asset?.isBitcoin == true
-    }.stateIn(viewModelScope, SharingStarted.WhileSubscribed(), accountAsset.value?.asset?.isBitcoin == true)
-    
+    override val showBuyButton: Boolean = accountAsset.asset.isBitcoin
+
     override val accounts: StateFlow<List<Account>> =
         session.accounts.filter { session.isConnected }
             .stateIn(viewModelScope, SharingStarted.WhileSubscribed(), listOf())
@@ -103,6 +111,24 @@ class AssetAccountDetailsViewModel(
         viewModelScope, SharingStarted.WhileSubscribed(), settingsManager.appSettings.hideAmounts
     )
 
+    override val isSendEnabled: StateFlow<Boolean> = combine(accountBalance, isMultisigWatchOnly) { accountBalance, isMultisigWatchOnly ->
+        if (isMultisigWatchOnly) {
+            false
+        } else if (accountAsset.account.isLightning) {
+            (session.lightningSdk.balanceOnChannel() ?: 0) > 0
+        } else {
+            accountBalance.balance(session) > 0
+        }
+    }.stateIn(viewModelScope, SharingStarted.WhileSubscribed(5000), false)
+
+    override val lightningInfo: StateFlow<LightningInfoLook?> = ((if (accountAsset.account.isLightning) {
+        session.lightningSdkOrNull?.nodeInfoStateFlow?.map {
+            if (session.isConnected) {
+                LightningInfoLook.create(session = session, nodeState = it)
+            } else null
+        }
+    } else null) ?: emptyFlow()).stateIn(viewModelScope, SharingStarted.WhileSubscribed(5000L), null)
+
     private val _totalBalance = MutableStateFlow("")
     override val totalBalance: StateFlow<String> = _totalBalance
 
@@ -111,12 +137,12 @@ class AssetAccountDetailsViewModel(
 
     init {
         session.ifConnected {
-            combine(accountAsset, accounts, isWatchOnly) { accountAsset, accounts, watchOnly ->
+            combine(accounts, isWatchOnly) { accounts, watchOnly ->
                 viewModelScope.launch {
-                    val assetName = accountAsset?.asset?.name(session)?.toString() ?: accountAsset?.assetId ?: ""
-                    val accountName = accountAsset?.account?.name ?: account.name
+                    val assetName = accountAsset.asset.name(session).toString()
+                    val accountName = accountAsset.account.name
                     _navData.value = NavData(
-                        title = assetName, 
+                        title = assetName,
                         subtitle = accountName,
                         actions = getMenuActions(
                             account = account,
@@ -203,7 +229,7 @@ class AssetAccountDetailsViewModel(
             is LocalEvents.ClickSend -> {
                 postSideEffect(
                     SideEffects.NavigateTo(
-                        NavigateDestinations.Send(
+                        NavigateDestinations.SendAddress(
                             greenWallet = greenWallet, accountAsset = accountAsset.value
                         )
                     )
@@ -235,7 +261,7 @@ class AssetAccountDetailsViewModel(
         accountAsset: AccountAsset?,
         watchOnly: Boolean
     ): List<NavAction> {
-        
+
         if (account.isLightning) {
             return listOfNotNull(
                 NavAction(
@@ -258,14 +284,14 @@ class AssetAccountDetailsViewModel(
                     postEvent(NavigateDestinations.RenameAccount(greenWallet = greenWallet, account = account))
                 }
             ).takeIf { !watchOnly },
-            
+
             NavAction(
                 title = getString(Res.string.id_watchonly),
                 icon = Res.drawable.binoculars,
                 isMenuEntry = true,
                 onClick = {
                     if (account.isSinglesig) {
-                        accountAsset?.also { 
+                        accountAsset?.also {
                             postEvent(NavigateDestinations.AccountDescriptor(greenWallet = greenWallet, accountAsset = it))
                         }
                     } else {

@@ -19,14 +19,13 @@ import kotlinx.coroutines.withContext
 import org.koin.core.component.KoinComponent
 import org.koin.core.component.inject
 
-class LightningWork(val context: Context, workerParams: WorkerParameters) :
-    CoroutineWorker(context, workerParams), KoinComponent {
+class LightningWork(val context: Context, workerParams: WorkerParameters) : CoroutineWorker(context, workerParams), KoinComponent {
 
     private val firebase: FcmCommon by inject()
     private val notificationManager: NotificationManagerAndroid by inject()
 
     override suspend fun getForegroundInfo(): ForegroundInfo {
-        val notification = notificationManager.createForegroundServiceNotification(context)
+        val notification = notificationManager.createLightningForegroundServiceNotification(context)
         return ForegroundInfo(id.hashCode(), notification)
     }
 
@@ -57,20 +56,15 @@ class LightningWork(val context: Context, workerParams: WorkerParameters) :
 
         fun create(walletId: String, breezNotification: BreezNotification, context: Context) {
 
-            val work = OneTimeWorkRequestBuilder<LightningWork>()
-                .addTag(TAG)
-                .setInputData(
-                    workDataOf(
-                        WALLET_ID to walletId,
-                        BREEZ_NOTIFICATION to breezNotification.toJson()
-                    )
+            val work = OneTimeWorkRequestBuilder<LightningWork>().addTag(TAG).setInputData(
+                workDataOf(
+                    WALLET_ID to walletId, BREEZ_NOTIFICATION to breezNotification.toJson()
                 )
-                .setExpedited(OutOfQuotaPolicy.RUN_AS_NON_EXPEDITED_WORK_REQUEST)
-                .build()
+            ).setExpedited(OutOfQuotaPolicy.RUN_AS_NON_EXPEDITED_WORK_REQUEST).build()
 
-            WorkManager
-                .getInstance(context)
-                .enqueueUniqueWork(walletId, ExistingWorkPolicy.APPEND_OR_REPLACE, work)
+            WorkManager.getInstance(context).enqueueUniqueWork(
+                uniqueWorkName = "$TAG-$walletId", existingWorkPolicy = ExistingWorkPolicy.APPEND_OR_REPLACE, request = work
+            )
         }
     }
 }

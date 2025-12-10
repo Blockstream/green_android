@@ -32,9 +32,11 @@ allprojects {
     repositories {
         google()
         mavenCentral()
-        maven ("https://jitpack.io")
+        mavenLocal()
+        maven("https://jitpack.io")
         maven("https://mvn.breez.technology/releases")
         maven("https://zendesk.jfrog.io/zendesk/repo")
         maven("https://maven.pkg.jetbrains.space/public/p/compose/dev")
+        maven("https://central.sonatype.com/repository/maven-snapshots/") // LWK Snapshots
     }
 }

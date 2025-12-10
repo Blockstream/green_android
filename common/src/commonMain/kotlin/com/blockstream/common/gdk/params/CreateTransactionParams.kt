@@ -2,6 +2,7 @@ package com.blockstream.common.gdk.params
 
 import com.blockstream.common.gdk.GreenJson
 import com.blockstream.common.gdk.data.AccountAsset
+import com.blockstream.green.data.lwk.NormalSubmarineSwap
 import kotlinx.serialization.SerialName
 import kotlinx.serialization.Serializable
 import kotlinx.serialization.json.JsonElement
@@ -32,6 +33,8 @@ data class CreateTransactionParams constructor(
     val utxos: Map<String, List<JsonElement>>? = null,
     @SerialName("fee_subaccount")
     val feeSubaccount: Long? = null,
+    @SerialName("submarine_swap")
+    val submarineSwap: NormalSubmarineSwap? = null,
 ) : GreenJson<CreateTransactionParams>() {
 
     override fun encodeDefaultsValues() = false

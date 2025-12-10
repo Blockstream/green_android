@@ -28,6 +28,7 @@ import com.blockstream.compose.theme.whiteMedium
 fun GreenDataLayout(
     modifier: Modifier = Modifier,
     title: String? = null,
+    subtitle: String? = null,
     badge: String? = null,
     border: BorderStroke? = null,
     helperText: String? = null,
@@ -85,6 +86,15 @@ fun GreenDataLayout(
                     )
                 }
             }
+        }
+
+        subtitle?.also {
+            Text(
+                text = it,
+                style = bodyLarge,
+                color = whiteMedium,
+                modifier = Modifier.padding(start = 4.dp, top = 2.dp)
+            )
         }
     }
 }

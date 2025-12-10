@@ -265,14 +265,31 @@ class LightningBridge constructor(
         breezSdkOrNull?.sync()
     }
 
-    fun balance(): Long? {
+    fun balanceOnChannel(): Long? {
         if (breezSdkOrNull == null) {
             return null
         }
 
         return try {
             updateNodeInfo().channelsBalanceSatoshi().also {
-                logger.d { "Balance: $it" }
+                logger.d { "Balance (channel+onchain): $it" }
+            }
+        } catch (e: Exception) {
+            e.printStackTrace()
+            null
+        }
+    }
+
+    fun balanceCombined(): Long? {
+        if (breezSdkOrNull == null) {
+            return null
+        }
+
+        return try {
+            updateNodeInfo().let {
+                it.channelsBalanceSatoshi() + it.onchainBalanceSatoshi()
+            }.also {
+                logger.d { "Balance (channel+onchain): $it" }
             }
         } catch (e: Exception) {
             e.printStackTrace()

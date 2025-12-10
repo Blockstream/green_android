@@ -12,14 +12,10 @@ import com.blockstream.common.database.DriverFactory
 import com.blockstream.common.fcm.FcmCommon
 import com.blockstream.common.fcm.Firebase
 import com.blockstream.common.lightning.BreezNotification
-import com.blockstream.common.managers.BluetoothManager
-import com.blockstream.common.managers.DeviceManager
+import com.blockstream.common.managers.*
 import com.blockstream.common.managers.DeviceManager.Companion.JADE
-import com.blockstream.common.managers.LifecycleManager
-import com.blockstream.common.managers.LocaleManager
-import com.blockstream.common.managers.NotificationManager
 import com.blockstream.green.data.config.AppInfo
-import com.blockstream.green.data.notifications.models.NotificationData
+import com.blockstream.green.data.notifications.models.MeldNotificationData
 import com.russhwolf.settings.NSUserDefaultsSettings
 import com.russhwolf.settings.ObservableSettings
 import kotlinx.cinterop.ExperimentalForeignApi
@@ -27,13 +23,7 @@ import org.koin.core.Koin
 import org.koin.core.component.KoinComponent
 import org.koin.core.parameter.parametersOf
 import org.koin.dsl.module
-import platform.Foundation.NSApplicationSupportDirectory
-import platform.Foundation.NSBundle
-import platform.Foundation.NSCachesDirectory
-import platform.Foundation.NSFileManager
-import platform.Foundation.NSURL
-import platform.Foundation.NSUserDefaults
-import platform.Foundation.NSUserDomainMask
+import platform.Foundation.*
 
 actual val platformModule = module {
     single {
@@ -108,7 +98,7 @@ fun startKoin(doOnStartup: () -> Unit = {}) {
 //            } binds (arrayOf(DeviceConnectionManager::class, DeviceConnectionInterface::class))
             single<FcmCommon> {
                 object : FcmCommon(get()) {
-                    override fun showBuyTransactionNotification(notificationData: NotificationData) {
+                    override fun showBuyTransactionNotification(meldNotificationData: MeldNotificationData) {
                         //no-op
                     }
 

@@ -1,6 +1,7 @@
 package com.blockstream.domain.banner
 
 import com.blockstream.common.gdk.GdkSession
+import com.blockstream.common.lwk.Lwk
 import com.blockstream.green.data.banner.Banner
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
@@ -17,6 +18,7 @@ class GetBannerUseCase() {
             }
 
             val activeNetworks = sessionOrNull?.activeSessions?.map { it.network }?.toMutableList() ?: mutableListOf()
+            sessionOrNull?.lwkOrNull?.also { activeNetworks.add(Lwk.LWK_NETWORK) }
             sessionOrNull?.lightning?.network?.also { activeNetworks.add(it) }
 
             val afterNetworkFilter = afterExcludedFilter?.filter { banner ->

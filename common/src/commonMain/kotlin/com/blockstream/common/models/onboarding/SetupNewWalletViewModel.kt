@@ -16,7 +16,7 @@ import com.blockstream.common.extensions.launchIn
 import com.blockstream.common.models.GreenViewModel
 import com.blockstream.common.navigation.NavigateDestinations
 import com.blockstream.common.sideeffects.SideEffects
-import com.blockstream.common.usecases.NewWalletUseCase
+import com.blockstream.domain.wallet.NewWalletUseCase
 import com.blockstream.ui.events.Event
 import com.blockstream.ui.navigation.NavAction
 import com.blockstream.ui.navigation.NavData

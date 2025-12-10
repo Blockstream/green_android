@@ -173,6 +173,7 @@ kotlin {
             api(libs.kable.core)
             api(libs.kotlincrypto.hash.md)
             api(libs.kotlincrypto.hash.sha2)
+            implementation(libs.kotlin.retry)
 
             api(libs.filekit.core)
             api(libs.filekit.dialogs)

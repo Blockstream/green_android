@@ -3,13 +3,13 @@ package com.blockstream.common.models.settings
 import blockstream_green.common.generated.resources.Res
 import blockstream_green.common.generated.resources.id_12_months_51840_blocks
 import blockstream_green.common.generated.resources.id_15_months_65535_blocks
-import blockstream_green.common.generated.resources.id_6_months_25920_blocks
-import blockstream_green.common.generated.resources.id_2fa_account
 import blockstream_green.common.generated.resources.id_2fa_expiry
 import blockstream_green.common.generated.resources.id_2fa_methods
 import blockstream_green.common.generated.resources.id_2fa_reset_in_progress
 import blockstream_green.common.generated.resources.id_2fa_threshold
+import blockstream_green.common.generated.resources.id_6_months_25920_blocks
 import blockstream_green.common.generated.resources.id_about
+import blockstream_green.common.generated.resources.id_account_settings
 import blockstream_green.common.generated.resources.id_another_2fa_method_is_already
 import blockstream_green.common.generated.resources.id_confirm_via_2fa_that_you
 import blockstream_green.common.generated.resources.id_copied_to_clipboard
@@ -25,7 +25,6 @@ import blockstream_green.common.generated.resources.id_security_change
 import blockstream_green.common.generated.resources.id_set_twofactor_threshold
 import blockstream_green.common.generated.resources.id_settings
 import blockstream_green.common.generated.resources.id_wallet_settings
-import blockstream_green.common.generated.resources.id_account_settings
 import blockstream_green.common.generated.resources.id_your_2fa_expires_so_that_if_you
 import blockstream_green.common.generated.resources.id_your_wallet_is_locked_for_a
 import com.blockstream.common.BTC_UNIT
@@ -65,12 +64,13 @@ import com.blockstream.common.models.GreenViewModel
 import com.blockstream.common.models.jade.JadeQrOperation
 import com.blockstream.common.navigation.NavigateDestinations
 import com.blockstream.common.sideeffects.SideEffects
-import com.blockstream.common.usecases.CreateAccountUseCase
 import com.blockstream.common.usecases.SetBiometricsUseCase
 import com.blockstream.common.usecases.SetPinUseCase
 import com.blockstream.common.utils.StringHolder
 import com.blockstream.common.utils.UserInput
 import com.blockstream.common.utils.toAmountLook
+import com.blockstream.domain.account.CreateAccountUseCase
+import com.blockstream.domain.boltz.IsSwapsEnabledUseCase
 import com.blockstream.ui.events.Event
 import com.blockstream.ui.navigation.NavData
 import com.blockstream.ui.sideeffects.SideEffect
@@ -123,6 +123,7 @@ class WalletSettingsViewModel(
     private val createAccountUseCase: CreateAccountUseCase by inject()
     private val setBiometricsUseCase: SetBiometricsUseCase by inject()
     private val setPinUseCase: SetPinUseCase by inject()
+    private val isSwapsEnabledUseCase: IsSwapsEnabledUseCase by inject()
 
     private val _items = MutableStateFlow(listOf<WalletSetting>())
     override val items = _items.asStateFlow()
@@ -151,8 +152,8 @@ class WalletSettingsViewModel(
         data class Toggle2FA(val method: TwoFactorMethod) : Event
         data class Enable2FA(val method: TwoFactorMethod) : Event
         data class Disable2FA(val method: TwoFactorMethod, val authenticateMethod: TwoFactorMethod) : Event
-        object RecoveryPhrase : Event
-        object SupportId : Event
+        data object RecoveryPhrase : Event
+        data object SupportId : Event
 
         data class CopyAmpId(val account: Account? = null) : Event
         data class ChooseAccountType(val accountType: AccountType) : Event
@@ -207,9 +208,10 @@ class WalletSettingsViewModel(
             combine(
                 session.settings(network = network ?: session.defaultNetwork),
                 network?.takeIf { it.isMultisig }?.let { session.twoFactorConfig(network) } ?: flowOf(null),
+                walletSettingsManager.getWalletSettings(walletId = greenWallet.id), // Update on wallet settings changes
                 session.allAccounts,
-                _hasBiometrics
-            ) { settings, twoFactorConfig, _, _ ->
+                _hasBiometrics,
+            ) { settings, twoFactorConfig, _, _, _ ->
                 _items.value = withContext(Dispatchers.IO) {
                     build(settings, twoFactorConfig)
                 }
@@ -377,20 +379,20 @@ class WalletSettingsViewModel(
                     list += WalletSetting.Text(getString(Res.string.id_account_settings))
                     list += listOfNotNull(
                         WalletSetting.Lightning(enabled = session.hasLightning)
-                            .takeIf { session.lightning != null && settingsManager.appSettings.experimentalFeatures },
+                            .takeIf { settingsManager.appSettings.experimentalFeatures || session.hasLightning },
                         WalletSetting.CreateAmpAccount.takeIf { session.accounts.value.find { it.type == AccountType.AMP_ACCOUNT } == null },
                         WalletSetting.CopyAmpId.takeIf { session.accounts.value.any { it.type == AccountType.AMP_ACCOUNT } },
                     )
-                    
+
                     val hasMultisig = session.activeBitcoinMultisig != null || session.activeLiquidMultisig != null
-                    
+
                     if (hasMultisig) {
                         list += listOf(WalletSetting.TwoFactorAuthentication)
                         session.activeMultisig.firstOrNull()?.also {
                             list += listOf(WalletSetting.PgpKey(enabled = session.getSettings(it)?.pgp.isNotBlank()))
                         }
                     }
-                    
+
                     list += listOf(
                         WalletSetting.ArchivedAccounts,
                         WalletSetting.CreateNewAccount
@@ -652,7 +654,7 @@ class WalletSettingsViewModel(
         doAsync({
             createAccountUseCase(
                 session = session,
-                greenWallet = greenWallet,
+                wallet = greenWallet,
                 accountType = accountType,
                 accountName = accountName,
                 network = network,

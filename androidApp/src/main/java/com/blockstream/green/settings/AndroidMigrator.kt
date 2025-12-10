@@ -3,6 +3,7 @@ package com.blockstream.green.settings
 import android.content.Context
 import android.content.SharedPreferences
 import android.util.Base64
+import androidx.core.content.edit
 import com.blockstream.common.data.CredentialType
 import com.blockstream.common.data.EncryptedData
 import com.blockstream.common.data.toGreenWallet
@@ -10,6 +11,7 @@ import com.blockstream.common.database.Database
 import com.blockstream.common.gdk.Gdk
 import com.blockstream.common.gdk.data.PinData
 import com.blockstream.common.managers.SettingsManager
+import com.blockstream.common.managers.WalletSettingsManager
 import com.blockstream.common.utils.toHex
 import com.blockstream.green.database.LoginCredentials
 import com.blockstream.green.database.Wallet
@@ -26,7 +28,8 @@ class AndroidMigrator(
     val walletDao: WalletDao,
     val gdk: Gdk,
     val settingsManager: SettingsManager,
-    val database: Database
+    val database: Database,
+    val walletSettingsManager: WalletSettingsManager
 ) {
 
     val keyStore: KeyStore by lazy {
@@ -45,6 +48,7 @@ class AndroidMigrator(
 
                 migrateAppDataV2()
                 migrateAppDataV3()
+                migrateAppDataV4()
             }
         }
     }
@@ -153,7 +157,7 @@ class AndroidMigrator(
             )
         )
 
-        sharedPreferences.edit().putBoolean(Preferences.MIGRATED_V3_V4_2, true).apply()
+        sharedPreferences.edit { putBoolean(Preferences.MIGRATED_V3_V4_2, true) }
     }
 
     private suspend fun fixV4Migration() {
@@ -234,7 +238,7 @@ class AndroidMigrator(
             }
         }
 
-        sharedPreferences.edit().putBoolean(Preferences.MIGRATED_V3_V4_2, true).apply()
+        sharedPreferences.edit { putBoolean(Preferences.MIGRATED_V3_V4_2, true) }
     }
 
     private suspend fun migrateAppDataV2() {
@@ -256,7 +260,7 @@ class AndroidMigrator(
                 }
             }
 
-            sharedPreferences.edit().putLong(Preferences.APP_DATA_VERSION, 2).apply()
+            sharedPreferences.edit { putLong(Preferences.APP_DATA_VERSION, 2) }
         }
     }
 
@@ -278,7 +282,31 @@ class AndroidMigrator(
                 settingsManager.increaseWalletCounter(it.id.toInt())
             }
 
-            sharedPreferences.edit().putLong(Preferences.APP_DATA_VERSION, 3).apply()
+            sharedPreferences.edit { putLong(Preferences.APP_DATA_VERSION, 3) }
+        }
+    }
+
+    private suspend fun migrateAppDataV4() {
+        if (sharedPreferences.getLong(Preferences.APP_DATA_VERSION, 0) < 4) {
+            logger.i { "Migrating AppData to v4" }
+
+            database.getAllWallets().forEach { wallet ->
+
+                wallet.extras?.also { extras ->
+                    walletSettingsManager.setTotalBalanceInFiat(walletId = wallet.id, enabled = extras.totalBalanceInFiat)
+
+                    extras.lightningNodeId?.also { nodeId ->
+                        walletSettingsManager.setLightningNodeId(walletId = wallet.id, nodeId = nodeId)
+                    }
+                }
+
+                (database.getLoginCredential(id = wallet.id, credentialType = CredentialType.KEYSTORE_GREENLIGHT_CREDENTIALS)
+                    ?: database.getLoginCredential(id = wallet.id, credentialType = CredentialType.LIGHTNING_MNEMONIC))?.also {
+                    walletSettingsManager.setLightningEnabled(it.wallet_id, enabled = true)
+                }
+            }
+
+            sharedPreferences.edit { putLong(Preferences.APP_DATA_VERSION, 4) }
         }
     }
 
@@ -317,7 +345,7 @@ class AndroidMigrator(
     }
 
     companion object : Loggable() {
-        const val APP_DATA_VERSION = 3
+        const val APP_DATA_VERSION = 4
         const val NETWORK_ID_ACTIVE = "network_id_active"
         const val VERSION = "version"
         const val PROXY_ENABLED = "proxy_enabled"

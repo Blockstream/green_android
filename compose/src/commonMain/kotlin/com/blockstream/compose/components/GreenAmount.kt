@@ -26,12 +26,13 @@ fun GreenAmount(
     amountFiat: String? = null,
     assetId: String? = null,
     address: String? = null,
+    addressMaxLines: Int? = null,
     session: GdkSession? = null,
     showIcon: Boolean = false
 ) {
     GreenDataLayout(title = title, modifier = modifier) {
         GreenColumn(padding = 0, space = 8) {
-            address?.also { GreenAddress(address = it) }
+            address?.also { GreenAddress(address = it, maxLines = addressMaxLines ?: Int.MAX_VALUE) }
 
             Box {
                 if (showIcon) {
