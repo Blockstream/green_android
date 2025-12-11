@@ -22,8 +22,8 @@ import com.blockstream.compose.sideeffects.DialogHost
 import com.blockstream.compose.sideeffects.DialogState
 import com.blockstream.compose.theme.GreenTheme
 import com.blockstream.green.data.config.AppInfo
-import com.blockstream.ui.navigation.LocalNavigator
-import com.blockstream.ui.navigation.bottomsheet.rememberBottomSheetNavigator
+import com.blockstream.compose.navigation.LocalNavigator
+import com.blockstream.compose.navigation.bottomsheet.rememberBottomSheetNavigator
 import com.russhwolf.settings.ObservableSettings
 import com.russhwolf.settings.SharedPreferencesSettings
 import org.koin.android.ext.koin.androidContext

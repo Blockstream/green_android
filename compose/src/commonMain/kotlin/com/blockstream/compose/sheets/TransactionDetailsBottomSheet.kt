@@ -14,7 +14,7 @@ import blockstream_green.common.generated.resources.id_more_details
 import com.blockstream.common.models.sheets.TransactionDetailsViewModelAbstract
 import com.blockstream.compose.components.GreenBottomSheet
 import com.blockstream.compose.views.DataListItem
-import com.blockstream.ui.components.GreenColumn
+import com.blockstream.compose.components.GreenColumn
 import org.jetbrains.compose.resources.stringResource
 
 @OptIn(ExperimentalMaterial3Api::class)

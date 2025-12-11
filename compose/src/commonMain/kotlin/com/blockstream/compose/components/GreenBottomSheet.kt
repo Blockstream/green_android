@@ -32,11 +32,10 @@ import com.blockstream.compose.theme.whiteHigh
 import com.blockstream.compose.theme.whiteMedium
 import com.blockstream.compose.utils.HandleSideEffect
 import com.blockstream.compose.utils.compatTestTagsAsResourceId
-import com.blockstream.ui.components.GreenColumn
-import com.blockstream.ui.navigation.LocalNavigator
-import com.blockstream.ui.navigation.bottomsheet.BottomSheetNavigator
+import com.blockstream.compose.navigation.LocalNavigator
+import com.blockstream.compose.navigation.bottomsheet.BottomSheetNavigator
 import com.blockstream.ui.sideeffects.SideEffect
-import com.blockstream.ui.utils.ifTrue
+import com.blockstream.compose.utils.ifTrue
 import kotlinx.coroutines.CoroutineScope
 
 @OptIn(ExperimentalMaterial3Api::class)

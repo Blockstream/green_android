@@ -7,7 +7,6 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.tooling.preview.Preview
 import com.blockstream.compose.theme.GreenChromePreview
-import com.blockstream.ui.components.GreenColumn
 
 @Preview
 @Composable

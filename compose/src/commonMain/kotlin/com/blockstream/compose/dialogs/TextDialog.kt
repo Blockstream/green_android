@@ -43,7 +43,7 @@ import com.blockstream.compose.theme.bodyLarge
 import com.blockstream.compose.theme.titleSmall
 import com.blockstream.compose.utils.DecimalFormatter
 import com.blockstream.compose.utils.OpenKeyboard
-import com.blockstream.ui.components.GreenColumn
+import com.blockstream.compose.components.GreenColumn
 import org.jetbrains.compose.resources.painterResource
 import org.jetbrains.compose.resources.stringResource
 

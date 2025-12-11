@@ -31,9 +31,9 @@ import com.blockstream.compose.theme.headlineLarge
 import com.blockstream.compose.theme.titleLarge
 import com.blockstream.compose.utils.AnimatedNullableVisibility
 import com.blockstream.compose.utils.SetupScreen
-import com.blockstream.ui.components.GreenColumn
-import com.blockstream.ui.navigation.LocalInnerPadding
-import com.blockstream.ui.utils.ifTrue
+import com.blockstream.compose.components.GreenColumn
+import com.blockstream.compose.navigation.LocalInnerPadding
+import com.blockstream.compose.utils.ifTrue
 
 @Composable
 fun PromoScreen(

@@ -29,7 +29,7 @@ import com.blockstream.common.sideeffects.SideEffects
 import com.blockstream.compose.components.GreenBottomSheet
 import com.blockstream.compose.components.GreenButton
 import com.blockstream.compose.utils.OpenKeyboard
-import com.blockstream.ui.navigation.setResult
+import com.blockstream.compose.navigation.setResult
 import org.jetbrains.compose.resources.stringResource
 
 @OptIn(ExperimentalMaterial3Api::class)

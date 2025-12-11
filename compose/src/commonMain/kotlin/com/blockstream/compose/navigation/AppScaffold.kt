@@ -50,7 +50,6 @@ import com.blockstream.common.navigation.NavigateDestinations
 import com.blockstream.compose.components.GreenTopAppBar
 import com.blockstream.compose.theme.bodyMedium
 import com.blockstream.compose.utils.HandleSideEffect
-import com.blockstream.ui.navigation.LocalNavigator
 import com.blockstream.ui.navigation.NavData
 import org.jetbrains.compose.resources.StringResource
 import org.jetbrains.compose.resources.stringResource

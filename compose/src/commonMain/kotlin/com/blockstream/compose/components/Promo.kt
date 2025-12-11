@@ -41,7 +41,6 @@ import com.blockstream.compose.theme.bodyMedium
 import com.blockstream.compose.theme.headlineSmall
 import com.blockstream.compose.theme.titleMedium
 import com.blockstream.compose.utils.AnimatedNullableVisibility
-import com.blockstream.ui.components.GreenColumn
 import org.jetbrains.compose.resources.painterResource
 
 @Composable

@@ -10,7 +10,7 @@ import blockstream_green.common.generated.resources.id_select_network
 import com.blockstream.common.data.MenuEntry
 import com.blockstream.common.data.MenuEntryList
 import com.blockstream.common.navigation.NavigateDestinations
-import com.blockstream.ui.navigation.setResult
+import com.blockstream.compose.navigation.setResult
 import org.jetbrains.compose.resources.stringResource
 
 @Composable

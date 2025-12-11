@@ -28,7 +28,7 @@ import com.blockstream.compose.theme.MonospaceFont
 import com.blockstream.compose.theme.bodyLarge
 import com.blockstream.compose.theme.whiteHigh
 import com.blockstream.compose.theme.whiteMedium
-import com.blockstream.ui.utils.ifTrue
+import com.blockstream.compose.utils.ifTrue
 
 @Composable
 fun GreenTextField(

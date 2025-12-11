@@ -40,9 +40,9 @@ import com.blockstream.compose.theme.bodySmall
 import com.blockstream.compose.theme.titleSmall
 import com.blockstream.compose.theme.whiteLow
 import com.blockstream.compose.theme.whiteMedium
-import com.blockstream.ui.components.GreenColumn
-import com.blockstream.ui.components.GreenRow
-import com.blockstream.ui.utils.appTestTag
+import com.blockstream.compose.components.GreenColumn
+import com.blockstream.compose.components.GreenRow
+import com.blockstream.compose.utils.appTestTag
 import org.jetbrains.compose.resources.stringResource
 import org.jetbrains.compose.ui.tooling.preview.Preview
 

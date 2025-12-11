@@ -63,11 +63,8 @@ import com.blockstream.compose.theme.green
 import com.blockstream.compose.theme.whiteHigh
 import com.blockstream.compose.theme.whiteMedium
 import com.blockstream.compose.utils.DecimalFormatter
-import com.blockstream.ui.components.GradientEdgeBox
-import com.blockstream.ui.components.GreenRow
-import com.blockstream.ui.components.GreenSpacer
-import com.blockstream.ui.utils.appTestTag
-import com.blockstream.ui.utils.ifTrue
+import com.blockstream.compose.utils.appTestTag
+import com.blockstream.compose.utils.ifTrue
 import org.jetbrains.compose.resources.painterResource
 import org.jetbrains.compose.resources.stringResource
 

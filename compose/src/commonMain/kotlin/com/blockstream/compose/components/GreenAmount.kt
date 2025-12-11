@@ -16,7 +16,6 @@ import com.blockstream.common.gdk.GdkSession
 import com.blockstream.compose.extensions.assetIcon
 import com.blockstream.compose.theme.bodyLarge
 import com.blockstream.compose.theme.titleMedium
-import com.blockstream.ui.components.GreenColumn
 
 @Composable
 fun GreenAmount(

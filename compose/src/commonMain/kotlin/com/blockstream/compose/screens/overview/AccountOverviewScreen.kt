@@ -54,11 +54,11 @@ import com.blockstream.compose.theme.labelMedium
 import com.blockstream.compose.theme.titleSmall
 import com.blockstream.compose.utils.SetupScreen
 import com.blockstream.compose.views.LightningInfo
-import com.blockstream.ui.components.GreenRow
-import com.blockstream.ui.navigation.LocalInnerPadding
-import com.blockstream.ui.navigation.getResult
-import com.blockstream.ui.utils.bottom
-import com.blockstream.ui.utils.reachedBottom
+import com.blockstream.compose.components.GreenRow
+import com.blockstream.compose.navigation.LocalInnerPadding
+import com.blockstream.compose.navigation.getResult
+import com.blockstream.compose.utils.bottom
+import com.blockstream.compose.utils.reachedBottom
 import kotlinx.coroutines.delay
 import org.jetbrains.compose.resources.painterResource
 import org.jetbrains.compose.resources.stringResource

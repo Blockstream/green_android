@@ -20,7 +20,7 @@ import com.blockstream.compose.theme.labelMedium
 import com.blockstream.compose.theme.whiteHigh
 import com.blockstream.compose.theme.whiteMedium
 import com.blockstream.compose.utils.CopyContainer
-import com.blockstream.ui.components.GreenColumn
+import com.blockstream.compose.components.GreenColumn
 import org.jetbrains.compose.resources.stringResource
 
 @OptIn(ExperimentalMaterial3Api::class)

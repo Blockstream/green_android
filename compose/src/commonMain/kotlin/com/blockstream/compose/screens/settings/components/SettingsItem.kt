@@ -18,7 +18,7 @@ import androidx.compose.ui.semantics.heading
 import androidx.compose.ui.semantics.semantics
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
-import com.blockstream.ui.components.GreenRow
+import com.blockstream.compose.components.GreenRow
 
 @Composable
 fun SettingsItem(

@@ -30,8 +30,8 @@ import com.blockstream.common.navigation.NavigateDestinations
 import com.blockstream.compose.components.GreenBottomSheet
 import com.blockstream.compose.components.GreenCard
 import com.blockstream.compose.theme.bodyLarge
-import com.blockstream.ui.components.GreenColumn
-import com.blockstream.ui.components.GreenRow
+import com.blockstream.compose.components.GreenColumn
+import com.blockstream.compose.components.GreenRow
 import org.jetbrains.compose.resources.stringResource
 
 @OptIn(ExperimentalMaterial3Api::class)

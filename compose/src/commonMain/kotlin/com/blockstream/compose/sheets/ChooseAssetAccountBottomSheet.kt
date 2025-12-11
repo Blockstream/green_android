@@ -24,8 +24,8 @@ import com.blockstream.common.navigation.NavigateDestinations
 import com.blockstream.common.navigation.PopTo
 import com.blockstream.compose.components.GreenAssetAccounts
 import com.blockstream.compose.components.GreenBottomSheet
-import com.blockstream.ui.components.GreenColumn
-import com.blockstream.ui.navigation.setResult
+import com.blockstream.compose.components.GreenColumn
+import com.blockstream.compose.navigation.setResult
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable

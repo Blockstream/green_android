@@ -56,11 +56,11 @@ import com.blockstream.compose.theme.labelLarge
 import com.blockstream.compose.theme.textHigh
 import com.blockstream.compose.theme.textMedium
 import com.blockstream.compose.utils.SetupScreen
-import com.blockstream.ui.components.GreenColumn
-import com.blockstream.ui.navigation.LocalInnerPadding
-import com.blockstream.ui.navigation.getResult
-import com.blockstream.ui.navigation.setResult
-import com.blockstream.ui.utils.bottom
+import com.blockstream.compose.components.GreenColumn
+import com.blockstream.compose.navigation.LocalInnerPadding
+import com.blockstream.compose.navigation.getResult
+import com.blockstream.compose.navigation.setResult
+import com.blockstream.compose.utils.bottom
 import kotlinx.coroutines.launch
 import kotlinx.serialization.Serializable
 import org.jetbrains.compose.resources.getString

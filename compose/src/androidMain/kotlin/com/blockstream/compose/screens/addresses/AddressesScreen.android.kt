@@ -6,7 +6,7 @@ import com.blockstream.common.looks.account.AddressLook
 import com.blockstream.common.models.addresses.AddressesViewModelPreview
 import com.blockstream.compose.GreenAndroidPreview
 import com.blockstream.compose.theme.GreenChromePreview
-import com.blockstream.ui.components.GreenColumn
+import com.blockstream.compose.components.GreenColumn
 
 @Composable
 @Preview

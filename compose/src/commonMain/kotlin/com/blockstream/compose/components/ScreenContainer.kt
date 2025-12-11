@@ -32,9 +32,9 @@ import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.blockstream.compose.theme.titleMedium
 import com.blockstream.ui.models.IOnProgress
-import com.blockstream.ui.navigation.LocalInnerPadding
-import com.blockstream.ui.utils.excludeBottom
-import com.blockstream.ui.utils.ifTrue
+import com.blockstream.compose.navigation.LocalInnerPadding
+import com.blockstream.compose.utils.excludeBottom
+import com.blockstream.compose.utils.ifTrue
 
 sealed class OnProgressStyle {
     data object Disabled : OnProgressStyle()

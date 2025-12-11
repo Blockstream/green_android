@@ -15,7 +15,7 @@ import com.blockstream.compose.components.CountriesList
 import com.blockstream.compose.components.CountryItem
 import com.blockstream.compose.components.GreenBottomSheet
 import com.blockstream.green.data.countries.Countries
-import com.blockstream.ui.navigation.setResult
+import com.blockstream.compose.navigation.setResult
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable

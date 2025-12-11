@@ -2,11 +2,12 @@ package com.blockstream.compose.screens.add
 
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.tooling.preview.Preview
+import com.blockstream.common.gdk.data.AccountType
 import com.blockstream.common.looks.AccountTypeLook
 import com.blockstream.common.models.add.ChooseAccountTypeViewModelPreview
 import com.blockstream.compose.GreenAndroidPreview
 import com.blockstream.compose.theme.GreenChromePreview
-import com.blockstream.ui.components.GreenColumn
+import com.blockstream.compose.components.GreenColumn
 
 @Composable
 @Preview
@@ -15,19 +16,19 @@ fun AccountTypePreview() {
         GreenColumn {
             AccountType(
                 AccountTypeLook(
-                    accountType = com.blockstream.common.gdk.data.AccountType.BIP44_LEGACY,
+                    accountType = AccountType.BIP44_LEGACY,
                     canBeAdded = true
                 )
             )
             AccountType(
                 AccountTypeLook(
-                    accountType = com.blockstream.common.gdk.data.AccountType.LIGHTNING,
+                    accountType = AccountType.LIGHTNING,
                     canBeAdded = true
                 )
             )
             AccountType(
                 AccountTypeLook(
-                    accountType = com.blockstream.common.gdk.data.AccountType.LIGHTNING,
+                    accountType = AccountType.LIGHTNING,
                     canBeAdded = false
                 )
             )

@@ -31,7 +31,7 @@ import com.adamglin.phosphoricons.bold.DotsThreeVertical
 import com.blockstream.compose.theme.labelMedium
 import com.blockstream.ui.navigation.NavAction
 import com.blockstream.ui.navigation.NavData
-import com.blockstream.ui.utils.appTestTag
+import com.blockstream.compose.utils.appTestTag
 import org.jetbrains.compose.resources.DrawableResource
 import org.jetbrains.compose.resources.painterResource
 import org.jetbrains.compose.resources.stringResource

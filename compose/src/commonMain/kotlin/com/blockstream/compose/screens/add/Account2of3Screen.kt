@@ -22,7 +22,7 @@ import com.blockstream.common.models.add.Account2of3ViewModelAbstract
 import com.blockstream.compose.components.GreenContentCard
 import com.blockstream.compose.theme.displayMedium
 import com.blockstream.compose.utils.SetupScreen
-import com.blockstream.ui.components.GreenColumn
+import com.blockstream.compose.components.GreenColumn
 import org.jetbrains.compose.resources.stringResource
 
 @Composable

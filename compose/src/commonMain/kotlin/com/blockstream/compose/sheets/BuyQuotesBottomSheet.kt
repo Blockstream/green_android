@@ -19,9 +19,9 @@ import com.blockstream.common.navigation.NavigateDestinations
 import com.blockstream.compose.components.GreenBottomSheet
 import com.blockstream.compose.components.MeldProvider
 import com.blockstream.green.data.meld.data.QuoteResponse
-import com.blockstream.ui.navigation.setResult
-import com.blockstream.ui.utils.ifTrue
-import com.blockstream.ui.utils.plus
+import com.blockstream.compose.navigation.setResult
+import com.blockstream.compose.utils.ifTrue
+import com.blockstream.compose.utils.plus
 import org.jetbrains.compose.resources.stringResource
 
 @OptIn(ExperimentalMaterial3Api::class)

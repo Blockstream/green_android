@@ -27,8 +27,8 @@ import com.blockstream.compose.extensions.onValueChange
 import com.blockstream.compose.theme.bodyLarge
 import com.blockstream.compose.theme.displayMedium
 import com.blockstream.compose.utils.SetupScreen
-import com.blockstream.ui.components.GreenColumn
-import com.blockstream.ui.navigation.getResult
+import com.blockstream.compose.components.GreenColumn
+import com.blockstream.compose.navigation.getResult
 import org.jetbrains.compose.resources.stringResource
 
 @Composable

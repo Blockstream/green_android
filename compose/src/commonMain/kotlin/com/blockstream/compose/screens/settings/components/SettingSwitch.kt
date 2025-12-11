@@ -6,7 +6,7 @@ import androidx.compose.material3.SwitchDefaults
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
-import com.blockstream.ui.utils.appTestTag
+import com.blockstream.compose.utils.appTestTag
 
 @Composable
 fun SettingSwitch(

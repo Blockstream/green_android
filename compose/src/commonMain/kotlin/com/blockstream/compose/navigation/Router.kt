@@ -201,11 +201,8 @@ import com.blockstream.compose.sheets.TwoFactorResetBottomSheet
 import com.blockstream.compose.sheets.WalletDeleteBottomSheet
 import com.blockstream.compose.sheets.WalletRenameBottomSheet
 import com.blockstream.compose.sheets.WatchOnlyCredentialsSettingsBottomSheet
-import com.blockstream.ui.navigation.Dialog
-import com.blockstream.ui.navigation.LocalInnerPadding
-import com.blockstream.ui.navigation.bottomsheet.onDismissRequest
-import com.blockstream.ui.navigation.dialogs.GenericDialog
-import com.blockstream.ui.navigation.setResult
+import com.blockstream.compose.navigation.bottomsheet.onDismissRequest
+import com.blockstream.compose.navigation.dialogs.GenericDialog
 import org.koin.compose.koinInject
 
 @Composable

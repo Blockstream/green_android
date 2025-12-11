@@ -39,8 +39,8 @@ import com.blockstream.compose.screens.jade.JadeQRResult
 import com.blockstream.compose.theme.bodyLarge
 import com.blockstream.compose.theme.titleMedium
 import com.blockstream.compose.utils.SetupScreen
-import com.blockstream.ui.components.GreenColumn
-import com.blockstream.ui.navigation.getResult
+import com.blockstream.compose.components.GreenColumn
+import com.blockstream.compose.navigation.getResult
 import org.jetbrains.compose.resources.painterResource
 import org.jetbrains.compose.resources.stringResource
 import org.jetbrains.compose.ui.tooling.preview.Preview

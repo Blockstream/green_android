@@ -34,10 +34,10 @@ import com.blockstream.compose.theme.whiteHigh
 import com.blockstream.compose.theme.whiteMedium
 import com.blockstream.compose.utils.AnimatedNullableVisibility
 import com.blockstream.compose.utils.roundBackground
-import com.blockstream.ui.components.GreenArrow
-import com.blockstream.ui.components.GreenRow
-import com.blockstream.ui.navigation.setResult
-import com.blockstream.ui.utils.appTestTag
+import com.blockstream.compose.components.GreenArrow
+import com.blockstream.compose.components.GreenRow
+import com.blockstream.compose.navigation.setResult
+import com.blockstream.compose.utils.appTestTag
 import org.jetbrains.compose.resources.stringResource
 
 @OptIn(ExperimentalMaterial3Api::class)

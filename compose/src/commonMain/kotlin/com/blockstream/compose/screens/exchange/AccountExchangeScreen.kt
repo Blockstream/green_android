@@ -61,8 +61,8 @@ import com.blockstream.compose.theme.md_theme_onErrorContainer
 import com.blockstream.compose.theme.titleLarge
 import com.blockstream.compose.utils.AnimatedNullableVisibility
 import com.blockstream.compose.utils.HandleSideEffect
-import com.blockstream.ui.components.GreenColumn
-import com.blockstream.ui.navigation.getResult
+import com.blockstream.compose.components.GreenColumn
+import com.blockstream.compose.navigation.getResult
 import org.jetbrains.compose.resources.painterResource
 import org.jetbrains.compose.resources.stringResource
 

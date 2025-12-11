@@ -41,11 +41,11 @@ import com.blockstream.compose.utils.OpenKeyboard
 import com.blockstream.compose.utils.SetupScreen
 import com.blockstream.green.data.meld.data.QuoteResponse
 import com.blockstream.green.data.meld.models.Country
-import com.blockstream.ui.components.GreenColumn
-import com.blockstream.ui.components.GreenRow
-import com.blockstream.ui.navigation.LocalNavigator
-import com.blockstream.ui.navigation.bottomsheet.BottomSheetNavigator
-import com.blockstream.ui.navigation.getResult
+import com.blockstream.compose.components.GreenColumn
+import com.blockstream.compose.components.GreenRow
+import com.blockstream.compose.navigation.LocalNavigator
+import com.blockstream.compose.navigation.bottomsheet.BottomSheetNavigator
+import com.blockstream.compose.navigation.getResult
 import org.jetbrains.compose.resources.stringResource
 
 @Composable

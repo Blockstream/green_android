@@ -28,8 +28,8 @@ import com.blockstream.compose.components.GreenAsset
 import com.blockstream.compose.components.GreenBottomSheet
 import com.blockstream.compose.components.GreenSearchField
 import com.blockstream.compose.theme.bodyMedium
-import com.blockstream.ui.components.GreenColumn
-import com.blockstream.ui.navigation.setResult
+import com.blockstream.compose.components.GreenColumn
+import com.blockstream.compose.navigation.setResult
 import org.jetbrains.compose.resources.stringResource
 
 @OptIn(ExperimentalMaterial3Api::class)

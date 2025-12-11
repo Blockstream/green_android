@@ -56,11 +56,11 @@ import com.blockstream.compose.theme.titleMedium
 import com.blockstream.compose.theme.titleSmall
 import com.blockstream.compose.theme.whiteMedium
 import com.blockstream.compose.utils.SetupScreen
-import com.blockstream.ui.components.GreenColumn
-import com.blockstream.ui.components.GreenRow
-import com.blockstream.ui.navigation.LocalInnerPadding
-import com.blockstream.ui.utils.bottom
-import com.blockstream.ui.utils.plus
+import com.blockstream.compose.components.GreenColumn
+import com.blockstream.compose.components.GreenRow
+import com.blockstream.compose.navigation.LocalInnerPadding
+import com.blockstream.compose.utils.bottom
+import com.blockstream.compose.utils.plus
 import kotlinx.coroutines.launch
 import org.jetbrains.compose.resources.getString
 import org.jetbrains.compose.resources.painterResource

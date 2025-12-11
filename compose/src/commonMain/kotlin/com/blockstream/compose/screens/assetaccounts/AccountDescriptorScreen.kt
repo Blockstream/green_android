@@ -44,8 +44,8 @@ import com.blockstream.compose.theme.bodyMedium
 import com.blockstream.compose.theme.titleSmall
 import com.blockstream.compose.theme.whiteMedium
 import com.blockstream.compose.utils.SetupScreen
-import com.blockstream.ui.components.GreenColumn
-import com.blockstream.ui.components.GreenRow
+import com.blockstream.compose.components.GreenColumn
+import com.blockstream.compose.components.GreenRow
 import kotlinx.coroutines.launch
 import org.jetbrains.compose.resources.getString
 import org.jetbrains.compose.resources.painterResource

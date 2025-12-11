@@ -11,7 +11,7 @@ import com.blockstream.common.models.send.SendChooseAccountViewModelPreview
 import com.blockstream.compose.GreenPreview
 import com.blockstream.compose.components.GreenAccountAsset
 import com.blockstream.compose.utils.SetupScreen
-import com.blockstream.ui.components.GreenColumn
+import com.blockstream.compose.components.GreenColumn
 import org.jetbrains.compose.ui.tooling.preview.Preview
 
 @Composable

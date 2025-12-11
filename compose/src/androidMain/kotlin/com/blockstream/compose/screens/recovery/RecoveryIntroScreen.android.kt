@@ -9,7 +9,7 @@ import blockstream_green.common.generated.resources.id_safe_environment
 import com.blockstream.common.models.recovery.RecoveryIntroViewModelPreview
 import com.blockstream.compose.GreenAndroidPreview
 import com.blockstream.compose.theme.GreenChromePreview
-import com.blockstream.ui.components.GreenColumn
+import com.blockstream.compose.components.GreenColumn
 import org.jetbrains.compose.resources.stringResource
 
 @Composable

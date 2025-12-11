@@ -9,7 +9,6 @@ import androidx.compose.ui.tooling.preview.Preview
 import com.blockstream.common.extensions.previewAccount
 import com.blockstream.common.extensions.previewEnrichedAsset
 import com.blockstream.compose.theme.GreenChromePreview
-import com.blockstream.ui.components.GreenColumn
 
 @Preview
 @Composable

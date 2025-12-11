@@ -40,10 +40,10 @@ import com.blockstream.compose.extensions.onValueChange
 import com.blockstream.compose.theme.titleSmall
 import com.blockstream.compose.utils.HandleSideEffect
 import com.blockstream.compose.utils.TextInputPassword
-import com.blockstream.ui.components.GreenColumn
-import com.blockstream.ui.components.GreenRow
-import com.blockstream.ui.navigation.setResult
-import com.blockstream.ui.utils.appTestTag
+import com.blockstream.compose.components.GreenColumn
+import com.blockstream.compose.components.GreenRow
+import com.blockstream.compose.navigation.setResult
+import com.blockstream.compose.utils.appTestTag
 import org.jetbrains.compose.resources.stringResource
 
 @OptIn(ExperimentalMaterial3Api::class)

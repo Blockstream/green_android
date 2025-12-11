@@ -9,7 +9,6 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.tooling.preview.Preview
 import com.blockstream.common.data.Denomination
 import com.blockstream.compose.GreenAndroidPreview
-import com.blockstream.ui.components.GreenColumn
 
 @Preview
 @Composable

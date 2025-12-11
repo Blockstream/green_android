@@ -43,9 +43,9 @@ import com.blockstream.common.navigation.NavigateDestinations
 import com.blockstream.compose.theme.bodyLarge
 import com.blockstream.compose.theme.bodySmall
 import com.blockstream.compose.theme.titleMedium
-import com.blockstream.ui.navigation.LocalNavigator
+import com.blockstream.compose.navigation.LocalNavigator
 import com.blockstream.ui.navigation.NavData
-import com.blockstream.ui.utils.ifTrue
+import com.blockstream.compose.utils.ifTrue
 import org.jetbrains.compose.resources.stringResource
 
 @OptIn(ExperimentalMaterial3Api::class)

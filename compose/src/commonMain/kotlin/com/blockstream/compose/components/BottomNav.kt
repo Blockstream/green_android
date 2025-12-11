@@ -32,7 +32,6 @@ import com.blockstream.compose.theme.GreenSmallEnd
 import com.blockstream.compose.theme.GreenSmallStart
 import com.blockstream.compose.theme.bottom_nav_bg
 import com.blockstream.compose.theme.green
-import com.blockstream.ui.components.GreenRow
 import org.jetbrains.compose.resources.painterResource
 import org.jetbrains.compose.resources.stringResource
 

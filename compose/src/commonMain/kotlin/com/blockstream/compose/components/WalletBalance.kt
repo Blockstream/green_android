@@ -27,7 +27,7 @@ import com.blockstream.common.models.overview.WalletBalanceViewModel.LocalEvents
 import com.blockstream.compose.theme.textHigh
 import com.blockstream.compose.theme.textMedium
 import com.blockstream.compose.utils.noRippleClickable
-import com.blockstream.ui.utils.appTestTag
+import com.blockstream.compose.utils.appTestTag
 import org.jetbrains.compose.resources.painterResource
 import org.jetbrains.compose.resources.stringResource
 

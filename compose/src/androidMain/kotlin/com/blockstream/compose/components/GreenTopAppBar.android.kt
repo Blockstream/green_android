@@ -13,7 +13,6 @@ import blockstream_green.common.generated.resources.Res
 import blockstream_green.common.generated.resources.note_pencil
 import blockstream_green.common.generated.resources.signature
 import com.blockstream.compose.GreenPreview
-import com.blockstream.ui.components.GreenColumn
 import com.blockstream.ui.navigation.NavAction
 import com.blockstream.ui.navigation.NavData
 

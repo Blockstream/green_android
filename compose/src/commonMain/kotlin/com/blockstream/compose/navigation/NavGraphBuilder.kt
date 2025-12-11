@@ -20,8 +20,7 @@ import com.blockstream.common.models.settings.WalletSettingsSection
 import com.blockstream.common.models.sheets.NoteType
 import com.blockstream.common.navigation.PopTo
 import com.blockstream.green.data.meld.data.QuotesResponse
-import com.blockstream.ui.navigation.LocalNavBackStackEntry
-import com.blockstream.ui.navigation.bottomsheet.bottomSheet
+import com.blockstream.compose.navigation.bottomsheet.bottomSheet
 import kotlin.io.encoding.ExperimentalEncodingApi
 import kotlin.reflect.typeOf
 

@@ -32,7 +32,7 @@ import com.blockstream.compose.components.GreenBottomSheet
 import com.blockstream.compose.components.GreenButton
 import com.blockstream.compose.extensions.onTextFieldValueChange
 import com.blockstream.compose.utils.OpenKeyboard
-import com.blockstream.ui.utils.appTestTag
+import com.blockstream.compose.utils.appTestTag
 import org.jetbrains.compose.resources.stringResource
 
 @OptIn(ExperimentalMaterial3Api::class)

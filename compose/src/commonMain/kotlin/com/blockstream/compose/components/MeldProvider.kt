@@ -28,7 +28,7 @@ import com.blockstream.compose.theme.labelLarge
 import com.blockstream.compose.theme.titleSmall
 import com.blockstream.compose.theme.whiteMedium
 import com.blockstream.green.data.meld.data.QuoteResponse
-import com.blockstream.ui.utils.ifTrue
+import com.blockstream.compose.utils.ifTrue
 import org.jetbrains.compose.resources.painterResource
 import org.jetbrains.compose.resources.stringResource
 

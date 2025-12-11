@@ -22,7 +22,7 @@ import blockstream_green.common.generated.resources.id_liquid_testnet_electrum_s
 import blockstream_green.common.generated.resources.id_testnet_electrum_server
 import com.blockstream.common.models.settings.AppSettingsViewModelAbstract
 import com.blockstream.compose.utils.TextInputPaste
-import com.blockstream.ui.components.GreenColumn
+import com.blockstream.compose.components.GreenColumn
 import kotlinx.coroutines.flow.MutableStateFlow
 import org.jetbrains.compose.resources.stringResource
 

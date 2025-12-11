@@ -31,10 +31,10 @@ import com.blockstream.compose.components.GreenBottomSheet
 import com.blockstream.compose.components.GreenCard
 import com.blockstream.compose.theme.titleSmall
 import com.blockstream.compose.theme.whiteLow
-import com.blockstream.ui.components.GreenArrow
-import com.blockstream.ui.components.GreenColumn
-import com.blockstream.ui.components.GreenRow
-import com.blockstream.ui.navigation.setResult
+import com.blockstream.compose.components.GreenArrow
+import com.blockstream.compose.components.GreenColumn
+import com.blockstream.compose.components.GreenRow
+import com.blockstream.compose.navigation.setResult
 import org.jetbrains.compose.resources.stringResource
 import org.koin.compose.koinInject
 

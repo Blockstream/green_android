@@ -24,8 +24,8 @@ import com.blockstream.compose.components.GreenBottomSheet
 import com.blockstream.compose.theme.bodyLarge
 import com.blockstream.compose.theme.green
 import com.blockstream.compose.theme.titleSmall
-import com.blockstream.ui.components.GreenRow
-import com.blockstream.ui.navigation.setResult
+import com.blockstream.compose.components.GreenRow
+import com.blockstream.compose.navigation.setResult
 import org.jetbrains.compose.resources.painterResource
 import org.jetbrains.compose.resources.stringResource
 

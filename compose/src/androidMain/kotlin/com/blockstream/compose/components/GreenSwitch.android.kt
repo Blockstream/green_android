@@ -10,8 +10,6 @@ import androidx.compose.ui.tooling.preview.Preview
 import blockstream_green.common.generated.resources.Res
 import blockstream_green.common.generated.resources.globe
 import com.blockstream.compose.GreenPreview
-import com.blockstream.ui.components.GreenColumn
-import com.blockstream.ui.components.GreenSwitch
 import org.jetbrains.compose.resources.painterResource
 
 @Composable

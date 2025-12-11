@@ -33,8 +33,6 @@ import com.blockstream.compose.theme.bodyLarge
 import com.blockstream.compose.theme.green
 import com.blockstream.compose.theme.whiteMedium
 import com.blockstream.compose.utils.noRippleClickable
-import com.blockstream.ui.components.GreenColumn
-import com.blockstream.ui.components.GreenRow
 import org.jetbrains.compose.resources.painterResource
 
 @Composable

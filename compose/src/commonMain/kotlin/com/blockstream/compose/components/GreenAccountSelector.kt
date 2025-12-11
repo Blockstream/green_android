@@ -17,8 +17,7 @@ import com.blockstream.common.gdk.data.Account
 import com.blockstream.compose.theme.bodyLarge
 import com.blockstream.compose.theme.whiteMedium
 import com.blockstream.compose.utils.noRippleClickable
-import com.blockstream.ui.components.GreenRow
-import com.blockstream.ui.utils.appTestTag
+import com.blockstream.compose.utils.appTestTag
 import org.jetbrains.compose.resources.stringResource
 
 @Composable

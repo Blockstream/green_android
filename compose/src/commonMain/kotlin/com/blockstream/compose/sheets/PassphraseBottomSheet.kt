@@ -27,8 +27,8 @@ import com.blockstream.compose.components.GreenBottomSheet
 import com.blockstream.compose.components.GreenButton
 import com.blockstream.compose.utils.HandleSideEffect
 import com.blockstream.compose.utils.TextInputPassword
-import com.blockstream.ui.components.GreenColumn
-import com.blockstream.ui.navigation.setResult
+import com.blockstream.compose.components.GreenColumn
+import com.blockstream.compose.navigation.setResult
 import org.jetbrains.compose.resources.stringResource
 
 @OptIn(ExperimentalMaterial3Api::class)

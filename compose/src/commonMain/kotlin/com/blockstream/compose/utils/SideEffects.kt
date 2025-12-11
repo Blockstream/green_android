@@ -63,7 +63,7 @@ import com.blockstream.compose.managers.askForBluetoothPermissions
 import com.blockstream.compose.navigation.navigate
 import com.blockstream.compose.sideeffects.OpenDialogData
 import com.blockstream.compose.sideeffects.openBrowser
-import com.blockstream.ui.navigation.LocalNavigator
+import com.blockstream.compose.navigation.LocalNavigator
 import com.blockstream.ui.sideeffects.SideEffect
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.delay

@@ -20,9 +20,7 @@ import com.blockstream.compose.theme.bodyMedium
 import com.blockstream.compose.theme.displaySmall
 import com.blockstream.compose.theme.labelLarge
 import com.blockstream.compose.theme.whiteMedium
-import com.blockstream.ui.components.GreenColumn
-import com.blockstream.ui.components.GreenRow
-import com.blockstream.ui.utils.appTestTag
+import com.blockstream.compose.utils.appTestTag
 import org.jetbrains.compose.resources.stringResource
 
 @Composable

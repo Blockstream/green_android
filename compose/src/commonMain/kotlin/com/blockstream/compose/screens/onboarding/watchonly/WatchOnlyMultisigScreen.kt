@@ -47,7 +47,7 @@ import com.blockstream.compose.utils.SetupScreen
 import com.blockstream.compose.utils.TextInputPassword
 import com.blockstream.compose.utils.TextInputPaste
 import com.blockstream.compose.utils.noRippleToggleable
-import com.blockstream.ui.components.GreenColumn
+import com.blockstream.compose.components.GreenColumn
 import org.jetbrains.compose.resources.stringResource
 
 @Composable

@@ -12,8 +12,6 @@ import com.adamglin.PhosphorIcons
 import com.adamglin.phosphoricons.Regular
 import com.adamglin.phosphoricons.regular.ShareNetwork
 import com.blockstream.compose.GreenPreview
-import com.blockstream.ui.components.GreenColumn
-import com.blockstream.ui.components.GreenRow
 
 @Composable
 @Preview

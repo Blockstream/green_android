@@ -24,7 +24,7 @@ import com.blockstream.compose.components.CountriesList
 import com.blockstream.compose.components.CountryItem
 import com.blockstream.compose.components.GreenBottomSheet
 import com.blockstream.compose.theme.bodyMedium
-import com.blockstream.ui.navigation.setResult
+import com.blockstream.compose.navigation.setResult
 import org.jetbrains.compose.resources.stringResource
 
 @OptIn(ExperimentalMaterial3Api::class)

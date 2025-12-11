@@ -28,9 +28,9 @@ import com.blockstream.compose.components.TransactionActionButtons
 import com.blockstream.compose.components.WalletBalance
 import com.blockstream.compose.theme.bodyMedium
 import com.blockstream.compose.utils.SetupScreen
-import com.blockstream.ui.navigation.LocalInnerPadding
-import com.blockstream.ui.utils.bottom
-import com.blockstream.ui.utils.plus
+import com.blockstream.compose.navigation.LocalInnerPadding
+import com.blockstream.compose.utils.bottom
+import com.blockstream.compose.utils.plus
 import org.jetbrains.compose.resources.stringResource
 
 @Composable

@@ -79,11 +79,11 @@ import com.blockstream.compose.theme.whiteLow
 import com.blockstream.compose.theme.whiteMedium
 import com.blockstream.compose.utils.HandleSideEffect
 import com.blockstream.compose.utils.SetupScreen
-import com.blockstream.ui.components.GreenColumn
-import com.blockstream.ui.components.GreenRow
-import com.blockstream.ui.navigation.LocalInnerPadding
-import com.blockstream.ui.navigation.getResult
-import com.blockstream.ui.utils.appTestTag
+import com.blockstream.compose.components.GreenColumn
+import com.blockstream.compose.components.GreenRow
+import com.blockstream.compose.navigation.LocalInnerPadding
+import com.blockstream.compose.navigation.getResult
+import com.blockstream.compose.utils.appTestTag
 import kotlinx.coroutines.launch
 import org.jetbrains.compose.resources.painterResource
 import org.jetbrains.compose.resources.stringResource

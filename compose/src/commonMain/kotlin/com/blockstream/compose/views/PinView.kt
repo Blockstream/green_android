@@ -50,8 +50,8 @@ import com.blockstream.compose.theme.md_theme_outline
 import com.blockstream.compose.theme.whiteHigh
 import com.blockstream.compose.theme.whiteLow
 import com.blockstream.compose.utils.AnimatedNullableVisibility
-import com.blockstream.ui.utils.appTestTag
-import com.blockstream.ui.utils.ifTrue
+import com.blockstream.compose.utils.appTestTag
+import com.blockstream.compose.utils.ifTrue
 import kotlinx.coroutines.launch
 import org.jetbrains.compose.resources.getString
 import org.jetbrains.compose.resources.painterResource

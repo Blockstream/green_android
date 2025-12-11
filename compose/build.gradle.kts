@@ -44,19 +44,19 @@ kotlin {
         commonMain.dependencies {
             /**  --- Modules ---------------------------------------------------------------------------- */
             api(project(":common"))
-            api(project(":ui-common"))
             /** ----------------------------------------------------------------------------------------- */
 
             /**  --- Compose ---------------------------------------------------------------------------- */
             implementation(compose.runtime)
             implementation(compose.foundation)
-            implementation(compose.material)
-            implementation(compose.material3)
-            implementation(compose.materialIconsExtended)
             implementation(compose.ui)
             implementation(compose.components.uiToolingPreview)
+            implementation(compose.material)
+            implementation(compose.material3)
             implementation(libs.constraintlayout.compose.multiplatform)
             implementation(libs.material3.adaptive)
+            implementation(libs.navigation.compose)
+            implementation(libs.compose.backhandler)
             /** ----------------------------------------------------------------------------------------- */
 
             /**  --- Koin   ----------------------------------------------------------------------------- */
@@ -71,7 +71,7 @@ kotlin {
             implementation(libs.coil.svg)
             implementation(libs.coil.test)
             implementation(libs.coil.network.ktor3)
-            // implementation(libs.compose.action.menu)
+            implementation(libs.phosphor.icon)
             /** ----------------------------------------------------------------------------------------- */
             implementation(libs.koalaplot.core)
         }

@@ -55,8 +55,8 @@ import com.blockstream.compose.theme.labelMedium
 import com.blockstream.compose.theme.red
 import com.blockstream.compose.theme.titleSmall
 import com.blockstream.compose.theme.whiteLow
-import com.blockstream.ui.utils.appTestTag
-import com.blockstream.ui.utils.composeIf
+import com.blockstream.compose.utils.appTestTag
+import com.blockstream.compose.utils.composeIf
 import io.github.koalaplot.core.ChartLayout
 import io.github.koalaplot.core.legend.LegendLocation
 import io.github.koalaplot.core.line.AreaBaseline

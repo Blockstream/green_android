@@ -54,8 +54,8 @@ import com.blockstream.compose.theme.md_theme_surfaceCircle
 import com.blockstream.compose.theme.whiteMedium
 import com.blockstream.compose.utils.SetupScreen
 import com.blockstream.compose.utils.noRippleClickable
-import com.blockstream.ui.components.GreenColumn
-import com.blockstream.ui.components.GreenRow
+import com.blockstream.compose.components.GreenColumn
+import com.blockstream.compose.components.GreenRow
 import org.jetbrains.compose.resources.painterResource
 import org.jetbrains.compose.resources.stringResource
 

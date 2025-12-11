@@ -94,11 +94,11 @@ import com.blockstream.compose.utils.SetupScreen
 import com.blockstream.compose.utils.TextInputPassword
 import com.blockstream.compose.utils.noRippleClickable
 import com.blockstream.compose.views.PinView
-import com.blockstream.ui.components.GreenColumn
-import com.blockstream.ui.components.GreenRow
-import com.blockstream.ui.components.GreenSpacer
-import com.blockstream.ui.navigation.getResult
-import com.blockstream.ui.navigation.setResult
+import com.blockstream.compose.components.GreenColumn
+import com.blockstream.compose.components.GreenRow
+import com.blockstream.compose.components.GreenSpacer
+import com.blockstream.compose.navigation.getResult
+import com.blockstream.compose.navigation.setResult
 import kotlinx.coroutines.flow.filter
 import kotlinx.coroutines.flow.first
 import org.jetbrains.compose.resources.getString

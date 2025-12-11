@@ -51,10 +51,10 @@ import com.blockstream.compose.sideeffects.rememberBiometricsState
 import com.blockstream.compose.theme.GreenChrome
 import com.blockstream.compose.theme.GreenTheme
 import com.blockstream.green.data.config.AppInfo
-import com.blockstream.ui.navigation.LocalNavData
-import com.blockstream.ui.navigation.LocalNavigator
-import com.blockstream.ui.navigation.bottomsheet.ModalBottomSheetLayout
-import com.blockstream.ui.navigation.bottomsheet.rememberBottomSheetNavigator
+import com.blockstream.compose.navigation.LocalNavData
+import com.blockstream.compose.navigation.LocalNavigator
+import com.blockstream.compose.navigation.bottomsheet.ModalBottomSheetLayout
+import com.blockstream.compose.navigation.bottomsheet.rememberBottomSheetNavigator
 import com.russhwolf.settings.ExperimentalSettingsApi
 import com.russhwolf.settings.ObservableSettings
 import com.russhwolf.settings.Settings

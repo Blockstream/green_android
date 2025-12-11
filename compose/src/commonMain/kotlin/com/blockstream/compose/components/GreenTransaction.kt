@@ -45,7 +45,6 @@ import com.blockstream.compose.theme.md_theme_inverseSurface
 import com.blockstream.compose.theme.orange
 import com.blockstream.compose.theme.red
 import com.blockstream.compose.theme.whiteMedium
-import com.blockstream.ui.components.GreenRow
 import org.jetbrains.compose.resources.painterResource
 import org.jetbrains.compose.resources.stringResource
 

@@ -23,7 +23,7 @@ import com.blockstream.compose.theme.bodyMedium
 import com.blockstream.compose.theme.md_theme_errorContainer
 import com.blockstream.compose.theme.whiteHigh
 import com.blockstream.compose.utils.AnimatedNullableVisibility
-import com.blockstream.ui.utils.appTestTag
+import com.blockstream.compose.utils.appTestTag
 
 @Composable
 fun GreenCard(

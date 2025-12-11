@@ -37,7 +37,7 @@ import com.blockstream.compose.extensions.onValueChange
 import com.blockstream.compose.theme.GreenChromePreview
 import com.blockstream.compose.theme.bodyMedium
 import com.blockstream.compose.theme.titleSmall
-import com.blockstream.ui.components.GreenColumn
+import com.blockstream.compose.components.GreenColumn
 import org.jetbrains.compose.resources.stringResource
 import org.jetbrains.compose.ui.tooling.preview.Preview
 

@@ -30,8 +30,8 @@ import com.blockstream.compose.components.GreenButtonColor
 import com.blockstream.compose.components.GreenButtonSize
 import com.blockstream.compose.components.GreenButtonType
 import com.blockstream.compose.theme.textMedium
-import com.blockstream.ui.components.GreenColumn
-import com.blockstream.ui.navigation.setResult
+import com.blockstream.compose.components.GreenColumn
+import com.blockstream.compose.navigation.setResult
 import org.jetbrains.compose.resources.painterResource
 import org.jetbrains.compose.resources.stringResource
 

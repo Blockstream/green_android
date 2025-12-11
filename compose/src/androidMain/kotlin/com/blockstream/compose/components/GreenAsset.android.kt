@@ -6,7 +6,6 @@ import blockstream_green.common.generated.resources.Res
 import blockstream_green.common.generated.resources.id_asset
 import com.blockstream.common.extensions.previewAssetBalance
 import com.blockstream.compose.GreenAndroidPreview
-import com.blockstream.ui.components.GreenColumn
 import org.jetbrains.compose.resources.stringResource
 
 @Preview

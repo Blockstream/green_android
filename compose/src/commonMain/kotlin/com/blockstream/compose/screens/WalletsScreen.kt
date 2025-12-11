@@ -38,7 +38,7 @@ import com.blockstream.compose.theme.whiteLow
 import com.blockstream.compose.utils.fadingEdges
 import com.blockstream.compose.views.WalletListItem
 import com.blockstream.compose.views.WalletListItemCallbacks
-import com.blockstream.ui.components.GreenColumn
+import com.blockstream.compose.components.GreenColumn
 import org.jetbrains.compose.resources.StringResource
 import org.jetbrains.compose.resources.stringResource
 

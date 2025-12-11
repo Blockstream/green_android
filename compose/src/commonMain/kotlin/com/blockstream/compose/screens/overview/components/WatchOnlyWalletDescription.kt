@@ -12,8 +12,8 @@ import blockstream_green.common.generated.resources.id_learn_more
 import com.blockstream.compose.theme.bodyMedium
 import com.blockstream.compose.theme.md_theme_primary
 import com.blockstream.compose.theme.whiteMedium
-import com.blockstream.ui.components.RichSpan
-import com.blockstream.ui.components.RichText
+import com.blockstream.compose.components.RichSpan
+import com.blockstream.compose.components.RichText
 import org.jetbrains.compose.resources.stringResource
 
 @Composable

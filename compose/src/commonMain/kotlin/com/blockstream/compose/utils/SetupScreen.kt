@@ -9,7 +9,7 @@ import androidx.compose.ui.Modifier
 import com.blockstream.common.models.GreenViewModel
 import com.blockstream.compose.components.OnProgressStyle
 import com.blockstream.compose.components.ScreenContainer
-import com.blockstream.ui.navigation.AppBarState
+import com.blockstream.compose.navigation.AppBarState
 import com.blockstream.ui.sideeffects.SideEffect
 import kotlinx.coroutines.CoroutineScope
 

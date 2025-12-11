@@ -14,7 +14,6 @@ import blockstream_green.common.generated.resources.id_amount
 import blockstream_green.common.generated.resources.id_error
 import com.blockstream.compose.GreenAndroidPreview
 import com.blockstream.compose.theme.green
-import com.blockstream.ui.components.GreenColumn
 import org.jetbrains.compose.resources.stringResource
 
 @Preview

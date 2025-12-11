@@ -11,7 +11,6 @@ import com.adamglin.phosphoricons.Regular
 import com.adamglin.phosphoricons.regular.ArrowLineDown
 import com.adamglin.phosphoricons.regular.ArrowLineUp
 import com.adamglin.phosphoricons.regular.ShoppingCart
-import com.blockstream.ui.components.GreenRow
 
 @Composable
 fun TransactionActionButtons(

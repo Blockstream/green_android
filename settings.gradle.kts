@@ -24,7 +24,6 @@ dependencyResolutionManagement {
 include(
     ":androidApp",
     ":compose",
-    ":ui-common",
     ":hardware",
     ":jade",
     ":base-gms",

@@ -25,8 +25,7 @@ import com.blockstream.compose.GreenPreview
 import com.blockstream.compose.extensions.assetIcon
 import com.blockstream.compose.extensions.policyIcon
 import com.blockstream.compose.theme.*
-import com.blockstream.ui.components.GreenColumn
-import com.blockstream.ui.utils.ifTrue
+import com.blockstream.compose.utils.ifTrue
 import org.jetbrains.compose.resources.painterResource
 import org.jetbrains.compose.resources.stringResource
 import org.jetbrains.compose.ui.tooling.preview.Preview

@@ -22,8 +22,8 @@ import blockstream_green.common.generated.resources.id_system_default
 import com.blockstream.common.models.settings.AppSettingsViewModel
 import com.blockstream.common.models.settings.AppSettingsViewModelAbstract
 import com.blockstream.compose.components.GreenBottomSheet
-import com.blockstream.ui.components.GreenRow
-import com.blockstream.ui.utils.appTestTag
+import com.blockstream.compose.components.GreenRow
+import com.blockstream.compose.utils.appTestTag
 import org.jetbrains.compose.resources.stringResource
 
 @OptIn(ExperimentalMaterial3Api::class)

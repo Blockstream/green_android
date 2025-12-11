@@ -11,7 +11,7 @@ import androidx.compose.ui.tooling.preview.Preview
 import com.blockstream.common.models.wallet.WalletNameViewModelPreview
 import com.blockstream.compose.GreenAndroidPreview
 import com.blockstream.compose.components.GreenButton
-import com.blockstream.ui.components.GreenColumn
+import com.blockstream.compose.components.GreenColumn
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable

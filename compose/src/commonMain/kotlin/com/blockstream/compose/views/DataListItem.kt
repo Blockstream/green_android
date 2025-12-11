@@ -23,8 +23,8 @@ import com.blockstream.compose.theme.whiteHigh
 import com.blockstream.compose.theme.whiteLow
 import com.blockstream.compose.theme.whiteMedium
 import com.blockstream.compose.utils.noRippleClickable
-import com.blockstream.ui.components.GreenColumn
-import com.blockstream.ui.components.GreenRow
+import com.blockstream.compose.components.GreenColumn
+import com.blockstream.compose.components.GreenRow
 import kotlinx.coroutines.launch
 
 @Composable

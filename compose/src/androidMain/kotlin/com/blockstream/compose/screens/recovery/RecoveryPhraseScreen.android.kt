@@ -5,7 +5,7 @@ import androidx.compose.ui.tooling.preview.Preview
 import com.blockstream.common.models.recovery.RecoveryPhraseViewModelPreview
 import com.blockstream.compose.GreenAndroidPreview
 import com.blockstream.compose.theme.GreenChromePreview
-import com.blockstream.ui.components.GreenColumn
+import com.blockstream.compose.components.GreenColumn
 
 @Composable
 @Preview

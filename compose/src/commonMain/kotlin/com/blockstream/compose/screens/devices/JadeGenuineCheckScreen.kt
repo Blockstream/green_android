@@ -1,5 +1,6 @@
 package com.blockstream.compose.screens.devices
 
+import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.fillMaxWidth
@@ -45,8 +46,8 @@ import com.blockstream.compose.theme.labelLarge
 import com.blockstream.compose.theme.titleLarge
 import com.blockstream.compose.theme.whiteMedium
 import com.blockstream.compose.utils.SetupScreen
-import com.blockstream.ui.components.GreenColumn
-import com.blockstream.ui.navigation.setResult
+import com.blockstream.compose.components.GreenColumn
+import com.blockstream.compose.navigation.setResult
 import org.jetbrains.compose.resources.painterResource
 import org.jetbrains.compose.resources.stringResource
 
@@ -113,7 +114,7 @@ fun JadeGenuineCheckScreen(
                 }
             }
 
-            androidx.compose.animation.AnimatedVisibility(
+            AnimatedVisibility(
                 visible = onProgress,
                 modifier = Modifier.fillMaxWidth().weight(1f)
             ) {
@@ -132,7 +133,7 @@ fun JadeGenuineCheckScreen(
                 }
             }
 
-            androidx.compose.animation.AnimatedVisibility(
+            AnimatedVisibility(
                 visible = !onProgress,
             ) {
 

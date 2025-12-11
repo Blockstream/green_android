@@ -22,7 +22,6 @@ import androidx.compose.ui.draw.alpha
 import androidx.compose.ui.draw.rotate
 import androidx.compose.ui.draw.scale
 import androidx.compose.ui.node.Ref
-import com.blockstream.ui.utils.ifTrue
 
 /**
  * Wrapper around [AnimatedVisibility] that remembers the last state so that a nullable
