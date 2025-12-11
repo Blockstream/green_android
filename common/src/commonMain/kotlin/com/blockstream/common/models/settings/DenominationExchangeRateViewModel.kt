@@ -13,7 +13,6 @@ import com.blockstream.common.gdk.data.Settings
 import com.blockstream.common.models.GreenViewModel
 import com.blockstream.common.sideeffects.SideEffects
 import com.blockstream.ui.events.Event
-import com.rickclephas.kmp.nativecoroutines.NativeCoroutinesState
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
@@ -26,14 +25,8 @@ abstract class DenominationExchangeRateViewModelAbstract(greenWallet: GreenWalle
     override fun screenName(): String = "DenominationAndExchangeRate"
 
     abstract val units: List<String>
-
-    @NativeCoroutinesState
     abstract val selectedUnit: StateFlow<String>
-
-    @NativeCoroutinesState
     abstract val exchangeAndCurrencies: StateFlow<List<String>>
-
-    @NativeCoroutinesState
     abstract val selectedExchangeAndCurrency: StateFlow<String>
 }
 

@@ -13,7 +13,8 @@ import com.blockstream.common.sideeffects.SideEffects
 import com.blockstream.common.utils.StringHolder
 import com.blockstream.ui.events.Event
 import com.blockstream.ui.navigation.NavData
-import com.rickclephas.kmp.observableviewmodel.launch
+import kotlinx.coroutines.launch
+import androidx.lifecycle.viewModelScope
 
 abstract class LnUrlAuthViewModelAbstract(
     greenWallet: GreenWallet,

@@ -1,5 +1,6 @@
 package com.blockstream.common.models.twofactor
 
+import androidx.lifecycle.viewModelScope
 import blockstream_green.common.generated.resources.Res
 import blockstream_green.common.generated.resources.id_insufficient_lbtc_for_fees
 import blockstream_green.common.generated.resources.id_insufficient_lbtc_to_send_a
@@ -16,16 +17,14 @@ import com.blockstream.common.sideeffects.SideEffects
 import com.blockstream.common.utils.StringHolder
 import com.blockstream.ui.events.Event
 import com.blockstream.ui.navigation.NavData
-import com.rickclephas.kmp.nativecoroutines.NativeCoroutinesState
-import com.rickclephas.kmp.observableviewmodel.launch
+import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
+import kotlinx.coroutines.launch
 import org.jetbrains.compose.resources.getString
 
 abstract class ReEnable2FAViewModelAbstract(greenWallet: GreenWallet) :
     GreenViewModel(greenWalletOrNull = greenWallet) {
     override fun screenName(): String = "ReEnable2FA"
-
-    @NativeCoroutinesState
     abstract val accounts: StateFlow<List<Account>>
 }
 

@@ -1,5 +1,6 @@
 package com.blockstream.common.models.assetaccounts
 
+import androidx.lifecycle.viewModelScope
 import blockstream_green.common.generated.resources.Res
 import blockstream_green.common.generated.resources.id_watchonly
 import com.blockstream.common.data.GreenWallet
@@ -8,10 +9,9 @@ import com.blockstream.common.extensions.previewWallet
 import com.blockstream.common.gdk.data.AccountAsset
 import com.blockstream.common.models.GreenViewModel
 import com.blockstream.ui.navigation.NavData
-import com.rickclephas.kmp.nativecoroutines.NativeCoroutinesState
-import com.rickclephas.kmp.observableviewmodel.launch
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
+import kotlinx.coroutines.launch
 import org.jetbrains.compose.resources.getString
 
 abstract class AccountDescriptorViewModelAbstract(
@@ -19,8 +19,6 @@ abstract class AccountDescriptorViewModelAbstract(
     accountAsset: AccountAsset
 ) : GreenViewModel(greenWalletOrNull = greenWallet, accountAssetOrNull = accountAsset) {
     override fun screenName(): String = "AccountDescriptor"
-
-    @NativeCoroutinesState
     abstract val descriptor: StateFlow<String>
 }
 

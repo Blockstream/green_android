@@ -1,5 +1,6 @@
 package com.blockstream.common.models.devices
 
+import androidx.lifecycle.viewModelScope
 import blockstream_green.common.generated.resources.Res
 import blockstream_green.common.generated.resources.id_your_device_was_disconnected
 import com.blockstream.common.SupportType
@@ -21,18 +22,15 @@ import com.blockstream.common.utils.randomChars
 import com.blockstream.green.utils.Loggable
 import com.blockstream.jade.data.JadeError
 import com.blockstream.ui.events.Event
-import com.rickclephas.kmp.nativecoroutines.NativeCoroutinesState
-import com.rickclephas.kmp.observableviewmodel.launch
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.onEach
+import kotlinx.coroutines.launch
 
 abstract class JadeGenuineCheckViewModelAbstract(greenWalletOrNull: GreenWallet?) :
     AbstractDeviceViewModel(greenWalletOrNull = greenWalletOrNull) {
     override fun screenName(): String = "JadeGenuineCheck"
-
-    @NativeCoroutinesState
     abstract val genuineState: StateFlow<GenuineState>
 }
 

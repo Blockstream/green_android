@@ -1,5 +1,6 @@
 package com.blockstream.common.models.lightning
 
+import androidx.lifecycle.viewModelScope
 import blockstream_green.common.generated.resources.Res
 import blockstream_green.common.generated.resources.id_empty_lightning_account
 import blockstream_green.common.generated.resources.id_refund
@@ -31,11 +32,6 @@ import com.blockstream.green.utils.Loggable
 import com.blockstream.ui.events.Event
 import com.blockstream.ui.navigation.NavData
 import com.blockstream.ui.sideeffects.SideEffect
-import com.rickclephas.kmp.nativecoroutines.NativeCoroutinesState
-import com.rickclephas.kmp.observableviewmodel.MutableStateFlow
-import com.rickclephas.kmp.observableviewmodel.coroutineScope
-import com.rickclephas.kmp.observableviewmodel.launch
-import com.rickclephas.kmp.observableviewmodel.stateIn
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -47,6 +43,8 @@ import kotlinx.coroutines.flow.filterNotNull
 import kotlinx.coroutines.flow.flow
 import kotlinx.coroutines.flow.launchIn
 import kotlinx.coroutines.flow.map
+import kotlinx.coroutines.flow.stateIn
+import kotlinx.coroutines.launch
 import kotlinx.coroutines.sync.Mutex
 import org.jetbrains.compose.resources.getString
 import kotlin.math.absoluteValue
@@ -63,35 +61,15 @@ abstract class RecoverFundsViewModelAbstract(
 
     override fun screenName(): String =
         if (isRefund) "OnChainRefund" else if (isSendAll) "LightningSendAll" else "RedeemOnchainFunds"
-
-    @NativeCoroutinesState
     abstract val bitcoinAccounts: StateFlow<List<AccountAssetBalance>>
-
-    @NativeCoroutinesState
     abstract val manualAddress: MutableStateFlow<String>
-
-    @NativeCoroutinesState
     abstract val amount: StateFlow<String>
-
-    @NativeCoroutinesState
     abstract val amountToBeRefunded: StateFlow<String?>
-
-    @NativeCoroutinesState
     abstract val amountToBeRefundedFiat: StateFlow<String?>
-
-    @NativeCoroutinesState
     abstract val hasBitcoinAccount: StateFlow<Boolean>
-
-    @NativeCoroutinesState
     abstract val showManualAddress: MutableStateFlow<Boolean>
-
-    @NativeCoroutinesState
     abstract val recommendedFees: StateFlow<RecommendedFees?>
-
-    @NativeCoroutinesState
     abstract val onProgressSending: StateFlow<Boolean>
-
-    @NativeCoroutinesState
     abstract val feePriority: StateFlow<FeePriority>
 
     abstract val error: StateFlow<String?>
@@ -107,20 +85,18 @@ class RecoverFundsViewModel(
     isSendAll = isSendAll,
     onChainAddress = onChainAddress
 ) {
-    override val manualAddress: MutableStateFlow<String> = MutableStateFlow(viewModelScope, "")
+    override val manualAddress: MutableStateFlow<String> = MutableStateFlow("")
 
     override val amountToBeRefunded: MutableStateFlow<String?> =
-        MutableStateFlow(viewModelScope, null)
+        MutableStateFlow(null)
     override val amountToBeRefundedFiat: MutableStateFlow<String?> =
-        MutableStateFlow(viewModelScope, null)
+        MutableStateFlow(null)
 
     private val _onProgressSending: MutableStateFlow<Boolean> = MutableStateFlow(false)
     override val onProgressSending: StateFlow<Boolean> = _onProgressSending.asStateFlow()
 
     private var _customFeeRate: MutableStateFlow<Long?> = MutableStateFlow(null)
     private val _feePriority: MutableStateFlow<FeePriority> = MutableStateFlow(FeePriority.Low())
-
-    @NativeCoroutinesState
     override val feePriority: StateFlow<FeePriority> = _feePriority.asStateFlow()
 
     // Used to trigger
@@ -162,7 +138,7 @@ class RecoverFundsViewModel(
     }.stateIn(viewModelScope, SharingStarted.WhileSubscribed(), true)
 
     override val showManualAddress: MutableStateFlow<Boolean> =
-        MutableStateFlow(viewModelScope, false)
+        MutableStateFlow(false)
 
     class LocalEvents {
         data class ClickFeePriority(val showCustomFeeRateDialog: Boolean = false) : Event
@@ -203,7 +179,7 @@ class RecoverFundsViewModel(
             ) { _ ->
                 prepareJob?.cancel()
                 prepareJob = prepare()
-            }.launchIn(viewModelScope.coroutineScope)
+            }.launchIn(viewModelScope)
         }
 
         bootstrap()

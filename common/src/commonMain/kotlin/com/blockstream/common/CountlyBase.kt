@@ -20,7 +20,6 @@ import com.blockstream.common.managers.SettingsManager
 import com.blockstream.green.data.banner.Banner
 import com.blockstream.green.data.config.AppInfo
 import com.blockstream.green.utils.Loggable
-import com.rickclephas.kmp.nativecoroutines.NativeCoroutines
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.channels.BufferOverflow
@@ -70,7 +69,6 @@ abstract class CountlyBase(
     private val _remoteConfigUpdateEvent =
         MutableSharedFlow<Unit>(replay = 1, onBufferOverflow = BufferOverflow.DROP_OLDEST)
 
-    @NativeCoroutines
     val remoteConfigUpdateEvent = _remoteConfigUpdateEvent.asSharedFlow()
 
     var exceptionCounter = 0L

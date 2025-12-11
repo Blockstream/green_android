@@ -2,6 +2,7 @@
 
 package com.blockstream.common.models
 
+import androidx.lifecycle.viewModelScope
 import blockstream_green.common.generated.resources.Res
 import blockstream_green.common.generated.resources.id_account_has_been_archived
 import blockstream_green.common.generated.resources.id_auto_logout_timeout_expired
@@ -82,10 +83,6 @@ import com.blockstream.jade.firmware.HardwareQATester
 import com.blockstream.ui.events.Event
 import com.blockstream.ui.models.BaseViewModel
 import com.blockstream.ui.sideeffects.SideEffect
-import com.rickclephas.kmp.nativecoroutines.NativeCoroutines
-import com.rickclephas.kmp.nativecoroutines.NativeCoroutinesState
-import com.rickclephas.kmp.observableviewmodel.MutableStateFlow
-import com.rickclephas.kmp.observableviewmodel.coroutineScope
 import kotlinx.coroutines.CompletableDeferred
 import kotlinx.coroutines.Deferred
 import kotlinx.coroutines.Dispatchers
@@ -159,15 +156,13 @@ open class GreenViewModel constructor(
     internal val isPreview by lazy { this::class.simpleName?.contains("Preview") == true }
 
     // Main action validation
-    internal val _isValid = MutableStateFlow(viewModelScope, isPreview)
+    internal val _isValid = MutableStateFlow(isPreview)
 
-    //@NativeCoroutinesState
     val isValid: StateFlow<Boolean> = _isValid
 
     // Main button enabled flag
     private val _buttonEnabled = MutableStateFlow(isPreview)
 
-    @NativeCoroutinesState
     val buttonEnabled: StateFlow<Boolean> = _buttonEnabled
 
     override fun screenName(): String? = null
@@ -178,7 +173,6 @@ open class GreenViewModel constructor(
     val greenWallet: GreenWallet
         get() = _greenWallet ?: greenWalletOrNull!!
 
-    @NativeCoroutines
     val greenWalletFlow: Flow<GreenWallet?> by lazy {
         greenWalletOrNull?.let {
             if (it.isEphemeral) {
@@ -195,7 +189,6 @@ open class GreenViewModel constructor(
     val device: GreenDevice
         get() = deviceOrNull!!
 
-    @NativeCoroutinesState
     val accountAsset: MutableStateFlow<AccountAsset?> = MutableStateFlow(accountAssetOrNull)
 
     val account: Account
@@ -223,14 +216,11 @@ open class GreenViewModel constructor(
             ?: Denomination.BTC)
     }
 
-    @NativeCoroutinesState
     val denomination: StateFlow<Denomination> by lazy { _denomination.asStateFlow() }
 
-    @NativeCoroutines
     val banner: MutableStateFlow<Banner?> = MutableStateFlow(null)
     val closedBanners = mutableListOf<Banner>()
 
-    @NativeCoroutines
     val promo: MutableStateFlow<Promo?> = MutableStateFlow(null)
     private var promoImpression: Boolean = false
 
@@ -535,7 +525,7 @@ open class GreenViewModel constructor(
             }
 
             is Events.SelectDenomination -> {
-                viewModelScope.coroutineScope.launch {
+                viewModelScope.launch {
                     denominatedValue()?.also {
                         if (it.assetId.isPolicyAsset(session)) {
                             postSideEffect(
@@ -672,7 +662,7 @@ open class GreenViewModel constructor(
             postSideEffect(SideEffects.ErrorDialog(error = it, supportData = errorReport(it)))
         }
     ): Job {
-        return viewModelScope.coroutineScope.launch {
+        return viewModelScope.launch {
             (mutex ?: Mutex()).withLock {
                 try {
                     preAction?.invoke()
@@ -775,7 +765,7 @@ open class GreenViewModel constructor(
             it.activeAccount = account.pointer
 
             if (!it.isEphemeral) {
-                viewModelScope.coroutineScope.launch(context = logException(countly)) {
+                viewModelScope.launch(context = logException(countly)) {
                     database.updateWallet(it)
                 }
             }

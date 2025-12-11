@@ -15,8 +15,6 @@ import com.blockstream.domain.wallet.NewWalletUseCase
 import com.blockstream.domain.wallet.RestoreWalletUseCase
 import com.blockstream.green.utils.Loggable
 import com.blockstream.ui.events.Event
-import com.rickclephas.kmp.nativecoroutines.NativeCoroutinesState
-import com.rickclephas.kmp.observableviewmodel.MutableStateFlow
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.onEach
@@ -29,8 +27,6 @@ abstract class PinViewModelAbstract(
     override fun screenName(): String = "OnBoardPin"
 
     override fun segmentation(): HashMap<String, Any>? = setupArgs.let { countly.onBoardingSegmentation(setupArgs = it) }
-
-    @NativeCoroutinesState
     abstract val rocketAnimation: StateFlow<Boolean>
 }
 
@@ -41,10 +37,8 @@ class PinViewModel constructor(
     private val newWalletUseCase: NewWalletUseCase by inject()
     private val restoreWalletUseCase: RestoreWalletUseCase by inject()
     private val checkRecoveryPhraseUseCase: CheckRecoveryPhraseUseCase by inject()
-
-    @NativeCoroutinesState
     override val rocketAnimation: MutableStateFlow<Boolean> =
-        MutableStateFlow(viewModelScope, false)
+        MutableStateFlow(false)
 
     class LocalEvents {
         class SetPin(val pin: String) : Event
@@ -175,7 +169,7 @@ class PinViewModel constructor(
 class PinViewModelPreview(setupArgs: SetupArgs) : PinViewModelAbstract(setupArgs) {
 
     override val rocketAnimation: MutableStateFlow<Boolean>
-        get() = MutableStateFlow(viewModelScope, false)
+        get() = MutableStateFlow(false)
 
     companion object {
         fun preview() = PinViewModelPreview(SetupArgs(mnemonic = "neutral inherit learn"))

@@ -1,5 +1,6 @@
 package com.blockstream.common.models.addresses
 
+import androidx.lifecycle.viewModelScope
 import blockstream_green.common.generated.resources.Res
 import blockstream_green.common.generated.resources.id_addresses
 import com.blockstream.common.data.GreenWallet
@@ -13,15 +14,14 @@ import com.blockstream.common.navigation.NavigateDestinations
 import com.blockstream.common.sideeffects.SideEffects
 import com.blockstream.ui.events.Event
 import com.blockstream.ui.navigation.NavData
-import com.rickclephas.kmp.nativecoroutines.NativeCoroutinesState
-import com.rickclephas.kmp.observableviewmodel.launch
-import com.rickclephas.kmp.observableviewmodel.stateIn
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.flow.map
+import kotlinx.coroutines.flow.stateIn
+import kotlinx.coroutines.launch
 import kotlinx.serialization.Serializable
 import org.jetbrains.compose.resources.getString
 
@@ -34,13 +34,10 @@ abstract class AddressesViewModelAbstract(greenWallet: GreenWallet, accountAsset
     GreenViewModel(greenWalletOrNull = greenWallet, accountAssetOrNull = accountAsset) {
     override fun screenName(): String = "PreviousAddresses"
 
-    @NativeCoroutinesState
     abstract val query: MutableStateFlow<String>
 
-    @NativeCoroutinesState
     abstract val addresses: StateFlow<List<AddressLook>>
 
-    @NativeCoroutinesState
     abstract val hasMore: StateFlow<Boolean>
 
     abstract val canSign: Boolean

@@ -1,5 +1,6 @@
 package com.blockstream.common.models.overview
 
+import androidx.lifecycle.viewModelScope
 import blockstream_green.common.generated.resources.Res
 import blockstream_green.common.generated.resources.id_home
 import breez_sdk.HealthCheckStatus
@@ -34,9 +35,6 @@ import com.blockstream.green.utils.Loggable
 import com.blockstream.ui.events.Event
 import com.blockstream.ui.navigation.NavData
 import com.blockstream.ui.sideeffects.SideEffect
-import com.rickclephas.kmp.nativecoroutines.NativeCoroutinesState
-import com.rickclephas.kmp.observableviewmodel.launch
-import com.rickclephas.kmp.observableviewmodel.stateIn
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.StateFlow
@@ -50,6 +48,8 @@ import kotlinx.coroutines.flow.flowOf
 import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.flow.merge
 import kotlinx.coroutines.flow.onEach
+import kotlinx.coroutines.flow.stateIn
+import kotlinx.coroutines.launch
 import org.jetbrains.compose.resources.getString
 import org.koin.core.component.inject
 
@@ -58,26 +58,12 @@ abstract class WalletOverviewViewModelAbstract(
 ) : WalletBalanceViewModel(greenWallet = greenWallet) {
 
     override fun screenName(): String = "HomeTab"
-
-    @NativeCoroutinesState
     abstract val alerts: StateFlow<List<AlertType>>
-
-    @NativeCoroutinesState
     abstract val showWalletOnboarding: MutableStateFlow<Boolean>
-
-    @NativeCoroutinesState
     abstract val assets: StateFlow<DataState<List<AssetBalance>>>
-
-    @NativeCoroutinesState
     abstract val activeAccount: StateFlow<Account?>
-
-    @NativeCoroutinesState
     abstract val accounts: StateFlow<List<AccountAssetBalance>>
-
-    @NativeCoroutinesState
     abstract val archivedAccounts: StateFlow<Int>
-
-    @NativeCoroutinesState
     abstract val bitcoinChartData: StateFlow<DataState<BitcoinChartData>?>
     abstract fun refetchBitcoinPriceHistory()
 

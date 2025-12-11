@@ -1,5 +1,6 @@
 package com.blockstream.common.models.exchange
 
+import androidx.lifecycle.viewModelScope
 import blockstream_green.common.generated.resources.Res
 import blockstream_green.common.generated.resources.id_account_transfer
 import com.blockstream.common.TransactionSegmentation
@@ -40,9 +41,6 @@ import com.blockstream.green.data.banner.Banner
 import com.blockstream.green.utils.Loggable
 import com.blockstream.ui.events.Event
 import com.blockstream.ui.navigation.NavData
-import com.rickclephas.kmp.nativecoroutines.NativeCoroutinesState
-import com.rickclephas.kmp.observableviewmodel.launch
-import com.rickclephas.kmp.observableviewmodel.stateIn
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.IO
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -53,6 +51,8 @@ import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.flow.distinctUntilChanged
 import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.flow.onEach
+import kotlinx.coroutines.flow.stateIn
+import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
 import org.jetbrains.compose.resources.getString
 import kotlin.math.absoluteValue
@@ -73,43 +73,19 @@ abstract class AccountExchangeViewModelAbstract(
     val fromAccountAsset = accountAsset
 
     open val fromAccountAssetBalance: StateFlow<AccountAssetBalance?> = accountAssetBalance
-
-    @NativeCoroutinesState
     val toAccountAsset: MutableStateFlow<AccountAsset?> = MutableStateFlow(null)
-
-    @NativeCoroutinesState
     val toAccount: StateFlow<Account?> = toAccountAsset.map {
         it?.account
     }.stateIn(viewModelScope, SharingStarted.WhileSubscribed(), null)
-
-    @NativeCoroutinesState
     abstract val errorAmount: StateFlow<String?>
-
-    @NativeCoroutinesState
     abstract val errorGeneric: StateFlow<String?>
-
-    @NativeCoroutinesState
     abstract val toAccounts: StateFlow<List<AccountAssetBalance>?>
-
-    @NativeCoroutinesState
     abstract val fromAccounts: StateFlow<List<AccountAssetBalance>?>
-
-    @NativeCoroutinesState
     abstract val amount: MutableStateFlow<String>
-
-    @NativeCoroutinesState
     abstract val amountExchange: StateFlow<String>
-
-    @NativeCoroutinesState
     abstract val isSendAll: MutableStateFlow<Boolean>
-
-    @NativeCoroutinesState
     abstract val supportsSendAll: StateFlow<Boolean>
-
-    @NativeCoroutinesState
     abstract val receiveAmount: StateFlow<String?>
-
-    @NativeCoroutinesState
     abstract val receiveAmountExchange: StateFlow<String?>
 }
 

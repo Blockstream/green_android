@@ -1,5 +1,6 @@
 package com.blockstream.common.models.add
 
+import androidx.lifecycle.viewModelScope
 import blockstream_green.common.generated.resources.Res
 import blockstream_green.common.generated.resources.id_creating_your_s_account
 import com.blockstream.common.data.EnrichedAsset
@@ -15,7 +16,6 @@ import com.blockstream.common.sideeffects.SideEffects
 import com.blockstream.domain.account.CreateAccountUseCase
 import com.blockstream.green.utils.Loggable
 import com.blockstream.ui.sideeffects.SideEffect
-import com.rickclephas.kmp.observableviewmodel.coroutineScope
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.filterNotNull
 import kotlinx.coroutines.flow.launchIn
@@ -36,7 +36,7 @@ abstract class AddAccountViewModelAbstract(greenWallet: GreenWallet, val assetId
     init {
         _accountTypeBeingCreated.filterNotNull().onEach {
             onProgressDescription.value = getString(Res.string.id_creating_your_s_account, it.accountType.toString())
-        }.launchIn(viewModelScope.coroutineScope)
+        }.launchIn(viewModelScope)
     }
 
     protected fun createAccount(

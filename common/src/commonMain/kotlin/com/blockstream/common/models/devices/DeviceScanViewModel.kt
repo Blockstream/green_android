@@ -1,5 +1,6 @@
 package com.blockstream.common.models.devices
 
+import androidx.lifecycle.viewModelScope
 import blockstream_green.common.generated.resources.Res
 import blockstream_green.common.generated.resources.id_troubleshoot
 import com.blockstream.common.data.GreenWallet
@@ -13,19 +14,16 @@ import com.blockstream.green.utils.Loggable
 import com.blockstream.ui.navigation.NavAction
 import com.blockstream.ui.navigation.NavData
 import com.juul.kable.NotConnectedException
-import com.rickclephas.kmp.nativecoroutines.NativeCoroutinesState
-import com.rickclephas.kmp.observableviewmodel.launch
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.combine
+import kotlinx.coroutines.launch
 import org.jetbrains.compose.resources.getString
 
 abstract class DeviceScanViewModelAbstract(greenWallet: GreenWallet) :
     AbstractDeviceViewModel(greenWalletOrNull = greenWallet) {
     override fun screenName(): String = "DeviceScan"
-
-    @NativeCoroutinesState
     abstract val deviceFlow: StateFlow<GreenDevice?>
 }
 

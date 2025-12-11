@@ -1,5 +1,6 @@
 package com.blockstream.common.models.jade
 
+import androidx.lifecycle.viewModelScope
 import blockstream_green.common.generated.resources.Res
 import blockstream_green.common.generated.resources.id_get_watch_only_information_from
 import blockstream_green.common.generated.resources.id_initiate_oracle_communication
@@ -42,9 +43,6 @@ import com.blockstream.common.utils.StringHolder
 import com.blockstream.green.utils.Loggable
 import com.blockstream.ui.events.Event
 import com.blockstream.ui.navigation.NavData
-import com.rickclephas.kmp.nativecoroutines.NativeCoroutinesState
-import com.rickclephas.kmp.observableviewmodel.coroutineScope
-import com.rickclephas.kmp.observableviewmodel.launch
 import io.github.vinceglb.filekit.FileKit
 import io.github.vinceglb.filekit.PlatformFile
 import io.github.vinceglb.filekit.cacheDir
@@ -131,14 +129,8 @@ abstract class JadeQRViewModelAbstract(
         JadeQrOperation.PinUnlock -> "PinUnlock"
         is JadeQrOperation.Psbt -> "JadeQR"
     }
-
-    @NativeCoroutinesState
     abstract val stepInfo: StateFlow<StepInfo>
-
-    @NativeCoroutinesState
     abstract val urPart: StateFlow<String?>
-
-    @NativeCoroutinesState
     abstract val isLightTheme: StateFlow<Boolean>
 
     internal var _scenario = MutableStateFlow(scenarionForOperation())
@@ -221,7 +213,7 @@ class JadeQRViewModel(
 
             _isValid.value = false
 
-            _job = viewModelScope.coroutineScope.launch(context = logException(countly)) {
+            _job = viewModelScope.launch(context = logException(countly)) {
                 // Rotate qr codes
                 if (parts != null && parts.size > 1) {
                     while (isActive) {

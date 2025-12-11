@@ -1,30 +1,28 @@
 package com.blockstream.common.models.archived
 
+import androidx.lifecycle.viewModelScope
 import blockstream_green.common.generated.resources.Res
 import blockstream_green.common.generated.resources.id_archived_accounts
-import blockstream_green.common.generated.resources.id_unarchive
-//import blockstream_green.common.generated.resources.id_d_accounts_unarchived_successfully
 import com.blockstream.common.data.DataState
 import com.blockstream.common.data.GreenWallet
 import com.blockstream.common.extensions.hasHistory
 import com.blockstream.common.extensions.launchIn
 import com.blockstream.common.extensions.previewAccountAssetBalance
 import com.blockstream.common.extensions.previewWallet
+import com.blockstream.common.gdk.data.Account
 import com.blockstream.common.gdk.data.AccountAssetBalance
 import com.blockstream.common.gdk.data.AccountType
 import com.blockstream.common.models.GreenViewModel
+import com.blockstream.common.sideeffects.SideEffects
 import com.blockstream.ui.navigation.NavData
-import com.rickclephas.kmp.nativecoroutines.NativeCoroutinesState
-import com.rickclephas.kmp.observableviewmodel.launch
-import com.rickclephas.kmp.observableviewmodel.stateIn
+import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.flow.onEach
+import kotlinx.coroutines.flow.stateIn
+import kotlinx.coroutines.launch
 import org.jetbrains.compose.resources.getString
-import com.blockstream.common.gdk.data.Account
-import com.blockstream.common.sideeffects.SideEffects
-import com.blockstream.common.utils.StringHolder
 
 abstract class ArchivedAccountsViewModelAbstract(
     greenWallet: GreenWallet,
@@ -32,11 +30,7 @@ abstract class ArchivedAccountsViewModelAbstract(
 ) :
     GreenViewModel(greenWalletOrNull = greenWallet) {
     override fun screenName(): String = "ArchivedAccounts"
-
-    @NativeCoroutinesState
     abstract val archivedAccounts: StateFlow<DataState<List<AccountAssetBalance>>>
-    
-    @NativeCoroutinesState
     abstract val selectedAccounts: StateFlow<Set<Account>>
     
     abstract fun toggleAccountSelection(account: Account)

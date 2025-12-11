@@ -8,7 +8,8 @@ import com.blockstream.common.extensions.previewWallet
 import com.blockstream.common.gdk.data.Network
 import com.blockstream.common.models.GreenViewModel
 import com.blockstream.ui.navigation.NavData
-import com.rickclephas.kmp.observableviewmodel.launch
+import kotlinx.coroutines.launch
+import androidx.lifecycle.viewModelScope
 import org.jetbrains.compose.resources.getString
 
 abstract class TwoFactorAuthenticationViewModelAbstract(

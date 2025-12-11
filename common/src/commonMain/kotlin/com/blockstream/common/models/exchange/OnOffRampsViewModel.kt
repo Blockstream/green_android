@@ -1,5 +1,6 @@
 package com.blockstream.common.models.exchange
 
+import androidx.lifecycle.viewModelScope
 import blockstream_green.common.generated.resources.Res
 import blockstream_green.common.generated.resources.id_buy
 import blockstream_green.common.generated.resources.id_type_an_amount_between_s_and_s
@@ -29,15 +30,14 @@ import com.blockstream.common.utils.toAmountLookOrNa
 import com.blockstream.green.utils.Loggable
 import com.blockstream.ui.events.Event
 import com.blockstream.ui.navigation.NavData
-import com.rickclephas.kmp.nativecoroutines.NativeCoroutinesState
-import com.rickclephas.kmp.observableviewmodel.launch
-import com.rickclephas.kmp.observableviewmodel.stateIn
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.flow.onEach
+import kotlinx.coroutines.flow.stateIn
+import kotlinx.coroutines.launch
 import org.jetbrains.compose.resources.getString
 
 abstract class OnOffRampsViewModelAbstract(
@@ -46,8 +46,6 @@ abstract class OnOffRampsViewModelAbstract(
     greenWallet = greenWallet
 ) {
     override fun screenName(): String = "OnOffRamps"
-
-    @NativeCoroutinesState
     abstract val showRecoveryConfirmation: StateFlow<Boolean>
 
     abstract val buyAsset: MutableStateFlow<AssetBalance?>

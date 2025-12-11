@@ -1,5 +1,6 @@
 package com.blockstream.common.models.abstract
 
+import androidx.lifecycle.viewModelScope
 import com.blockstream.common.data.GreenWallet
 import com.blockstream.common.data.ScanResult
 import com.blockstream.common.events.Events
@@ -10,9 +11,9 @@ import com.blockstream.common.models.GreenViewModel
 import com.blockstream.common.sideeffects.SideEffects
 import com.blockstream.green.utils.Loggable
 import com.blockstream.ui.events.Event
-import com.rickclephas.kmp.observableviewmodel.coroutineScope
 import kotlinx.coroutines.CancellationException
 import kotlinx.coroutines.CompletableDeferred
+import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.sync.Mutex
@@ -57,7 +58,7 @@ abstract class AbstractScannerViewModel(val isDecodeContinuous: Boolean = false,
             if (!isScanComplete) {
                 if ((isDecodeContinuous && scannedText.startsWith(prefix = "ur:", ignoreCase = true)) || bcurPartEmitter != null) {
                     if (bcurPartEmitter == null) {
-                        viewModelScope.coroutineScope.launch(context = logException(countly)) {
+                        viewModelScope.launch(context = logException(countly)) {
 
                             try {
                                 val bcurDecodedData = session.bcurDecode(
@@ -92,7 +93,7 @@ abstract class AbstractScannerViewModel(val isDecodeContinuous: Boolean = false,
                     }
                 } else {
                     // launch a new coroutine to avoid blocking the main thread
-                    viewModelScope.coroutineScope.launch(context = logException(countly)) {
+                    viewModelScope.launch(context = logException(countly)) {
                         barcodeScannerResult(ScanResult(scannedText))
                     }
                 }

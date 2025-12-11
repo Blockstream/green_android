@@ -1,5 +1,6 @@
 package com.blockstream.common.models.demo
 
+import androidx.lifecycle.viewModelScope
 import com.blockstream.common.Urls
 import com.blockstream.common.data.DataState
 import com.blockstream.common.gdk.GdkSession
@@ -8,21 +9,17 @@ import com.blockstream.common.sideeffects.SideEffects
 import com.blockstream.common.utils.toAmountLookOrNa
 import com.blockstream.ui.events.Event
 import com.blockstream.ui.sideeffects.SideEffect
-import com.rickclephas.kmp.nativecoroutines.NativeCoroutinesState
-import com.rickclephas.kmp.observableviewmodel.MutableStateFlow
-import com.rickclephas.kmp.observableviewmodel.coroutineScope
-import com.rickclephas.kmp.observableviewmodel.stateIn
 import kotlinx.coroutines.delay
+import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.map
+import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.launch
 
 class DemoViewModel : GreenViewModel() {
-    @NativeCoroutinesState
-    val counter = MutableStateFlow(viewModelScope, 0)
+    val counter = MutableStateFlow(0)
 
-    @NativeCoroutinesState
-    val data = MutableStateFlow<DataState<Int>>(viewModelScope, DataState.Loading)
+    val data = MutableStateFlow<DataState<Int>>(DataState.Loading)
 
     class LocalEvents {
         object EventOpenBrowser : Event
@@ -48,7 +45,7 @@ class DemoViewModel : GreenViewModel() {
     val gdkSession: GdkSession
 
     init {
-        viewModelScope.coroutineScope.launch {
+        viewModelScope.launch {
             while (true) {
                 delay(3000L)
                 data.value = DataState.Success(1337)
@@ -65,16 +62,12 @@ class DemoViewModel : GreenViewModel() {
         bootstrap()
     }
 
-    @NativeCoroutinesState
     val accounts get() = gdkSession.accounts
 
-    @NativeCoroutinesState
     val transactions get() = gdkSession.walletTransactions
 
-    @NativeCoroutinesState
     val walletAssets get() = gdkSession.walletAssets
 
-    @NativeCoroutinesState
     val walletBalance = gdkSession.walletTotalBalance
         .map {
             if (it > -1) {

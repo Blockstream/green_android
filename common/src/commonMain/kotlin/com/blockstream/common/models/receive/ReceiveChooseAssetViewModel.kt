@@ -14,7 +14,8 @@ import com.blockstream.common.sideeffects.SideEffects
 import com.blockstream.domain.boltz.BoltzUseCase
 import com.blockstream.domain.receive.ReceiveUseCase
 import com.blockstream.ui.navigation.NavData
-import com.rickclephas.kmp.observableviewmodel.launch
+import kotlinx.coroutines.launch
+import androidx.lifecycle.viewModelScope
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import org.jetbrains.compose.resources.getString

@@ -6,7 +6,6 @@ plugins {
     alias(libs.plugins.jetbrainsCompose)
     alias(libs.plugins.compose.compiler)
     alias(libs.plugins.kotlinxSerialization)
-    alias(libs.plugins.kmp.nativecoroutines)
 }
 
 kotlin {
@@ -49,7 +48,6 @@ kotlin {
 
             /**  --- Misc. ---------------------------------------------------------------------- */
             api(libs.phosphor.icon)
-            api(libs.kmp.observableviewmodel)
 
             implementation(libs.kermit)
 

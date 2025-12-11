@@ -1,5 +1,6 @@
 package com.blockstream.common.models.transaction
 
+import androidx.lifecycle.viewModelScope
 import blockstream_green.common.generated.resources.Res
 import blockstream_green.common.generated.resources.id_received
 import blockstream_green.common.generated.resources.id_receiving
@@ -36,15 +37,13 @@ import com.blockstream.green.utils.Loggable
 import com.blockstream.ui.events.Event
 import com.blockstream.ui.navigation.NavData
 import com.blockstream.ui.sideeffects.SideEffect
-import com.rickclephas.kmp.nativecoroutines.NativeCoroutinesState
-import com.rickclephas.kmp.observableviewmodel.coroutineScope
-import com.rickclephas.kmp.observableviewmodel.launch
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.flow.filterNotNull
 import kotlinx.coroutines.flow.launchIn
 import kotlinx.coroutines.flow.onEach
+import kotlinx.coroutines.launch
 import kotlinx.serialization.json.Json
 import kotlinx.serialization.json.jsonArray
 import kotlinx.serialization.json.jsonObject
@@ -59,59 +58,23 @@ abstract class TransactionViewModelAbstract(
     accountAssetOrNull = accountAssetOrNull
 ) {
     override fun screenName(): String = "TransactionDetails"
-
-    @NativeCoroutinesState
     abstract val transaction: StateFlow<Transaction>
-
-    @NativeCoroutinesState
     abstract val status: StateFlow<TransactionStatus>
-
-    @NativeCoroutinesState
     abstract val type: StateFlow<Transaction.Type>
-
-    @NativeCoroutinesState
     abstract val isCloseChannel: StateFlow<Boolean>
-
-    @NativeCoroutinesState
     abstract val createdAt: StateFlow<String?>
-
-    @NativeCoroutinesState
     abstract val spv: StateFlow<Transaction.SPVResult>
-
-    @NativeCoroutinesState
     abstract val amounts: StateFlow<List<AmountAssetLook>>
-
-    @NativeCoroutinesState
     abstract val transactionId: StateFlow<String?>
-
-    @NativeCoroutinesState
     abstract val fee: StateFlow<String?>
-
-    @NativeCoroutinesState
     abstract val feeRate: StateFlow<String?>
-
-    @NativeCoroutinesState
     abstract val total: StateFlow<String?>
-
-    @NativeCoroutinesState
     abstract val totalFiat: StateFlow<String?>
-
-    @NativeCoroutinesState
     abstract val canReplaceByFee: StateFlow<Boolean>
-
-    @NativeCoroutinesState
     abstract val address: StateFlow<String?>
-
-    @NativeCoroutinesState
     abstract val note: StateFlow<String?>
-
-    @NativeCoroutinesState
     abstract val canEditNote: StateFlow<Boolean>
-
-    @NativeCoroutinesState
     abstract val hasMoreDetails: StateFlow<Boolean>
-    
-    @NativeCoroutinesState
     abstract val isMeldTransaction: StateFlow<Boolean>
 }
 
@@ -214,11 +177,11 @@ class TransactionViewModel(transaction: Transaction, greenWallet: GreenWallet) :
                     ?: accountTransactions.data()?.find { it.txHash == transaction.txHash }
             }.filterNotNull().onEach {
                 _transaction.value = it
-            }.launchIn(viewModelScope.coroutineScope)
+            }.launchIn(viewModelScope)
 
             _transaction.onEach {
                 updateData()
-            }.launchIn(viewModelScope.coroutineScope)
+            }.launchIn(viewModelScope)
         }
 
         bootstrap()

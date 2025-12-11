@@ -1,5 +1,6 @@
 package com.blockstream.common.models.devices
 
+import androidx.lifecycle.viewModelScope
 import blockstream_green.common.generated.resources.Res
 import blockstream_green.common.generated.resources.id_setup_guide
 import blockstream_green.common.generated.resources.id_your_device_was_disconnected
@@ -21,21 +22,20 @@ import com.blockstream.ui.navigation.NavAction
 import com.blockstream.ui.navigation.NavData
 import com.blockstream.ui.sideeffects.SideEffect
 import com.juul.kable.NotConnectedException
-import com.rickclephas.kmp.nativecoroutines.NativeCoroutinesState
-import com.rickclephas.kmp.observableviewmodel.launch
 import kotlinx.coroutines.delay
+import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.onEach
+import kotlinx.coroutines.launch
 import org.jetbrains.compose.resources.getString
 
 abstract class DeviceInfoViewModelAbstract(val deviceId: String) : AbstractDeviceViewModel() {
     override fun screenName(): String = "DeviceInfo"
 
-    @NativeCoroutinesState
     abstract val jadeIsUninitialized: StateFlow<Boolean>
 }
 
-class DeviceInfoViewModel constructor(deviceId: String) : DeviceInfoViewModelAbstract(deviceId = deviceId) {
+class DeviceInfoViewModel(deviceId: String) : DeviceInfoViewModelAbstract(deviceId = deviceId) {
 
     private val _jadeIsUninitialized = MutableStateFlow(false)
     override val jadeIsUninitialized: StateFlow<Boolean> = _jadeIsUninitialized

@@ -7,7 +7,6 @@ plugins {
     alias(libs.plugins.jetbrainsCompose)
     alias(libs.plugins.compose.compiler)
     alias(libs.plugins.kotlinxSerialization)
-    alias(libs.plugins.kmp.nativecoroutines)
     alias(libs.plugins.app.cash.sqldelight)
     alias(libs.plugins.nativeCocoapods)
     alias(libs.plugins.google.devtools.ksp)
@@ -32,8 +31,6 @@ sqldelight {
     }
     linkSqlite.set(true)
 }
-
-nativeCoroutines { k2Mode = false }
 
 kotlin {
     compilerOptions {
@@ -162,7 +159,6 @@ kotlin {
             /**  --- Misc. ------------------------------------------------------------------------------ */
             api(libs.stately.concurrent.collections)
             api(libs.sqldelight.coroutines.extensions)
-            api(libs.kmp.observableviewmodel)
             api(libs.uri.kmp)
             api(libs.multiplatform.settings)
             api(libs.multiplatform.settings.no.arg)

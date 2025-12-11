@@ -27,7 +27,8 @@ import com.blockstream.common.utils.feeRateWithUnit
 import com.blockstream.green.data.banner.Banner
 import com.blockstream.ui.events.Event
 import com.blockstream.ui.navigation.NavData
-import com.rickclephas.kmp.observableviewmodel.launch
+import kotlinx.coroutines.launch
+import androidx.lifecycle.viewModelScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.flow.filterNotNull

@@ -1,5 +1,6 @@
 package com.blockstream.common.models.onboarding
 
+import androidx.lifecycle.viewModelScope
 import blockstream_green.common.generated.resources.Res
 import blockstream_green.common.generated.resources.id_creating_wallet
 import blockstream_green.common.generated.resources.id_set_up_watchonly
@@ -20,12 +21,11 @@ import com.blockstream.domain.wallet.NewWalletUseCase
 import com.blockstream.ui.events.Event
 import com.blockstream.ui.navigation.NavAction
 import com.blockstream.ui.navigation.NavData
-import com.rickclephas.kmp.observableviewmodel.coroutineScope
-import com.rickclephas.kmp.observableviewmodel.launch
 import kotlinx.coroutines.CompletableDeferred
 import kotlinx.coroutines.CoroutineStart
 import kotlinx.coroutines.async
 import kotlinx.coroutines.flow.onEach
+import kotlinx.coroutines.launch
 import org.jetbrains.compose.resources.getString
 import org.koin.core.component.inject
 
@@ -157,7 +157,7 @@ class SetupNewWalletViewModel(greenWalletOrNull: GreenWallet? = null) :
         }
 
         doAsync({
-            val biometricsCipherProvider = viewModelScope.coroutineScope.async(
+            val biometricsCipherProvider = viewModelScope.async(
                 start = CoroutineStart.LAZY
             ) {
                 CompletableDeferred<PlatformCipher>().let {

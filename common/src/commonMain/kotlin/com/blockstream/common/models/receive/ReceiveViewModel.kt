@@ -1,5 +1,6 @@
 package com.blockstream.common.models.receive
 
+import androidx.lifecycle.viewModelScope
 import blockstream_green.common.generated.resources.Res
 import blockstream_green.common.generated.resources.at
 import blockstream_green.common.generated.resources.id_address_copied_to_clipboard
@@ -65,10 +66,6 @@ import com.blockstream.ui.events.Event
 import com.blockstream.ui.navigation.NavAction
 import com.blockstream.ui.navigation.NavData
 import com.eygraber.uri.Uri
-import com.rickclephas.kmp.nativecoroutines.NativeCoroutinesState
-import com.rickclephas.kmp.observableviewmodel.coroutineScope
-import com.rickclephas.kmp.observableviewmodel.launch
-import com.rickclephas.kmp.observableviewmodel.stateIn
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.IO
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -78,6 +75,8 @@ import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.flow.filterNotNull
 import kotlinx.coroutines.flow.launchIn
 import kotlinx.coroutines.flow.onEach
+import kotlinx.coroutines.flow.stateIn
+import kotlinx.coroutines.launch
 import kotlinx.coroutines.sync.Mutex
 import kotlinx.coroutines.withContext
 import kotlinx.serialization.Serializable
@@ -97,68 +96,26 @@ abstract class ReceiveViewModelAbstract(greenWallet: GreenWallet, accountAssetOr
     GreenViewModel(greenWalletOrNull = greenWallet, accountAssetOrNull = accountAssetOrNull) {
 
     override fun screenName(): String = "Receive"
-
-    @NativeCoroutinesState
     abstract val showRecoveryConfirmation: StateFlow<Boolean>
-
-    @NativeCoroutinesState
     abstract val showSwap: StateFlow<Boolean>
-
-    @NativeCoroutinesState
     abstract val isReverseSubmarineSwap: MutableStateFlow<Boolean> // Lightning -> Chain
-
-    @NativeCoroutinesState
     abstract val amount: MutableStateFlow<String>
-
-    @NativeCoroutinesState
     abstract val showAmount: StateFlow<Boolean>
-
-    @NativeCoroutinesState
     abstract val note: StateFlow<String?>
-
-    @NativeCoroutinesState
     abstract val liquidityFee: StateFlow<String?>
-
-    @NativeCoroutinesState
     abstract val onchainSwapMessage: StateFlow<String?>
-
-    @NativeCoroutinesState
     abstract val amountCurrency: StateFlow<String>
-
-    @NativeCoroutinesState
     abstract val receiveAmountData: StateFlow<ReceiveAmountData>
-
-    @NativeCoroutinesState
     abstract val invoiceAmountToReceive: StateFlow<String?>
-
-    @NativeCoroutinesState
     abstract val invoiceAmountToReceiveFiat: StateFlow<String?>
-
-    @NativeCoroutinesState
     abstract val invoiceDescription: StateFlow<String?>
-
-    @NativeCoroutinesState
     abstract val invoiceExpiration: StateFlow<String?>
-
-    @NativeCoroutinesState
     abstract val invoiceExpirationTimestamp: StateFlow<Long?>
-
-    @NativeCoroutinesState
     abstract val receiveAddress: StateFlow<String?>
-
-    @NativeCoroutinesState
     abstract val receiveAddressUri: StateFlow<String?>
-
-    @NativeCoroutinesState
     abstract val showVerifyOnDevice: StateFlow<Boolean>
-
-    @NativeCoroutinesState
     abstract val showLightningOnChainAddress: StateFlow<Boolean>
-
-    @NativeCoroutinesState
     abstract val showLedgerAssetWarning: StateFlow<Boolean>
-
-    @NativeCoroutinesState
     abstract val asset: StateFlow<EnrichedAsset>
 
     internal var pendingAction: PendingAction? = null
@@ -400,7 +357,7 @@ class ReceiveViewModel(greenWallet: GreenWallet, accountAsset: AccountAsset) :
                     .onEach {
                         _amountCurrency.value =
                             it.unit(session, lightningAccount.network.policyAsset)
-                    }.launchIn(viewModelScope.coroutineScope)
+                    }.launchIn(viewModelScope)
 
                 session.lastInvoicePaid.filterNotNull().onEach { lastInvoicePaid ->
                     logger.d { "Last invoice paid: $lastInvoicePaid" }
@@ -416,7 +373,7 @@ class ReceiveViewModel(greenWallet: GreenWallet, accountAsset: AccountAsset) :
                         )
                         _lightningInvoicePaymentHash.value = null
                     }
-                }.launchIn(viewModelScope.coroutineScope)
+                }.launchIn(viewModelScope)
             }
         }
 

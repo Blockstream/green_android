@@ -1,5 +1,6 @@
 package com.blockstream.common.models.devices
 
+import androidx.lifecycle.viewModelScope
 import com.blockstream.common.Urls
 import com.blockstream.common.data.GreenWallet
 import com.blockstream.common.devices.DeviceBrand
@@ -22,13 +23,14 @@ import com.blockstream.common.utils.StringHolder
 import com.blockstream.green.utils.Loggable
 import com.blockstream.ui.events.Event
 import com.blockstream.ui.sideeffects.SideEffect
-import com.rickclephas.kmp.observableviewmodel.stateIn
 import kotlinx.coroutines.CompletableDeferred
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.IO
+import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.flowOf
 import kotlinx.coroutines.flow.map
+import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.runBlocking
 import org.koin.core.component.inject
@@ -72,7 +74,7 @@ abstract class AbstractDeviceViewModel constructor(
     val bluetoothState = (if (isPreview) flowOf(BluetoothState.ON) else deviceManager.bluetoothState).map {
         it
     }.stateIn(
-        viewModelScope = viewModelScope,
+        viewModelScope,
         SharingStarted.WhileSubscribed(),
         BluetoothState.UNAVAILABLE
     )

@@ -1,5 +1,6 @@
 package com.blockstream.common.models
 
+import androidx.lifecycle.viewModelScope
 import com.blockstream.common.data.GreenWallet
 import com.blockstream.common.interfaces.JadeHttpRequestUrlValidator
 import com.blockstream.common.managers.LifecycleManager
@@ -7,8 +8,8 @@ import com.blockstream.common.navigation.NavigateDestinations
 import com.blockstream.common.sideeffects.SideEffects
 import com.blockstream.domain.navigation.NavigateToWallet
 import com.blockstream.ui.events.Event
-import com.rickclephas.kmp.observableviewmodel.launch
 import kotlinx.coroutines.CompletableDeferred
+import kotlinx.coroutines.launch
 import org.koin.core.component.inject
 
 class MainViewModel : GreenViewModel(), JadeHttpRequestUrlValidator {

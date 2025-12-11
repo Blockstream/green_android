@@ -1,5 +1,6 @@
 package com.blockstream.common.models.assetaccounts
 
+import androidx.lifecycle.viewModelScope
 import blockstream_green.common.generated.resources.Res
 import blockstream_green.common.generated.resources.binoculars
 import blockstream_green.common.generated.resources.box_arrow_down
@@ -30,9 +31,7 @@ import com.blockstream.green.utils.Loggable
 import com.blockstream.ui.events.Event
 import com.blockstream.ui.navigation.NavAction
 import com.blockstream.ui.navigation.NavData
-import com.rickclephas.kmp.observableviewmodel.coroutineScope
-import com.rickclephas.kmp.observableviewmodel.launch
-import com.rickclephas.kmp.observableviewmodel.stateIn
+import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.combine
@@ -43,6 +42,8 @@ import kotlinx.coroutines.flow.launchIn
 import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.flow.merge
 import kotlinx.coroutines.flow.onEach
+import kotlinx.coroutines.flow.stateIn
+import kotlinx.coroutines.launch
 import org.jetbrains.compose.resources.getString
 
 abstract class AssetAccountDetailsViewModelAbstract(
@@ -151,13 +152,13 @@ class AssetAccountDetailsViewModel(
                         )
                     )
                 }
-            }.launchIn(viewModelScope.coroutineScope)
+            }.launchIn(viewModelScope)
         }
 
         session.ifConnected {
             accountBalance.onEach {
                 updateTotalBalance()
-            }.launchIn(viewModelScope.coroutineScope)
+            }.launchIn(viewModelScope)
 
             session.getTransactions(account = account, isReset = true, isLoadMore = false)
         }

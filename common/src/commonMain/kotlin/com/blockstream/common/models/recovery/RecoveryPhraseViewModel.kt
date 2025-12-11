@@ -1,5 +1,6 @@
 package com.blockstream.common.models.recovery
 
+import androidx.lifecycle.viewModelScope
 import blockstream_green.common.generated.resources.Res
 import blockstream_green.common.generated.resources.id_back_up_recovery_phrase
 import blockstream_green.common.generated.resources.id_lightning
@@ -12,11 +13,9 @@ import com.blockstream.common.gdk.data.Credentials
 import com.blockstream.common.models.GreenViewModel
 import com.blockstream.ui.events.Event
 import com.blockstream.ui.navigation.NavData
-import com.rickclephas.kmp.nativecoroutines.NativeCoroutinesState
-import com.rickclephas.kmp.observableviewmodel.MutableStateFlow
-import com.rickclephas.kmp.observableviewmodel.launch
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
+import kotlinx.coroutines.launch
 import org.jetbrains.compose.resources.getString
 
 abstract class RecoveryPhraseViewModelAbstract(
@@ -25,17 +24,9 @@ abstract class RecoveryPhraseViewModelAbstract(
 ) :
     GreenViewModel(greenWalletOrNull = greenWallet) {
     override fun screenName(): String = "RecoveryPhrase"
-
-    @NativeCoroutinesState
     abstract val mnemonic: StateFlow<String>
-
-    @NativeCoroutinesState
     abstract val mnemonicWords: StateFlow<List<String>>
-
-    @NativeCoroutinesState
     abstract val passphrase: StateFlow<String?>
-
-    @NativeCoroutinesState
     abstract val showQR: MutableStateFlow<Boolean>
 }
 
@@ -55,7 +46,7 @@ class RecoveryPhraseViewModel(
     private val _passphrase = MutableStateFlow<String?>(null)
     override val passphrase: StateFlow<String?> = _passphrase
 
-    override val showQR = MutableStateFlow(viewModelScope, false)
+    override val showQR = MutableStateFlow(false)
 
     class LocalEvents {
         object ClickLearnMore : Events.OpenBrowser(Urls.HELP_BIP39_PASSPHRASE)
@@ -95,7 +86,7 @@ class RecoveryPhraseViewModelPreview(isLightning: Boolean, providedCredentials: 
     override val mnemonic: MutableStateFlow<String> = MutableStateFlow(DummyMnemonic)
     override val mnemonicWords: MutableStateFlow<List<String>> = MutableStateFlow(DummyMnemonic.split(" "))
     override val passphrase: MutableStateFlow<String?> = MutableStateFlow(providedCredentials?.bip39Passphrase)
-    override val showQR: MutableStateFlow<Boolean> = MutableStateFlow(viewModelScope, false)
+    override val showQR: MutableStateFlow<Boolean> = MutableStateFlow(false)
 
     companion object {
         val DummyMnemonic =

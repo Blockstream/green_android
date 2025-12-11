@@ -65,7 +65,6 @@ import com.blockstream.common.platformFileSystem
 import com.blockstream.common.platformName
 import com.blockstream.green.data.config.AppInfo
 import com.blockstream.green.utils.Loggable
-import com.rickclephas.kmp.nativecoroutines.NativeCoroutinesIgnore
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.IO
 import kotlinx.coroutines.channels.BufferOverflow
@@ -163,8 +162,7 @@ class LightningBridge constructor(
             }
         }
     }
-
-    @NativeCoroutinesIgnore
+    
     suspend fun connectToGreenlight(
         mnemonic: String,
         parentXpubHashId: String? = null,
@@ -485,8 +483,7 @@ class LightningBridge constructor(
             updateNodeInfo()
         }
     }
-
-    @NativeCoroutinesIgnore
+    
     suspend fun recommendedFees(): RecommendedFees? = tryCatch(context = Dispatchers.IO) {
         breezSdkOrNull?.recommendedFees()
     }

@@ -1,5 +1,6 @@
 package com.blockstream.common.models.overview
 
+import androidx.lifecycle.viewModelScope
 import com.blockstream.common.data.Denomination
 import com.blockstream.common.data.GreenWallet
 import com.blockstream.common.extensions.launchIn
@@ -7,7 +8,6 @@ import com.blockstream.common.models.GreenViewModel
 import com.blockstream.common.utils.toAmountLook
 import com.blockstream.ui.events.Event
 import com.blockstream.ui.models.IPostEvent
-import com.rickclephas.kmp.observableviewmodel.stateIn
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.StateFlow
@@ -16,6 +16,7 @@ import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.flow.filter
 import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.flow.onEach
+import kotlinx.coroutines.flow.stateIn
 
 interface IWalletBalance : IPostEvent {
     val hideAmounts: StateFlow<Boolean>

@@ -1,5 +1,6 @@
 package com.blockstream.common.models.about
 
+import androidx.lifecycle.viewModelScope
 import blockstream_green.common.generated.resources.Res
 import blockstream_green.common.generated.resources.id_thank_you_for_your_feedback
 import com.blockstream.common.SupportType
@@ -15,11 +16,10 @@ import com.blockstream.common.navigation.NavigateDestinations
 import com.blockstream.common.sideeffects.SideEffects
 import com.blockstream.common.utils.StringHolder
 import com.blockstream.ui.events.Event
-import com.rickclephas.kmp.nativecoroutines.NativeCoroutinesState
-import com.rickclephas.kmp.observableviewmodel.launch
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.flow.onEach
+import kotlinx.coroutines.launch
 import kotlinx.datetime.TimeZone
 import kotlinx.datetime.toLocalDateTime
 import org.koin.core.component.inject
@@ -29,13 +29,10 @@ abstract class AboutViewModelAbstract : GreenViewModel() {
     abstract val year: String
     abstract val version: String
 
-    @NativeCoroutinesState
     abstract val rate: MutableStateFlow<Int>
 
-    @NativeCoroutinesState
     abstract val email: MutableStateFlow<String>
 
-    @NativeCoroutinesState
     abstract val feedback: MutableStateFlow<String>
 }
 

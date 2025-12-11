@@ -20,7 +20,6 @@ import com.blockstream.common.gdk.data.AccountType
 import com.blockstream.common.gdk.data.Network
 import com.blockstream.common.managers.SessionManager
 import com.blockstream.common.utils.getBitcoinOrLiquidUnit
-import com.rickclephas.kmp.nativecoroutines.NativeCoroutinesIgnore
 import org.jetbrains.compose.resources.StringResource
 
 inline fun <T : Any> GdkSession.ifConnected(block: () -> T?): T? {
@@ -31,7 +30,6 @@ inline fun <T : Any> GdkSession.ifConnected(block: () -> T?): T? {
     }
 }
 
-@NativeCoroutinesIgnore
 suspend fun <T : Any> GdkSession.ifConnectedSuspend(block: suspend () -> T?): T? {
     return if (this.isConnected) {
         block()

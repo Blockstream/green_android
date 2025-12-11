@@ -4,7 +4,6 @@ package com.blockstream.common.managers
 
 import com.blockstream.common.data.ApplicationSettings
 import com.blockstream.common.utils.server
-import com.rickclephas.kmp.nativecoroutines.NativeCoroutinesIgnore
 import com.russhwolf.settings.ExperimentalSettingsApi
 import com.russhwolf.settings.ObservableSettings
 import com.russhwolf.settings.coroutines.getBooleanFlow
@@ -30,8 +29,7 @@ class SettingsManager constructor(
 
     val appSettings
         get() = _appSettings.value
-
-    @NativeCoroutinesIgnore
+    
     val appSettingsStateFlow
         get() = _appSettings.asStateFlow()
 

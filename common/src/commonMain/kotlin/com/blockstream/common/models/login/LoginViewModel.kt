@@ -1,5 +1,6 @@
 package com.blockstream.common.models.login
 
+import androidx.lifecycle.viewModelScope
 import blockstream_green.common.generated.resources.Res
 import blockstream_green.common.generated.resources.id_bip39_passphrase_login
 import blockstream_green.common.generated.resources.id_emergency_recovery_phrase
@@ -66,10 +67,6 @@ import com.blockstream.ui.events.Event
 import com.blockstream.ui.navigation.NavAction
 import com.blockstream.ui.navigation.NavData
 import com.blockstream.ui.sideeffects.SideEffect
-import com.rickclephas.kmp.nativecoroutines.NativeCoroutinesState
-import com.rickclephas.kmp.observableviewmodel.MutableStateFlow
-import com.rickclephas.kmp.observableviewmodel.coroutineScope
-import com.rickclephas.kmp.observableviewmodel.stateIn
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.StateFlow
@@ -77,6 +74,7 @@ import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.flow.filterNotNull
 import kotlinx.coroutines.flow.onEach
+import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.launch
 import org.jetbrains.compose.resources.getString
 import org.koin.core.component.inject
@@ -86,62 +84,24 @@ abstract class LoginViewModelAbstract(
     greenWallet: GreenWallet
 ) : GreenViewModel(greenWalletOrNull = greenWallet) {
     override fun screenName(): String = "Login"
-
-    @NativeCoroutinesState
     abstract val bip39Passphrase: MutableStateFlow<String>
-
-    @NativeCoroutinesState
     abstract val watchOnlyUsername: MutableStateFlow<String>
-
-    @NativeCoroutinesState
     abstract val watchOnlyPassword: MutableStateFlow<String>
-
-    @NativeCoroutinesState
     abstract val isEmergencyRecoveryPhrase: MutableStateFlow<Boolean>
-
-    @NativeCoroutinesState
     abstract val error: StateFlow<String?>
-
-    @NativeCoroutinesState
     abstract val tor: StateFlow<TorEvent>
-
-    @NativeCoroutinesState
     abstract val applicationSettings: StateFlow<ApplicationSettings>
-
-    @NativeCoroutinesState
     abstract val isWatchOnlyLoginEnabled: StateFlow<Boolean>
-
-    @NativeCoroutinesState
     abstract val showWatchOnlyUsername: StateFlow<Boolean>
-
-    @NativeCoroutinesState
     abstract val showWatchOnlyPassword: StateFlow<Boolean>
-
-    @NativeCoroutinesState
     abstract val biometricsCredentials: StateFlow<DataState<LoginCredentials>>
-
-    @NativeCoroutinesState
     abstract val richWatchOnlyCredentials: StateFlow<DataState<LoginCredentials>>
-
-    @NativeCoroutinesState
     abstract val watchOnlyCredentials: StateFlow<DataState<LoginCredentials>>
-
-    @NativeCoroutinesState
     abstract val hwWatchOnlyCredentials: StateFlow<DataState<LoginCredentials>>
-
-    @NativeCoroutinesState
     abstract val pinCredentials: StateFlow<DataState<LoginCredentials>>
-
-    @NativeCoroutinesState
     abstract val mnemonicCredentials: StateFlow<DataState<LoginCredentials>>
-
-    @NativeCoroutinesState
     abstract val passwordCredentials: StateFlow<DataState<LoginCredentials>>
-
-    @NativeCoroutinesState
     abstract val lightningMnemonic: StateFlow<DataState<LoginCredentials>>
-
-    @NativeCoroutinesState
     abstract val showRestoreWithRecovery: StateFlow<Boolean>
 }
 
@@ -159,67 +119,37 @@ class LoginViewModel constructor(
     private val lightningNodeIdUseCase: LightningNodeIdUseCase by inject()
     private val enableHardwareWatchOnlyUseCase: EnableHardwareWatchOnlyUseCase by inject()
     private val setupDevelopmentEnv = SetupDevelopmentEnv() // Only for dev env
-
-    @NativeCoroutinesState
-    override val bip39Passphrase = MutableStateFlow(viewModelScope, "")
-
-    @NativeCoroutinesState
-    override val watchOnlyUsername: MutableStateFlow<String> = MutableStateFlow(viewModelScope, greenWallet.watchOnlyUsername ?: "")
-
-    @NativeCoroutinesState
-    override val watchOnlyPassword = MutableStateFlow(viewModelScope, "")
-
-    @NativeCoroutinesState
-    override val isEmergencyRecoveryPhrase = MutableStateFlow(viewModelScope, false)
-
-    @NativeCoroutinesState
+    override val bip39Passphrase = MutableStateFlow("")
+    override val watchOnlyUsername: MutableStateFlow<String> = MutableStateFlow(greenWallet.watchOnlyUsername ?: "")
+    override val watchOnlyPassword = MutableStateFlow("")
+    override val isEmergencyRecoveryPhrase = MutableStateFlow(false)
     override val tor = sessionManager.torProxyProgress
-
-    @NativeCoroutinesState
     override val applicationSettings = settingsManager.appSettingsStateFlow
 
     private val _error = MutableStateFlow<String?>(null)
-
-    @NativeCoroutinesState
     override val error = _error.asStateFlow()
 
     private val isBip39Login
         get() = bip39Passphrase.value.trim().isNotBlank()
 
-    private var _initialAction = MutableStateFlow(viewModelScope, false)
+    private var _initialAction = MutableStateFlow(false)
 
-    private val _biometricsCredentials: MutableStateFlow<DataState<LoginCredentials>> = MutableStateFlow(viewModelScope, DataState.Loading)
-    private val _watchOnlyCredentials: MutableStateFlow<DataState<LoginCredentials>> = MutableStateFlow(viewModelScope, DataState.Loading)
-    private val _hwWatchOnlyCredentials: MutableStateFlow<DataState<LoginCredentials>> = MutableStateFlow(viewModelScope, DataState.Loading)
+    private val _biometricsCredentials: MutableStateFlow<DataState<LoginCredentials>> = MutableStateFlow(DataState.Loading)
+    private val _watchOnlyCredentials: MutableStateFlow<DataState<LoginCredentials>> = MutableStateFlow(DataState.Loading)
+    private val _hwWatchOnlyCredentials: MutableStateFlow<DataState<LoginCredentials>> = MutableStateFlow(DataState.Loading)
     private val _richWatchOnlyCredentials: MutableStateFlow<DataState<LoginCredentials>> =
-        MutableStateFlow(viewModelScope, DataState.Loading)
-    private val _pinCredentials: MutableStateFlow<DataState<LoginCredentials>> = MutableStateFlow(viewModelScope, DataState.Loading)
-    private val _mnemonicCredentials: MutableStateFlow<DataState<LoginCredentials>> = MutableStateFlow(viewModelScope, DataState.Loading)
-    private val _passwordCredentials: MutableStateFlow<DataState<LoginCredentials>> = MutableStateFlow(viewModelScope, DataState.Loading)
-    private val _lightningMnemonic: MutableStateFlow<DataState<LoginCredentials>> = MutableStateFlow(viewModelScope, DataState.Loading)
-
-    @NativeCoroutinesState
+        MutableStateFlow(DataState.Loading)
+    private val _pinCredentials: MutableStateFlow<DataState<LoginCredentials>> = MutableStateFlow(DataState.Loading)
+    private val _mnemonicCredentials: MutableStateFlow<DataState<LoginCredentials>> = MutableStateFlow(DataState.Loading)
+    private val _passwordCredentials: MutableStateFlow<DataState<LoginCredentials>> = MutableStateFlow(DataState.Loading)
+    private val _lightningMnemonic: MutableStateFlow<DataState<LoginCredentials>> = MutableStateFlow(DataState.Loading)
     override val biometricsCredentials: StateFlow<DataState<LoginCredentials>> = _biometricsCredentials
-
-    @NativeCoroutinesState
     override val richWatchOnlyCredentials: StateFlow<DataState<LoginCredentials>> = _richWatchOnlyCredentials
-
-    @NativeCoroutinesState
     override val watchOnlyCredentials: StateFlow<DataState<LoginCredentials>> = _watchOnlyCredentials
-
-    @NativeCoroutinesState
     override val hwWatchOnlyCredentials: StateFlow<DataState<LoginCredentials>> = _hwWatchOnlyCredentials
-
-    @NativeCoroutinesState
     override val pinCredentials: StateFlow<DataState<LoginCredentials>> = _pinCredentials
-
-    @NativeCoroutinesState
     override val mnemonicCredentials: StateFlow<DataState<LoginCredentials>> = _mnemonicCredentials
-
-    @NativeCoroutinesState
     override val passwordCredentials: StateFlow<DataState<LoginCredentials>> = _passwordCredentials
-
-    @NativeCoroutinesState
     override val lightningMnemonic: StateFlow<DataState<LoginCredentials>> = _lightningMnemonic
 
     override val showRestoreWithRecovery = combine(
@@ -231,8 +161,6 @@ class LoginViewModel constructor(
     ) { onProgress, pinCredentials, passwordCredentials, biometricsCredentials, mnemonicCredentials ->
         pinCredentials.isEmpty() && !greenWallet.isWatchOnly && !greenWallet.isHardware && passwordCredentials.isEmpty() && biometricsCredentials.isEmpty() && mnemonicCredentials.isEmpty() && !onProgress
     }.stateIn(viewModelScope, SharingStarted.WhileSubscribed(), false)
-
-    @NativeCoroutinesState
     override val isWatchOnlyLoginEnabled: StateFlow<Boolean> = combine(
         watchOnlyPassword,
         watchOnlyCredentials,
@@ -241,15 +169,11 @@ class LoginViewModel constructor(
     ) { watchOnlyPassword, watchOnlyCredentials, onProgress, hwWatchOnlyCredentials ->
         (hwWatchOnlyCredentials.isNotEmpty() || watchOnlyPassword.isNotBlank() || greenWallet.isWatchOnlySingleSig || (!watchOnlyCredentials.isEmpty() && !_initialAction.value)) && !onProgress
     }.stateIn(viewModelScope, SharingStarted.WhileSubscribed(), false)
-
-    @NativeCoroutinesState
     override val showWatchOnlyUsername = combine(
         _initialAction, watchOnlyCredentials, hwWatchOnlyCredentials
     ) { initialAction, watchOnlyCredentials, hwWatchOnlyCredentials ->
         (watchOnlyCredentials.isEmpty() || (initialAction && greenWallet.isWatchOnlyMultisig)) && hwWatchOnlyCredentials.isEmpty()
     }.stateIn(viewModelScope, SharingStarted.WhileSubscribed(), false)
-
-    @NativeCoroutinesState
     override val showWatchOnlyPassword = combine(
         _initialAction,
         watchOnlyCredentials,
@@ -544,7 +468,7 @@ class LoginViewModel constructor(
     private fun setBip39Passphrase(passphrase: String, alwaysAsk: Boolean?) {
         bip39Passphrase.value = passphrase.trim()
         if (alwaysAsk != null) {
-            viewModelScope.coroutineScope.launch(context = logException(countly)) {
+            viewModelScope.launch(context = logException(countly)) {
                 greenWallet.also {
                     it.askForBip39Passphrase = alwaysAsk
                     database.updateWallet(it)
@@ -582,7 +506,7 @@ class LoginViewModel constructor(
             isEmergencyRecoveryPhrase.value = false
         }, onError = {
             if (it.isNotAuthorized()) {
-                viewModelScope.coroutineScope.launch {
+                viewModelScope.launch {
                     database.replaceLoginCredential(loginCredentials.copy(counter = loginCredentials.counter + 1))
                 }
             } else {
@@ -933,7 +857,7 @@ class LoginViewModel constructor(
                 if (it.isNotAuthorized()) {
                     loginCredentials?.also { loginCredentials ->
 
-                        viewModelScope.coroutineScope.launch {
+                        viewModelScope.launch {
                             database.replaceLoginCredential(loginCredentials.copy(counter = loginCredentials.counter + 1))
                         }
                     }
@@ -998,27 +922,27 @@ class LoginViewModelPreview(
     withDevice: Boolean = false,
     isWatchOnly: Boolean = false,
 ) : LoginViewModelAbstract(greenWallet = greenWallet) {
-    override val bip39Passphrase: MutableStateFlow<String> = MutableStateFlow(viewModelScope, "")
-    override val watchOnlyUsername: MutableStateFlow<String> = MutableStateFlow(viewModelScope, if (isWatchOnly) "username" else "")
-    override val watchOnlyPassword: MutableStateFlow<String> = MutableStateFlow(viewModelScope, if (isWatchOnly) "password" else "")
-    override val error: MutableStateFlow<String?> = MutableStateFlow(viewModelScope, null)
-    override val isEmergencyRecoveryPhrase: MutableStateFlow<Boolean> = MutableStateFlow(viewModelScope, false)
-    override val tor: StateFlow<TorEvent> = MutableStateFlow(viewModelScope, TorEvent(progress = 0))
-    override val applicationSettings: StateFlow<ApplicationSettings> = MutableStateFlow(viewModelScope, ApplicationSettings())
-    override val isWatchOnlyLoginEnabled: StateFlow<Boolean> = MutableStateFlow(viewModelScope, isWatchOnly)
-    override val showWatchOnlyUsername: StateFlow<Boolean> = MutableStateFlow(viewModelScope, false)
-    override val showWatchOnlyPassword: StateFlow<Boolean> = MutableStateFlow(viewModelScope, false)
-    override val biometricsCredentials: StateFlow<DataState<LoginCredentials>> = MutableStateFlow(viewModelScope, DataState.Empty)
-    override val richWatchOnlyCredentials: StateFlow<DataState<LoginCredentials>> = MutableStateFlow(viewModelScope, DataState.Empty)
-    override val watchOnlyCredentials: StateFlow<DataState<LoginCredentials>> = MutableStateFlow(viewModelScope, DataState.Empty)
-    override val hwWatchOnlyCredentials: StateFlow<DataState<LoginCredentials>> = MutableStateFlow(viewModelScope, DataState.Empty)
+    override val bip39Passphrase: MutableStateFlow<String> = MutableStateFlow("")
+    override val watchOnlyUsername: MutableStateFlow<String> = MutableStateFlow(if (isWatchOnly) "username" else "")
+    override val watchOnlyPassword: MutableStateFlow<String> = MutableStateFlow(if (isWatchOnly) "password" else "")
+    override val error: MutableStateFlow<String?> = MutableStateFlow(null)
+    override val isEmergencyRecoveryPhrase: MutableStateFlow<Boolean> = MutableStateFlow(false)
+    override val tor: StateFlow<TorEvent> = MutableStateFlow(TorEvent(progress = 0))
+    override val applicationSettings: StateFlow<ApplicationSettings> = MutableStateFlow(ApplicationSettings())
+    override val isWatchOnlyLoginEnabled: StateFlow<Boolean> = MutableStateFlow(isWatchOnly)
+    override val showWatchOnlyUsername: StateFlow<Boolean> = MutableStateFlow(false)
+    override val showWatchOnlyPassword: StateFlow<Boolean> = MutableStateFlow(false)
+    override val biometricsCredentials: StateFlow<DataState<LoginCredentials>> = MutableStateFlow(DataState.Empty)
+    override val richWatchOnlyCredentials: StateFlow<DataState<LoginCredentials>> = MutableStateFlow(DataState.Empty)
+    override val watchOnlyCredentials: StateFlow<DataState<LoginCredentials>> = MutableStateFlow(DataState.Empty)
+    override val hwWatchOnlyCredentials: StateFlow<DataState<LoginCredentials>> = MutableStateFlow(DataState.Empty)
     override val pinCredentials: StateFlow<DataState<LoginCredentials>> =
-        MutableStateFlow(viewModelScope, if (withPinCredentials) DataState.Success(previewLoginCredentials()) else DataState.Empty)
-    override val mnemonicCredentials: StateFlow<DataState<LoginCredentials>> = MutableStateFlow(viewModelScope, DataState.Empty)
+        MutableStateFlow(if (withPinCredentials) DataState.Success(previewLoginCredentials()) else DataState.Empty)
+    override val mnemonicCredentials: StateFlow<DataState<LoginCredentials>> = MutableStateFlow(DataState.Empty)
     override val passwordCredentials: StateFlow<DataState<LoginCredentials>> =
-        MutableStateFlow(viewModelScope, if (withPasswprdCredentials) DataState.Success(previewLoginCredentials()) else DataState.Empty)
-    override val lightningMnemonic: StateFlow<DataState<LoginCredentials>> = MutableStateFlow(viewModelScope, DataState.Empty)
-    override val showRestoreWithRecovery = MutableStateFlow(viewModelScope, false)
+        MutableStateFlow(if (withPasswprdCredentials) DataState.Success(previewLoginCredentials()) else DataState.Empty)
+    override val lightningMnemonic: StateFlow<DataState<LoginCredentials>> = MutableStateFlow(DataState.Empty)
+    override val showRestoreWithRecovery = MutableStateFlow(false)
 
     init {
         banner.value = Banner.preview3

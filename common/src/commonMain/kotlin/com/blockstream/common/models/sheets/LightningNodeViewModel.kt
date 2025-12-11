@@ -1,11 +1,26 @@
 package com.blockstream.common.models.sheets
 
-import blockstream_green.common.generated.resources.*
+import androidx.lifecycle.viewModelScope
+import blockstream_green.common.generated.resources.Res
+import blockstream_green.common.generated.resources.id_account_balance
+import blockstream_green.common.generated.resources.id_completed
+import blockstream_green.common.generated.resources.id_inbound_liquidity
+import blockstream_green.common.generated.resources.id_max_payable_amount
+import blockstream_green.common.generated.resources.id_max_receivable_amount
+import blockstream_green.common.generated.resources.id_max_single_payment_amount
+import blockstream_green.common.generated.resources.id_onchain_balance
+import blockstream_green.common.generated.resources.id_rescan_swaps_initiated
 import com.blockstream.common.data.GreenWallet
 import com.blockstream.common.data.SetupArgs
 import com.blockstream.common.extensions.launchIn
 import com.blockstream.common.extensions.previewWallet
-import com.blockstream.common.lightning.*
+import com.blockstream.common.lightning.LightningManager
+import com.blockstream.common.lightning.channelsBalanceSatoshi
+import com.blockstream.common.lightning.maxPayableSatoshi
+import com.blockstream.common.lightning.maxReceivableSatoshi
+import com.blockstream.common.lightning.maxSinglePaymentAmountSatoshi
+import com.blockstream.common.lightning.onchainBalanceSatoshi
+import com.blockstream.common.lightning.totalInboundLiquiditySatoshi
 import com.blockstream.common.models.GreenViewModel
 import com.blockstream.common.navigation.NavigateDestinations
 import com.blockstream.common.sideeffects.SideEffects
@@ -13,9 +28,13 @@ import com.blockstream.common.utils.StringHolder
 import com.blockstream.common.utils.toAmountLookOrNa
 import com.blockstream.green.utils.Loggable
 import com.blockstream.ui.events.Event
-import com.rickclephas.kmp.nativecoroutines.NativeCoroutinesState
-import com.rickclephas.kmp.observableviewmodel.stateIn
-import kotlinx.coroutines.flow.*
+import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.flow.SharingStarted
+import kotlinx.coroutines.flow.StateFlow
+import kotlinx.coroutines.flow.asStateFlow
+import kotlinx.coroutines.flow.map
+import kotlinx.coroutines.flow.onEach
+import kotlinx.coroutines.flow.stateIn
 import org.koin.core.component.inject
 
 abstract class LightningNodeViewModelAbstract(
@@ -23,10 +42,7 @@ abstract class LightningNodeViewModelAbstract(
 ) : GreenViewModel(
     greenWalletOrNull = greenWallet
 ) {
-    @NativeCoroutinesState
     abstract val data: StateFlow<List<Pair<StringHolder, StringHolder>>>
-
-    @NativeCoroutinesState
     abstract val showEmptyAccount: StateFlow<Boolean>
 }
 

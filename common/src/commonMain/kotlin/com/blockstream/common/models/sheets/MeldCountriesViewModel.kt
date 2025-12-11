@@ -1,16 +1,17 @@
 package com.blockstream.common.models.sheets
 
 import androidx.compose.runtime.Immutable
+import androidx.lifecycle.viewModelScope
 import com.blockstream.common.data.GreenWallet
 import com.blockstream.common.models.GreenViewModel
 import com.blockstream.green.data.meld.models.Country
 import com.blockstream.green.domain.base.Result
 import com.blockstream.green.domain.meld.GetMeldCountries
-import com.rickclephas.kmp.observableviewmodel.stateIn
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.map
+import kotlinx.coroutines.flow.stateIn
 import org.koin.core.component.inject
 
 class MeldCountriesViewModel(

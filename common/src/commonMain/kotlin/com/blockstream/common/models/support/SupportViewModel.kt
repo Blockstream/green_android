@@ -1,5 +1,6 @@
 package com.blockstream.common.models.support
 
+import androidx.lifecycle.viewModelScope
 import blockstream_green.common.generated.resources.Res
 import blockstream_green.common.generated.resources.id_contact_support
 import blockstream_green.common.generated.resources.id_thank_you_for_your_feedback
@@ -18,11 +19,10 @@ import com.blockstream.common.utils.isEmailValid
 import com.blockstream.green.utils.Loggable
 import com.blockstream.ui.events.Event
 import com.blockstream.ui.navigation.NavData
-import com.rickclephas.kmp.nativecoroutines.NativeCoroutinesState
-import com.rickclephas.kmp.observableviewmodel.launch
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.flow.onEach
+import kotlinx.coroutines.launch
 import org.jetbrains.compose.resources.getString
 
 abstract class SupportViewModelAbstract(
@@ -35,20 +35,10 @@ abstract class SupportViewModelAbstract(
     override fun screenName(): String = "Support"
 
     override val isLoginRequired: Boolean = false
-
-    @NativeCoroutinesState
     abstract val email: MutableStateFlow<String>
-
-    @NativeCoroutinesState
     abstract val message: MutableStateFlow<String>
-
-    @NativeCoroutinesState
     abstract val attachLogs: MutableStateFlow<Boolean>
-
-    @NativeCoroutinesState
     abstract val isTorEnabled: MutableStateFlow<Boolean>
-
-    @NativeCoroutinesState
     abstract val torAcknowledged: MutableStateFlow<Boolean>
 }
 

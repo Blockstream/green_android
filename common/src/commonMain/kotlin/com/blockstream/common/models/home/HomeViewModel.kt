@@ -1,5 +1,6 @@
 package com.blockstream.common.models.home
 
+import androidx.lifecycle.viewModelScope
 import blockstream_green.common.generated.resources.Res
 import blockstream_green.common.generated.resources.blockstream_logo
 import blockstream_green.common.generated.resources.id_about
@@ -24,10 +25,7 @@ import com.blockstream.green.utils.Loggable
 import com.blockstream.ui.events.Event
 import com.blockstream.ui.navigation.NavAction
 import com.blockstream.ui.navigation.NavData
-import com.rickclephas.kmp.nativecoroutines.NativeCoroutinesState
-import com.rickclephas.kmp.observableviewmodel.MutableStateFlow
-import com.rickclephas.kmp.observableviewmodel.launch
-import com.rickclephas.kmp.observableviewmodel.stateIn
+import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.combine
@@ -35,18 +33,14 @@ import kotlinx.coroutines.flow.filterNotNull
 import kotlinx.coroutines.flow.flowOf
 import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.flow.onEach
+import kotlinx.coroutines.flow.stateIn
+import kotlinx.coroutines.launch
 import org.koin.core.component.inject
 
 abstract class HomeViewModelAbstract(val isGetStarted: Boolean = false) : GreenViewModel() {
     override fun screenName(): String? = if (isGetStarted) "GetStarted" else "Home"
-
-    @NativeCoroutinesState
     abstract val isEmptyWallet: StateFlow<Boolean?>
-
-    @NativeCoroutinesState
     abstract val allWallets: StateFlow<List<WalletListLook>?>
-
-    @NativeCoroutinesState
     abstract val showV5Upgrade: StateFlow<Boolean>
 }
 
@@ -83,8 +77,6 @@ class HomeViewModel(isGetStarted: Boolean = false) : HomeViewModelAbstract(isGet
             !isEmptyWallet
         } else false
     }.stateIn(viewModelScope, SharingStarted.WhileSubscribed(5000L), false)
-
-    @NativeCoroutinesState
     override val allWallets = combine(
         database.getAllWalletsFlow(),
         sessionManager.ephemeralWallets,
@@ -201,14 +193,10 @@ class HomeViewModelPreview(
     ephemeralWallets: List<WalletListLook>,
     hardwareWallets: List<WalletListLook>,
 ) : HomeViewModelAbstract() {
-    override val isEmptyWallet: StateFlow<Boolean?> = MutableStateFlow(
-        viewModelScope,
-        softwareWallets.isEmpty() && ephemeralWallets.isEmpty() && hardwareWallets.isEmpty()
-    )
-
-    @NativeCoroutinesState
+    override val isEmptyWallet: StateFlow<Boolean?> =
+        MutableStateFlow(softwareWallets.isEmpty() && ephemeralWallets.isEmpty() && hardwareWallets.isEmpty())
     override val allWallets: StateFlow<List<WalletListLook>?> =
-        MutableStateFlow(viewModelScope, softwareWallets)
+        MutableStateFlow(softwareWallets)
 
     override val showV5Upgrade: StateFlow<Boolean> = MutableStateFlow(true)
 

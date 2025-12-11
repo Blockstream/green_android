@@ -1,5 +1,6 @@
 package com.blockstream.common.models.overview
 
+import androidx.lifecycle.viewModelScope
 import blockstream_green.common.generated.resources.Res
 import blockstream_green.common.generated.resources.id_security
 import com.blockstream.common.crypto.PlatformCipher
@@ -22,18 +23,17 @@ import com.blockstream.jade.firmware.JadeFirmwareManager.Companion.JADE_FW_VERSI
 import com.blockstream.ui.events.Event
 import com.blockstream.ui.navigation.NavData
 import com.blockstream.ui.sideeffects.SideEffect
-import com.rickclephas.kmp.observableviewmodel.MutableStateFlow
-import com.rickclephas.kmp.observableviewmodel.coroutineScope
-import com.rickclephas.kmp.observableviewmodel.launch
-import com.rickclephas.kmp.observableviewmodel.stateIn
 import kotlinx.coroutines.CompletableDeferred
 import kotlinx.coroutines.CoroutineStart
 import kotlinx.coroutines.async
+import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.filterNotNull
 import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.flow.onEach
+import kotlinx.coroutines.flow.stateIn
+import kotlinx.coroutines.launch
 import kotlinx.serialization.Serializable
 import org.jetbrains.compose.resources.getString
 import org.koin.core.component.inject
@@ -198,7 +198,7 @@ class SecurityViewModel(greenWallet: GreenWallet) :
                         throw Exception("Biometric authentication is not available")
                     }
 
-                    val biometricsCipherProvider = viewModelScope.coroutineScope.async(
+                    val biometricsCipherProvider = viewModelScope.async(
                         start = CoroutineStart.LAZY
                     ) {
                         CompletableDeferred<PlatformCipher>().let {
@@ -262,7 +262,6 @@ class SecurityViewModelPreview(override val isHardware: Boolean = false) :
 
     override val credentials: StateFlow<List<Pair<CredentialType, LoginCredentials?>>> =
         MutableStateFlow(
-            viewModelScope,
             listOf(
                 CredentialType.BIOMETRICS_MNEMONIC to LoginCredentials(
                     "",

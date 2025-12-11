@@ -1,5 +1,6 @@
 package com.blockstream.common.models.wallet
 
+import androidx.lifecycle.viewModelScope
 import com.blockstream.common.data.GreenWallet
 import com.blockstream.common.events.Events
 import com.blockstream.common.extensions.cleanup
@@ -8,8 +9,6 @@ import com.blockstream.common.extensions.previewWallet
 import com.blockstream.common.models.GreenViewModel
 import com.blockstream.common.sideeffects.SideEffects
 import com.blockstream.ui.events.Event
-import com.rickclephas.kmp.nativecoroutines.NativeCoroutinesState
-import com.rickclephas.kmp.observableviewmodel.coroutineScope
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.launchIn
 import kotlinx.coroutines.flow.onEach
@@ -19,8 +18,6 @@ abstract class WalletNameViewModelAbstract(greenWallet: GreenWallet) :
     override fun screenName(): String = "RenameWallet"
 
     override val isLoginRequired: Boolean = false
-
-    @NativeCoroutinesState
     abstract val name: MutableStateFlow<String>
 }
 
@@ -32,7 +29,7 @@ class WalletNameViewModel(greenWallet: GreenWallet) : WalletNameViewModelAbstrac
 
         name.onEach {
             _isValid.value = it.cleanup().isNotBlank()
-        }.launchIn(viewModelScope.coroutineScope)
+        }.launchIn(viewModelScope)
     }
 
     override suspend fun handleEvent(event: Event) {

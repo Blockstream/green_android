@@ -1,5 +1,6 @@
 package com.blockstream.common.models.receive
 
+import androidx.lifecycle.viewModelScope
 import com.blockstream.common.data.Denomination
 import com.blockstream.common.data.GreenWallet
 import com.blockstream.common.events.Events
@@ -13,8 +14,6 @@ import com.blockstream.common.utils.getBitcoinOrLiquidUnit
 import com.blockstream.common.utils.getFiatCurrency
 import com.blockstream.common.utils.toAmountLook
 import com.blockstream.ui.events.Event
-import com.rickclephas.kmp.nativecoroutines.NativeCoroutinesState
-import com.rickclephas.kmp.observableviewmodel.coroutineScope
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.flow.debounce
@@ -33,14 +32,8 @@ abstract class RequestAmountViewModelAbstract(
         countly.accountSegmentation(session, account)
 
     abstract val isPolicyAsset: Boolean
-
-    @NativeCoroutinesState
     abstract val amount: MutableStateFlow<String>
-
-    @NativeCoroutinesState
     abstract val amountCurrency: MutableStateFlow<String>
-
-    @NativeCoroutinesState
     abstract val exchange: MutableStateFlow<String>
 }
 
@@ -63,7 +56,7 @@ class RequestAmountViewModel(
 
     init {
         if (initialAmount.isNotBlank()) {
-            viewModelScope.coroutineScope.launch {
+            viewModelScope.launch {
                 amount.value = (if (isPolicyAsset) {
                     try {
                         // Amount is always in BTC value, convert it to user's settings
@@ -90,7 +83,7 @@ class RequestAmountViewModel(
         if (isPolicyAsset) {
             combine(denomination, amount.debounce(10)) { _, _ ->
                 updateExchange()
-            }.launchIn(viewModelScope.coroutineScope)
+            }.launchIn(viewModelScope)
         }
 
         denomination
@@ -106,7 +99,7 @@ class RequestAmountViewModel(
                 } else {
                     accountAsset.asset.ticker ?: ""
                 }
-            }.launchIn(viewModelScope.coroutineScope)
+            }.launchIn(viewModelScope)
 
         bootstrap()
     }
@@ -122,7 +115,7 @@ class RequestAmountViewModel(
     }
 
     private fun convertAmount() {
-        viewModelScope.coroutineScope.launch {
+        viewModelScope.launch {
             val amount: String? = try {
                 val input = UserInput.parseUserInput(
                     session = session,
@@ -180,7 +173,7 @@ class RequestAmountViewModel(
     }
 
     private fun toggleCurrency() {
-        viewModelScope.coroutineScope.launch {
+        viewModelScope.launch {
 
             // Convert between BTC / Fiat
             amount.value = try {

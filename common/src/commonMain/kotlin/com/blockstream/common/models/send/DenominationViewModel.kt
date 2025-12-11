@@ -1,5 +1,6 @@
 package com.blockstream.common.models.send
 
+import androidx.lifecycle.viewModelScope
 import blockstream_green.common.generated.resources.Res
 import blockstream_green.common.generated.resources.id_enter_amount_in
 import com.blockstream.common.data.DenominatedValue
@@ -10,9 +11,6 @@ import com.blockstream.common.extensions.previewWallet
 import com.blockstream.common.models.GreenViewModel
 import com.blockstream.green.utils.Loggable
 import com.blockstream.ui.navigation.NavData
-import com.rickclephas.kmp.nativecoroutines.NativeCoroutinesState
-import com.rickclephas.kmp.observableviewmodel.coroutineScope
-import com.rickclephas.kmp.observableviewmodel.launch
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
@@ -28,8 +26,6 @@ abstract class DenominationViewModelAbstract(
     override fun segmentation(): HashMap<String, Any>? {
         return countly.sessionSegmentation(session = session)
     }
-
-    @NativeCoroutinesState
     abstract val denominations: StateFlow<List<DenominatedValue>>
 }
 
@@ -53,7 +49,7 @@ class DenominationViewModel(
         _denomination.value = denominatedValue.denomination
 
         session.ifConnected {
-            viewModelScope.coroutineScope.launch {
+            viewModelScope.launch {
                 _denominations.value = listOfNotNull(
                     DenominatedValue.toDenomination(
                         denominatedValue = denominatedValue,

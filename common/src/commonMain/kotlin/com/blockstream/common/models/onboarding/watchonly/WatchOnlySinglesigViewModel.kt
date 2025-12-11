@@ -1,23 +1,22 @@
 package com.blockstream.common.models.onboarding.watchonly
 
+import androidx.lifecycle.viewModelScope
 import com.blockstream.common.data.SetupArgs
 import com.blockstream.common.data.WatchOnlyCredentials
 import com.blockstream.common.events.Events
 import com.blockstream.common.extensions.launchIn
 import com.blockstream.common.gdk.data.AccountType
 import com.blockstream.common.models.GreenViewModel
-import com.blockstream.common.utils.WatchOnlyDetector
 import com.blockstream.common.utils.WatchOnlyCredentialType
+import com.blockstream.common.utils.WatchOnlyDetector
 import com.blockstream.ui.events.Event
 import com.blockstream.ui.sideeffects.SideEffect
-import com.rickclephas.kmp.nativecoroutines.NativeCoroutinesState
-import com.rickclephas.kmp.observableviewmodel.MutableStateFlow
-import com.rickclephas.kmp.observableviewmodel.stateIn
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.flow.onEach
+import kotlinx.coroutines.flow.stateIn
 import kotlinx.serialization.json.Json
 import kotlinx.serialization.json.JsonObject
 import kotlinx.serialization.json.JsonPrimitive
@@ -33,17 +32,9 @@ abstract class WatchOnlySinglesigViewModelAbstract(val setupArgs: SetupArgs) : G
 
     override fun segmentation(): HashMap<String, Any>? =
         setupArgs.let { countly.onBoardingSegmentation(setupArgs = it) }
-
-    @NativeCoroutinesState
     abstract val isLiquid: StateFlow<Boolean>
-
-    @NativeCoroutinesState
     abstract val isLoginEnabled: StateFlow<Boolean>
-
-    @NativeCoroutinesState
     abstract val watchOnlyDescriptor: MutableStateFlow<String>
-
-    @NativeCoroutinesState
     abstract val isOutputDescriptors: MutableStateFlow<Boolean>
 }
 
@@ -54,13 +45,13 @@ class WatchOnlySinglesigViewModel(setupArgs: SetupArgs) :
     private var detectedNetwork: String? = null
 
     override val isLiquid: MutableStateFlow<Boolean> =
-        MutableStateFlow(viewModelScope, setupArgs.network?.isLiquid == true)
+        MutableStateFlow(setupArgs.network?.isLiquid == true)
 
     override val watchOnlyDescriptor: MutableStateFlow<String> =
-        MutableStateFlow(viewModelScope, "")
+        MutableStateFlow("")
 
     override val isOutputDescriptors: MutableStateFlow<Boolean> =
-        MutableStateFlow(viewModelScope, setupArgs.network?.isLiquid == true)
+        MutableStateFlow(setupArgs.network?.isLiquid == true)
 
     override val isLoginEnabled: StateFlow<Boolean>
 

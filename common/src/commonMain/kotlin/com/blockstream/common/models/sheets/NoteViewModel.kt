@@ -6,7 +6,6 @@ import com.blockstream.common.extensions.previewWallet
 import com.blockstream.common.models.GreenViewModel
 import com.blockstream.common.sideeffects.SideEffects
 import com.blockstream.ui.events.Event
-import com.rickclephas.kmp.nativecoroutines.NativeCoroutinesState
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.serialization.Serializable
 
@@ -15,8 +14,8 @@ enum class NoteType {
     Note, Description, Comment
 }
 
-abstract class NoteViewModelAbstract(val noteType: NoteType, greenWallet: GreenWallet) : GreenViewModel(greenWalletOrNull = greenWallet) {
-    @NativeCoroutinesState
+abstract class NoteViewModelAbstract(val noteType: NoteType, greenWallet: GreenWallet) :
+    GreenViewModel(greenWalletOrNull = greenWallet) {
     abstract val note: MutableStateFlow<String>
 }
 

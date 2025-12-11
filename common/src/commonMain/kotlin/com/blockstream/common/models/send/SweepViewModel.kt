@@ -1,5 +1,6 @@
 package com.blockstream.common.models.send
 
+import androidx.lifecycle.viewModelScope
 import blockstream_green.common.generated.resources.Res
 import blockstream_green.common.generated.resources.id_sweep
 import com.blockstream.common.AddressInputType
@@ -27,9 +28,6 @@ import com.blockstream.common.utils.toAmountLook
 import com.blockstream.green.utils.Loggable
 import com.blockstream.ui.events.Event
 import com.blockstream.ui.navigation.NavData
-import com.rickclephas.kmp.nativecoroutines.NativeCoroutinesState
-import com.rickclephas.kmp.observableviewmodel.launch
-import com.rickclephas.kmp.observableviewmodel.stateIn
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.SharingStarted
@@ -39,6 +37,8 @@ import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.flow.filterNotNull
 import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.flow.onEach
+import kotlinx.coroutines.flow.stateIn
+import kotlinx.coroutines.launch
 import org.jetbrains.compose.resources.getString
 
 abstract class SweepViewModelAbstract(
@@ -54,17 +54,9 @@ abstract class SweepViewModelAbstract(
     override fun segmentation(): HashMap<String, Any>? {
         return countly.sessionSegmentation(session = session)
     }
-
-    @NativeCoroutinesState
     abstract val accounts: StateFlow<List<AccountAssetBalance>>
-
-    @NativeCoroutinesState
     abstract val privateKey: MutableStateFlow<String>
-
-    @NativeCoroutinesState
     abstract val amount: StateFlow<String?>
-
-    @NativeCoroutinesState
     abstract val amountFiat: StateFlow<String?>
 }
 

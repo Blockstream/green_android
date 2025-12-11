@@ -1,5 +1,6 @@
 package com.blockstream.common.models.add
 
+import androidx.lifecycle.viewModelScope
 import blockstream_green.common.generated.resources.Res
 import blockstream_green.common.generated.resources.id_invalid_xpub
 import com.blockstream.common.data.SetupArgs
@@ -11,9 +12,6 @@ import com.blockstream.common.navigation.NavigateDestinations
 import com.blockstream.common.sideeffects.SideEffects
 import com.blockstream.ui.events.Event
 import com.blockstream.ui.navigation.NavData
-import com.rickclephas.kmp.nativecoroutines.NativeCoroutinesState
-import com.rickclephas.kmp.observableviewmodel.coroutineScope
-import com.rickclephas.kmp.observableviewmodel.launch
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.IO
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -21,6 +19,7 @@ import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.launchIn
 import kotlinx.coroutines.flow.onEach
+import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
 import org.jetbrains.compose.resources.getString
 import org.koin.core.component.inject
@@ -31,11 +30,7 @@ abstract class XpubViewModelAbstract(val setupArgs: SetupArgs) : AddAccountViewM
     popTo = setupArgs.popTo
 ) {
     override fun screenName(): String = "AddAccountPublicKey"
-
-    @NativeCoroutinesState
     abstract val xpub: MutableStateFlow<String>
-
-    @NativeCoroutinesState
     abstract val error: StateFlow<String?>
 }
 
@@ -64,7 +59,7 @@ class XpubViewModel(setupArgs: SetupArgs) : XpubViewModelAbstract(setupArgs = se
                 }
             }
 
-        }.launchIn(viewModelScope.coroutineScope)
+        }.launchIn(viewModelScope)
 
         bootstrap()
     }

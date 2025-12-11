@@ -1,10 +1,9 @@
 package com.blockstream.common.extensions
 
+import androidx.lifecycle.ViewModel
+import androidx.lifecycle.viewModelScope
 import com.blockstream.common.CountlyBase
 import com.blockstream.green.data.config.AppInfo
-import com.rickclephas.kmp.observableviewmodel.ViewModel
-import com.rickclephas.kmp.observableviewmodel.ViewModelScope
-import com.rickclephas.kmp.observableviewmodel.coroutineScope
 import kotlinx.coroutines.CancellationException
 import kotlinx.coroutines.CoroutineExceptionHandler
 import kotlinx.coroutines.CoroutineScope
@@ -140,13 +139,7 @@ fun MutableStateFlow<Boolean>.toggle() {
     this.value = !value
 }
 
-fun <T> Flow<T>.launchIn(viewModel: ViewModel) = launchIn(viewModel.viewModelScope.coroutineScope)
-
-fun ViewModelScope.launchSafe(
-    context: CoroutineContext = EmptyCoroutineContext,
-    start: CoroutineStart = CoroutineStart.DEFAULT,
-    block: suspend CoroutineScope.() -> Unit
-) = coroutineScope.launchSafe(context = context, start = start, block = block)
+fun <T> Flow<T>.launchIn(viewModel: ViewModel) = launchIn(viewModel.viewModelScope)
 
 fun CoroutineScope.supervisorJob() = CoroutineScope(context = coroutineContext + SupervisorJob() + Dispatchers.IO + handleException())
 

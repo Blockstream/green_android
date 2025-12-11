@@ -29,7 +29,6 @@ import com.blockstream.common.models.sheets.NoteType
 import com.blockstream.green.data.meld.data.QuotesResponse
 import com.blockstream.ui.events.Event
 import com.blockstream.ui.navigation.Route
-import com.rickclephas.kmp.nativecoroutines.NativeCoroutines
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.IO
 import kotlinx.coroutines.withContext
@@ -192,7 +191,7 @@ sealed class NavigateDestinations : NavigateDestination() {
     @Serializable
     data class Assets constructor(val greenWallet: GreenWallet, val assets: AssetBalanceList) : NavigateDestination() {
         companion object {
-            @NativeCoroutines
+
             suspend fun create(viewModel: GreenViewModel): Assets {
                 return Assets(
                     greenWallet = viewModel.greenWallet,

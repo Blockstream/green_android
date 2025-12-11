@@ -1,6 +1,17 @@
 package com.blockstream.common.models.onboarding.phone
 
-import blockstream_green.common.generated.resources.*
+import androidx.lifecycle.viewModelScope
+import blockstream_green.common.generated.resources.Res
+import blockstream_green.common.generated.resources.id_enter_your_12_24_or_27_words
+import blockstream_green.common.generated.resources.id_enter_your_24_or_27_words
+import blockstream_green.common.generated.resources.id_enter_your_27_words_recovery
+import blockstream_green.common.generated.resources.id_help
+import blockstream_green.common.generated.resources.id_invalid_mnemonic_continue
+import blockstream_green.common.generated.resources.id_recovery_phrase_check
+import blockstream_green.common.generated.resources.id_restoring_your_wallet
+import blockstream_green.common.generated.resources.id_well_done_you_can_continue
+import blockstream_green.common.generated.resources.id_well_done_you_can_continue_with
+import blockstream_green.common.generated.resources.question
 import com.arkivanov.essenty.statekeeper.StateKeeper
 import com.arkivanov.essenty.statekeeper.StateKeeperDispatcher
 import com.blockstream.common.crypto.BiometricsException
@@ -23,14 +34,15 @@ import com.blockstream.ui.events.Event
 import com.blockstream.ui.navigation.NavAction
 import com.blockstream.ui.navigation.NavData
 import com.blockstream.ui.sideeffects.SideEffect
-import com.rickclephas.kmp.nativecoroutines.NativeCoroutinesState
-import com.rickclephas.kmp.observableviewmodel.MutableStateFlow
-import com.rickclephas.kmp.observableviewmodel.coroutineScope
-import com.rickclephas.kmp.observableviewmodel.launch
 import kotlinx.coroutines.CompletableDeferred
 import kotlinx.coroutines.CoroutineStart
 import kotlinx.coroutines.async
-import kotlinx.coroutines.flow.*
+import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.flow.StateFlow
+import kotlinx.coroutines.flow.combine
+import kotlinx.coroutines.flow.launchIn
+import kotlinx.coroutines.flow.onEach
+import kotlinx.coroutines.launch
 import kotlinx.serialization.Serializable
 import org.jetbrains.compose.resources.getString
 import org.koin.core.component.inject
@@ -43,41 +55,17 @@ abstract class EnterRecoveryPhraseViewModelAbstract(val setupArgs: SetupArgs) :
 
     override fun segmentation(): HashMap<String, Any>? =
         setupArgs.let { countly.onBoardingSegmentation(setupArgs = it) }
-
-    @NativeCoroutinesState
     abstract val recoveryPhrase: MutableStateFlow<List<String>>
-
-    @NativeCoroutinesState
     abstract val rows: MutableStateFlow<Int>
-
-    @NativeCoroutinesState
     abstract val activeWord: MutableStateFlow<Int>
-
-    @NativeCoroutinesState
     abstract val matchedWords: MutableStateFlow<List<String>>
-
-    @NativeCoroutinesState
     abstract val enabledKeys: MutableStateFlow<Set<String>>
-
-    @NativeCoroutinesState
     abstract val isRecoveryPhraseValid: StateFlow<Boolean>
-
-    @NativeCoroutinesState
     abstract val showInputButtons: StateFlow<Boolean>
-
-    @NativeCoroutinesState
     abstract val showHelpButton: StateFlow<Boolean>
-
-    @NativeCoroutinesState
     abstract val showTypeNextWordHint: StateFlow<Boolean>
-
-    @NativeCoroutinesState
     abstract val showInvalidMnemonicError: StateFlow<Boolean>
-
-    @NativeCoroutinesState
     abstract val recoveryPhraseSize: MutableStateFlow<Int>
-
-    @NativeCoroutinesState
     abstract val hintMessage: MutableStateFlow<String>
 
     abstract val bip39WordList: List<String>
@@ -89,47 +77,23 @@ class EnterRecoveryPhraseViewModel(setupArgs: SetupArgs, stateKeeper: StateKeepe
 
     private val restoreWalletUseCase: RestoreWalletUseCase by inject()
     private val checkRecoveryPhraseUseCase: CheckRecoveryPhraseUseCase by inject()
-
-    @NativeCoroutinesState
     override val recoveryPhrase: MutableStateFlow<List<String>> =
-        MutableStateFlow(viewModelScope, listOf())
-
-    @NativeCoroutinesState
-    override val rows: MutableStateFlow<Int> = MutableStateFlow(viewModelScope, 12)
-
-    @NativeCoroutinesState
-    override val activeWord: MutableStateFlow<Int> = MutableStateFlow(viewModelScope, -1)
-
-    @NativeCoroutinesState
-    override val matchedWords = MutableStateFlow(viewModelScope, listOf<String>())
-
-    @NativeCoroutinesState
-    override val enabledKeys = MutableStateFlow(viewModelScope, setOf<String>())
-
-    @NativeCoroutinesState
+        MutableStateFlow(listOf())
+    override val rows: MutableStateFlow<Int> = MutableStateFlow(12)
+    override val activeWord: MutableStateFlow<Int> = MutableStateFlow(-1)
+    override val matchedWords = MutableStateFlow(listOf<String>())
+    override val enabledKeys = MutableStateFlow(setOf<String>())
     override val isRecoveryPhraseValid: MutableStateFlow<Boolean> =
-        MutableStateFlow(viewModelScope, false)
-
-    @NativeCoroutinesState
+        MutableStateFlow(false)
     override val showInputButtons: MutableStateFlow<Boolean> =
-        MutableStateFlow(viewModelScope, true)
-
-    @NativeCoroutinesState
-    override val showHelpButton: MutableStateFlow<Boolean> = MutableStateFlow(viewModelScope, false)
-
-    @NativeCoroutinesState
+        MutableStateFlow(true)
+    override val showHelpButton: MutableStateFlow<Boolean> = MutableStateFlow(false)
     override val showTypeNextWordHint: MutableStateFlow<Boolean> =
-        MutableStateFlow(viewModelScope, false)
-
-    @NativeCoroutinesState
+        MutableStateFlow(false)
     override val showInvalidMnemonicError: MutableStateFlow<Boolean> =
-        MutableStateFlow(viewModelScope, false)
-
-    @NativeCoroutinesState
-    override val recoveryPhraseSize: MutableStateFlow<Int> = MutableStateFlow(viewModelScope, 12)
-
-    @NativeCoroutinesState
-    override val hintMessage: MutableStateFlow<String> = MutableStateFlow(viewModelScope, "")
+        MutableStateFlow(false)
+    override val recoveryPhraseSize: MutableStateFlow<Int> = MutableStateFlow(12)
+    override val hintMessage: MutableStateFlow<String> = MutableStateFlow("")
 
     override val bip39WordList: List<String> by lazy { wally.getBip39WordList() }
 
@@ -179,7 +143,7 @@ class EnterRecoveryPhraseViewModel(setupArgs: SetupArgs, stateKeeper: StateKeepe
 
         combine(recoveryPhrase, recoveryPhraseSize, activeWord) { _, _, _ ->
             checkRecoveryPhrase()
-        }.launchIn(viewModelScope.coroutineScope)
+        }.launchIn(viewModelScope)
     }
 
     override suspend fun handleEvent(event: Event) {
@@ -389,7 +353,7 @@ class EnterRecoveryPhraseViewModel(setupArgs: SetupArgs, stateKeeper: StateKeepe
         }
 
         doAsync({
-            val biometricsCipherProvider = viewModelScope.coroutineScope.async(
+            val biometricsCipherProvider = viewModelScope.async(
                 start = CoroutineStart.LAZY
             ) {
                 CompletableDeferred<PlatformCipher>().let {
@@ -451,29 +415,29 @@ class EnterRecoveryPhraseViewModel(setupArgs: SetupArgs, stateKeeper: StateKeepe
 class EnterRecoveryPhraseViewModelPreview(setupArgs: SetupArgs) :
     EnterRecoveryPhraseViewModelAbstract(setupArgs) {
     override val recoveryPhrase: MutableStateFlow<List<String>> =
-        MutableStateFlow(viewModelScope, emptyList())
+        MutableStateFlow(emptyList())
 
-    override val rows: MutableStateFlow<Int> = MutableStateFlow(viewModelScope, 4)
+    override val rows: MutableStateFlow<Int> = MutableStateFlow(4)
 
-    override val activeWord: MutableStateFlow<Int> = MutableStateFlow(viewModelScope, -1)
+    override val activeWord: MutableStateFlow<Int> = MutableStateFlow(-1)
 
-    override val matchedWords: MutableStateFlow<List<String>> = MutableStateFlow(viewModelScope, mutableListOf("about"))
+    override val matchedWords: MutableStateFlow<List<String>> = MutableStateFlow(mutableListOf("about"))
 
-    override val enabledKeys: MutableStateFlow<Set<String>> = MutableStateFlow(viewModelScope, setOf())
+    override val enabledKeys: MutableStateFlow<Set<String>> = MutableStateFlow(setOf())
 
-    override val isRecoveryPhraseValid: StateFlow<Boolean> = MutableStateFlow(viewModelScope, true)
+    override val isRecoveryPhraseValid: StateFlow<Boolean> = MutableStateFlow(true)
 
-    override val showInputButtons: StateFlow<Boolean> = MutableStateFlow(viewModelScope, true)
+    override val showInputButtons: StateFlow<Boolean> = MutableStateFlow(true)
 
-    override val showHelpButton: StateFlow<Boolean> = MutableStateFlow(viewModelScope, false)
+    override val showHelpButton: StateFlow<Boolean> = MutableStateFlow(false)
 
-    override val showTypeNextWordHint: StateFlow<Boolean> = MutableStateFlow(viewModelScope, false)
+    override val showTypeNextWordHint: StateFlow<Boolean> = MutableStateFlow(false)
 
     override val showInvalidMnemonicError: StateFlow<Boolean> =
-        MutableStateFlow(viewModelScope, false)
-    override val recoveryPhraseSize: MutableStateFlow<Int> = MutableStateFlow(viewModelScope, 24)
+        MutableStateFlow(false)
+    override val recoveryPhraseSize: MutableStateFlow<Int> = MutableStateFlow(24)
 
-    override val hintMessage: MutableStateFlow<String> = MutableStateFlow(viewModelScope, "")
+    override val hintMessage: MutableStateFlow<String> = MutableStateFlow("")
 
     override val bip39WordList: List<String> = listOf()
 

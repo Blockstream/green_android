@@ -1,5 +1,6 @@
 package com.blockstream.common.models.sheets
 
+import androidx.lifecycle.viewModelScope
 import blockstream_green.common.generated.resources.Res
 import blockstream_green.common.generated.resources.id_account_balance
 import blockstream_green.common.generated.resources.id_asset_id
@@ -20,8 +21,6 @@ import com.blockstream.common.gdk.data.AccountAsset
 import com.blockstream.common.models.GreenViewModel
 import com.blockstream.common.utils.StringHolder
 import com.blockstream.common.utils.toAmountLookOrNa
-import com.rickclephas.kmp.nativecoroutines.NativeCoroutinesState
-import com.rickclephas.kmp.observableviewmodel.coroutineScope
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
@@ -37,7 +36,6 @@ abstract class AssetDetailsViewModelAbstract(
     greenWalletOrNull = greenWallet,
     accountAssetOrNull = accountAsset
 ) {
-    @NativeCoroutinesState
     abstract val data: StateFlow<List<Pair<StringHolder, StringHolder>>>
 }
 
@@ -97,7 +95,7 @@ class AssetDetailsViewModel(
                     }
                 }
 
-            }.launchIn(viewModelScope.coroutineScope)
+            }.launchIn(viewModelScope)
         }
 
         bootstrap()

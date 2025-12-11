@@ -1,5 +1,6 @@
 package com.blockstream.common.models.settings
 
+import androidx.lifecycle.viewModelScope
 import blockstream_green.common.generated.resources.Res
 import blockstream_green.common.generated.resources.id_watchonly
 import com.blockstream.common.data.CredentialType
@@ -19,30 +20,21 @@ import com.blockstream.common.utils.StringHolder
 import com.blockstream.green.utils.Loggable
 import com.blockstream.ui.events.Event
 import com.blockstream.ui.navigation.NavData
-import com.rickclephas.kmp.nativecoroutines.NativeCoroutinesState
-import com.rickclephas.kmp.observableviewmodel.MutableStateFlow
-import com.rickclephas.kmp.observableviewmodel.launch
-import com.rickclephas.kmp.observableviewmodel.stateIn
+import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.flow.map
+import kotlinx.coroutines.flow.stateIn
+import kotlinx.coroutines.launch
 import org.jetbrains.compose.resources.getString
 
 abstract class WatchOnlyViewModelAbstract(greenWallet: GreenWallet) :
     GreenViewModel(greenWalletOrNull = greenWallet) {
     override fun screenName(): String = "WalletSettingsWatchOnly"
-
-    @NativeCoroutinesState
     abstract val richWatchOnly: StateFlow<List<RichWatchOnly>?>
-
-    @NativeCoroutinesState
     abstract val multisigWatchOnly: StateFlow<List<WatchOnlyLook>>
-
-    @NativeCoroutinesState
     abstract val extendedPublicKeysAccounts: StateFlow<List<WatchOnlyLook>>
-
-    @NativeCoroutinesState
     abstract val outputDescriptorsAccounts: StateFlow<List<WatchOnlyLook>>
 }
 
@@ -143,7 +135,7 @@ class WatchOnlyViewModelPreview(greenWallet: GreenWallet) :
 
     override val multisigWatchOnly: StateFlow<List<WatchOnlyLook>> =
         MutableStateFlow(
-            viewModelScope, listOf(
+            listOf(
                 WatchOnlyLook(
                     network = previewNetwork(),
                     username = "username"
@@ -157,7 +149,6 @@ class WatchOnlyViewModelPreview(greenWallet: GreenWallet) :
 
     override val extendedPublicKeysAccounts: StateFlow<List<WatchOnlyLook>> =
         MutableStateFlow(
-            viewModelScope,
             listOf(
                 WatchOnlyLook(
                     account = previewAccount(),
@@ -168,7 +159,6 @@ class WatchOnlyViewModelPreview(greenWallet: GreenWallet) :
 
     override val outputDescriptorsAccounts: StateFlow<List<WatchOnlyLook>> =
         MutableStateFlow(
-            viewModelScope,
             listOf(
                 WatchOnlyLook(
                     account = previewAccount(),

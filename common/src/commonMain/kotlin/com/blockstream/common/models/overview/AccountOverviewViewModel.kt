@@ -1,5 +1,6 @@
 package com.blockstream.common.models.overview
 
+import androidx.lifecycle.viewModelScope
 import blockstream_green.common.generated.resources.Res
 import blockstream_green.common.generated.resources.box_arrow_down
 import blockstream_green.common.generated.resources.id_archive_account
@@ -43,8 +44,6 @@ import com.blockstream.green.utils.Loggable
 import com.blockstream.ui.events.Event
 import com.blockstream.ui.navigation.NavAction
 import com.blockstream.ui.navigation.NavData
-import com.rickclephas.kmp.nativecoroutines.NativeCoroutinesState
-import com.rickclephas.kmp.observableviewmodel.stateIn
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.StateFlow
@@ -55,6 +54,7 @@ import kotlinx.coroutines.flow.filterNotNull
 import kotlinx.coroutines.flow.flowOf
 import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.flow.onEach
+import kotlinx.coroutines.flow.stateIn
 import org.jetbrains.compose.resources.getString
 
 abstract class AccountOverviewViewModelAbstract(
@@ -62,29 +62,13 @@ abstract class AccountOverviewViewModelAbstract(
 ) : GreenViewModel(greenWalletOrNull = greenWallet, accountAssetOrNull = accountAsset) {
 
     override fun screenName(): String = "AccountOverview"
-
-    @NativeCoroutinesState
     abstract val alerts: StateFlow<List<AlertType>>
-
-    @NativeCoroutinesState
     abstract val assets: StateFlow<DataState<List<AssetBalance>>>
-
-    @NativeCoroutinesState
     abstract val accountBalance: StateFlow<AccountBalance>
-
-    @NativeCoroutinesState
     abstract val accounts: StateFlow<List<Account>>
-
-    @NativeCoroutinesState
     abstract val showAmpInfo: StateFlow<Boolean>
-
-    @NativeCoroutinesState
     abstract val lightningInfo: StateFlow<LightningInfoLook?>
-
-    @NativeCoroutinesState
     abstract val transactions: StateFlow<DataState<List<TransactionLook>>>
-
-    @NativeCoroutinesState
     abstract val hasMoreTransactions: StateFlow<Boolean>
 }
 

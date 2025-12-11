@@ -12,7 +12,6 @@ import com.blockstream.common.gdk.data.LoginData
 import com.blockstream.common.platformFileSystem
 import com.blockstream.green.data.config.AppInfo
 import com.blockstream.green.utils.Loggable
-import com.rickclephas.kmp.nativecoroutines.NativeCoroutinesIgnore
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.IO
 import kotlinx.coroutines.launch
@@ -53,8 +52,7 @@ class LightningManager constructor(
             })
         }
     }
-
-    @NativeCoroutinesIgnore
+    
     suspend fun getLightningBridge(loginData: LoginData): LightningBridge {
         val file = "${gdk.dataDir}/breezSdk/${loginData.xpubHashId}/0"
 

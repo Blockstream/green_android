@@ -1,5 +1,6 @@
 package com.blockstream.common.models.lightning
 
+import androidx.lifecycle.viewModelScope
 import blockstream_green.common.generated.resources.Res
 import blockstream_green.common.generated.resources.id_amount_must_be_at_least_s
 import blockstream_green.common.generated.resources.id_amount_must_be_at_most_s
@@ -33,9 +34,6 @@ import com.blockstream.common.utils.toAmountLook
 import com.blockstream.green.utils.Loggable
 import com.blockstream.ui.events.Event
 import com.blockstream.ui.navigation.NavData
-import com.rickclephas.kmp.nativecoroutines.NativeCoroutinesState
-import com.rickclephas.kmp.observableviewmodel.coroutineScope
-import com.rickclephas.kmp.observableviewmodel.launch
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
@@ -51,22 +49,12 @@ abstract class LnUrlWithdrawViewModelAbstract(greenWallet: GreenWallet) :
     GreenViewModel(greenWalletOrNull = greenWallet) {
 
     override fun screenName(): String = "LNURLWithdraw"
-
-    @NativeCoroutinesState
     abstract val withdrawalLimits: StateFlow<String>
-
-    @NativeCoroutinesState
     abstract val amount: MutableStateFlow<String>
 
     abstract val isAmountLocked: Boolean
-
-    @NativeCoroutinesState
     abstract val exchange: StateFlow<String>
-
-    @NativeCoroutinesState
     abstract val description: MutableStateFlow<String>
-
-    @NativeCoroutinesState
     abstract val error: StateFlow<String?>
 
     abstract val redeemMessage: String
@@ -115,7 +103,7 @@ class LnUrlWithdrawViewModel(greenWallet: GreenWallet, val requestData: LnUrlWit
 
         // Set amount if min/max is the same
         if (isAmountLocked) {
-            viewModelScope.coroutineScope.launch(context = logException(countly)) {
+            viewModelScope.launch(context = logException(countly)) {
                 amount.value = requestData.minWithdrawableSatoshi().toAmountLook(
                     session = session,
                     denomination = denomination.value,
@@ -130,7 +118,7 @@ class LnUrlWithdrawViewModel(greenWallet: GreenWallet, val requestData: LnUrlWit
                 updateExchange()
                 check()
             }
-        }.launchIn(viewModelScope.coroutineScope)
+        }.launchIn(viewModelScope)
 
         combine(session.lightningSdk.nodeInfoStateFlow, denomination) { nodeState, denomination ->
             // Min
@@ -156,7 +144,7 @@ class LnUrlWithdrawViewModel(greenWallet: GreenWallet, val requestData: LnUrlWit
                     denomination = denomination
                 ) ?: ""
             )
-        }.launchIn(viewModelScope.coroutineScope)
+        }.launchIn(viewModelScope)
 
         bootstrap()
     }

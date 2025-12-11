@@ -1,5 +1,6 @@
 package com.blockstream.common.models.add
 
+import androidx.lifecycle.viewModelScope
 import com.blockstream.common.data.SetupArgs
 import com.blockstream.common.events.Events
 import com.blockstream.common.extensions.previewNetwork
@@ -7,7 +8,7 @@ import com.blockstream.common.extensions.previewWallet
 import com.blockstream.common.gdk.data.AccountType
 import com.blockstream.ui.events.Event
 import com.blockstream.ui.navigation.NavData
-import com.rickclephas.kmp.observableviewmodel.launch
+import kotlinx.coroutines.launch
 
 abstract class ReviewAddAccountViewModelAbstract(
     val setupArgs: SetupArgs

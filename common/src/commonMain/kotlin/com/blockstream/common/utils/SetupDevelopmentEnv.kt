@@ -6,7 +6,8 @@ import com.blockstream.common.models.login.LoginViewModel
 import com.blockstream.common.models.login.LoginViewModelAbstract
 import com.blockstream.common.sideeffects.SideEffects
 import com.blockstream.green.data.config.AppInfo
-import com.rickclephas.kmp.observableviewmodel.launch
+import kotlinx.coroutines.launch
+import androidx.lifecycle.viewModelScope
 import kotlinx.coroutines.flow.first
 import org.koin.core.component.KoinComponent
 import org.koin.core.component.inject

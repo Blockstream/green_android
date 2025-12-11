@@ -1,5 +1,6 @@
 package com.blockstream.common.models.recovery
 
+import androidx.lifecycle.viewModelScope
 import blockstream_green.common.generated.resources.Res
 import blockstream_green.common.generated.resources.id_before_you_back_up
 import com.arkivanov.essenty.statekeeper.StateKeeper
@@ -13,14 +14,11 @@ import com.blockstream.common.sideeffects.SideEffects
 import com.blockstream.ui.events.Event
 import com.blockstream.ui.navigation.NavData
 import com.blockstream.ui.sideeffects.SideEffect
-import com.rickclephas.kmp.nativecoroutines.NativeCoroutinesState
-import com.rickclephas.kmp.observableviewmodel.MutableStateFlow
-import com.rickclephas.kmp.observableviewmodel.coroutineScope
-import com.rickclephas.kmp.observableviewmodel.launch
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.drop
 import kotlinx.coroutines.flow.launchIn
 import kotlinx.coroutines.flow.onEach
+import kotlinx.coroutines.launch
 import kotlinx.serialization.Serializable
 import org.jetbrains.compose.resources.getString
 import org.koin.core.component.inject
@@ -28,11 +26,7 @@ import org.koin.core.component.inject
 abstract class RecoveryIntroViewModelAbstract(val setupArgs: SetupArgs) :
     GreenViewModel(greenWalletOrNull = setupArgs.greenWallet) {
     override fun screenName(): String = "RecoveryIntro"
-
-    @NativeCoroutinesState
     abstract val mnemonicSize: MutableStateFlow<Int>
-
-    @NativeCoroutinesState
     abstract val mnemonic: MutableStateFlow<String>
 }
 
@@ -46,12 +40,8 @@ class RecoveryIntroViewModel(
     private val state: State = stateKeeper.consume(STATE, State.serializer()) ?: State(
         mnemonic = gdk.generateMnemonic12(), mnemonicSize = 12
     )
-
-    @NativeCoroutinesState
-    override val mnemonic = MutableStateFlow(viewModelScope, state.mnemonic)
-
-    @NativeCoroutinesState
-    override val mnemonicSize = MutableStateFlow(viewModelScope, state.mnemonicSize)
+    override val mnemonic = MutableStateFlow(state.mnemonic)
+    override val mnemonicSize = MutableStateFlow(state.mnemonicSize)
 
     class LocalSideEffects {
         object LaunchUserPresence : SideEffect
@@ -70,7 +60,7 @@ class RecoveryIntroViewModel(
             mnemonicSize.drop(1).onEach {
                 mnemonic.value =
                     if (it == 12) gdk.generateMnemonic12() else gdk.generateMnemonic24()
-            }.launchIn(viewModelScope.coroutineScope)
+            }.launchIn(viewModelScope)
         }
 
         viewModelScope.launch {
@@ -152,12 +142,8 @@ class RecoveryIntroViewModel(
 
 class RecoveryIntroViewModelPreview(setupArgs: SetupArgs) :
     RecoveryIntroViewModelAbstract(setupArgs = setupArgs) {
-    @NativeCoroutinesState
-    override val mnemonicSize: MutableStateFlow<Int> = MutableStateFlow(viewModelScope, 1)
-
-    @NativeCoroutinesState
+    override val mnemonicSize: MutableStateFlow<Int> = MutableStateFlow(1)
     override val mnemonic: MutableStateFlow<String> = MutableStateFlow(
-        viewModelScope,
         "chalk verb patch cube sell west penalty fish park worry tribe tourist"
     )
 

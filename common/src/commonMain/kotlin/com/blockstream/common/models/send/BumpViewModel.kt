@@ -1,5 +1,6 @@
 package com.blockstream.common.models.send
 
+import androidx.lifecycle.viewModelScope
 import blockstream_green.common.generated.resources.Res
 import blockstream_green.common.generated.resources.id_increase_fee
 import com.blockstream.common.TransactionSegmentation
@@ -22,14 +23,13 @@ import com.blockstream.common.utils.toAmountLook
 import com.blockstream.green.utils.Loggable
 import com.blockstream.ui.events.Event
 import com.blockstream.ui.navigation.NavData
-import com.rickclephas.kmp.nativecoroutines.NativeCoroutinesState
-import com.rickclephas.kmp.observableviewmodel.launch
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.flow.filterNotNull
+import kotlinx.coroutines.launch
 import kotlinx.serialization.json.Json
 import org.jetbrains.compose.resources.getString
 
@@ -46,29 +46,13 @@ abstract class BumpViewModelAbstract(
     override fun segmentation(): HashMap<String, Any>? {
         return countly.sessionSegmentation(session = session)
     }
-
-    @NativeCoroutinesState
     abstract val address: StateFlow<String?>
-
-    @NativeCoroutinesState
     abstract val amount: StateFlow<String?>
-
-    @NativeCoroutinesState
     abstract val amountFiat: StateFlow<String?>
-
-    @NativeCoroutinesState
     abstract val total: StateFlow<String?>
-
-    @NativeCoroutinesState
     abstract val totalFiat: StateFlow<String?>
-
-    @NativeCoroutinesState
     abstract val oldFee: StateFlow<String?>
-
-    @NativeCoroutinesState
     abstract val oldFeeFiat: StateFlow<String?>
-
-    @NativeCoroutinesState
     abstract val oldFeeRate: StateFlow<String?>
 }
 

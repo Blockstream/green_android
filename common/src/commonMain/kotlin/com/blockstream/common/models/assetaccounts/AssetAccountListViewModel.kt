@@ -1,5 +1,6 @@
 package com.blockstream.common.models.assetaccounts
 
+import androidx.lifecycle.viewModelScope
 import com.blockstream.common.data.DataState
 import com.blockstream.common.data.Denomination
 import com.blockstream.common.data.EnrichedAsset
@@ -16,38 +17,25 @@ import com.blockstream.common.sideeffects.SideEffects
 import com.blockstream.common.utils.toAmountLook
 import com.blockstream.ui.events.Event
 import com.blockstream.ui.navigation.NavData
-import com.rickclephas.kmp.nativecoroutines.NativeCoroutinesState
-import com.rickclephas.kmp.observableviewmodel.coroutineScope
-import com.rickclephas.kmp.observableviewmodel.launch
-import com.rickclephas.kmp.observableviewmodel.stateIn
+import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.flow.filter
 import kotlinx.coroutines.flow.launchIn
 import kotlinx.coroutines.flow.onEach
+import kotlinx.coroutines.flow.stateIn
+import kotlinx.coroutines.launch
 
 abstract class AssetAccountListViewModelAbstract(
     greenWallet: GreenWallet, val assetId: String
 ) : WalletBalanceViewModel(greenWallet = greenWallet) {
     override fun screenName(): String = "AssetAccountList"
-
-    @NativeCoroutinesState
     abstract val accounts: StateFlow<List<AccountAssetBalance>>
-
-    @NativeCoroutinesState
     abstract val isLoading: StateFlow<Boolean>
-
-    @NativeCoroutinesState
     abstract val asset: StateFlow<EnrichedAsset?>
-
-    @NativeCoroutinesState
     abstract val totalBalance: StateFlow<String>
-
-    @NativeCoroutinesState
     abstract val totalBalanceFiat: StateFlow<String?>
-
-    @NativeCoroutinesState
     abstract val transactions: StateFlow<DataState<List<TransactionLook>>>
 }
 
@@ -114,7 +102,7 @@ class AssetAccountListViewModel(
                 }.onEach { accountsList ->
                     _accounts.value = accountsList
                     updateTotalBalance(accountsList)
-                }.launchIn(viewModelScope.coroutineScope)
+                }.launchIn(viewModelScope)
             }
         }
 

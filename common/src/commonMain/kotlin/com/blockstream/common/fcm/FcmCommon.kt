@@ -17,7 +17,6 @@ import com.blockstream.green.data.config.AppInfo
 import com.blockstream.green.data.notifications.models.BoltzNotificationSimple
 import com.blockstream.green.data.notifications.models.MeldNotificationData
 import com.blockstream.green.utils.Loggable
-import com.rickclephas.kmp.nativecoroutines.NativeCoroutinesIgnore
 import kotlinx.coroutines.flow.filter
 import kotlinx.coroutines.flow.firstOrNull
 import kotlinx.coroutines.withTimeoutOrNull
@@ -51,24 +50,20 @@ abstract class FcmCommon constructor(val applicationScope: ApplicationScope) : K
         boltzNotificationData: BoltzNotificationSimple
     )
 
-    @NativeCoroutinesIgnore
     abstract suspend fun showSwapReceiveNotification(
         wallet: GreenWallet
     )
 
-    @NativeCoroutinesIgnore
     abstract suspend fun showSwapSendNotification(
         wallet: GreenWallet
     )
 
-    @NativeCoroutinesIgnore
     abstract suspend fun showLightningPaymentNotification(
         wallet: GreenWallet,
         paymentHash: String,
         satoshi: Long
     )
 
-    @NativeCoroutinesIgnore
     abstract suspend fun showOpenWalletNotification(
         wallet: GreenWallet,
         breezNotification: BreezNotification
@@ -83,10 +78,8 @@ abstract class FcmCommon constructor(val applicationScope: ApplicationScope) : K
         meldNotificationData: MeldNotificationData
     )
 
-    @NativeCoroutinesIgnore
     protected suspend fun wallet(walletId: String) = database.getWallet(walletId)
-
-    @NativeCoroutinesIgnore
+    
     suspend fun doLightningBackgroundWork(walletId: String, breezNotification: BreezNotification) {
         logger.d { "doLightningBackgroundWork for walletId:$walletId with data: $breezNotification" }
 

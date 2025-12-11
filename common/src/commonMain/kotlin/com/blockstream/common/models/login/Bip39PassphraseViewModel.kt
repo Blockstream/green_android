@@ -1,5 +1,6 @@
 package com.blockstream.common.models.login
 
+import androidx.lifecycle.viewModelScope
 import com.blockstream.common.Urls
 import com.blockstream.common.data.GreenWallet
 import com.blockstream.common.events.Events
@@ -9,8 +10,6 @@ import com.blockstream.common.models.GreenViewModel
 import com.blockstream.common.sideeffects.SideEffects
 import com.blockstream.ui.events.Event
 import com.blockstream.ui.sideeffects.SideEffect
-import com.rickclephas.kmp.nativecoroutines.NativeCoroutinesState
-import com.rickclephas.kmp.observableviewmodel.coroutineScope
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.launch
 
@@ -19,11 +18,7 @@ abstract class Bip39PassphraseViewModelAbstract(greenWallet: GreenWallet) :
     override fun screenName(): String = "BIP39Passphrase"
 
     override val isLoginRequired: Boolean = false
-
-    @NativeCoroutinesState
     abstract val passphrase: MutableStateFlow<String>
-
-    @NativeCoroutinesState
     abstract val isAlwaysAsk: MutableStateFlow<Boolean>
 }
 
@@ -50,7 +45,7 @@ class Bip39PassphraseViewModel(greenWallet: GreenWallet, passphrase: String) :
         super.handleEvent(event)
         when (event) {
             is Events.Continue -> {
-                viewModelScope.coroutineScope.launch(context = logException(countly)) {
+                viewModelScope.launch(context = logException(countly)) {
                     greenWallet.askForBip39Passphrase = isAlwaysAsk.value
                     database.updateWallet(greenWallet)
 

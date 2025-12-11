@@ -1,5 +1,6 @@
 package com.blockstream.common.models.sheets
 
+import androidx.lifecycle.viewModelScope
 import blockstream_green.common.generated.resources.Res
 import blockstream_green.common.generated.resources.id_firmware_version_s
 import blockstream_green.common.generated.resources.id_hash_s
@@ -10,29 +11,19 @@ import com.blockstream.common.managers.DeviceManager
 import com.blockstream.common.models.GreenViewModel
 import com.blockstream.common.sideeffects.SideEffects
 import com.blockstream.jade.firmware.FirmwareUpdateState
-import com.rickclephas.kmp.nativecoroutines.NativeCoroutinesState
-import com.rickclephas.kmp.observableviewmodel.launch
 import kotlinx.coroutines.delay
+import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.onEach
+import kotlinx.coroutines.launch
 import org.jetbrains.compose.resources.getString
 import org.koin.core.component.inject
 
 abstract class JadeFirmwareUpdateViewModelAbstract() : GreenViewModel() {
-
-    @NativeCoroutinesState
     abstract val status: StateFlow<FirmwareUpdateState?>
-
-    @NativeCoroutinesState
     abstract val firmware: StateFlow<String>
-
-    @NativeCoroutinesState
     abstract val hash: StateFlow<String>
-
-    @NativeCoroutinesState
     abstract val progress: StateFlow<Int>
-
-    @NativeCoroutinesState
     abstract val transfer: StateFlow<String>
 }
 

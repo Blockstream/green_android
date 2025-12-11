@@ -14,7 +14,8 @@ import com.blockstream.green.data.config.AppInfo
 import com.blockstream.green.utils.Loggable
 import com.blockstream.ui.events.Event
 import com.blockstream.ui.navigation.NavData
-import com.rickclephas.kmp.observableviewmodel.launch
+import kotlinx.coroutines.launch
+import androidx.lifecycle.viewModelScope
 import org.koin.core.component.get
 import org.koin.core.component.inject
 

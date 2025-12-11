@@ -1,5 +1,6 @@
 package com.blockstream.common.models.send
 
+import androidx.lifecycle.viewModelScope
 import blockstream_green.common.generated.resources.Res
 import blockstream_green.common.generated.resources.id_add_note
 import blockstream_green.common.generated.resources.id_review
@@ -27,8 +28,6 @@ import com.blockstream.green.utils.Loggable
 import com.blockstream.ui.events.Event
 import com.blockstream.ui.navigation.NavAction
 import com.blockstream.ui.navigation.NavData
-import com.rickclephas.kmp.nativecoroutines.NativeCoroutinesState
-import com.rickclephas.kmp.observableviewmodel.coroutineScope
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
@@ -46,11 +45,7 @@ abstract class SendConfirmViewModelAbstract(greenWallet: GreenWallet, accountAss
             account = account
         )
     }
-
-    @NativeCoroutinesState
     abstract val transactionConfirmLook: StateFlow<TransactionConfirmLook?>
-
-    @NativeCoroutinesState
     abstract val showVerifyOnDevice: StateFlow<Boolean>
 }
 
@@ -108,7 +103,7 @@ class SendConfirmViewModel constructor(
             }
 
             session.pendingTransaction?.also {
-                viewModelScope.coroutineScope.launch {
+                viewModelScope.launch {
                     if (appInfo.isDevelopmentOrDebug) {
                         logger.d { "Params: ${it.params}" }
                         logger.d { "Transaction: ${it.transaction}" }

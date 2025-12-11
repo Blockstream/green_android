@@ -1,5 +1,6 @@
 package com.blockstream.common.models.devices
 
+import androidx.lifecycle.viewModelScope
 import blockstream_green.common.generated.resources.Res
 import blockstream_green.common.generated.resources.id_setup_guide
 import com.blockstream.common.devices.DeviceModel
@@ -10,19 +11,16 @@ import com.blockstream.common.sideeffects.SideEffects
 import com.blockstream.ui.events.Event
 import com.blockstream.ui.navigation.NavAction
 import com.blockstream.ui.navigation.NavData
-import com.rickclephas.kmp.nativecoroutines.NativeCoroutinesState
-import com.rickclephas.kmp.observableviewmodel.launch
-import com.rickclephas.kmp.observableviewmodel.stateIn
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.map
+import kotlinx.coroutines.flow.stateIn
+import kotlinx.coroutines.launch
 import org.jetbrains.compose.resources.getString
 
 abstract class DeviceListViewModelAbstract(val isJade: Boolean) : AbstractDeviceViewModel() {
     override fun screenName(): String = "DeviceList"
-
-    @NativeCoroutinesState
     abstract val devices: StateFlow<List<GreenDevice>>
 
 }

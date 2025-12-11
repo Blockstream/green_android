@@ -1,5 +1,6 @@
 package com.blockstream.common.models.sheets
 
+import androidx.lifecycle.viewModelScope
 import com.blockstream.common.data.GreenWallet
 import com.blockstream.common.extensions.previewAccountAsset
 import com.blockstream.common.extensions.previewWallet
@@ -7,8 +8,6 @@ import com.blockstream.common.gdk.data.AccountAsset
 import com.blockstream.common.gdk.data.Transaction
 import com.blockstream.common.models.GreenViewModel
 import com.blockstream.common.utils.StringHolder
-import com.rickclephas.kmp.nativecoroutines.NativeCoroutinesState
-import com.rickclephas.kmp.observableviewmodel.coroutineScope
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
@@ -24,7 +23,6 @@ abstract class TransactionDetailsViewModelAbstract(
     greenWalletOrNull = greenWallet,
     accountAssetOrNull = accountAsset
 ) {
-    @NativeCoroutinesState
     abstract val data: StateFlow<List<Pair<StringHolder, StringHolder>>>
 }
 
@@ -54,12 +52,12 @@ class TransactionDetailsViewModel(greenWallet: GreenWallet, initialTransaction: 
                     ?: accountTransactions.data()?.find { it.txHash == initialTransaction.txHash }
             }.filterNotNull().onEach {
                 _transaction.value = it
-            }.launchIn(viewModelScope.coroutineScope)
+            }.launchIn(viewModelScope)
         }
 
         _transaction.onEach {
             _data.value = _transaction.value.details(session = session, database = database)
-        }.launchIn(viewModelScope.coroutineScope)
+        }.launchIn(viewModelScope)
 
         bootstrap()
     }

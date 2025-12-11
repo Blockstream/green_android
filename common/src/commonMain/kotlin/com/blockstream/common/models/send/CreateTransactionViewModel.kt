@@ -1,5 +1,6 @@
 package com.blockstream.common.models.send
 
+import androidx.lifecycle.viewModelScope
 import blockstream_green.common.generated.resources.Res
 import blockstream_green.common.generated.resources.id_sending
 import blockstream_green.common.generated.resources.id_signing
@@ -39,8 +40,6 @@ import com.blockstream.common.utils.toAmountLook
 import com.blockstream.green.utils.Loggable
 import com.blockstream.ui.events.Event
 import com.blockstream.ui.sideeffects.SideEffect
-import com.rickclephas.kmp.nativecoroutines.NativeCoroutinesState
-import com.rickclephas.kmp.observableviewmodel.stateIn
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.StateFlow
@@ -51,6 +50,7 @@ import kotlinx.coroutines.flow.flowOf
 import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.flow.merge
 import kotlinx.coroutines.flow.onEach
+import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.sync.Mutex
 import kotlinx.serialization.Serializable
 import kotlinx.serialization.json.JsonObject
@@ -80,8 +80,6 @@ abstract class CreateTransactionViewModelAbstract(
     }.stateIn(viewModelScope, SharingStarted.WhileSubscribed(5000), null)
 
     internal val _feePriority: MutableStateFlow<FeePriority> = MutableStateFlow(FeePriority.Low())
-
-    @NativeCoroutinesState
     val feePriority: StateFlow<FeePriority> = _feePriority.asStateFlow()
 
     internal val _feeEstimation: MutableStateFlow<List<Long>?> = MutableStateFlow(null)
@@ -93,15 +91,12 @@ abstract class CreateTransactionViewModelAbstract(
     internal var _addressInputType: AddressInputType? = null
 
     internal val _showFeeSelector: MutableStateFlow<Boolean> = MutableStateFlow(false)
-
-    @NativeCoroutinesState
     val showFeeSelector: StateFlow<Boolean> = _showFeeSelector.asStateFlow()
 
     internal val _onProgressSending: MutableStateFlow<Boolean> = MutableStateFlow(false)
     val onProgressSending: StateFlow<Boolean> = _onProgressSending.asStateFlow()
 
-    // Gets updated when Account assets are updated
-    @NativeCoroutinesState
+    // Gets updated when Account assets are updatedState
     val accountAssetBalance: StateFlow<AccountAssetBalance?> =
         combine(accountAsset, denomination, _network.flatMapLatest { network ->
             network?.let {
@@ -124,15 +119,11 @@ abstract class CreateTransactionViewModelAbstract(
         }.stateIn(viewModelScope, SharingStarted.WhileSubscribed(), accountAssetOrNull?.accountAssetBalance)
 
     internal var _customFeeRate: MutableStateFlow<Double?> = MutableStateFlow(null)
-
-    @NativeCoroutinesState
     val customFeeRate: StateFlow<Double?> = _customFeeRate.asStateFlow()
 
     val note = MutableStateFlow(sessionOrNull?.pendingTransaction?.transaction?.memo ?: "")
 
     protected val _error: MutableStateFlow<String?> = MutableStateFlow(null)
-
-    @NativeCoroutinesState
     val error: StateFlow<String?> = _error.asStateFlow()
 
     internal var createTransactionParams: MutableStateFlow<CreateTransactionParams?> = MutableStateFlow(null)

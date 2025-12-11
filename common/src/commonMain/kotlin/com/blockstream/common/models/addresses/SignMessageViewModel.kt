@@ -12,7 +12,6 @@ import com.blockstream.common.gdk.device.DeviceResolver
 import com.blockstream.common.gdk.params.SignMessageParams
 import com.blockstream.common.models.GreenViewModel
 import com.blockstream.ui.events.Event
-import com.rickclephas.kmp.nativecoroutines.NativeCoroutinesState
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
@@ -25,11 +24,7 @@ abstract class SignMessageViewModelAbstract(
 ) :
     GreenViewModel(greenWalletOrNull = greenWallet, accountAssetOrNull = accountAsset) {
     override fun screenName(): String = "SignMessage"
-
-    @NativeCoroutinesState
     abstract val message: MutableStateFlow<String>
-
-    @NativeCoroutinesState
     abstract val signature: StateFlow<String?>
 }
 

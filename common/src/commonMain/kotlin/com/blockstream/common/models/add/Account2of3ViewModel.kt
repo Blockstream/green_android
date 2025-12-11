@@ -1,12 +1,13 @@
 package com.blockstream.common.models.add
 
+import androidx.lifecycle.viewModelScope
 import com.blockstream.common.data.SetupArgs
 import com.blockstream.common.extensions.previewWallet
 import com.blockstream.common.navigation.NavigateDestinations
 import com.blockstream.common.sideeffects.SideEffects
 import com.blockstream.ui.events.Event
 import com.blockstream.ui.navigation.NavData
-import com.rickclephas.kmp.observableviewmodel.launch
+import kotlinx.coroutines.launch
 
 abstract class Account2of3ViewModelAbstract(
     val setupArgs: SetupArgs

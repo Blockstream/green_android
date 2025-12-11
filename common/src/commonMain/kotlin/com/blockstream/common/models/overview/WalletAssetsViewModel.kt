@@ -1,5 +1,6 @@
 package com.blockstream.common.models.overview
 
+import androidx.lifecycle.viewModelScope
 import blockstream_green.common.generated.resources.Res
 import blockstream_green.common.generated.resources.id_my_assets
 import com.blockstream.common.data.DataState
@@ -10,12 +11,12 @@ import com.blockstream.common.gdk.data.AssetBalance
 import com.blockstream.common.models.GreenViewModel
 import com.blockstream.green.utils.Loggable
 import com.blockstream.ui.navigation.NavData
-import com.rickclephas.kmp.nativecoroutines.NativeCoroutinesState
-import com.rickclephas.kmp.observableviewmodel.launch
-import com.rickclephas.kmp.observableviewmodel.stateIn
+import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.map
+import kotlinx.coroutines.flow.stateIn
+import kotlinx.coroutines.launch
 import org.jetbrains.compose.resources.getString
 
 abstract class WalletAssetsViewModelAbstract(
@@ -23,8 +24,6 @@ abstract class WalletAssetsViewModelAbstract(
 ) : GreenViewModel(greenWalletOrNull = greenWallet) {
 
     override fun screenName(): String = "Assets"
-
-    @NativeCoroutinesState
     abstract val assets: StateFlow<DataState<List<AssetBalance>>>
 }
 

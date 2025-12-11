@@ -1,5 +1,6 @@
 package com.blockstream.common.models.settings
 
+import androidx.lifecycle.viewModelScope
 import blockstream_green.common.generated.resources.Res
 import blockstream_green.common.generated.resources.id_1s_twofactor_setup
 import blockstream_green.common.generated.resources.id_2fa_call_is_now_enabled
@@ -33,13 +34,12 @@ import com.blockstream.common.utils.StringHolder
 import com.blockstream.common.utils.isEmailValid
 import com.blockstream.ui.events.Event
 import com.blockstream.ui.navigation.NavData
-import com.rickclephas.kmp.nativecoroutines.NativeCoroutinesState
-import com.rickclephas.kmp.observableviewmodel.launch
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.flow.onEach
+import kotlinx.coroutines.launch
 import org.jetbrains.compose.resources.getString
 
 abstract class TwoFactorSetupViewModelAbstract(
@@ -66,26 +66,12 @@ abstract class TwoFactorSetupViewModelAbstract(
             twoFactorMethod = method.gdkType
         )
     }
-
-    @NativeCoroutinesState
     abstract val messageText: StateFlow<String?>
-
-    @NativeCoroutinesState
     abstract val actionText: StateFlow<String?>
-
-    @NativeCoroutinesState
     abstract val country: MutableStateFlow<String>
-
-    @NativeCoroutinesState
     abstract val number: MutableStateFlow<String>
-
-    @NativeCoroutinesState
     abstract val email: MutableStateFlow<String>
-
-    @NativeCoroutinesState
     abstract val qr: StateFlow<String?>
-
-    @NativeCoroutinesState
     abstract val authenticatorCode: StateFlow<String?>
 }
 

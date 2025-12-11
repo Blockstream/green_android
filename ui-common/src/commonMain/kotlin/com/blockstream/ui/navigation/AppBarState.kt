@@ -13,7 +13,6 @@ import androidx.compose.ui.backhandler.BackHandler
 import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.navigation.compose.currentBackStackEntryAsState
-import com.rickclephas.kmp.nativecoroutines.NativeCoroutinesState
 import kotlinx.coroutines.flow.StateFlow
 import org.jetbrains.compose.resources.DrawableResource
 import org.jetbrains.compose.resources.StringResource
@@ -61,7 +60,6 @@ class NavDataState(navData: NavData = NavData()) {
 val LocalNavData = compositionLocalOf { NavDataState() }
 
 interface INavData {
-    @NativeCoroutinesState
     val navData: StateFlow<NavData>
 
     fun navigateBack()

@@ -1,5 +1,6 @@
 package com.blockstream.common.models.add
 
+import androidx.lifecycle.viewModelScope
 import blockstream_green.common.generated.resources.Res
 import blockstream_green.common.generated.resources.id_add_new_account
 import com.blockstream.common.BTC_POLICY_ASSET
@@ -24,35 +25,23 @@ import com.blockstream.common.sideeffects.SideEffects
 import com.blockstream.ui.events.Event
 import com.blockstream.ui.navigation.NavData
 import com.blockstream.ui.sideeffects.SideEffect
-import com.rickclephas.kmp.nativecoroutines.NativeCoroutinesState
-import com.rickclephas.kmp.observableviewmodel.coroutineScope
-import com.rickclephas.kmp.observableviewmodel.launch
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.flow.launchIn
 import kotlinx.coroutines.flow.onEach
+import kotlinx.coroutines.launch
 import org.jetbrains.compose.resources.getString
 
 abstract class ChooseAccountTypeViewModelAbstract(
     greenWallet: GreenWallet, assetId: String?, popTo: PopTo?, val allowAssetSelection: Boolean = true,
 ) : AddAccountViewModelAbstract(greenWallet = greenWallet, assetId = assetId, popTo = popTo) {
     override fun screenName(): String = "AddAccountChooseType"
-
-    @NativeCoroutinesState
     abstract val asset: MutableStateFlow<AssetBalance>
-
-    @NativeCoroutinesState
     abstract val accountTypes: StateFlow<List<AccountTypeLook>>
-
-    @NativeCoroutinesState
     abstract val accountTypeBeingCreated: StateFlow<AccountTypeLook?>
-
-    @NativeCoroutinesState
     abstract val isShowingAdvancedOptions: MutableStateFlow<Boolean>
-
-    @NativeCoroutinesState
     abstract val hasAdvancedOptions: MutableStateFlow<Boolean>
 }
 
@@ -159,7 +148,7 @@ class ChooseAccountTypeViewModel(greenWallet: GreenWallet, initAsset: AssetBalan
 
                 hasAdvancedOptions.value =
                     allAccountTypes.value.size != defaultAccountTypes.value.size
-            }.launchIn(viewModelScope.coroutineScope)
+            }.launchIn(viewModelScope)
 
             combine(allAccountTypes, isShowingAdvancedOptions) { _, showAdvanced ->
                 showAdvanced
@@ -169,12 +158,12 @@ class ChooseAccountTypeViewModel(greenWallet: GreenWallet, initAsset: AssetBalan
                 } else {
                     defaultAccountTypes.value
                 }
-            }.launchIn(viewModelScope.coroutineScope)
+            }.launchIn(viewModelScope)
         }
 
         onProgress.onEach {
             _navData.value = _navData.value.copy(isVisible = !it)
-        }.launchIn(viewModelScope.coroutineScope)
+        }.launchIn(viewModelScope)
     }
 
     override suspend fun handleEvent(event: Event) {

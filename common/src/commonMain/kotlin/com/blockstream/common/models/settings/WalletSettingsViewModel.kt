@@ -1,5 +1,6 @@
 package com.blockstream.common.models.settings
 
+import androidx.lifecycle.viewModelScope
 import blockstream_green.common.generated.resources.Res
 import blockstream_green.common.generated.resources.id_12_months_51840_blocks
 import blockstream_green.common.generated.resources.id_15_months_65535_blocks
@@ -74,9 +75,6 @@ import com.blockstream.domain.boltz.IsSwapsEnabledUseCase
 import com.blockstream.ui.events.Event
 import com.blockstream.ui.navigation.NavData
 import com.blockstream.ui.sideeffects.SideEffect
-import com.rickclephas.kmp.nativecoroutines.NativeCoroutinesState
-import com.rickclephas.kmp.observableviewmodel.coroutineScope
-import com.rickclephas.kmp.observableviewmodel.launch
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.IO
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -110,8 +108,6 @@ abstract class WalletSettingsViewModelAbstract(
         WalletSettingsSection.TwoFactor -> "WalletSettings2FA"
         else -> "WalletSettingsTab"
     }
-
-    @NativeCoroutinesState
     abstract val items: StateFlow<List<WalletSetting>>
 }
 
@@ -203,7 +199,7 @@ class WalletSettingsViewModel(
         session.ifConnected {
             database.getLoginCredentialsFlow(greenWallet.id).onEach {
                 _hasBiometrics.value = it.biometricsPinData != null || it.biometricsMnemonic != null
-            }.launchIn(viewModelScope.coroutineScope)
+            }.launchIn(viewModelScope)
 
             combine(
                 session.settings(network = network ?: session.defaultNetwork),

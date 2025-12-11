@@ -21,7 +21,6 @@ import com.blockstream.common.lwk.LwkManager
 import com.blockstream.common.utils.Timer
 import com.blockstream.green.data.config.AppInfo
 import com.blockstream.green.utils.Loggable
-import com.rickclephas.kmp.nativecoroutines.NativeCoroutinesIgnore
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.SupervisorJob
@@ -316,8 +315,7 @@ class SessionManager constructor(
 
         return session
     }
-
-    @NativeCoroutinesIgnore
+    
     suspend fun getLightningBridge(mnemonic: String, isTestnet: Boolean): LightningBridge {
         val lightningLoginData = httpRequestHandler.getWalletIdentifier(
             network = httpRequestHandler.networks.bitcoinElectrum(isTestnet),

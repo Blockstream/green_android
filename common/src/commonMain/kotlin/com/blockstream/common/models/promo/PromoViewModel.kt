@@ -9,7 +9,8 @@ import com.blockstream.common.extensions.previewWallet
 import com.blockstream.common.models.GreenViewModel
 import com.blockstream.ui.navigation.NavAction
 import com.blockstream.ui.navigation.NavData
-import com.rickclephas.kmp.observableviewmodel.launch
+import kotlinx.coroutines.launch
+import androidx.lifecycle.viewModelScope
 
 abstract class PromoViewModelAbstract(promo: Promo, greenWalletOrNull: GreenWallet?) : GreenViewModel(
     greenWalletOrNull = greenWalletOrNull

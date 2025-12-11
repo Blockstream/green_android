@@ -1,5 +1,6 @@
 package com.blockstream.common.models.settings
 
+import androidx.lifecycle.viewModelScope
 import blockstream_green.common.generated.resources.Res
 import blockstream_green.common.generated.resources.id_watchonly
 import com.blockstream.common.data.GreenWallet
@@ -13,13 +14,12 @@ import com.blockstream.common.models.GreenViewModel
 import com.blockstream.common.sideeffects.SideEffects
 import com.blockstream.ui.events.Event
 import com.blockstream.ui.navigation.NavData
-import com.rickclephas.kmp.nativecoroutines.NativeCoroutinesState
-import com.rickclephas.kmp.observableviewmodel.launch
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.flow.onEach
+import kotlinx.coroutines.launch
 import org.jetbrains.compose.resources.getString
 
 abstract class WatchOnlyCredentialsSettingsViewModelAbstract(
@@ -28,14 +28,8 @@ abstract class WatchOnlyCredentialsSettingsViewModelAbstract(
 ) :
     GreenViewModel(greenWalletOrNull = greenWallet) {
     override fun screenName(): String = "WatchOnlyCredentials"
-
-    @NativeCoroutinesState
     abstract val username: MutableStateFlow<String>
-
-    @NativeCoroutinesState
     abstract val password: MutableStateFlow<String>
-
-    @NativeCoroutinesState
     abstract val hasWatchOnlyCredentials: StateFlow<Boolean>
 }
 

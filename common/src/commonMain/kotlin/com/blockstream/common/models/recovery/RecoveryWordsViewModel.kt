@@ -9,7 +9,8 @@ import com.blockstream.common.sideeffects.SideEffects
 import com.blockstream.green.utils.Loggable
 import com.blockstream.ui.events.Event
 import com.blockstream.ui.navigation.NavData
-import com.rickclephas.kmp.observableviewmodel.launch
+import kotlinx.coroutines.launch
+import androidx.lifecycle.viewModelScope
 
 abstract class RecoveryWordsViewModelAbstract(val setupArgs: SetupArgs) :
     GreenViewModel(greenWalletOrNull = setupArgs.greenWallet) {

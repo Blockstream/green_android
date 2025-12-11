@@ -2,7 +2,6 @@ package com.blockstream.common.managers
 
 import com.blockstream.common.crypto.GreenKeystore
 import com.blockstream.green.utils.Loggable
-import com.rickclephas.kmp.nativecoroutines.NativeCoroutinesState
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.Job
@@ -31,13 +30,9 @@ class LifecycleManager constructor(
 ) {
     private val scope = CoroutineScope(context = Dispatchers.Default)
     private val _lifecycleState = MutableStateFlow(LifecycleState.Background)
-
-    @NativeCoroutinesState
     val lifecycleState = _lifecycleState.asStateFlow()
 
     private val _isLocked = MutableStateFlow(canLock())
-
-    @NativeCoroutinesState
     val isLocked = _isLocked.asStateFlow()
 
     private var lockJob: Job? = null

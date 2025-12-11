@@ -134,7 +134,6 @@ import com.blockstream.common.utils.toAmountLook
 import com.blockstream.common.utils.toHex
 import com.blockstream.green.utils.Loggable
 import com.blockstream.jade.HttpRequestHandler
-import com.rickclephas.kmp.nativecoroutines.NativeCoroutinesIgnore
 import kotlinx.coroutines.CoroutineDispatcher
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.CoroutineStart
@@ -452,7 +451,6 @@ class GdkSession constructor(
 
     private val _isConnectedState = MutableStateFlow(false)
 
-    @NativeCoroutinesIgnore
     val isConnectedState = _isConnectedState.asStateFlow()
     val isConnected
         get() = isConnectedState.value
@@ -1012,7 +1010,6 @@ class GdkSession constructor(
         lightningSdkOrNull = lightningManager.getLightningBridge(lightningLoginData)
     }
 
-    @NativeCoroutinesIgnore
     suspend fun initLightningIfNeeded(mnemonic: String?) {
         if (lightningSdkOrNull == null && supportsLightning()) {
             // Init SDK
@@ -2790,7 +2787,6 @@ class GdkSession constructor(
         )
     }
 
-    @NativeCoroutinesIgnore
     suspend fun createTransaction(network: Network, params: CreateTransactionParams) =
         if (network.isLightning) {
             createLightningTransaction(network, params).also {
@@ -2800,8 +2796,7 @@ class GdkSession constructor(
             network,
             gdk.createTransaction(gdkSession(network), params)
         ).result<CreateTransaction>()
-
-    @NativeCoroutinesIgnore
+    
     suspend fun createRedepositTransaction(network: Network, params: CreateTransactionParams) =
         authHandler(
             network,
@@ -3279,8 +3274,7 @@ class GdkSession constructor(
 
         return privateKey
     }
-
-    @NativeCoroutinesIgnore
+    
     suspend fun jadePsbtRequest(psbt: String): BcurEncodedData {
 
         val params = BcurEncodeParams(
@@ -3290,8 +3284,7 @@ class GdkSession constructor(
 
         return bcurEncode(params)
     }
-
-    @NativeCoroutinesIgnore
+    
     suspend fun jadePinRequest(payload: String): BcurEncodedData {
 
         val params = BcurEncodeParams(
@@ -3301,8 +3294,7 @@ class GdkSession constructor(
 
         return bcurEncode(params)
     }
-
-    @NativeCoroutinesIgnore
+    
     suspend fun jadeBip8539Request(): Pair<ByteArray, BcurEncodedData> {
         val privateKey = createEcPrivateKey()
 
@@ -3319,8 +3311,7 @@ class GdkSession constructor(
     fun jadeBip8539Reply(privateKey: ByteArray, publicKey: ByteArray, encrypted: ByteArray): String? {
         return wally.bip85FromJade(privateKey, publicKey, "bip85_bip39_entropy", encrypted)
     }
-
-    @NativeCoroutinesIgnore
+    
     suspend fun bcurEncode(params: BcurEncodeParams): BcurEncodedData {
         val network = defaultNetworkOrNull ?: networks.bitcoinElectrum
 
