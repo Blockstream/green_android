@@ -13,7 +13,7 @@ import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import blockstream_green.common.generated.resources.Res
 import blockstream_green.common.generated.resources.id_asset_details
-import com.blockstream.common.models.sheets.AssetDetailsViewModelAbstract
+import com.blockstream.compose.models.sheets.AssetDetailsViewModelAbstract
 import com.blockstream.compose.components.GreenBottomSheet
 import com.blockstream.compose.theme.bodyLarge
 import com.blockstream.compose.theme.labelMedium

@@ -8,7 +8,7 @@ import androidx.compose.ui.window.application
 import ca.gosyer.appdirs.AppDirs
 import co.touchlab.kermit.Logger
 import com.blockstream.common.data.AppConfig
-import com.blockstream.common.models.MainViewModel
+import com.blockstream.compose.models.MainViewModel
 import com.blockstream.compose.GreenApp
 import com.blockstream.compose.di.initKoinDesktop
 import com.blockstream.compose.theme.GreenChrome

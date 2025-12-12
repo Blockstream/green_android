@@ -8,9 +8,9 @@ import androidx.compose.runtime.setValue
 import com.arkivanov.essenty.statekeeper.StateKeeper
 import com.arkivanov.essenty.statekeeper.StateKeeperDispatcher
 import com.blockstream.common.extensions.logException
-import com.blockstream.common.models.GreenViewModel
 import com.blockstream.common.platformFileSystem
-import com.blockstream.common.sideeffects.OpenBrowserType
+import com.blockstream.compose.models.GreenViewModel
+import com.blockstream.compose.sideeffects.OpenBrowserType
 import com.darkrockstudios.libraries.mpfilepicker.FilePicker
 import io.github.vinceglb.filekit.PlatformFile
 import kotlinx.coroutines.CoroutineScope

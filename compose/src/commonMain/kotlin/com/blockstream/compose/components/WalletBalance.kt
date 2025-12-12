@@ -22,8 +22,8 @@ import blockstream_green.common.generated.resources.eye
 import blockstream_green.common.generated.resources.eye_slash
 import blockstream_green.common.generated.resources.id_total_bitcoin_balance
 import com.blockstream.common.extensions.isNotBlank
-import com.blockstream.common.models.overview.IWalletBalance
-import com.blockstream.common.models.overview.WalletBalanceViewModel.LocalEvents
+import com.blockstream.compose.models.overview.IWalletBalance
+import com.blockstream.compose.models.overview.WalletBalanceViewModel.LocalEvents
 import com.blockstream.compose.theme.textHigh
 import com.blockstream.compose.theme.textMedium
 import com.blockstream.compose.utils.noRippleClickable

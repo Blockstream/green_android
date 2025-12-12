@@ -15,20 +15,20 @@ import blockstream_green.common.generated.resources.id_amount_to_receive
 import blockstream_green.common.generated.resources.id_description
 import blockstream_green.common.generated.resources.id_redeem
 import com.blockstream.common.data.DenominatedValue
-import com.blockstream.common.events.Events
-import com.blockstream.common.models.lightning.LnUrlWithdrawViewModelAbstract
-import com.blockstream.common.navigation.NavigateDestinations
 import com.blockstream.compose.components.GreenAmountField
 import com.blockstream.compose.components.GreenButton
+import com.blockstream.compose.components.GreenColumn
 import com.blockstream.compose.components.GreenTextField
 import com.blockstream.compose.components.OnProgressStyle
+import com.blockstream.compose.events.Events
 import com.blockstream.compose.extensions.onValueChange
+import com.blockstream.compose.models.lightning.LnUrlWithdrawViewModelAbstract
+import com.blockstream.compose.navigation.NavigateDestinations
+import com.blockstream.compose.navigation.getResult
 import com.blockstream.compose.theme.bodyMedium
 import com.blockstream.compose.theme.labelLarge
 import com.blockstream.compose.theme.whiteLow
 import com.blockstream.compose.utils.SetupScreen
-import com.blockstream.compose.components.GreenColumn
-import com.blockstream.compose.navigation.getResult
 import org.jetbrains.compose.resources.stringResource
 
 @Composable

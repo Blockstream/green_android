@@ -13,8 +13,8 @@ import blockstream_green.common.generated.resources.Res
 import blockstream_green.common.generated.resources.note_pencil
 import blockstream_green.common.generated.resources.signature
 import com.blockstream.compose.GreenPreview
-import com.blockstream.ui.navigation.NavAction
-import com.blockstream.ui.navigation.NavData
+import com.blockstream.compose.navigation.NavAction
+import com.blockstream.compose.navigation.NavData
 
 @androidx.compose.ui.tooling.preview.Preview
 @Composable

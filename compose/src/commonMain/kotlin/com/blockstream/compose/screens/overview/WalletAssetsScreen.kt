@@ -11,9 +11,9 @@ import androidx.compose.runtime.getValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
-import com.blockstream.common.models.overview.WalletAssetsViewModelAbstract
-import com.blockstream.common.navigation.NavigateDestinations
 import com.blockstream.compose.components.GreenAsset
+import com.blockstream.compose.models.overview.WalletAssetsViewModelAbstract
+import com.blockstream.compose.navigation.NavigateDestinations
 import com.blockstream.compose.utils.SetupScreen
 
 @Composable

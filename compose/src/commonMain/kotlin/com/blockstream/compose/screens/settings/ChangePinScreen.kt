@@ -17,8 +17,8 @@ import blockstream_green.common.generated.resources.id_change_pin
 import blockstream_green.common.generated.resources.id_pins_do_not_match_please_try
 import blockstream_green.common.generated.resources.id_verify_your_pin
 import blockstream_green.common.generated.resources.id_youll_need_your_pin_to_log_in
-import com.blockstream.common.models.settings.WalletSettingsViewModel
-import com.blockstream.common.models.settings.WalletSettingsViewModelAbstract
+import com.blockstream.compose.models.settings.WalletSettingsViewModel
+import com.blockstream.compose.models.settings.WalletSettingsViewModelAbstract
 import com.blockstream.compose.LocalSnackbar
 import com.blockstream.compose.components.OnProgressStyle
 import com.blockstream.compose.theme.bodyLarge

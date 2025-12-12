@@ -14,24 +14,24 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
-import com.adamglin.PhosphorIcons
-import com.adamglin.phosphoricons.Regular
-import com.adamglin.phosphoricons.regular.CaretRight
 import blockstream_green.common.generated.resources.Res
 import blockstream_green.common.generated.resources.id_multisig_bitcoin
 import blockstream_green.common.generated.resources.id_multisig_bitcoin_testnet
 import blockstream_green.common.generated.resources.id_multisig_liquid
 import blockstream_green.common.generated.resources.id_multisig_liquid_testnet
 import blockstream_green.common.generated.resources.id_select_network
+import com.adamglin.PhosphorIcons
+import com.adamglin.phosphoricons.Regular
+import com.adamglin.phosphoricons.regular.CaretRight
 import com.blockstream.common.data.SetupArgs
 import com.blockstream.common.gdk.data.Network
-import com.blockstream.common.models.GreenViewModel
-import com.blockstream.common.navigation.NavigateDestinations
 import com.blockstream.compose.components.GreenBottomSheet
 import com.blockstream.compose.components.GreenCard
-import com.blockstream.compose.theme.bodyLarge
 import com.blockstream.compose.components.GreenColumn
 import com.blockstream.compose.components.GreenRow
+import com.blockstream.compose.models.GreenViewModel
+import com.blockstream.compose.navigation.NavigateDestinations
+import com.blockstream.compose.theme.bodyLarge
 import org.jetbrains.compose.resources.stringResource
 
 @OptIn(ExperimentalMaterial3Api::class)

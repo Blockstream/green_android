@@ -2,7 +2,7 @@ package com.blockstream.compose.dialogs
 
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
-import com.blockstream.common.models.GreenViewModel
+import com.blockstream.compose.models.GreenViewModel
 
 @Composable
 actual fun AppRateDialog(

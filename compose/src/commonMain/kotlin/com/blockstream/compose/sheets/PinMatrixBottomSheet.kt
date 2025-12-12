@@ -20,16 +20,16 @@ import blockstream_green.common.generated.resources.Res
 import blockstream_green.common.generated.resources.backspace
 import blockstream_green.common.generated.resources.id_continue
 import blockstream_green.common.generated.resources.id_enter_the_pin_for_your_hardware
-import com.blockstream.common.models.GreenViewModel
-import com.blockstream.common.navigation.NavigateDestinations
 import com.blockstream.compose.components.GreenBottomSheet
 import com.blockstream.compose.components.GreenButton
+import com.blockstream.compose.components.GreenColumn
+import com.blockstream.compose.components.GreenRow
+import com.blockstream.compose.models.GreenViewModel
+import com.blockstream.compose.navigation.NavigateDestinations
+import com.blockstream.compose.navigation.setResult
 import com.blockstream.compose.theme.green
 import com.blockstream.compose.theme.headlineSmall
 import com.blockstream.compose.utils.HandleSideEffect
-import com.blockstream.compose.components.GreenColumn
-import com.blockstream.compose.components.GreenRow
-import com.blockstream.compose.navigation.setResult
 import org.jetbrains.compose.resources.painterResource
 import org.jetbrains.compose.resources.stringResource
 

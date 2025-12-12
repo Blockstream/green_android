@@ -24,8 +24,8 @@ import blockstream_green.common.generated.resources.house
 import blockstream_green.common.generated.resources.id_make_sure_to_be_in_a_private
 import blockstream_green.common.generated.resources.id_recovery_phrase_check
 import blockstream_green.common.generated.resources.id_what_is_word_number_s
-import com.blockstream.common.models.recovery.RecoveryCheckViewModel
-import com.blockstream.common.models.recovery.RecoveryCheckViewModelAbstract
+import com.blockstream.compose.models.recovery.RecoveryCheckViewModel
+import com.blockstream.compose.models.recovery.RecoveryCheckViewModelAbstract
 import com.blockstream.compose.components.GreenButton
 import com.blockstream.compose.components.GreenButtonColor
 import com.blockstream.compose.components.GreenButtonSize

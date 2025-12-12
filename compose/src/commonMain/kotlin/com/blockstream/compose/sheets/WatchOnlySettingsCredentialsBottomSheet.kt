@@ -32,10 +32,10 @@ import blockstream_green.common.generated.resources.id_save
 import blockstream_green.common.generated.resources.id_update
 import blockstream_green.common.generated.resources.id_username
 import blockstream_green.common.generated.resources.id_watchonly_credentials
-import com.blockstream.common.events.Events
+import com.blockstream.compose.events.Events
 import com.blockstream.common.extensions.isNotBlank
-import com.blockstream.common.models.settings.WatchOnlyCredentialsSettingsViewModel
-import com.blockstream.common.models.settings.WatchOnlyCredentialsSettingsViewModelAbstract
+import com.blockstream.compose.models.settings.WatchOnlyCredentialsSettingsViewModel
+import com.blockstream.compose.models.settings.WatchOnlyCredentialsSettingsViewModelAbstract
 import com.blockstream.compose.components.GreenBottomSheet
 import com.blockstream.compose.components.GreenButton
 import com.blockstream.compose.components.GreenButtonColor

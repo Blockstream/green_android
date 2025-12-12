@@ -1,0 +1,88 @@
+package com.blockstream.compose.models.add
+
+import androidx.lifecycle.viewModelScope
+import blockstream_green.common.generated.resources.Res
+import blockstream_green.common.generated.resources.id_invalid_xpub
+import com.blockstream.common.data.SetupArgs
+import com.blockstream.common.extensions.isBlank
+import com.blockstream.common.extensions.previewWallet
+import com.blockstream.common.gdk.Wally
+import com.blockstream.compose.events.Event
+import com.blockstream.compose.events.Events
+import com.blockstream.compose.navigation.NavData
+import com.blockstream.compose.navigation.NavigateDestinations
+import com.blockstream.compose.sideeffects.SideEffects
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.IO
+import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.flow.StateFlow
+import kotlinx.coroutines.flow.asStateFlow
+import kotlinx.coroutines.flow.launchIn
+import kotlinx.coroutines.flow.onEach
+import kotlinx.coroutines.launch
+import kotlinx.coroutines.withContext
+import org.jetbrains.compose.resources.getString
+import org.koin.core.component.inject
+
+abstract class XpubViewModelAbstract(val setupArgs: SetupArgs) : AddAccountViewModelAbstract(
+    greenWallet = setupArgs.greenWallet!!,
+    assetId = setupArgs.assetId,
+    popTo = setupArgs.popTo
+) {
+    override fun screenName(): String = "AddAccountPublicKey"
+    abstract val xpub: MutableStateFlow<String>
+    abstract val error: StateFlow<String?>
+}
+
+class XpubViewModel(setupArgs: SetupArgs) : XpubViewModelAbstract(setupArgs = setupArgs) {
+
+    override val xpub: MutableStateFlow<String> = MutableStateFlow("")
+    private val _error: MutableStateFlow<String?> = MutableStateFlow(null)
+    override val error: StateFlow<String?> = _error.asStateFlow()
+
+    private val wally: Wally by inject()
+
+    init {
+        viewModelScope.launch {
+            _navData.value = NavData(title = setupArgs.accountType?.toString(), subtitle = greenWallet.name)
+        }
+
+        xpub.onEach {
+            if (it.isBlank()) {
+                _error.value = null
+                _isValid.value = false
+            } else {
+                _isValid.value = withContext(Dispatchers.IO) {
+                    wally.isXpubValid(it)
+                }.also { isXpubValid ->
+                    _error.value = if (!isXpubValid) getString(Res.string.id_invalid_xpub) else null
+                }
+            }
+
+        }.launchIn(viewModelScope)
+
+        bootstrap()
+    }
+
+    override suspend fun handleEvent(event: Event) {
+        super.handleEvent(event)
+        if (event is Events.Continue) {
+            postSideEffect(SideEffects.NavigateTo(NavigateDestinations.ReviewAddAccount(setupArgs.copy(xpub = xpub.value))))
+        }
+    }
+}
+
+class XpubViewModelPreview(setupArgs: SetupArgs) : XpubViewModelAbstract(setupArgs = setupArgs) {
+
+    override val xpub: MutableStateFlow<String> = MutableStateFlow("")
+
+    override val error: MutableStateFlow<String?> = MutableStateFlow(null)
+
+    companion object {
+        fun preview() = XpubViewModelPreview(
+            setupArgs = SetupArgs(greenWallet = previewWallet(isHardware = true))
+        )
+    }
+}
+
+

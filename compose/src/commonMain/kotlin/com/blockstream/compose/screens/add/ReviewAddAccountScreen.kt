@@ -21,21 +21,21 @@ import blockstream_green.common.generated.resources.id_recovery_key_type
 import blockstream_green.common.generated.resources.id_recovery_phrase
 import blockstream_green.common.generated.resources.id_review_account_information
 import blockstream_green.common.generated.resources.id_xpub
-import com.blockstream.common.events.Events
 import com.blockstream.common.extensions.isNotBlank
-import com.blockstream.common.models.add.ReviewAddAccountViewModelAbstract
-import com.blockstream.common.navigation.NavigateDestinations
-import com.blockstream.common.sideeffects.SideEffects
 import com.blockstream.compose.components.GreenButton
+import com.blockstream.compose.components.GreenColumn
 import com.blockstream.compose.components.ScreenContainer
+import com.blockstream.compose.events.Events
+import com.blockstream.compose.models.add.ReviewAddAccountViewModelAbstract
+import com.blockstream.compose.navigation.NavigateDestinations
+import com.blockstream.compose.navigation.setResult
+import com.blockstream.compose.sideeffects.SideEffects
 import com.blockstream.compose.theme.MonospaceFont
 import com.blockstream.compose.theme.displayMedium
 import com.blockstream.compose.theme.labelLarge
 import com.blockstream.compose.theme.titleMedium
 import com.blockstream.compose.theme.whiteMedium
 import com.blockstream.compose.utils.HandleSideEffect
-import com.blockstream.compose.components.GreenColumn
-import com.blockstream.compose.navigation.setResult
 import org.jetbrains.compose.resources.stringResource
 
 @Composable

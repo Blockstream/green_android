@@ -20,12 +20,15 @@ import blockstream_green.common.generated.resources.Res
 import blockstream_green.common.generated.resources.id_custom
 import blockstream_green.common.generated.resources.id_network_fee
 import com.blockstream.common.data.FeePriority
-import com.blockstream.common.models.send.FeeViewModelAbstract
-import com.blockstream.common.navigation.NavigateDestinations
+import com.blockstream.compose.components.GreenArrow
 import com.blockstream.compose.components.GreenBottomSheet
 import com.blockstream.compose.components.GreenButton
 import com.blockstream.compose.components.GreenButtonType
 import com.blockstream.compose.components.GreenCard
+import com.blockstream.compose.components.GreenRow
+import com.blockstream.compose.models.send.FeeViewModelAbstract
+import com.blockstream.compose.navigation.NavigateDestinations
+import com.blockstream.compose.navigation.setResult
 import com.blockstream.compose.theme.bodyMedium
 import com.blockstream.compose.theme.bodySmall
 import com.blockstream.compose.theme.labelMedium
@@ -33,11 +36,8 @@ import com.blockstream.compose.theme.titleSmall
 import com.blockstream.compose.theme.whiteHigh
 import com.blockstream.compose.theme.whiteMedium
 import com.blockstream.compose.utils.AnimatedNullableVisibility
-import com.blockstream.compose.utils.roundBackground
-import com.blockstream.compose.components.GreenArrow
-import com.blockstream.compose.components.GreenRow
-import com.blockstream.compose.navigation.setResult
 import com.blockstream.compose.utils.appTestTag
+import com.blockstream.compose.utils.roundBackground
 import org.jetbrains.compose.resources.stringResource
 
 @OptIn(ExperimentalMaterial3Api::class)

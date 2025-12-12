@@ -23,10 +23,10 @@ import blockstream_green.common.generated.resources.id_user_authentication
 import blockstream_green.common.generated.resources.id_you_have_to_authenticate_to
 import com.blockstream.common.crypto.BiometricsException
 import com.blockstream.common.database.wallet.LoginCredentials
-import com.blockstream.common.events.Events
-import com.blockstream.common.models.GreenViewModel
-import com.blockstream.common.models.login.LoginViewModel
-import com.blockstream.common.models.login.LoginViewModelAbstract
+import com.blockstream.compose.events.Events
+import com.blockstream.compose.models.GreenViewModel
+import com.blockstream.compose.models.login.LoginViewModel
+import com.blockstream.compose.models.login.LoginViewModelAbstract
 import com.blockstream.common.utils.AndroidKeystore
 import com.blockstream.common.utils.StringHolder
 import com.blockstream.compose.LocalActivity

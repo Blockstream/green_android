@@ -11,8 +11,11 @@ import com.blockstream.domain.bitcoinpricehistory.ObserveBitcoinPriceHistory
 import com.blockstream.domain.boltz.boltzModule
 import com.blockstream.domain.hardware.VerifyAddressUseCase
 import com.blockstream.domain.lightning.LightningNodeIdUseCase
-import com.blockstream.domain.meld.*
-import com.blockstream.domain.navigation.NavigateToWallet
+import com.blockstream.domain.meld.CreateCryptoQuoteUseCase
+import com.blockstream.domain.meld.CreateCryptoWidgetUseCase
+import com.blockstream.domain.meld.DefaultValuesUseCase
+import com.blockstream.domain.meld.GetLastSuccessfulPurchaseExchange
+import com.blockstream.domain.meld.MeldUseCase
 import com.blockstream.domain.promo.GetPromoUseCase
 import com.blockstream.domain.receive.receiveModule
 import com.blockstream.domain.send.sendModule
@@ -35,9 +38,6 @@ val commonModule = module {
     }
     single {
         LightningNodeIdUseCase(get())
-    }
-    single {
-        NavigateToWallet(get(), get())
     }
     single {
         VerifyAddressUseCase(get())

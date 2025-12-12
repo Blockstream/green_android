@@ -35,14 +35,16 @@ import blockstream_green.common.generated.resources.x_bold
 import com.blockstream.common.SupportType
 import com.blockstream.common.data.SupportData
 import com.blockstream.common.devices.DeviceModel
-import com.blockstream.common.models.GreenViewModel
-import com.blockstream.common.navigation.NavigateDestinations
 import com.blockstream.common.utils.hostname
 import com.blockstream.compose.components.GreenButton
 import com.blockstream.compose.components.GreenButtonColor
 import com.blockstream.compose.components.GreenButtonSize
 import com.blockstream.compose.components.GreenButtonType
 import com.blockstream.compose.components.GreenCard
+import com.blockstream.compose.components.GreenColumn
+import com.blockstream.compose.components.GreenRow
+import com.blockstream.compose.models.GreenViewModel
+import com.blockstream.compose.navigation.NavigateDestinations
 import com.blockstream.compose.theme.bodyMedium
 import com.blockstream.compose.theme.labelLarge
 import com.blockstream.compose.theme.redDark
@@ -51,8 +53,6 @@ import com.blockstream.compose.theme.textMedium
 import com.blockstream.compose.theme.titleLarge
 import com.blockstream.compose.theme.titleMedium
 import com.blockstream.compose.theme.titleSmall
-import com.blockstream.compose.components.GreenColumn
-import com.blockstream.compose.components.GreenRow
 import org.jetbrains.compose.resources.painterResource
 import org.jetbrains.compose.resources.stringResource
 

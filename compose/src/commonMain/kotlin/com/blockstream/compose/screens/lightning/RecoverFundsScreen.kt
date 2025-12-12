@@ -28,15 +28,12 @@ import blockstream_green.common.generated.resources.id_refundable
 import blockstream_green.common.generated.resources.id_set_custom_fee_rate
 import com.blockstream.common.data.FeePriority
 import com.blockstream.common.data.ScanResult
-import com.blockstream.common.events.Events
 import com.blockstream.common.extensions.toggle
 import com.blockstream.common.gdk.data.AccountAssetBalance
 import com.blockstream.common.gdk.data.AccountAssetBalanceList
-import com.blockstream.common.models.lightning.RecoverFundsViewModel
-import com.blockstream.common.models.lightning.RecoverFundsViewModelAbstract
-import com.blockstream.common.navigation.NavigateDestinations
 import com.blockstream.compose.components.GreenAccountAsset
 import com.blockstream.compose.components.GreenAmount
+import com.blockstream.compose.components.GreenColumn
 import com.blockstream.compose.components.GreenIconButton
 import com.blockstream.compose.components.GreenNetworkFee
 import com.blockstream.compose.components.GreenTextField
@@ -44,14 +41,17 @@ import com.blockstream.compose.components.OnProgressStyle
 import com.blockstream.compose.components.RiveAnimation
 import com.blockstream.compose.components.SlideToUnlock
 import com.blockstream.compose.dialogs.TextDialog
+import com.blockstream.compose.events.Events
 import com.blockstream.compose.extensions.onValueChange
+import com.blockstream.compose.models.lightning.RecoverFundsViewModel
+import com.blockstream.compose.models.lightning.RecoverFundsViewModelAbstract
+import com.blockstream.compose.navigation.NavigateDestinations
+import com.blockstream.compose.navigation.getResult
 import com.blockstream.compose.theme.green
 import com.blockstream.compose.theme.red
 import com.blockstream.compose.theme.whiteMedium
 import com.blockstream.compose.utils.AnimatedNullableVisibility
 import com.blockstream.compose.utils.SetupScreen
-import com.blockstream.compose.components.GreenColumn
-import com.blockstream.compose.navigation.getResult
 import org.jetbrains.compose.resources.painterResource
 import org.jetbrains.compose.resources.stringResource
 

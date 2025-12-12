@@ -27,9 +27,10 @@ import blockstream_green.common.generated.resources.id_read_more
 import blockstream_green.common.generated.resources.id_total
 import blockstream_green.common.generated.resources.id_total_fees
 import com.blockstream.common.Urls
-import com.blockstream.common.sideeffects.OpenBrowserType
 import com.blockstream.compose.components.GreenBottomSheet
+import com.blockstream.compose.components.GreenColumn
 import com.blockstream.compose.managers.LocalPlatformManager
+import com.blockstream.compose.sideeffects.OpenBrowserType
 import com.blockstream.compose.theme.bodyMedium
 import com.blockstream.compose.theme.bodySmall
 import com.blockstream.compose.theme.green
@@ -37,7 +38,6 @@ import com.blockstream.compose.theme.labelLarge
 import com.blockstream.compose.theme.titleSmall
 import com.blockstream.compose.theme.whiteHigh
 import com.blockstream.compose.theme.whiteMedium
-import com.blockstream.compose.components.GreenColumn
 import org.jetbrains.compose.resources.painterResource
 import org.jetbrains.compose.resources.stringResource
 

@@ -1,9 +1,9 @@
 package com.blockstream.green.utils
 
 import android.net.Uri
-import com.blockstream.common.events.Events
-import com.blockstream.common.models.MainViewModel
-import com.blockstream.common.sideeffects.SideEffects
+import com.blockstream.compose.events.Events
+import com.blockstream.compose.models.MainViewModel
+import com.blockstream.compose.sideeffects.SideEffects
 
 object DeepLinkHandler : Loggable() {
 

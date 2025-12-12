@@ -25,10 +25,10 @@ import com.blockstream.common.extensions.indexOfOrNull
 import com.blockstream.common.extensions.previewNetwork
 import com.blockstream.common.extensions.previewWallet
 import com.blockstream.common.gdk.data.Network
-import com.blockstream.common.models.settings.TwoFactorAuthenticationViewModel
-import com.blockstream.common.models.settings.TwoFactorAuthenticationViewModelAbstract
-import com.blockstream.common.models.settings.WalletSettingsViewModelAbstract
-import com.blockstream.common.models.settings.WalletSettingsViewModelPreview
+import com.blockstream.compose.models.settings.TwoFactorAuthenticationViewModel
+import com.blockstream.compose.models.settings.TwoFactorAuthenticationViewModelAbstract
+import com.blockstream.compose.models.settings.WalletSettingsViewModelAbstract
+import com.blockstream.compose.models.settings.WalletSettingsViewModelPreview
 import com.adamglin.PhosphorIcons
 import com.adamglin.phosphoricons.Regular
 import com.adamglin.phosphoricons.regular.Warning

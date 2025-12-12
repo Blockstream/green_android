@@ -44,10 +44,10 @@ import com.adamglin.phosphoricons.regular.Warning
 import com.adamglin.phosphoricons.regular.X
 import com.blockstream.common.data.AlertType
 import com.blockstream.common.data.SetupArgs
-import com.blockstream.common.events.Events
-import com.blockstream.common.models.GreenViewModel
-import com.blockstream.common.navigation.NavigateDestinations
 import com.blockstream.compose.GreenPreview
+import com.blockstream.compose.events.Events
+import com.blockstream.compose.models.GreenViewModel
+import com.blockstream.compose.navigation.NavigateDestinations
 import com.blockstream.compose.theme.blueOutline
 import com.blockstream.compose.theme.blueSurface
 import com.blockstream.compose.theme.bodyMedium

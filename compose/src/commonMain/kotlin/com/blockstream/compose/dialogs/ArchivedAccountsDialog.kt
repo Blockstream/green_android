@@ -18,17 +18,17 @@ import blockstream_green.common.generated.resources.id_account_archived
 import blockstream_green.common.generated.resources.id_continue
 import blockstream_green.common.generated.resources.id_see_archived_accounts_s
 import blockstream_green.common.generated.resources.id_you_can_still_receive_funds_but
-import com.blockstream.common.models.archived.ArchivedAccountsViewModelAbstract
-import com.blockstream.common.navigation.NavigateDestinations
 import com.blockstream.compose.components.GreenButton
 import com.blockstream.compose.components.GreenButtonType
 import com.blockstream.compose.components.GreenCard
+import com.blockstream.compose.components.GreenColumn
 import com.blockstream.compose.components.Rive
 import com.blockstream.compose.components.RiveAnimation
+import com.blockstream.compose.models.archived.ArchivedAccountsViewModelAbstract
+import com.blockstream.compose.navigation.NavigateDestinations
 import com.blockstream.compose.theme.bodyLarge
 import com.blockstream.compose.theme.titleLarge
 import com.blockstream.compose.utils.HandleSideEffectDialog
-import com.blockstream.compose.components.GreenColumn
 import org.jetbrains.compose.resources.stringResource
 
 @Composable

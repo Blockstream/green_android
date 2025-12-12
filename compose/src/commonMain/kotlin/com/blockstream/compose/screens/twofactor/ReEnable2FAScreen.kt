@@ -20,9 +20,9 @@ import blockstream_green.common.generated.resources.id_2fa_protected_accounts_ar
 import blockstream_green.common.generated.resources.id_learn_more
 import blockstream_green.common.generated.resources.id_redeposit_expired_2fa_coins
 import blockstream_green.common.generated.resources.re_enable_two_factor
-import com.blockstream.common.models.twofactor.ReEnable2FAViewModel
-import com.blockstream.common.models.twofactor.ReEnable2FAViewModelAbstract
-import com.blockstream.common.models.twofactor.ReEnable2FAViewModelPreview
+import com.blockstream.compose.models.twofactor.ReEnable2FAViewModel
+import com.blockstream.compose.models.twofactor.ReEnable2FAViewModelAbstract
+import com.blockstream.compose.models.twofactor.ReEnable2FAViewModelPreview
 import com.blockstream.compose.GreenPreview
 import com.blockstream.compose.components.GreenAccountAsset
 import com.blockstream.compose.components.GreenButton

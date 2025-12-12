@@ -44,13 +44,10 @@ import com.adamglin.phosphoricons.regular.ArrowsDownUp
 import com.adamglin.phosphoricons.regular.Gear
 import com.adamglin.phosphoricons.regular.House
 import com.adamglin.phosphoricons.regular.ShieldCheck
-import com.blockstream.common.models.MainViewModel
-import com.blockstream.common.navigation.NavigateDestination
-import com.blockstream.common.navigation.NavigateDestinations
 import com.blockstream.compose.components.GreenTopAppBar
+import com.blockstream.compose.models.MainViewModel
 import com.blockstream.compose.theme.bodyMedium
 import com.blockstream.compose.utils.HandleSideEffect
-import com.blockstream.ui.navigation.NavData
 import org.jetbrains.compose.resources.StringResource
 import org.jetbrains.compose.resources.stringResource
 import kotlin.reflect.KClass

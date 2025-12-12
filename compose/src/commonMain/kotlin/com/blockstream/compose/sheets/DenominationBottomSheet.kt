@@ -18,14 +18,14 @@ import blockstream_green.common.generated.resources.Res
 import blockstream_green.common.generated.resources.check_circle
 import blockstream_green.common.generated.resources.id_enter_amount_in
 import com.blockstream.common.data.DenominatedValue
-import com.blockstream.common.models.send.DenominationViewModelAbstract
-import com.blockstream.common.navigation.NavigateDestinations
 import com.blockstream.compose.components.GreenBottomSheet
+import com.blockstream.compose.components.GreenRow
+import com.blockstream.compose.models.send.DenominationViewModelAbstract
+import com.blockstream.compose.navigation.NavigateDestinations
+import com.blockstream.compose.navigation.setResult
 import com.blockstream.compose.theme.bodyLarge
 import com.blockstream.compose.theme.green
 import com.blockstream.compose.theme.titleSmall
-import com.blockstream.compose.components.GreenRow
-import com.blockstream.compose.navigation.setResult
 import org.jetbrains.compose.resources.painterResource
 import org.jetbrains.compose.resources.stringResource
 

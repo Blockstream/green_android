@@ -40,8 +40,8 @@ import blockstream_green.common.generated.resources.id_welcome_to_blockstream_ja
 import blockstream_green.common.generated.resources.id_your_bitcoin_and_liquid_assets
 import blockstream_green.common.generated.resources.offline_key_storage
 import blockstream_green.common.generated.resources.qr_airgapped
-import com.blockstream.common.models.onboarding.hardware.UseHardwareDeviceViewModel
-import com.blockstream.common.models.onboarding.hardware.UseHardwareDeviceViewModelAbstract
+import com.blockstream.compose.models.onboarding.hardware.UseHardwareDeviceViewModel
+import com.blockstream.compose.models.onboarding.hardware.UseHardwareDeviceViewModelAbstract
 import com.blockstream.compose.components.GreenButton
 import com.blockstream.compose.components.GreenButtonColor
 import com.blockstream.compose.components.GreenButtonSize

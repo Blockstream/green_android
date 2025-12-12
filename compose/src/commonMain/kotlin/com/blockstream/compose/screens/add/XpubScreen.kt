@@ -18,17 +18,17 @@ import blockstream_green.common.generated.resources.id_enter_your_xpub
 import blockstream_green.common.generated.resources.id_use_an_xpub_for_which_you_own
 import blockstream_green.common.generated.resources.id_xpub
 import com.blockstream.common.data.ScanResult
-import com.blockstream.common.events.Events
-import com.blockstream.common.models.add.XpubViewModelAbstract
-import com.blockstream.common.navigation.NavigateDestinations
 import com.blockstream.compose.components.GreenButton
+import com.blockstream.compose.components.GreenColumn
 import com.blockstream.compose.components.GreenTextField
+import com.blockstream.compose.events.Events
 import com.blockstream.compose.extensions.onValueChange
+import com.blockstream.compose.models.add.XpubViewModelAbstract
+import com.blockstream.compose.navigation.NavigateDestinations
+import com.blockstream.compose.navigation.getResult
 import com.blockstream.compose.theme.bodyLarge
 import com.blockstream.compose.theme.displayMedium
 import com.blockstream.compose.utils.SetupScreen
-import com.blockstream.compose.components.GreenColumn
-import com.blockstream.compose.navigation.getResult
 import org.jetbrains.compose.resources.stringResource
 
 @Composable

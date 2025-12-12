@@ -3,7 +3,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.uikit.ComposeUIViewControllerDelegate
 import androidx.compose.ui.window.ComposeUIViewController
 import com.blockstream.common.managers.LifecycleManager
-import com.blockstream.common.models.MainViewModel
+import com.blockstream.compose.models.MainViewModel
 import com.blockstream.compose.GreenApp
 import com.blockstream.compose.di.startKoin
 import com.blockstream.compose.theme.GreenChrome

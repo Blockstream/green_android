@@ -5,7 +5,7 @@ import android.content.Context
 import androidx.lifecycle.LifecycleObserver
 import com.blockstream.common.CountlyBase
 import com.blockstream.common.data.AppConfig
-import com.blockstream.common.di.initKoin
+import com.blockstream.compose.di.initKoin
 import com.blockstream.gms.di.gmsModule
 import com.blockstream.green.BuildConfig
 import com.blockstream.green.R

@@ -6,7 +6,7 @@ import blockstream_green.common.generated.resources.Res
 import blockstream_green.common.generated.resources.house
 import blockstream_green.common.generated.resources.id_make_sure_you_are_alone_and_no
 import blockstream_green.common.generated.resources.id_safe_environment
-import com.blockstream.common.models.recovery.RecoveryIntroViewModelPreview
+import com.blockstream.compose.models.recovery.RecoveryIntroViewModelPreview
 import com.blockstream.compose.GreenAndroidPreview
 import com.blockstream.compose.theme.GreenChromePreview
 import com.blockstream.compose.components.GreenColumn

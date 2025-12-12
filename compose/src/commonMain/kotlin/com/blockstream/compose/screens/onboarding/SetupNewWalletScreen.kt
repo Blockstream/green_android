@@ -15,20 +15,20 @@ import blockstream_green.common.generated.resources.Res
 import blockstream_green.common.generated.resources.id_create_a_new_wallet_to_begin
 import blockstream_green.common.generated.resources.id_restore_from_backup
 import blockstream_green.common.generated.resources.id_set_up_mobile_wallet
-import com.blockstream.common.events.Events
-import com.blockstream.common.models.onboarding.SetupNewWalletViewModel
-import com.blockstream.common.models.onboarding.SetupNewWalletViewModelAbstract
-import com.blockstream.common.navigation.NavigateDestinations
 import com.blockstream.compose.components.GreenButton
 import com.blockstream.compose.components.GreenButtonSize
 import com.blockstream.compose.components.GreenButtonType
+import com.blockstream.compose.components.GreenColumn
 import com.blockstream.compose.components.OnProgressStyle
 import com.blockstream.compose.components.Rive
 import com.blockstream.compose.components.RiveAnimation
+import com.blockstream.compose.events.Events
+import com.blockstream.compose.models.onboarding.SetupNewWalletViewModel
+import com.blockstream.compose.models.onboarding.SetupNewWalletViewModelAbstract
+import com.blockstream.compose.navigation.NavigateDestinations
+import com.blockstream.compose.navigation.getResult
 import com.blockstream.compose.theme.whiteMedium
 import com.blockstream.compose.utils.SetupScreen
-import com.blockstream.compose.components.GreenColumn
-import com.blockstream.compose.navigation.getResult
 import org.jetbrains.compose.resources.stringResource
 
 @Composable

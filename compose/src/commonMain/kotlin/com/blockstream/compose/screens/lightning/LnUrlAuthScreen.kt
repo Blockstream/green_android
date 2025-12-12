@@ -11,8 +11,8 @@ import blockstream_green.common.generated.resources.Res
 import blockstream_green.common.generated.resources.id_authenticate
 import blockstream_green.common.generated.resources.id_no_personal_data_will_be_shared
 import blockstream_green.common.generated.resources.id_you_can_use_your_wallet_to
-import com.blockstream.common.events.Events
-import com.blockstream.common.models.lightning.LnUrlAuthViewModelAbstract
+import com.blockstream.compose.events.Events
+import com.blockstream.compose.models.lightning.LnUrlAuthViewModelAbstract
 import com.blockstream.compose.components.GreenButton
 import com.blockstream.compose.theme.bodyLarge
 import com.blockstream.compose.theme.bodySmall

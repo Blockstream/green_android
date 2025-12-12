@@ -10,7 +10,7 @@ import blockstream_green.common.generated.resources.arrow_u_left_down
 import blockstream_green.common.generated.resources.export
 import blockstream_green.common.generated.resources.magnifying_glass
 import blockstream_green.common.generated.resources.pencil_simple_line
-import com.blockstream.common.models.transaction.TransactionViewModelPreview
+import com.blockstream.compose.models.transaction.TransactionViewModelPreview
 import com.blockstream.compose.GreenAndroidPreview
 import com.blockstream.compose.theme.GreenChromePreview
 import org.jetbrains.compose.resources.painterResource

@@ -73,8 +73,8 @@ import com.adamglin.PhosphorIcons
 import com.adamglin.phosphoricons.Regular
 import com.adamglin.phosphoricons.regular.CaretRight
 import com.blockstream.common.data.ScreenLockSetting
-import com.blockstream.common.models.settings.AppSettingsViewModel
-import com.blockstream.common.models.settings.AppSettingsViewModelAbstract
+import com.blockstream.compose.models.settings.AppSettingsViewModel
+import com.blockstream.compose.models.settings.AppSettingsViewModelAbstract
 import com.blockstream.common.utils.StringHolder
 import com.blockstream.compose.LocalDialog
 import com.blockstream.compose.screens.settings.components.PersonalElectrumServerSection

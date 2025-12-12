@@ -40,14 +40,17 @@ import com.adamglin.phosphoricons.Regular
 import com.adamglin.phosphoricons.regular.Copy
 import com.blockstream.common.data.TwoFactorMethod
 import com.blockstream.common.data.TwoFactorSetupAction
-import com.blockstream.common.events.Events
-import com.blockstream.common.models.settings.TwoFactorSetupViewModel
-import com.blockstream.common.models.settings.TwoFactorSetupViewModelAbstract
-import com.blockstream.common.navigation.NavigateDestinations
 import com.blockstream.compose.components.GreenButton
+import com.blockstream.compose.components.GreenColumn
 import com.blockstream.compose.components.GreenQR
+import com.blockstream.compose.components.GreenRow
+import com.blockstream.compose.events.Events
 import com.blockstream.compose.extensions.linkText
 import com.blockstream.compose.extensions.onValueChange
+import com.blockstream.compose.models.settings.TwoFactorSetupViewModel
+import com.blockstream.compose.models.settings.TwoFactorSetupViewModelAbstract
+import com.blockstream.compose.navigation.NavigateDestinations
+import com.blockstream.compose.navigation.getResult
 import com.blockstream.compose.theme.bodyLarge
 import com.blockstream.compose.theme.bodyMedium
 import com.blockstream.compose.theme.labelMedium
@@ -57,9 +60,6 @@ import com.blockstream.compose.theme.whiteMedium
 import com.blockstream.compose.utils.CopyContainer
 import com.blockstream.compose.utils.SetupScreen
 import com.blockstream.green.data.countries.Country
-import com.blockstream.compose.components.GreenColumn
-import com.blockstream.compose.components.GreenRow
-import com.blockstream.compose.navigation.getResult
 import org.jetbrains.compose.resources.painterResource
 import org.jetbrains.compose.resources.stringResource
 

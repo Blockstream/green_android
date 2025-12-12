@@ -11,10 +11,10 @@ import blockstream_green.common.generated.resources.id_2fa_isnt_set_up_yetnnyou_
 import blockstream_green.common.generated.resources.id_enable_2fa
 import blockstream_green.common.generated.resources.id_set_up_2fa_now
 import com.blockstream.common.gdk.data.Network
-import com.blockstream.common.models.GreenViewModel
-import com.blockstream.common.navigation.NavigateDestinations
 import com.blockstream.compose.components.GreenBottomSheet
 import com.blockstream.compose.components.GreenButton
+import com.blockstream.compose.models.GreenViewModel
+import com.blockstream.compose.navigation.NavigateDestinations
 import com.blockstream.compose.utils.HandleSideEffect
 import org.jetbrains.compose.resources.stringResource
 

@@ -4,8 +4,8 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.Stable
 import androidx.compose.runtime.remember
 import com.blockstream.common.database.wallet.LoginCredentials
-import com.blockstream.common.models.GreenViewModel
-import com.blockstream.common.models.login.LoginViewModelAbstract
+import com.blockstream.compose.models.GreenViewModel
+import com.blockstream.compose.models.login.LoginViewModelAbstract
 
 @Composable
 actual fun rememberBiometricsState(): BiometricsState {

@@ -14,17 +14,17 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
 import com.blockstream.common.data.EnrichedAsset
+import com.blockstream.common.data.PopTo
 import com.blockstream.common.extensions.isPolicyAsset
 import com.blockstream.common.gdk.data.Account
 import com.blockstream.common.gdk.data.AccountType
 import com.blockstream.common.gdk.data.AssetBalance
 import com.blockstream.common.gdk.data.Assets
-import com.blockstream.common.models.GreenViewModel
-import com.blockstream.common.navigation.NavigateDestinations
-import com.blockstream.common.navigation.PopTo
 import com.blockstream.compose.components.GreenAssetAccounts
 import com.blockstream.compose.components.GreenBottomSheet
 import com.blockstream.compose.components.GreenColumn
+import com.blockstream.compose.models.GreenViewModel
+import com.blockstream.compose.navigation.NavigateDestinations
 import com.blockstream.compose.navigation.setResult
 
 @OptIn(ExperimentalMaterial3Api::class)

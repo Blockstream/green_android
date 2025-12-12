@@ -27,15 +27,15 @@ import blockstream_green.common.generated.resources.id_a_new_device_has_been_det
 import blockstream_green.common.generated.resources.id_genuine_check
 import blockstream_green.common.generated.resources.id_genuine_check_is_mandatory_for
 import blockstream_green.common.generated.resources.id_new_jade_plus_connected
-import com.blockstream.common.models.GreenViewModel
-import com.blockstream.common.navigation.NavigateDestinations
 import com.blockstream.compose.components.GreenBottomSheet
 import com.blockstream.compose.components.GreenButton
 import com.blockstream.compose.components.GreenButtonSize
+import com.blockstream.compose.components.GreenColumn
+import com.blockstream.compose.models.GreenViewModel
+import com.blockstream.compose.navigation.NavigateDestinations
+import com.blockstream.compose.navigation.setResult
 import com.blockstream.compose.theme.bodyMedium
 import com.blockstream.compose.theme.textMedium
-import com.blockstream.compose.components.GreenColumn
-import com.blockstream.compose.navigation.setResult
 import org.jetbrains.compose.resources.painterResource
 import org.jetbrains.compose.resources.stringResource
 

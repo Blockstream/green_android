@@ -17,8 +17,8 @@ import blockstream_green.common.generated.resources.id_select_your_recovery_key
 import blockstream_green.common.generated.resources.id_use_a_public_key
 import blockstream_green.common.generated.resources.id_use_an_existing_recovery_phrase
 import blockstream_green.common.generated.resources.id_use_an_xpub_for_which_you_own
-import com.blockstream.common.models.add.Account2of3ViewModel
-import com.blockstream.common.models.add.Account2of3ViewModelAbstract
+import com.blockstream.compose.models.add.Account2of3ViewModel
+import com.blockstream.compose.models.add.Account2of3ViewModelAbstract
 import com.blockstream.compose.components.GreenContentCard
 import com.blockstream.compose.theme.displayMedium
 import com.blockstream.compose.utils.SetupScreen

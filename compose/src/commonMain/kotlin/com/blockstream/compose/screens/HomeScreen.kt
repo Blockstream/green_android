@@ -32,19 +32,21 @@ import blockstream_green.common.generated.resources.id_privacy_policy
 import blockstream_green.common.generated.resources.id_simple__secure_selfcustody
 import blockstream_green.common.generated.resources.id_terms_of_service
 import blockstream_green.common.generated.resources.id_weve_redesigned_the_app_to_make_it_faster
-import com.blockstream.common.events.Events
-import com.blockstream.common.models.home.HomeViewModel
-import com.blockstream.common.models.home.HomeViewModelAbstract
-import com.blockstream.common.navigation.NavigateDestinations
 import com.blockstream.compose.components.Banner
 import com.blockstream.compose.components.GreenButton
 import com.blockstream.compose.components.GreenButtonColor
 import com.blockstream.compose.components.GreenButtonSize
 import com.blockstream.compose.components.GreenButtonType
+import com.blockstream.compose.components.GreenColumn
 import com.blockstream.compose.components.Promo
 import com.blockstream.compose.components.Rive
 import com.blockstream.compose.components.RiveAnimation
+import com.blockstream.compose.events.Events
 import com.blockstream.compose.extensions.linkText
+import com.blockstream.compose.models.home.HomeViewModel
+import com.blockstream.compose.models.home.HomeViewModelAbstract
+import com.blockstream.compose.navigation.NavigateDestinations
+import com.blockstream.compose.navigation.getResult
 import com.blockstream.compose.theme.bodyLarge
 import com.blockstream.compose.theme.bodyMedium
 import com.blockstream.compose.theme.displayLarge
@@ -52,10 +54,8 @@ import com.blockstream.compose.theme.md_theme_background
 import com.blockstream.compose.theme.titleLarge
 import com.blockstream.compose.theme.whiteMedium
 import com.blockstream.compose.utils.SetupScreen
-import com.blockstream.compose.utils.noRippleClickable
-import com.blockstream.compose.components.GreenColumn
-import com.blockstream.compose.navigation.getResult
 import com.blockstream.compose.utils.appTestTag
+import com.blockstream.compose.utils.noRippleClickable
 import org.jetbrains.compose.resources.painterResource
 import org.jetbrains.compose.resources.stringResource
 

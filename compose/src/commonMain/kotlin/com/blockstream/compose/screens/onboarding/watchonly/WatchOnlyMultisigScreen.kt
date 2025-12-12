@@ -35,8 +35,8 @@ import blockstream_green.common.generated.resources.id_password
 import blockstream_green.common.generated.resources.id_remember_me
 import blockstream_green.common.generated.resources.id_set_up_multisig_watchonly
 import blockstream_green.common.generated.resources.id_username
-import com.blockstream.common.events.Events
-import com.blockstream.common.models.onboarding.watchonly.WatchOnlyMultisigViewModelAbstract
+import com.blockstream.compose.events.Events
+import com.blockstream.compose.models.onboarding.watchonly.WatchOnlyMultisigViewModelAbstract
 import com.blockstream.compose.components.GreenButton
 import com.blockstream.compose.components.GreenButtonSize
 import com.blockstream.compose.extensions.onValueChange

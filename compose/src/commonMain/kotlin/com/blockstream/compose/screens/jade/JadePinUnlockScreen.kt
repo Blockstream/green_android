@@ -18,20 +18,20 @@ import blockstream_green.common.generated.resources.id_qr_pin_unlock
 import blockstream_green.common.generated.resources.id_set_your_pin_via_qr
 import blockstream_green.common.generated.resources.id_start_scan_qr_on_jade_and
 import com.blockstream.common.devices.DeviceModel
-import com.blockstream.common.models.GreenViewModel
-import com.blockstream.common.models.jade.JadeQrOperation
-import com.blockstream.common.navigation.NavigateDestinations
 import com.blockstream.compose.components.GreenButton
 import com.blockstream.compose.components.GreenButtonSize
+import com.blockstream.compose.components.GreenColumn
+import com.blockstream.compose.components.GreenRow
+import com.blockstream.compose.models.GreenViewModel
+import com.blockstream.compose.models.jade.JadeQrOperation
+import com.blockstream.compose.navigation.NavigateDestinations
+import com.blockstream.compose.navigation.getResult
 import com.blockstream.compose.theme.bodyLarge
 import com.blockstream.compose.theme.headlineMedium
 import com.blockstream.compose.theme.titleSmall
 import com.blockstream.compose.theme.whiteHigh
 import com.blockstream.compose.theme.whiteMedium
 import com.blockstream.compose.utils.SetupScreen
-import com.blockstream.compose.components.GreenColumn
-import com.blockstream.compose.components.GreenRow
-import com.blockstream.compose.navigation.getResult
 import org.jetbrains.compose.resources.stringResource
 
 @Composable

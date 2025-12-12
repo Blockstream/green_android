@@ -44,19 +44,19 @@ import blockstream_green.common.generated.resources.id_show_details
 import blockstream_green.common.generated.resources.id_user_contact_info_ip_address
 import blockstream_green.common.generated.resources.id_whats_collected
 import blockstream_green.common.generated.resources.id_whats_not_collected
-import com.blockstream.common.models.sheets.AnalyticsViewModel
-import com.blockstream.common.models.sheets.AnalyticsViewModelAbstract
-import com.blockstream.common.sideeffects.SideEffects
 import com.blockstream.compose.components.GreenBottomSheet
 import com.blockstream.compose.components.GreenButton
 import com.blockstream.compose.components.GreenButtonSize
 import com.blockstream.compose.components.GreenButtonType
-import com.blockstream.compose.theme.whiteHigh
-import com.blockstream.compose.utils.HandleSideEffect
 import com.blockstream.compose.components.GreenCircle
 import com.blockstream.compose.components.GreenColumn
 import com.blockstream.compose.components.GreenRow
 import com.blockstream.compose.components.GreenSpacer
+import com.blockstream.compose.models.sheets.AnalyticsViewModel
+import com.blockstream.compose.models.sheets.AnalyticsViewModelAbstract
+import com.blockstream.compose.sideeffects.SideEffects
+import com.blockstream.compose.theme.whiteHigh
+import com.blockstream.compose.utils.HandleSideEffect
 import org.jetbrains.compose.resources.stringResource
 
 @OptIn(ExperimentalMaterial3Api::class)

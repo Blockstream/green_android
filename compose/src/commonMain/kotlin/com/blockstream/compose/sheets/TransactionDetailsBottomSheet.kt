@@ -11,7 +11,7 @@ import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import blockstream_green.common.generated.resources.Res
 import blockstream_green.common.generated.resources.id_more_details
-import com.blockstream.common.models.sheets.TransactionDetailsViewModelAbstract
+import com.blockstream.compose.models.sheets.TransactionDetailsViewModelAbstract
 import com.blockstream.compose.components.GreenBottomSheet
 import com.blockstream.compose.views.DataListItem
 import com.blockstream.compose.components.GreenColumn

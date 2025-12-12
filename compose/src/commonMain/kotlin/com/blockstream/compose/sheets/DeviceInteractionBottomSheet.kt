@@ -24,9 +24,9 @@ import blockstream_green.common.generated.resources.id_fee
 import blockstream_green.common.generated.resources.id_sent_to
 import blockstream_green.common.generated.resources.id_to_show_balances_and
 import com.blockstream.common.Urls
-import com.blockstream.common.events.Events
+import com.blockstream.compose.events.Events
 import com.blockstream.common.looks.transaction.TransactionConfirmLook
-import com.blockstream.common.models.SimpleGreenViewModel
+import com.blockstream.compose.models.SimpleGreenViewModel
 import com.blockstream.common.utils.StringHolder
 import com.blockstream.compose.components.GreenAddress
 import com.blockstream.compose.components.GreenAmount

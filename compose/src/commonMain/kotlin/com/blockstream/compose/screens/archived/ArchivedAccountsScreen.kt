@@ -19,7 +19,7 @@ import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import blockstream_green.common.generated.resources.Res
 import blockstream_green.common.generated.resources.id_no_archived_accounts
 import blockstream_green.common.generated.resources.id_unarchive
-import com.blockstream.common.models.archived.ArchivedAccountsViewModelAbstract
+import com.blockstream.compose.models.archived.ArchivedAccountsViewModelAbstract
 import com.blockstream.compose.components.GreenAccountAsset
 import com.blockstream.compose.components.GreenButton
 import com.blockstream.compose.components.GreenButtonSize

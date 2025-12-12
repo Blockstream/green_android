@@ -25,16 +25,16 @@ import com.adamglin.phosphoricons.regular.ArrowsDownUp
 import com.adamglin.phosphoricons.regular.Coins
 import com.adamglin.phosphoricons.regular.QrCode
 import com.blockstream.common.CountlyBase
-import com.blockstream.common.navigation.NavigateDestinations
 import com.blockstream.compose.LocalAppInfo
+import com.blockstream.compose.components.GreenArrow
 import com.blockstream.compose.components.GreenBottomSheet
 import com.blockstream.compose.components.GreenCard
-import com.blockstream.compose.theme.titleSmall
-import com.blockstream.compose.theme.whiteLow
-import com.blockstream.compose.components.GreenArrow
 import com.blockstream.compose.components.GreenColumn
 import com.blockstream.compose.components.GreenRow
+import com.blockstream.compose.navigation.NavigateDestinations
 import com.blockstream.compose.navigation.setResult
+import com.blockstream.compose.theme.titleSmall
+import com.blockstream.compose.theme.whiteLow
 import org.jetbrains.compose.resources.stringResource
 import org.koin.compose.koinInject
 

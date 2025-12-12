@@ -4,8 +4,6 @@ import androidx.navigation.NavDestination.Companion.hasRoute
 import androidx.navigation.NavGraph.Companion.findStartDestination
 import androidx.navigation.NavHostController
 import androidx.navigation.toRoute
-import com.blockstream.common.navigation.NavigateDestination
-import com.blockstream.common.navigation.NavigateDestinations
 
 fun navigate(
     navigator: NavHostController,

@@ -10,11 +10,11 @@ import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import blockstream_green.common.generated.resources.Res
 import blockstream_green.common.generated.resources.id_connect_hardware_wallet
 import blockstream_green.common.generated.resources.id_sign_transaction
-import com.blockstream.common.models.send.CreateTransactionViewModelAbstract
-import com.blockstream.common.models.send.PendingAction
-import com.blockstream.common.models.send.SendConfirmViewModelPreview
-import com.blockstream.common.navigation.NavigateDestinations
 import com.blockstream.compose.GreenPreview
+import com.blockstream.compose.models.send.CreateTransactionViewModelAbstract
+import com.blockstream.compose.models.send.PendingAction
+import com.blockstream.compose.models.send.SendConfirmViewModelPreview
+import com.blockstream.compose.navigation.NavigateDestinations
 import org.jetbrains.compose.resources.stringResource
 import org.jetbrains.compose.ui.tooling.preview.Preview
 

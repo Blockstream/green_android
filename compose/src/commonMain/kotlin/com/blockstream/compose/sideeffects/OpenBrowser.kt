@@ -5,7 +5,6 @@ import blockstream_green.common.generated.resources.id_cancel
 import blockstream_green.common.generated.resources.id_open
 import blockstream_green.common.generated.resources.id_tor
 import blockstream_green.common.generated.resources.id_you_have_tor_enabled_are_you
-import com.blockstream.common.sideeffects.OpenBrowserType
 import com.blockstream.common.utils.StringHolder
 import com.blockstream.compose.managers.PlatformManager
 import org.jetbrains.compose.resources.getString

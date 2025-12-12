@@ -17,7 +17,7 @@ import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import blockstream_green.common.generated.resources.Res
 import blockstream_green.common.generated.resources.blockstream_jade_device
 import blockstream_green.common.generated.resources.id_firmware_upgrade
-import com.blockstream.common.models.sheets.JadeFirmwareUpdateViewModelAbstract
+import com.blockstream.compose.models.sheets.JadeFirmwareUpdateViewModelAbstract
 import com.blockstream.compose.components.GreenBottomSheet
 import com.blockstream.compose.theme.MonospaceFont
 import com.blockstream.compose.theme.bodyMedium

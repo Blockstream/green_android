@@ -27,18 +27,18 @@ import com.adamglin.phosphoricons.Regular
 import com.adamglin.phosphoricons.regular.CaretRight
 import com.blockstream.common.data.GreenWallet
 import com.blockstream.common.looks.wallet.WalletListLook
-import com.blockstream.common.models.home.HomeViewModel
-import com.blockstream.common.models.home.HomeViewModelAbstract
-import com.blockstream.common.navigation.NavigateDestinations
 import com.blockstream.compose.components.GreenCard
+import com.blockstream.compose.components.GreenColumn
 import com.blockstream.compose.components.Promo
+import com.blockstream.compose.models.home.HomeViewModel
+import com.blockstream.compose.models.home.HomeViewModelAbstract
+import com.blockstream.compose.navigation.NavigateDestinations
 import com.blockstream.compose.theme.labelMedium
 import com.blockstream.compose.theme.titleMedium
 import com.blockstream.compose.theme.whiteLow
 import com.blockstream.compose.utils.fadingEdges
 import com.blockstream.compose.views.WalletListItem
 import com.blockstream.compose.views.WalletListItemCallbacks
-import com.blockstream.compose.components.GreenColumn
 import org.jetbrains.compose.resources.StringResource
 import org.jetbrains.compose.resources.stringResource
 

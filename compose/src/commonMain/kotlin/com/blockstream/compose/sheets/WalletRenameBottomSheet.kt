@@ -26,8 +26,8 @@ import blockstream_green.common.generated.resources.Res
 import blockstream_green.common.generated.resources.id_choose_a_name_for_your_wallet
 import blockstream_green.common.generated.resources.id_save
 import blockstream_green.common.generated.resources.id_wallet_name
-import com.blockstream.common.events.Events
-import com.blockstream.common.models.wallet.WalletNameViewModelAbstract
+import com.blockstream.compose.events.Events
+import com.blockstream.compose.models.wallet.WalletNameViewModelAbstract
 import com.blockstream.compose.components.GreenBottomSheet
 import com.blockstream.compose.components.GreenButton
 import com.blockstream.compose.extensions.onTextFieldValueChange

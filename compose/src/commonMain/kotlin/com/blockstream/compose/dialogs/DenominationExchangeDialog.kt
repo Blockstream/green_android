@@ -24,8 +24,8 @@ import blockstream_green.common.generated.resources.id_denomination
 import blockstream_green.common.generated.resources.id_denomination__exchange_rate
 import blockstream_green.common.generated.resources.id_exchange_rate
 import blockstream_green.common.generated.resources.id_ok
-import com.blockstream.common.models.settings.DenominationExchangeRateViewModel
-import com.blockstream.common.models.settings.DenominationExchangeRateViewModelAbstract
+import com.blockstream.compose.models.settings.DenominationExchangeRateViewModel
+import com.blockstream.compose.models.settings.DenominationExchangeRateViewModelAbstract
 import com.blockstream.compose.components.GreenButton
 import com.blockstream.compose.components.GreenButtonType
 import com.blockstream.compose.components.GreenCard

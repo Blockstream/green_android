@@ -29,23 +29,27 @@ import com.adamglin.phosphoricons.Regular
 import com.adamglin.phosphoricons.regular.ArrowSquareOut
 import com.blockstream.common.data.AlertType
 import com.blockstream.common.data.DenominatedValue
-import com.blockstream.common.events.Events
+import com.blockstream.common.data.PopTo
 import com.blockstream.common.gdk.data.AccountAsset
 import com.blockstream.common.gdk.data.AccountAssetBalance
 import com.blockstream.common.gdk.data.AccountAssetBalanceList
 import com.blockstream.common.gdk.data.AssetBalance
 import com.blockstream.common.gdk.data.AssetBalanceList
-import com.blockstream.common.models.exchange.OnOffRampsViewModelAbstract
-import com.blockstream.common.navigation.NavigateDestinations
-import com.blockstream.common.navigation.PopTo
 import com.blockstream.compose.components.GreenAccountAsset
 import com.blockstream.compose.components.GreenAlert
 import com.blockstream.compose.components.GreenAmountField
+import com.blockstream.compose.components.GreenArrow
 import com.blockstream.compose.components.GreenAsset
 import com.blockstream.compose.components.GreenButton
 import com.blockstream.compose.components.GreenButtonSize
+import com.blockstream.compose.components.GreenColumn
 import com.blockstream.compose.components.GreenDataLayout
+import com.blockstream.compose.components.GreenRow
+import com.blockstream.compose.events.Events
 import com.blockstream.compose.extensions.onValueChange
+import com.blockstream.compose.models.exchange.OnOffRampsViewModelAbstract
+import com.blockstream.compose.navigation.NavigateDestinations
+import com.blockstream.compose.navigation.getResult
 import com.blockstream.compose.theme.bodyMedium
 import com.blockstream.compose.theme.green
 import com.blockstream.compose.theme.green20
@@ -54,10 +58,6 @@ import com.blockstream.compose.theme.md_theme_errorContainer
 import com.blockstream.compose.theme.md_theme_surface
 import com.blockstream.compose.theme.whiteLow
 import com.blockstream.compose.utils.SetupScreen
-import com.blockstream.compose.components.GreenArrow
-import com.blockstream.compose.components.GreenColumn
-import com.blockstream.compose.components.GreenRow
-import com.blockstream.compose.navigation.getResult
 import org.jetbrains.compose.resources.stringResource
 
 @Composable

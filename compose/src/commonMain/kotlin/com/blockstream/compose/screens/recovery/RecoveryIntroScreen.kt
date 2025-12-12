@@ -33,9 +33,9 @@ import blockstream_green.common.generated.resources.id_show_recovery_phrase
 import blockstream_green.common.generated.resources.id_whomever_can_access_your
 import blockstream_green.common.generated.resources.shield_check
 import blockstream_green.common.generated.resources.warning
-import com.blockstream.common.events.Events
-import com.blockstream.common.models.recovery.RecoveryIntroViewModel
-import com.blockstream.common.models.recovery.RecoveryIntroViewModelAbstract
+import com.blockstream.compose.events.Events
+import com.blockstream.compose.models.recovery.RecoveryIntroViewModel
+import com.blockstream.compose.models.recovery.RecoveryIntroViewModelAbstract
 import com.blockstream.compose.LocalBiometricState
 import com.blockstream.compose.components.GreenButton
 import com.blockstream.compose.components.GreenButtonSize

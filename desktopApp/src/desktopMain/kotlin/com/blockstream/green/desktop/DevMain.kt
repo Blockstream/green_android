@@ -5,7 +5,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.window.WindowState
 import androidx.compose.ui.window.singleWindowApplication
-import com.blockstream.common.models.MainViewModel
+import com.blockstream.compose.models.MainViewModel
 import com.blockstream.compose.GreenApp
 import com.blockstream.compose.theme.GreenChrome
 import com.blockstream.compose.theme.GreenTheme

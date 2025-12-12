@@ -4,7 +4,6 @@ import com.blockstream.common.gdk.GreenJson
 import com.blockstream.common.gdk.data.AccountType
 import com.blockstream.common.gdk.data.Credentials
 import com.blockstream.common.gdk.data.Network
-import com.blockstream.common.navigation.PopTo
 import kotlinx.serialization.Serializable
 
 @Serializable

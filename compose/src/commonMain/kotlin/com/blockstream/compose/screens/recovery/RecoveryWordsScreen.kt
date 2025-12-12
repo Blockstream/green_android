@@ -28,8 +28,8 @@ import blockstream_green.common.generated.resources.id_make_sure_to_be_in_a_priv
 import blockstream_green.common.generated.resources.id_recovery_phrase
 import blockstream_green.common.generated.resources.id_store_it_somewhere_safe
 import blockstream_green.common.generated.resources.id_write_down_your_recovery_phrase
-import com.blockstream.common.events.Events
-import com.blockstream.common.models.recovery.RecoveryWordsViewModelAbstract
+import com.blockstream.compose.events.Events
+import com.blockstream.compose.models.recovery.RecoveryWordsViewModelAbstract
 import com.blockstream.compose.components.GreenButton
 import com.blockstream.compose.components.GreenButtonSize
 import com.blockstream.compose.extensions.colorText

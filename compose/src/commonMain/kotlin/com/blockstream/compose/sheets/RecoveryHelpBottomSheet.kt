@@ -10,8 +10,8 @@ import blockstream_green.common.generated.resources.id_1_double_check_all_of_you
 import blockstream_green.common.generated.resources.id_help
 import blockstream_green.common.generated.resources.id_i_typed_all_my_recovery_phrase
 import blockstream_green.common.generated.resources.id_visit_the_blockstream_help
-import com.blockstream.common.models.sheets.RecoveryHelpViewModel
-import com.blockstream.common.models.sheets.RecoveryHelpViewModelAbstract
+import com.blockstream.compose.models.sheets.RecoveryHelpViewModel
+import com.blockstream.compose.models.sheets.RecoveryHelpViewModelAbstract
 import com.blockstream.compose.components.GreenBottomSheet
 import com.blockstream.compose.components.GreenButton
 import com.blockstream.compose.theme.bodyLarge

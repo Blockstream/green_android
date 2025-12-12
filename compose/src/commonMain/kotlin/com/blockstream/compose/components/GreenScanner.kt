@@ -25,8 +25,8 @@ import blockstream_green.common.generated.resources.Res
 import blockstream_green.common.generated.resources.id_scan_from_image
 import blockstream_green.common.generated.resources.lightning
 import blockstream_green.common.generated.resources.lightning_slash
-import com.blockstream.common.events.Events
-import com.blockstream.common.models.abstract.AbstractScannerViewModel
+import com.blockstream.compose.events.Events
+import com.blockstream.compose.models.abstract.AbstractScannerViewModel
 import com.blockstream.compose.LocalDialog
 import com.blockstream.compose.extensions.pxToDp
 import com.blockstream.compose.managers.rememberImagePicker

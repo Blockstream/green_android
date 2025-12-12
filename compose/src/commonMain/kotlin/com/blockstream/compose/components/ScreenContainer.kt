@@ -31,7 +31,7 @@ import androidx.compose.ui.input.pointer.pointerInput
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.blockstream.compose.theme.titleMedium
-import com.blockstream.ui.models.IOnProgress
+import com.blockstream.compose.models.IOnProgress
 import com.blockstream.compose.navigation.LocalInnerPadding
 import com.blockstream.compose.utils.excludeBottom
 import com.blockstream.compose.utils.ifTrue

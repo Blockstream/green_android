@@ -14,14 +14,14 @@ import blockstream_green.common.generated.resources.Res
 import blockstream_green.common.generated.resources.id_best_price
 import blockstream_green.common.generated.resources.id_exchange
 import blockstream_green.common.generated.resources.id_other
-import com.blockstream.common.models.GreenViewModel
-import com.blockstream.common.navigation.NavigateDestinations
 import com.blockstream.compose.components.GreenBottomSheet
 import com.blockstream.compose.components.MeldProvider
-import com.blockstream.green.data.meld.data.QuoteResponse
+import com.blockstream.compose.models.GreenViewModel
+import com.blockstream.compose.navigation.NavigateDestinations
 import com.blockstream.compose.navigation.setResult
 import com.blockstream.compose.utils.ifTrue
 import com.blockstream.compose.utils.plus
+import com.blockstream.green.data.meld.data.QuoteResponse
 import org.jetbrains.compose.resources.stringResource
 
 @OptIn(ExperimentalMaterial3Api::class)

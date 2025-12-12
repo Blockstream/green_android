@@ -18,12 +18,12 @@ import com.blockstream.common.managers.SettingsManager
 import com.blockstream.common.utils.AndroidKeystore
 import com.blockstream.compose.managers.LocalPlatformManager
 import com.blockstream.compose.managers.rememberPlatformManager
+import com.blockstream.compose.navigation.LocalNavigator
+import com.blockstream.compose.navigation.bottomsheet.rememberBottomSheetNavigator
 import com.blockstream.compose.sideeffects.DialogHost
 import com.blockstream.compose.sideeffects.DialogState
 import com.blockstream.compose.theme.GreenTheme
 import com.blockstream.green.data.config.AppInfo
-import com.blockstream.compose.navigation.LocalNavigator
-import com.blockstream.compose.navigation.bottomsheet.rememberBottomSheetNavigator
 import com.russhwolf.settings.ObservableSettings
 import com.russhwolf.settings.SharedPreferencesSettings
 import org.koin.android.ext.koin.androidContext

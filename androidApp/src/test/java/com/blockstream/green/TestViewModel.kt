@@ -7,7 +7,7 @@ import com.blockstream.common.gdk.GdkSession
 import com.blockstream.common.managers.PromoManager
 import com.blockstream.common.managers.SessionManager
 import com.blockstream.common.managers.SettingsManager
-import com.blockstream.common.models.GreenViewModel
+import com.blockstream.compose.models.GreenViewModel
 import com.blockstream.domain.promo.GetPromoUseCase
 import com.blockstream.green.data.config.AppInfo
 import io.mockk.every

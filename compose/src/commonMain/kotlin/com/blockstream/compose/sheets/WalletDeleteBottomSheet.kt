@@ -13,8 +13,8 @@ import blockstream_green.common.generated.resources.Res
 import blockstream_green.common.generated.resources.id_be_sure_your_recovery_phrase_is
 import blockstream_green.common.generated.resources.id_do_you_have_the_backup
 import blockstream_green.common.generated.resources.id_remove_wallet
-import com.blockstream.common.events.Events
-import com.blockstream.common.models.wallet.WalletDeleteViewModelAbstract
+import com.blockstream.compose.events.Events
+import com.blockstream.compose.models.wallet.WalletDeleteViewModelAbstract
 import com.blockstream.compose.components.GreenBottomSheet
 import com.blockstream.compose.components.GreenButton
 import com.blockstream.compose.components.GreenButtonColor

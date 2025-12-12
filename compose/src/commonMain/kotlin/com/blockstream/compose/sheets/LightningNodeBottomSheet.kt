@@ -20,8 +20,8 @@ import blockstream_green.common.generated.resources.id_node_info
 import blockstream_green.common.generated.resources.id_rescan_swaps
 import blockstream_green.common.generated.resources.id_share_diagnostic_data
 import blockstream_green.common.generated.resources.id_show_recovery_phrase
-import com.blockstream.common.models.sheets.LightningNodeViewModel
-import com.blockstream.common.models.sheets.LightningNodeViewModelAbstract
+import com.blockstream.compose.models.sheets.LightningNodeViewModel
+import com.blockstream.compose.models.sheets.LightningNodeViewModelAbstract
 import com.blockstream.compose.components.GreenBottomSheet
 import com.blockstream.compose.components.GreenButton
 import com.blockstream.compose.components.GreenButtonType

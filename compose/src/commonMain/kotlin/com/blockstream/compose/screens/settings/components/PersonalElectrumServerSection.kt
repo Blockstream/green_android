@@ -20,7 +20,7 @@ import blockstream_green.common.generated.resources.id_enable_tls
 import blockstream_green.common.generated.resources.id_liquid_electrum_server
 import blockstream_green.common.generated.resources.id_liquid_testnet_electrum_server
 import blockstream_green.common.generated.resources.id_testnet_electrum_server
-import com.blockstream.common.models.settings.AppSettingsViewModelAbstract
+import com.blockstream.compose.models.settings.AppSettingsViewModelAbstract
 import com.blockstream.compose.utils.TextInputPaste
 import com.blockstream.compose.components.GreenColumn
 import kotlinx.coroutines.flow.MutableStateFlow

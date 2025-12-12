@@ -23,8 +23,8 @@ import blockstream_green.common.generated.resources.id_message
 import blockstream_green.common.generated.resources.id_paste_here_the_message_to_be
 import blockstream_green.common.generated.resources.id_sign_message
 import blockstream_green.common.generated.resources.id_signature
-import com.blockstream.common.events.Events
-import com.blockstream.common.models.addresses.SignMessageViewModelAbstract
+import com.blockstream.compose.events.Events
+import com.blockstream.compose.models.addresses.SignMessageViewModelAbstract
 import com.blockstream.common.utils.StringHolder
 import com.blockstream.compose.components.GreenBottomSheet
 import com.blockstream.compose.components.GreenButton

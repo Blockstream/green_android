@@ -21,15 +21,15 @@ import blockstream_green.common.generated.resources.id_add_note
 import blockstream_green.common.generated.resources.id_comment
 import blockstream_green.common.generated.resources.id_description
 import blockstream_green.common.generated.resources.id_save
-import com.blockstream.common.events.Events
-import com.blockstream.common.models.sheets.NoteType
-import com.blockstream.common.models.sheets.NoteViewModelAbstract
-import com.blockstream.common.navigation.NavigateDestinations
-import com.blockstream.common.sideeffects.SideEffects
 import com.blockstream.compose.components.GreenBottomSheet
 import com.blockstream.compose.components.GreenButton
-import com.blockstream.compose.utils.OpenKeyboard
+import com.blockstream.compose.events.Events
+import com.blockstream.compose.models.sheets.NoteType
+import com.blockstream.compose.models.sheets.NoteViewModelAbstract
+import com.blockstream.compose.navigation.NavigateDestinations
 import com.blockstream.compose.navigation.setResult
+import com.blockstream.compose.sideeffects.SideEffects
+import com.blockstream.compose.utils.OpenKeyboard
 import org.jetbrains.compose.resources.stringResource
 
 @OptIn(ExperimentalMaterial3Api::class)

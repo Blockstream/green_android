@@ -7,8 +7,8 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
 import com.blockstream.common.gdk.data.AssetBalance
-import com.blockstream.common.models.send.SendChooseAssetViewModelAbstract
-import com.blockstream.common.models.send.SendChooseAssetViewModelPreview
+import com.blockstream.compose.models.send.SendChooseAssetViewModelAbstract
+import com.blockstream.compose.models.send.SendChooseAssetViewModelPreview
 import com.blockstream.compose.GreenPreview
 import com.blockstream.compose.components.GreenAsset
 import com.blockstream.compose.utils.SetupScreen

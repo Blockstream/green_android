@@ -30,8 +30,8 @@ import blockstream_green.common.generated.resources.id_select_initialize_and_cho
 import blockstream_green.common.generated.resources.id_step_1s
 import blockstream_green.common.generated.resources.id_use_the_jogwheel_to_select_the
 import blockstream_green.common.generated.resources.id_verify_recovery_phrase
-import com.blockstream.common.events.Events
-import com.blockstream.common.models.devices.JadeGuideViewModelAbstract
+import com.blockstream.compose.events.Events
+import com.blockstream.compose.models.devices.JadeGuideViewModelAbstract
 import com.blockstream.compose.components.GreenButton
 import com.blockstream.compose.components.GreenButtonColor
 import com.blockstream.compose.components.GreenButtonSize

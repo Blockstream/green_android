@@ -21,14 +21,14 @@ import blockstream_green.common.generated.resources.Res
 import blockstream_green.common.generated.resources.id_continue
 import blockstream_green.common.generated.resources.id_passphrase
 import blockstream_green.common.generated.resources.id_please_enter_the_passphrase_for
-import com.blockstream.common.models.GreenViewModel
-import com.blockstream.common.navigation.NavigateDestinations
 import com.blockstream.compose.components.GreenBottomSheet
 import com.blockstream.compose.components.GreenButton
+import com.blockstream.compose.components.GreenColumn
+import com.blockstream.compose.models.GreenViewModel
+import com.blockstream.compose.navigation.NavigateDestinations
+import com.blockstream.compose.navigation.setResult
 import com.blockstream.compose.utils.HandleSideEffect
 import com.blockstream.compose.utils.TextInputPassword
-import com.blockstream.compose.components.GreenColumn
-import com.blockstream.compose.navigation.setResult
 import org.jetbrains.compose.resources.stringResource
 
 @OptIn(ExperimentalMaterial3Api::class)

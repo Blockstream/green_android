@@ -4,7 +4,7 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.tooling.preview.Preview
 import com.blockstream.common.gdk.data.UtxoView
 import com.blockstream.common.looks.transaction.TransactionConfirmLook
-import com.blockstream.common.models.SimpleGreenViewModelPreview
+import com.blockstream.compose.models.SimpleGreenViewModelPreview
 import com.blockstream.common.utils.StringHolder
 import com.blockstream.compose.GreenAndroidPreview
 

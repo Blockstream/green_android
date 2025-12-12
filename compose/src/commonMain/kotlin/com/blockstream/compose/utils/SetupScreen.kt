@@ -6,11 +6,11 @@ import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import com.blockstream.common.models.GreenViewModel
+import com.blockstream.compose.models.GreenViewModel
 import com.blockstream.compose.components.OnProgressStyle
 import com.blockstream.compose.components.ScreenContainer
 import com.blockstream.compose.navigation.AppBarState
-import com.blockstream.ui.sideeffects.SideEffect
+import com.blockstream.compose.sideeffects.SideEffect
 import kotlinx.coroutines.CoroutineScope
 
 @Composable

@@ -1,3 +1,5 @@
+@file:OptIn(ExperimentalUuidApi::class)
+
 package com.blockstream.compose.di
 
 import com.blockstream.common.ZendeskSdk
@@ -5,21 +7,27 @@ import com.blockstream.common.crypto.GreenKeystore
 import com.blockstream.common.crypto.NoKeystore
 import com.blockstream.common.data.AppConfig
 import com.blockstream.common.data.GreenWallet
-import com.blockstream.common.di.initKoin
 import com.blockstream.common.fcm.FcmCommon
 import com.blockstream.common.fcm.Firebase
 import com.blockstream.common.interfaces.DeviceConnectionInterface
 import com.blockstream.common.lightning.BreezNotification
 import com.blockstream.common.managers.DeviceManager
-import com.blockstream.common.managers.DeviceManager.Companion.JADE
 import com.blockstream.common.managers.NotificationManager
 import com.blockstream.compose.managers.DeviceConnectionManager
 import com.blockstream.green.data.config.AppInfo
+import com.blockstream.green.data.notifications.models.BoltzNotificationSimple
 import com.blockstream.green.data.notifications.models.MeldNotificationData
+import com.blockstream.jade.connection.JadeBleConnection
 import kotlinx.cinterop.ExperimentalForeignApi
 import org.koin.dsl.binds
 import org.koin.dsl.module
-import platform.Foundation.*
+import platform.Foundation.NSApplicationSupportDirectory
+import platform.Foundation.NSBundle
+import platform.Foundation.NSCachesDirectory
+import platform.Foundation.NSFileManager
+import platform.Foundation.NSURL
+import platform.Foundation.NSUserDomainMask
+import kotlin.uuid.ExperimentalUuidApi
 
 @OptIn(ExperimentalForeignApi::class)
 fun startKoin(doOnStartup: () -> Unit = {}) {
@@ -75,7 +83,7 @@ fun startKoin(doOnStartup: () -> Unit = {}) {
                     get(),
                     get(),
                     get(),
-                    listOf(JADE)
+                    listOf(JadeBleConnection.JADE_SERVICE)
                 )
             }
             single {
@@ -97,6 +105,18 @@ fun startKoin(doOnStartup: () -> Unit = {}) {
                         walletId: String,
                         breezNotification: BreezNotification
                     ) {
+
+                    }
+
+                    override fun scheduleBoltzBackgroundJob(boltzNotificationData: BoltzNotificationSimple) {
+
+                    }
+
+                    override suspend fun showSwapReceiveNotification(wallet: GreenWallet) {
+
+                    }
+
+                    override suspend fun showSwapSendNotification(wallet: GreenWallet) {
 
                     }
 

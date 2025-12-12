@@ -33,8 +33,8 @@ import blockstream_green.common.generated.resources.id_please_be_as_detailed_as_
 import blockstream_green.common.generated.resources.id_share_logs
 import blockstream_green.common.generated.resources.id_submit
 import com.blockstream.common.SupportType
-import com.blockstream.common.events.Events
-import com.blockstream.common.models.support.SupportViewModelAbstract
+import com.blockstream.compose.events.Events
+import com.blockstream.compose.models.support.SupportViewModelAbstract
 import com.blockstream.compose.components.GreenButton
 import com.blockstream.compose.components.GreenButtonSize
 import com.blockstream.compose.extensions.onValueChange

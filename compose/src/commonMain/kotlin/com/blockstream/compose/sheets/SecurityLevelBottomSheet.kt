@@ -44,8 +44,8 @@ import com.adamglin.phosphoricons.regular.Lightning
 import com.adamglin.phosphoricons.regular.Lock
 import com.adamglin.phosphoricons.regular.ShieldCheck
 import com.adamglin.phosphoricons.regular.ShieldChevron
-import com.blockstream.common.models.onboarding.SetupNewWalletViewModel
-import com.blockstream.common.models.onboarding.SetupNewWalletViewModelAbstract
+import com.blockstream.compose.models.onboarding.SetupNewWalletViewModel
+import com.blockstream.compose.models.onboarding.SetupNewWalletViewModelAbstract
 import com.blockstream.compose.components.GreenBottomSheet
 import com.blockstream.compose.components.GreenButton
 import com.blockstream.compose.components.GreenButtonSize

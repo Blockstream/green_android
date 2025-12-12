@@ -86,26 +86,9 @@ import com.blockstream.common.data.LogoutReason
 import com.blockstream.common.data.SupportData
 import com.blockstream.common.data.TwoFactorMethod
 import com.blockstream.common.data.TwoFactorSetupAction
-import com.blockstream.common.data.WalletSetting
-import com.blockstream.common.events.Events.Logout
 import com.blockstream.common.gdk.data.AccountAssetBalance
 import com.blockstream.common.gdk.data.AccountAssetBalanceList
 import com.blockstream.common.gdk.data.AccountType
-import com.blockstream.common.models.settings.DenominationExchangeRateViewModel
-import com.blockstream.common.models.settings.WalletSettingsSection
-import com.blockstream.common.models.settings.WalletSettingsViewModel
-import com.blockstream.common.models.settings.WalletSettingsViewModel.LocalEvents
-import com.blockstream.common.models.settings.WalletSettingsViewModel.LocalEvents.SetCsvTime
-import com.blockstream.common.models.settings.WalletSettingsViewModel.LocalEvents.Toggle2FA
-import com.blockstream.common.models.settings.WalletSettingsViewModel.LocalSideEffects
-import com.blockstream.common.models.settings.WalletSettingsViewModelAbstract
-import com.blockstream.common.navigation.NavigateDestinations
-import com.blockstream.common.navigation.NavigateDestinations.ArchivedAccounts
-import com.blockstream.common.navigation.NavigateDestinations.JadeGenuineCheck
-import com.blockstream.common.navigation.NavigateDestinations.RenameWallet
-import com.blockstream.common.navigation.NavigateDestinations.Support
-import com.blockstream.common.navigation.NavigateDestinations.WalletSettings
-import com.blockstream.common.sideeffects.SideEffects
 import com.blockstream.common.utils.StringHolder
 import com.blockstream.common.utils.getBitcoinOrLiquidUnit
 import com.blockstream.compose.LocalBiometricState
@@ -115,14 +98,34 @@ import com.blockstream.compose.components.GreenButton
 import com.blockstream.compose.components.GreenButtonColor
 import com.blockstream.compose.components.GreenButtonSize
 import com.blockstream.compose.components.GreenButtonType
+import com.blockstream.compose.components.GreenColumn
+import com.blockstream.compose.components.GreenRow
 import com.blockstream.compose.components.LearnMoreButton
 import com.blockstream.compose.components.OnProgressStyle
+import com.blockstream.compose.data.WalletSetting
 import com.blockstream.compose.dialogs.DenominationExchangeDialog
 import com.blockstream.compose.dialogs.SingleChoiceDialog
 import com.blockstream.compose.dialogs.TextDialog
+import com.blockstream.compose.events.Events.Logout
 import com.blockstream.compose.extensions.colorText
+import com.blockstream.compose.models.settings.DenominationExchangeRateViewModel
+import com.blockstream.compose.models.settings.WalletSettingsSection
+import com.blockstream.compose.models.settings.WalletSettingsViewModel.LocalEvents
+import com.blockstream.compose.models.settings.WalletSettingsViewModel.LocalEvents.SetCsvTime
+import com.blockstream.compose.models.settings.WalletSettingsViewModel.LocalEvents.Toggle2FA
+import com.blockstream.compose.models.settings.WalletSettingsViewModel.LocalSideEffects
+import com.blockstream.compose.models.settings.WalletSettingsViewModelAbstract
+import com.blockstream.compose.navigation.LocalInnerPadding
+import com.blockstream.compose.navigation.NavigateDestinations
+import com.blockstream.compose.navigation.NavigateDestinations.ArchivedAccounts
+import com.blockstream.compose.navigation.NavigateDestinations.JadeGenuineCheck
+import com.blockstream.compose.navigation.NavigateDestinations.RenameWallet
+import com.blockstream.compose.navigation.NavigateDestinations.Support
+import com.blockstream.compose.navigation.NavigateDestinations.WalletSettings
+import com.blockstream.compose.navigation.getResult
 import com.blockstream.compose.screens.jade.JadeQRResult
 import com.blockstream.compose.sideeffects.OpenDialogData
+import com.blockstream.compose.sideeffects.SideEffects
 import com.blockstream.compose.theme.bodyLarge
 import com.blockstream.compose.theme.bodyMedium
 import com.blockstream.compose.theme.green
@@ -131,10 +134,6 @@ import com.blockstream.compose.theme.titleSmall
 import com.blockstream.compose.theme.whiteLow
 import com.blockstream.compose.theme.whiteMedium
 import com.blockstream.compose.utils.SetupScreen
-import com.blockstream.compose.components.GreenColumn
-import com.blockstream.compose.components.GreenRow
-import com.blockstream.compose.navigation.LocalInnerPadding
-import com.blockstream.compose.navigation.getResult
 import com.blockstream.compose.utils.appTestTag
 import com.blockstream.compose.utils.bottom
 import com.blockstream.compose.utils.ifTrue
@@ -155,7 +154,7 @@ fun WalletSettingsScreen(
     var showPgpDialog by remember { mutableStateOf<String?>(null) }
     var showAutologoutTimeoutDialog by remember { mutableStateOf<Int?>(null) }
     var showThresholdDialog by remember { mutableStateOf<String?>(null) }
-    var showTwoFactorChangeDialog by remember { mutableStateOf<WalletSettingsViewModel.LocalSideEffects.Disable2FA?>(null) }
+    var showTwoFactorChangeDialog by remember { mutableStateOf<LocalSideEffects.Disable2FA?>(null) }
     val onProgress by viewModel.onProgress.collectAsStateWithLifecycle()
 
     val biometricsState = LocalBiometricState.current
@@ -175,7 +174,7 @@ fun WalletSettingsScreen(
             showPgpDialog = null
 
             if (key != null) {
-                viewModel.postEvent(WalletSettingsViewModel.LocalEvents.SetPgp(key))
+                viewModel.postEvent(LocalEvents.SetPgp(key))
             }
         }
     }
@@ -194,7 +193,7 @@ fun WalletSettingsScreen(
             showThresholdDialog = null
 
             if (value != null) {
-                viewModel.postEvent(WalletSettingsViewModel.LocalEvents.SetTwoFactorThreshold(value))
+                viewModel.postEvent(LocalEvents.SetTwoFactorThreshold(value))
             }
         }
     }
@@ -225,7 +224,7 @@ fun WalletSettingsScreen(
                 if (position != null) {
                     disable2fa.availableMethods.getOrNull(position)?.also {
                         viewModel.postEvent(
-                            WalletSettingsViewModel.LocalEvents.Disable2FA(
+                            LocalEvents.Disable2FA(
                                 method = disable2fa.method,
                                 authenticateMethod = it
                             )
@@ -253,7 +252,7 @@ fun WalletSettingsScreen(
             showAutologoutTimeoutDialog = null
 
             if (position != null) {
-                viewModel.postEvent(WalletSettingsViewModel.LocalEvents.SetAutologoutTimeout(values[position]))
+                viewModel.postEvent(LocalEvents.SetAutologoutTimeout(values[position]))
             }
         }
     }
@@ -305,7 +304,7 @@ fun WalletSettingsScreen(
                                 secondaryText = getString(Res.string.id_archived_accounts),
                                 onSecondary = {
                                     viewModel.postEvent(
-                                        NavigateDestinations.ArchivedAccounts(
+                                        ArchivedAccounts(
                                             greenWallet = viewModel.greenWallet,
                                             navigateToRoot = true
                                         )

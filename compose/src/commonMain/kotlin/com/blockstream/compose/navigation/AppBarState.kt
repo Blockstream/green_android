@@ -12,8 +12,6 @@ import androidx.compose.ui.ExperimentalComposeUiApi
 import androidx.compose.ui.backhandler.BackHandler
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.navigation.compose.currentBackStackEntryAsState
-import com.blockstream.ui.navigation.INavData
-import com.blockstream.ui.navigation.NavData
 
 @Stable
 class NavDataState(navData: NavData = NavData()) {

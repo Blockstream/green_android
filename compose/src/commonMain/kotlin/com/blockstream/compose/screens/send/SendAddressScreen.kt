@@ -14,19 +14,19 @@ import blockstream_green.common.generated.resources.id_next
 import blockstream_green.common.generated.resources.id_recipient_address
 import com.blockstream.common.AddressInputType
 import com.blockstream.common.data.ScanResult
-import com.blockstream.common.events.Events
-import com.blockstream.common.models.send.CreateTransactionViewModelAbstract
-import com.blockstream.common.models.send.SendAddressViewModelAbstract
-import com.blockstream.common.models.send.SendAddressViewModelPreview
-import com.blockstream.common.navigation.NavigateDestinations
 import com.blockstream.compose.GreenPreview
 import com.blockstream.compose.components.Banner
 import com.blockstream.compose.components.GreenButton
 import com.blockstream.compose.components.GreenButtonSize
-import com.blockstream.compose.components.GreenTextField
-import com.blockstream.compose.utils.SetupScreen
 import com.blockstream.compose.components.GreenColumn
+import com.blockstream.compose.components.GreenTextField
+import com.blockstream.compose.events.Events
+import com.blockstream.compose.models.send.CreateTransactionViewModelAbstract
+import com.blockstream.compose.models.send.SendAddressViewModelAbstract
+import com.blockstream.compose.models.send.SendAddressViewModelPreview
+import com.blockstream.compose.navigation.NavigateDestinations
 import com.blockstream.compose.navigation.getResult
+import com.blockstream.compose.utils.SetupScreen
 import org.jetbrains.compose.resources.stringResource
 import org.jetbrains.compose.ui.tooling.preview.Preview
 

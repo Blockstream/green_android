@@ -20,8 +20,8 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import coil3.compose.AsyncImage
-import com.blockstream.common.events.Events
-import com.blockstream.common.models.promo.PromoViewModelAbstract
+import com.blockstream.compose.events.Events
+import com.blockstream.compose.models.promo.PromoViewModelAbstract
 import com.blockstream.compose.components.GreenButton
 import com.blockstream.compose.components.GreenButtonSize
 import com.blockstream.compose.components.VideoSurface

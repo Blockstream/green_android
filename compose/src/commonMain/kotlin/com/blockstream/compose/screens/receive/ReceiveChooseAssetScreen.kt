@@ -9,8 +9,8 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.blockstream.common.gdk.data.AssetBalance
-import com.blockstream.common.models.receive.ReceiveChooseAssetViewModelAbstract
-import com.blockstream.common.models.receive.ReceiveChooseAssetViewModelPreview
+import com.blockstream.compose.models.receive.ReceiveChooseAssetViewModelAbstract
+import com.blockstream.compose.models.receive.ReceiveChooseAssetViewModelPreview
 import com.blockstream.compose.GreenPreview
 import com.blockstream.compose.components.GreenAsset
 import com.blockstream.compose.screens.receive.components.LightningReadyBadge

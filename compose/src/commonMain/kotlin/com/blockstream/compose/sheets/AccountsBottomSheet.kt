@@ -16,15 +16,15 @@ import blockstream_green.common.generated.resources.Res
 import blockstream_green.common.generated.resources.id_account_selector
 import blockstream_green.common.generated.resources.id_no_available_accounts
 import com.blockstream.common.gdk.data.AccountAssetBalanceList
-import com.blockstream.common.models.GreenViewModel
-import com.blockstream.common.navigation.NavigateDestinations
 import com.blockstream.compose.components.GreenAccountAsset
 import com.blockstream.compose.components.GreenBottomSheet
+import com.blockstream.compose.components.GreenColumn
+import com.blockstream.compose.models.GreenViewModel
+import com.blockstream.compose.navigation.NavigateDestinations
+import com.blockstream.compose.navigation.setResult
 import com.blockstream.compose.theme.bodyMedium
 import com.blockstream.compose.theme.bodySmall
 import com.blockstream.compose.theme.whiteLow
-import com.blockstream.compose.components.GreenColumn
-import com.blockstream.compose.navigation.setResult
 import org.jetbrains.compose.resources.stringResource
 
 @OptIn(ExperimentalMaterial3Api::class)

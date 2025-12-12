@@ -9,13 +9,13 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import com.blockstream.common.extensions.isBlank
-import com.blockstream.common.models.GreenViewModel
-import com.blockstream.common.navigation.NavigateDestinations
 import com.blockstream.compose.components.CountriesList
 import com.blockstream.compose.components.CountryItem
 import com.blockstream.compose.components.GreenBottomSheet
-import com.blockstream.green.data.countries.Countries
+import com.blockstream.compose.models.GreenViewModel
+import com.blockstream.compose.navigation.NavigateDestinations
 import com.blockstream.compose.navigation.setResult
+import com.blockstream.green.data.countries.Countries
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable

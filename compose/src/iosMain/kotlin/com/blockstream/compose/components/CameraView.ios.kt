@@ -16,8 +16,8 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.interop.UIKitView
-import com.blockstream.common.events.Events
-import com.blockstream.common.models.abstract.AbstractScannerViewModel
+import com.blockstream.compose.events.Events
+import com.blockstream.compose.models.abstract.AbstractScannerViewModel
 import kotlinx.cinterop.BetaInteropApi
 import kotlinx.cinterop.CValue
 import kotlinx.cinterop.ExperimentalForeignApi

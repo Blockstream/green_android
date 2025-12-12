@@ -23,9 +23,9 @@ import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import blockstream_green.common.generated.resources.Res
 import blockstream_green.common.generated.resources.id_account_name
 import blockstream_green.common.generated.resources.id_save
-import com.blockstream.common.events.Events
+import com.blockstream.compose.events.Events
 import com.blockstream.common.extensions.isNotBlank
-import com.blockstream.common.models.GreenViewModel
+import com.blockstream.compose.models.GreenViewModel
 import com.blockstream.compose.components.GreenBottomSheet
 import com.blockstream.compose.components.GreenButton
 import com.blockstream.compose.utils.OpenKeyboard

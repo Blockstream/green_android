@@ -28,9 +28,9 @@ import androidx.fragment.app.FragmentActivity
 import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.compose.LocalLifecycleOwner
 import co.touchlab.kermit.Logger
-import com.blockstream.common.events.Events
-import com.blockstream.common.models.abstract.AbstractScannerViewModel
-import com.blockstream.common.models.camera.CameraViewModelPreview
+import com.blockstream.compose.events.Events
+import com.blockstream.compose.models.abstract.AbstractScannerViewModel
+import com.blockstream.compose.models.camera.CameraViewModelPreview
 import com.blockstream.compose.GreenAndroidPreview
 import com.blockstream.compose.LocalActivity
 import com.blockstream.compose.R

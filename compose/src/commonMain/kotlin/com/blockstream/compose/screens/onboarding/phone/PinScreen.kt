@@ -21,8 +21,8 @@ import blockstream_green.common.generated.resources.id_set_a_pin
 import blockstream_green.common.generated.resources.id_verify_your_pin
 import blockstream_green.common.generated.resources.id_youll_need_your_pin_to_log_in
 import com.blockstream.common.extensions.isNotBlank
-import com.blockstream.common.models.onboarding.phone.PinViewModel
-import com.blockstream.common.models.onboarding.phone.PinViewModelAbstract
+import com.blockstream.compose.models.onboarding.phone.PinViewModel
+import com.blockstream.compose.models.onboarding.phone.PinViewModelAbstract
 import com.blockstream.compose.LocalSnackbar
 import com.blockstream.compose.components.GreenButton
 import com.blockstream.compose.components.GreenButtonSize

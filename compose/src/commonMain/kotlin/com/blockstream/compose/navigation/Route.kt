@@ -1,12 +1,12 @@
 package com.blockstream.compose.navigation
 
+
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.runtime.ProvidableCompositionLocal
 import androidx.compose.runtime.compositionLocalOf
 import androidx.compose.runtime.staticCompositionLocalOf
 import androidx.navigation.NavBackStackEntry
 import androidx.navigation.NavHostController
-import com.blockstream.ui.navigation.Route
 import kotlinx.serialization.Serializable
 import kotlin.uuid.ExperimentalUuidApi
 import kotlin.uuid.Uuid
@@ -20,6 +20,12 @@ val LocalNavBackStackEntry: ProvidableCompositionLocal<NavBackStackEntry?> =
 val LocalInnerPadding: ProvidableCompositionLocal<PaddingValues> =
     compositionLocalOf { PaddingValues() }
 
+interface Route {
+    val uniqueId: String
+    val unique: Boolean
+    val makeItRoot: Boolean
+    val isBottomNavigation: Boolean
+}
 
 @Serializable
 data class Dialog @OptIn(ExperimentalUuidApi::class) constructor(
@@ -33,4 +39,3 @@ data class Dialog @OptIn(ExperimentalUuidApi::class) constructor(
     override val makeItRoot: Boolean = false
     override val isBottomNavigation: Boolean = false
 }
-

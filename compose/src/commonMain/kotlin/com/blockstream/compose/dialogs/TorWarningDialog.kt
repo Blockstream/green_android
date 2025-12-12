@@ -13,7 +13,7 @@ import blockstream_green.common.generated.resources.id_warning
 import com.adamglin.PhosphorIcons
 import com.adamglin.phosphoricons.Regular
 import com.adamglin.phosphoricons.regular.Warning
-import com.blockstream.common.models.MainViewModel
+import com.blockstream.compose.models.MainViewModel
 import org.jetbrains.compose.resources.stringResource
 
 @Composable

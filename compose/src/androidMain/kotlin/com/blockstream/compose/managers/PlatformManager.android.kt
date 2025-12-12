@@ -44,14 +44,14 @@ import blockstream_green.common.generated.resources.Res
 import blockstream_green.common.generated.resources.id_share
 import com.arkivanov.essenty.statekeeper.StateKeeper
 import com.arkivanov.essenty.statekeeper.stateKeeper
-import com.blockstream.common.events.Events
 import com.blockstream.common.extensions.logException
 import com.blockstream.common.extensions.tryCatchNull
 import com.blockstream.common.managers.BluetoothManager
 import com.blockstream.common.managers.BluetoothManager.Companion.BLE_PERMISSIONS
-import com.blockstream.common.models.GreenViewModel
-import com.blockstream.common.sideeffects.OpenBrowserType
 import com.blockstream.compose.LocalActivity
+import com.blockstream.compose.events.Events
+import com.blockstream.compose.models.GreenViewModel
+import com.blockstream.compose.sideeffects.OpenBrowserType
 import com.blockstream.green.data.config.AppInfo
 import com.google.accompanist.permissions.ExperimentalPermissionsApi
 import com.google.accompanist.permissions.isGranted

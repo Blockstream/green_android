@@ -2,7 +2,7 @@ package com.blockstream.common.models.about
 
 import app.cash.turbine.test
 import com.blockstream.common.models.TestViewModel
-import com.blockstream.common.sideeffects.SideEffects
+import com.blockstream.compose.sideeffects.SideEffects
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.test.runTest
 import kotlinx.datetime.TimeZone

@@ -33,9 +33,9 @@ import blockstream_green.common.generated.resources.x
 import coil3.compose.AsyncImagePainter
 import coil3.compose.rememberAsyncImagePainter
 import com.blockstream.common.data.Promo
-import com.blockstream.common.events.Events
+import com.blockstream.compose.events.Events
 import com.blockstream.common.extensions.isNotBlank
-import com.blockstream.common.models.GreenViewModel
+import com.blockstream.compose.models.GreenViewModel
 import com.blockstream.compose.theme.bodyLarge
 import com.blockstream.compose.theme.bodyMedium
 import com.blockstream.compose.theme.headlineSmall

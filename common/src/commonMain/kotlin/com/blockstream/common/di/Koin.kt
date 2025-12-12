@@ -4,7 +4,6 @@ import co.touchlab.kermit.Logger
 import co.touchlab.kermit.Severity
 import co.touchlab.kermit.chunked
 import co.touchlab.kermit.platformLogWriter
-import com.blockstream.common.btcpricehistory.btcPriceHistoryModule
 import com.blockstream.common.data.AppConfig
 import com.blockstream.common.database.Database
 import com.blockstream.common.gdk.Gdk
@@ -20,14 +19,10 @@ import com.blockstream.common.managers.PromoManager
 import com.blockstream.common.managers.SessionManager
 import com.blockstream.common.managers.SettingsManager
 import com.blockstream.common.managers.WalletSettingsManager
-import com.blockstream.green.data.config.AppInfo
 import kotlinx.coroutines.MainScope
 import okio.internal.commonToUtf8String
-import org.koin.core.KoinApplication
-import org.koin.core.context.startKoin
 import org.koin.core.module.Module
 import org.koin.core.module.dsl.singleOf
-import org.koin.core.parameter.parametersOf
 import org.koin.dsl.module
 import kotlin.io.encoding.Base64
 
@@ -35,40 +30,10 @@ typealias ApplicationScope = kotlinx.coroutines.CoroutineScope
 
 expect val platformModule: Module
 
-fun initKoin(appInfo: AppInfo, appConfig: AppConfig, doOnStartup: () -> Unit = {}, vararg appModules: Module): KoinApplication {
-    val koinApplication = startKoin {
-        modules(
-            module {
-                single {
-                    appInfo
-                }
-                single {
-                    doOnStartup
-                }
-            }
-        )
-        modules(commonModule)
-        modules(*appModules)
-        modules(platformModule)
-        modules(commonModules(appConfig))
-        modules(btcPriceHistoryModule)
-    }
 
-    // Dummy initialization logic, making use of appModule declarations for demonstration purposes.
-    val koin = koinApplication.koin
-    // doOnStartup is a lambda which is implemented in Swift on iOS side
-    val doOnStartup = koin.get<() -> Unit>()
-    doOnStartup.invoke()
-
-    val logger = koin.get<Logger> { parametersOf(null) }
-    val appInfo = koin.get<AppInfo>()
-    logger.v { "Green: version: ${appInfo.version}" }
-
-    return koinApplication
-}
 
 @OptIn(ExperimentalUnsignedTypes::class)
-private fun commonModules(appConfig: AppConfig): List<Module> {
+fun commonModules(appConfig: AppConfig): List<Module> {
     return listOf(module {
         single {
             appConfig
@@ -135,7 +100,7 @@ private fun commonModules(appConfig: AppConfig): List<Module> {
         Logger.setLogWriters(platformLogWriter().chunked())
 
         factory { (tag: String?) -> if (tag != null) Logger.withTag(tag) else Logger }
-    }, factoryViewModels)
+    })
 }
 
 

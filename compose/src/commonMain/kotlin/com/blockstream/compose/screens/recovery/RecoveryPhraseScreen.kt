@@ -33,8 +33,8 @@ import blockstream_green.common.generated.resources.id_the_qr_code_does_not_incl
 import blockstream_green.common.generated.resources.id_the_recovery_phrase_can_be_used
 import blockstream_green.common.generated.resources.id_use_this_recovery_phrase_to
 import com.blockstream.common.extensions.isNotBlank
-import com.blockstream.common.models.recovery.RecoveryPhraseViewModel
-import com.blockstream.common.models.recovery.RecoveryPhraseViewModelAbstract
+import com.blockstream.compose.models.recovery.RecoveryPhraseViewModel
+import com.blockstream.compose.models.recovery.RecoveryPhraseViewModelAbstract
 import com.blockstream.compose.components.GreenQR
 import com.blockstream.compose.components.LearnMoreButton
 import com.blockstream.compose.theme.green

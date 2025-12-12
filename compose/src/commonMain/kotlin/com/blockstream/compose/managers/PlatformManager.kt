@@ -4,8 +4,8 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.ProvidableCompositionLocal
 import androidx.compose.runtime.staticCompositionLocalOf
 import com.arkivanov.essenty.statekeeper.StateKeeper
-import com.blockstream.common.models.GreenViewModel
-import com.blockstream.common.sideeffects.OpenBrowserType
+import com.blockstream.compose.models.GreenViewModel
+import com.blockstream.compose.sideeffects.OpenBrowserType
 import io.github.vinceglb.filekit.PlatformFile
 import kotlinx.coroutines.CoroutineScope
 import okio.Source

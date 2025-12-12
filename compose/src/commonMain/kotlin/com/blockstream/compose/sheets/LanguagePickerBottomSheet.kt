@@ -19,8 +19,8 @@ import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import blockstream_green.common.generated.resources.Res
 import blockstream_green.common.generated.resources.id_language
 import blockstream_green.common.generated.resources.id_system_default
-import com.blockstream.common.models.settings.AppSettingsViewModel
-import com.blockstream.common.models.settings.AppSettingsViewModelAbstract
+import com.blockstream.compose.models.settings.AppSettingsViewModel
+import com.blockstream.compose.models.settings.AppSettingsViewModelAbstract
 import com.blockstream.compose.components.GreenBottomSheet
 import com.blockstream.compose.components.GreenRow
 import com.blockstream.compose.utils.appTestTag

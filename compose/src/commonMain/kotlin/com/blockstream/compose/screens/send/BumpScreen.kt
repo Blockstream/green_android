@@ -37,17 +37,19 @@ import blockstream_green.common.generated.resources.id_set_custom_fee_rate
 import blockstream_green.common.generated.resources.id_total
 import com.blockstream.common.data.FeePriority
 import com.blockstream.common.data.GreenWallet
-import com.blockstream.common.models.send.BumpViewModelAbstract
-import com.blockstream.common.models.send.CreateTransactionViewModelAbstract
-import com.blockstream.common.navigation.NavigateDestinations
 import com.blockstream.common.utils.DecimalFormat
 import com.blockstream.common.utils.stringResourceFromId
 import com.blockstream.compose.components.GreenAccountAsset
 import com.blockstream.compose.components.GreenAddress
+import com.blockstream.compose.components.GreenColumn
 import com.blockstream.compose.components.GreenConfirmButton
 import com.blockstream.compose.components.GreenDataLayout
 import com.blockstream.compose.components.GreenNetworkFee
 import com.blockstream.compose.dialogs.TextDialog
+import com.blockstream.compose.models.send.BumpViewModelAbstract
+import com.blockstream.compose.models.send.CreateTransactionViewModelAbstract
+import com.blockstream.compose.navigation.NavigateDestinations
+import com.blockstream.compose.navigation.getResult
 import com.blockstream.compose.screens.jade.JadeQRResult
 import com.blockstream.compose.theme.bodyLarge
 import com.blockstream.compose.theme.bodyMedium
@@ -62,8 +64,6 @@ import com.blockstream.compose.theme.whiteHigh
 import com.blockstream.compose.theme.whiteMedium
 import com.blockstream.compose.utils.AnimatedNullableVisibility
 import com.blockstream.compose.utils.SetupScreen
-import com.blockstream.compose.components.GreenColumn
-import com.blockstream.compose.navigation.getResult
 import org.jetbrains.compose.resources.stringResource
 
 @Composable

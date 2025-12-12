@@ -11,8 +11,8 @@ import blockstream_green.common.generated.resources.id_learn_more
 import com.adamglin.PhosphorIcons
 import com.adamglin.phosphoricons.Regular
 import com.adamglin.phosphoricons.regular.Warning
-import com.blockstream.common.events.Events
-import com.blockstream.common.models.GreenViewModel
+import com.blockstream.compose.events.Events
+import com.blockstream.compose.models.GreenViewModel
 import com.blockstream.compose.utils.AnimatedNullableVisibility
 import com.blockstream.green.data.banner.Banner
 import org.jetbrains.compose.resources.stringResource

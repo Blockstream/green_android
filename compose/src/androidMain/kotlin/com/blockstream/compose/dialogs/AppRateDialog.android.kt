@@ -32,9 +32,9 @@ import blockstream_green.common.generated.resources.id_you_have_successfully_sen
 import blockstream_green.common.generated.resources.x
 import com.blockstream.base.GooglePlay
 import com.blockstream.common.Urls
-import com.blockstream.common.events.Events
-import com.blockstream.common.models.GreenViewModel
-import com.blockstream.common.models.SimpleGreenViewModelPreview
+import com.blockstream.compose.events.Events
+import com.blockstream.compose.models.GreenViewModel
+import com.blockstream.compose.models.SimpleGreenViewModelPreview
 import com.blockstream.compose.GreenPreview
 import com.blockstream.compose.LocalActivity
 import com.blockstream.compose.R

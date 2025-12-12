@@ -39,21 +39,23 @@ import blockstream_green.common.generated.resources.id_set_custom_fee_rate
 import blockstream_green.common.generated.resources.id_to
 import com.blockstream.common.data.DenominatedValue
 import com.blockstream.common.data.FeePriority
-import com.blockstream.common.events.Events
 import com.blockstream.common.gdk.data.AccountAssetBalance
-import com.blockstream.common.models.exchange.AccountExchangeViewModel
-import com.blockstream.common.models.exchange.AccountExchangeViewModelAbstract
-import com.blockstream.common.models.send.CreateTransactionViewModelAbstract
-import com.blockstream.common.navigation.NavigateDestinations
 import com.blockstream.common.utils.DecimalFormat
 import com.blockstream.common.utils.stringResourceFromId
 import com.blockstream.common.utils.stringResourceFromIdOrNull
 import com.blockstream.compose.components.GreenAccountAsset
 import com.blockstream.compose.components.GreenAmountField
 import com.blockstream.compose.components.GreenButton
+import com.blockstream.compose.components.GreenColumn
 import com.blockstream.compose.components.GreenDataLayout
 import com.blockstream.compose.components.GreenNetworkFee
 import com.blockstream.compose.dialogs.TextDialog
+import com.blockstream.compose.events.Events
+import com.blockstream.compose.models.exchange.AccountExchangeViewModel
+import com.blockstream.compose.models.exchange.AccountExchangeViewModelAbstract
+import com.blockstream.compose.models.send.CreateTransactionViewModelAbstract
+import com.blockstream.compose.navigation.NavigateDestinations
+import com.blockstream.compose.navigation.getResult
 import com.blockstream.compose.theme.bodyLarge
 import com.blockstream.compose.theme.green
 import com.blockstream.compose.theme.md_theme_onError
@@ -61,8 +63,6 @@ import com.blockstream.compose.theme.md_theme_onErrorContainer
 import com.blockstream.compose.theme.titleLarge
 import com.blockstream.compose.utils.AnimatedNullableVisibility
 import com.blockstream.compose.utils.HandleSideEffect
-import com.blockstream.compose.components.GreenColumn
-import com.blockstream.compose.navigation.getResult
 import org.jetbrains.compose.resources.painterResource
 import org.jetbrains.compose.resources.stringResource
 

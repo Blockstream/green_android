@@ -24,17 +24,17 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.navigation.get
 import com.blockstream.common.extensions.isNotBlank
-import com.blockstream.common.models.GreenViewModel
-import com.blockstream.common.sideeffects.SideEffects
+import com.blockstream.compose.models.GreenViewModel
+import com.blockstream.compose.navigation.LocalNavigator
+import com.blockstream.compose.navigation.bottomsheet.BottomSheetNavigator
+import com.blockstream.compose.sideeffects.SideEffect
+import com.blockstream.compose.sideeffects.SideEffects
 import com.blockstream.compose.theme.bodyLarge
 import com.blockstream.compose.theme.titleMedium
 import com.blockstream.compose.theme.whiteHigh
 import com.blockstream.compose.theme.whiteMedium
 import com.blockstream.compose.utils.HandleSideEffect
 import com.blockstream.compose.utils.compatTestTagsAsResourceId
-import com.blockstream.compose.navigation.LocalNavigator
-import com.blockstream.compose.navigation.bottomsheet.BottomSheetNavigator
-import com.blockstream.ui.sideeffects.SideEffect
 import com.blockstream.compose.utils.ifTrue
 import kotlinx.coroutines.CoroutineScope
 

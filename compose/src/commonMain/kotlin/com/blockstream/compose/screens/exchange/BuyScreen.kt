@@ -21,11 +21,7 @@ import com.adamglin.phosphoricons.Regular
 import com.adamglin.phosphoricons.regular.ArrowSquareOut
 import com.blockstream.common.data.AlertType
 import com.blockstream.common.data.DenominatedValue
-import com.blockstream.common.events.Events
 import com.blockstream.common.gdk.data.AccountAssetBalance
-import com.blockstream.common.models.exchange.BuyViewModelAbstract
-import com.blockstream.common.navigation.NavigateDestinations
-import com.blockstream.common.sideeffects.SideEffects
 import com.blockstream.compose.components.GreenAccountSelector
 import com.blockstream.compose.components.GreenAlert
 import com.blockstream.compose.components.GreenAmountField
@@ -33,19 +29,23 @@ import com.blockstream.compose.components.GreenButton
 import com.blockstream.compose.components.GreenButtonColor
 import com.blockstream.compose.components.GreenButtonSize
 import com.blockstream.compose.components.GreenButtonType
+import com.blockstream.compose.components.GreenColumn
+import com.blockstream.compose.components.GreenRow
 import com.blockstream.compose.components.MeldProvider
 import com.blockstream.compose.components.OnProgressStyle
+import com.blockstream.compose.events.Events
 import com.blockstream.compose.extensions.onValueChange
+import com.blockstream.compose.models.exchange.BuyViewModelAbstract
+import com.blockstream.compose.navigation.LocalNavigator
+import com.blockstream.compose.navigation.NavigateDestinations
+import com.blockstream.compose.navigation.bottomsheet.BottomSheetNavigator
+import com.blockstream.compose.navigation.getResult
+import com.blockstream.compose.sideeffects.SideEffects
 import com.blockstream.compose.theme.green20
 import com.blockstream.compose.utils.OpenKeyboard
 import com.blockstream.compose.utils.SetupScreen
 import com.blockstream.green.data.meld.data.QuoteResponse
 import com.blockstream.green.data.meld.models.Country
-import com.blockstream.compose.components.GreenColumn
-import com.blockstream.compose.components.GreenRow
-import com.blockstream.compose.navigation.LocalNavigator
-import com.blockstream.compose.navigation.bottomsheet.BottomSheetNavigator
-import com.blockstream.compose.navigation.getResult
 import org.jetbrains.compose.resources.stringResource
 
 @Composable

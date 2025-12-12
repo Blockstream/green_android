@@ -1,3 +1,5 @@
+@file:OptIn(ExperimentalUuidApi::class)
+
 package com.blockstream.compose.di
 
 import com.blockstream.common.CountlyBase
@@ -6,15 +8,16 @@ import com.blockstream.common.crypto.GreenKeystore
 import com.blockstream.common.crypto.NoKeystore
 import com.blockstream.common.data.AppConfig
 import com.blockstream.common.data.GreenWallet
-import com.blockstream.common.di.initKoin
 import com.blockstream.common.fcm.FcmCommon
 import com.blockstream.common.fcm.Firebase
 import com.blockstream.common.lightning.BreezNotification
 import com.blockstream.common.managers.BluetoothManager
 import com.blockstream.common.managers.DeviceManager
 import com.blockstream.green.data.config.AppInfo
+import com.blockstream.green.data.notifications.models.BoltzNotificationSimple
 import com.blockstream.green.data.notifications.models.MeldNotificationData
 import org.koin.dsl.module
+import kotlin.uuid.ExperimentalUuidApi
 
 fun initKoinDesktop(appConfig: AppConfig, appInfo: AppInfo, doOnStartup: () -> Unit = {}) {
 
@@ -118,6 +121,18 @@ fun initKoinDesktop(appConfig: AppConfig, appInfo: AppInfo, doOnStartup: () -> U
                         breezNotification: BreezNotification
                     ) {
 
+                    }
+
+                    override fun scheduleBoltzBackgroundJob(boltzNotificationData: BoltzNotificationSimple) {
+
+                    }
+
+                    override suspend fun showSwapReceiveNotification(wallet: GreenWallet) {
+
+                    }
+
+                    override suspend fun showSwapSendNotification(wallet: GreenWallet) {
+                        
                     }
 
                     override suspend fun showLightningPaymentNotification(

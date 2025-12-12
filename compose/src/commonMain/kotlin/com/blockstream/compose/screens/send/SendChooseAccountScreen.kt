@@ -6,8 +6,8 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Modifier
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
-import com.blockstream.common.models.send.SendChooseAccountViewModelAbstract
-import com.blockstream.common.models.send.SendChooseAccountViewModelPreview
+import com.blockstream.compose.models.send.SendChooseAccountViewModelAbstract
+import com.blockstream.compose.models.send.SendChooseAccountViewModelPreview
 import com.blockstream.compose.GreenPreview
 import com.blockstream.compose.components.GreenAccountAsset
 import com.blockstream.compose.utils.SetupScreen

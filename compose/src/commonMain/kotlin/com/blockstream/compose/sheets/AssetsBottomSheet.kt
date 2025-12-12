@@ -22,14 +22,14 @@ import blockstream_green.common.generated.resources.Res
 import blockstream_green.common.generated.resources.id_empty
 import com.blockstream.common.extensions.isBlank
 import com.blockstream.common.gdk.data.AssetBalanceList
-import com.blockstream.common.models.GreenViewModel
-import com.blockstream.common.navigation.NavigateDestinations
 import com.blockstream.compose.components.GreenAsset
 import com.blockstream.compose.components.GreenBottomSheet
-import com.blockstream.compose.components.GreenSearchField
-import com.blockstream.compose.theme.bodyMedium
 import com.blockstream.compose.components.GreenColumn
+import com.blockstream.compose.components.GreenSearchField
+import com.blockstream.compose.models.GreenViewModel
+import com.blockstream.compose.navigation.NavigateDestinations
 import com.blockstream.compose.navigation.setResult
+import com.blockstream.compose.theme.bodyMedium
 import org.jetbrains.compose.resources.stringResource
 
 @OptIn(ExperimentalMaterial3Api::class)

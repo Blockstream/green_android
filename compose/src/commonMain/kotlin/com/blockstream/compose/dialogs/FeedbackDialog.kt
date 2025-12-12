@@ -27,9 +27,9 @@ import blockstream_green.common.generated.resources.id_give_us_your_feedback
 import blockstream_green.common.generated.resources.id_optional
 import blockstream_green.common.generated.resources.id_rate_your_experience
 import blockstream_green.common.generated.resources.id_send
-import com.blockstream.common.models.about.AboutViewModel
-import com.blockstream.common.models.about.AboutViewModelAbstract
-import com.blockstream.common.models.about.AboutViewModelPreview
+import com.blockstream.compose.models.about.AboutViewModel
+import com.blockstream.compose.models.about.AboutViewModelAbstract
+import com.blockstream.compose.models.about.AboutViewModelPreview
 import com.blockstream.compose.components.GreenButton
 import com.blockstream.compose.components.GreenButtonType
 import com.blockstream.compose.components.GreenCard
