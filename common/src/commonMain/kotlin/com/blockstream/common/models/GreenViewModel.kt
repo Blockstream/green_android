@@ -2,7 +2,15 @@
 
 package com.blockstream.common.models
 
-import blockstream_green.common.generated.resources.*
+import blockstream_green.common.generated.resources.Res
+import blockstream_green.common.generated.resources.id_account_has_been_archived
+import blockstream_green.common.generated.resources.id_auto_logout_timeout_expired
+import blockstream_green.common.generated.resources.id_could_not_recognized_qr_code
+import blockstream_green.common.generated.resources.id_could_not_recognized_the_uri
+import blockstream_green.common.generated.resources.id_swap_is_in_progress
+import blockstream_green.common.generated.resources.id_unstable_internet_connection
+import blockstream_green.common.generated.resources.id_you_dont_have_a_lightning
+import blockstream_green.common.generated.resources.id_your_device_was_disconnected
 import breez_sdk.InputType
 import com.blockstream.common.AddressInputType
 import com.blockstream.common.CountlyBase
@@ -10,7 +18,20 @@ import com.blockstream.common.ViewModelView
 import com.blockstream.common.ZendeskSdk
 import com.blockstream.common.crypto.GreenKeystore
 import com.blockstream.common.crypto.PlatformCipher
-import com.blockstream.common.data.*
+import com.blockstream.common.data.CredentialType
+import com.blockstream.common.data.DenominatedValue
+import com.blockstream.common.data.Denomination
+import com.blockstream.common.data.DeviceIdentifier
+import com.blockstream.common.data.EncryptedData
+import com.blockstream.common.data.GreenWallet
+import com.blockstream.common.data.LogoutReason
+import com.blockstream.common.data.MultipleWatchOnlyCredentials
+import com.blockstream.common.data.Promo
+import com.blockstream.common.data.Redact
+import com.blockstream.common.data.SupportData
+import com.blockstream.common.data.TwoFactorResolverData
+import com.blockstream.common.data.WatchOnlyCredentials
+import com.blockstream.common.data.toSerializable
 import com.blockstream.common.database.Database
 import com.blockstream.common.database.wallet.LoginCredentials
 import com.blockstream.common.devices.ConnectionType
@@ -37,7 +58,12 @@ import com.blockstream.common.gdk.data.Network
 import com.blockstream.common.gdk.device.DeviceResolver
 import com.blockstream.common.gdk.device.GdkHardwareWallet
 import com.blockstream.common.gdk.device.HardwareWalletInteraction
-import com.blockstream.common.managers.*
+import com.blockstream.common.managers.BluetoothManager
+import com.blockstream.common.managers.NotificationManager
+import com.blockstream.common.managers.PromoManager
+import com.blockstream.common.managers.SessionManager
+import com.blockstream.common.managers.SettingsManager
+import com.blockstream.common.managers.WalletSettingsManager
 import com.blockstream.common.navigation.NavigateDestination
 import com.blockstream.common.navigation.NavigateDestinations
 import com.blockstream.common.sideeffects.SideEffects
@@ -60,13 +86,27 @@ import com.rickclephas.kmp.nativecoroutines.NativeCoroutines
 import com.rickclephas.kmp.nativecoroutines.NativeCoroutinesState
 import com.rickclephas.kmp.observableviewmodel.MutableStateFlow
 import com.rickclephas.kmp.observableviewmodel.coroutineScope
-import kotlinx.coroutines.*
-import kotlinx.coroutines.flow.*
+import kotlinx.coroutines.CompletableDeferred
+import kotlinx.coroutines.Deferred
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.Job
+import kotlinx.coroutines.flow.Flow
+import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.flow.StateFlow
+import kotlinx.coroutines.flow.asStateFlow
+import kotlinx.coroutines.flow.combine
+import kotlinx.coroutines.flow.drop
+import kotlinx.coroutines.flow.flowOf
+import kotlinx.coroutines.flow.onEach
+import kotlinx.coroutines.isActive
+import kotlinx.coroutines.launch
+import kotlinx.coroutines.runBlocking
 import kotlinx.coroutines.sync.Mutex
 import kotlinx.coroutines.sync.withLock
+import kotlinx.coroutines.withContext
+import kotlinx.coroutines.withTimeout
 import org.koin.core.component.KoinComponent
 import org.koin.core.component.inject
-import kotlin.text.isBlank
 import kotlin.time.Duration
 import kotlin.time.Duration.Companion.minutes
 import kotlin.uuid.ExperimentalUuidApi
@@ -265,7 +305,12 @@ open class GreenViewModel constructor(
         }?.launchIn(this)
 
         _event.onEach {
-            handleEvent(it)
+            try {
+                handleEvent(it)
+            } catch (e: Exception) {
+                e.printStackTrace()
+                countly.recordException(e)
+            }
         }.launchIn(this)
 
         countly.viewModel(this)
