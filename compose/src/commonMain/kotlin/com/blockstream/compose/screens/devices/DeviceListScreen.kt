@@ -51,8 +51,8 @@ import blockstream_green.common.generated.resources.id_step_1s
 import blockstream_green.common.generated.resources.id_troubleshoot
 import blockstream_green.common.generated.resources.ledger_trezor
 import blockstream_green.common.generated.resources.usb
-import com.blockstream.common.devices.GreenDevice
-import com.blockstream.common.managers.BluetoothState
+import com.blockstream.data.devices.GreenDevice
+import com.blockstream.data.managers.BluetoothState
 import com.blockstream.compose.components.GreenButton
 import com.blockstream.compose.components.GreenButtonColor
 import com.blockstream.compose.components.GreenButtonSize

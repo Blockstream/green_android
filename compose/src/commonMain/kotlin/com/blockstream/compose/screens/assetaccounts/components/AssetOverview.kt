@@ -13,8 +13,8 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-import com.blockstream.common.data.EnrichedAsset
-import com.blockstream.common.gdk.GdkSession
+import com.blockstream.data.data.EnrichedAsset
+import com.blockstream.data.gdk.GdkSession
 import com.blockstream.compose.extensions.assetIcon
 import com.blockstream.compose.theme.bodyMedium
 import com.blockstream.compose.theme.headlineMedium

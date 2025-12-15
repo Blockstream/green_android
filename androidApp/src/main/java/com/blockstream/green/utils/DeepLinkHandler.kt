@@ -4,6 +4,7 @@ import android.net.Uri
 import com.blockstream.compose.events.Events
 import com.blockstream.compose.models.MainViewModel
 import com.blockstream.compose.sideeffects.SideEffects
+import com.blockstream.utils.Loggable
 
 object DeepLinkHandler : Loggable() {
 

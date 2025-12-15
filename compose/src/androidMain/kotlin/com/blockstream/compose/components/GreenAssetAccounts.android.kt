@@ -6,8 +6,8 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.tooling.preview.Preview
-import com.blockstream.common.extensions.previewAccount
-import com.blockstream.common.extensions.previewEnrichedAsset
+import com.blockstream.compose.extensions.previewAccount
+import com.blockstream.compose.extensions.previewEnrichedAsset
 import com.blockstream.compose.theme.GreenChromePreview
 
 @Preview

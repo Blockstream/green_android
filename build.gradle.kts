@@ -40,3 +40,12 @@ allprojects {
         maven("https://central.sonatype.com/repository/maven-snapshots/") // LWK Snapshots
     }
 }
+
+task("useBlockstreamKeys") {
+    doLast {
+        println("AppKeys: Use Blockstream Keys")
+        rootProject.file("contrib/blockstream_keys.txt").copyTo(
+            rootProject.file("app_keys.txt"), overwrite = true
+        )
+    }
+}

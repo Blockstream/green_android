@@ -13,7 +13,7 @@ import blockstream_green.common.generated.resources.id_account
 import com.adamglin.PhosphorIcons
 import com.adamglin.phosphoricons.Fill
 import com.adamglin.phosphoricons.fill.CaretDown
-import com.blockstream.common.gdk.data.Account
+import com.blockstream.data.gdk.data.Account
 import com.blockstream.compose.theme.bodyLarge
 import com.blockstream.compose.theme.whiteMedium
 import com.blockstream.compose.utils.noRippleClickable

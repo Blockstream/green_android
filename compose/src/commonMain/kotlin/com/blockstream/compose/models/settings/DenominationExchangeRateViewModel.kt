@@ -2,15 +2,15 @@ package com.blockstream.compose.models.settings
 
 import blockstream_green.common.generated.resources.Res
 import blockstream_green.common.generated.resources.id_s_from_s
-import com.blockstream.common.BTC_UNIT
-import com.blockstream.common.BitcoinUnits
-import com.blockstream.common.TestnetUnits
-import com.blockstream.common.data.GreenWallet
-import com.blockstream.common.extensions.ifConnected
-import com.blockstream.common.extensions.launchIn
-import com.blockstream.common.extensions.previewWallet
-import com.blockstream.common.gdk.data.Settings
+import com.blockstream.data.BTC_UNIT
+import com.blockstream.data.BitcoinUnits
+import com.blockstream.data.TestnetUnits
+import com.blockstream.data.data.GreenWallet
+import com.blockstream.data.extensions.ifConnected
+import com.blockstream.data.gdk.data.Settings
 import com.blockstream.compose.events.Event
+import com.blockstream.compose.extensions.launchIn
+import com.blockstream.compose.extensions.previewWallet
 import com.blockstream.compose.models.GreenViewModel
 import com.blockstream.compose.sideeffects.SideEffects
 import kotlinx.coroutines.flow.MutableStateFlow

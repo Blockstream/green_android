@@ -32,10 +32,10 @@ import blockstream_green.common.generated.resources.id_this_is_not_the_default_b
 import blockstream_green.common.generated.resources.id_warning
 import blockstream_green.common.generated.resources.warning
 import blockstream_green.common.generated.resources.x_bold
-import com.blockstream.common.SupportType
-import com.blockstream.common.data.SupportData
-import com.blockstream.common.devices.DeviceModel
-import com.blockstream.common.utils.hostname
+import com.blockstream.data.SupportType
+import com.blockstream.data.data.SupportData
+import com.blockstream.data.devices.DeviceModel
+import com.blockstream.data.utils.hostname
 import com.blockstream.compose.components.GreenButton
 import com.blockstream.compose.components.GreenButtonColor
 import com.blockstream.compose.components.GreenButtonSize

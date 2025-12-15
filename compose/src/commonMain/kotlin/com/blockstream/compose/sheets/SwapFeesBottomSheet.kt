@@ -26,7 +26,7 @@ import blockstream_green.common.generated.resources.id_network_fee_and_swap_fee
 import blockstream_green.common.generated.resources.id_read_more
 import blockstream_green.common.generated.resources.id_total
 import blockstream_green.common.generated.resources.id_total_fees
-import com.blockstream.common.Urls
+import com.blockstream.data.Urls
 import com.blockstream.compose.components.GreenBottomSheet
 import com.blockstream.compose.components.GreenColumn
 import com.blockstream.compose.managers.LocalPlatformManager

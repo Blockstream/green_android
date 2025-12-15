@@ -1,15 +1,15 @@
 package com.blockstream.compose.models.onboarding.watchonly
 
 import androidx.lifecycle.viewModelScope
-import com.blockstream.common.data.SetupArgs
-import com.blockstream.common.data.WatchOnlyCredentials
-import com.blockstream.common.extensions.launchIn
-import com.blockstream.common.gdk.data.AccountType
-import com.blockstream.common.gdk.data.Network
-import com.blockstream.common.utils.WatchOnlyCredentialType
-import com.blockstream.common.utils.WatchOnlyDetector
+import com.blockstream.data.data.SetupArgs
+import com.blockstream.data.data.WatchOnlyCredentials
+import com.blockstream.data.gdk.data.AccountType
+import com.blockstream.data.gdk.data.Network
+import com.blockstream.data.utils.WatchOnlyCredentialType
+import com.blockstream.data.utils.WatchOnlyDetector
 import com.blockstream.compose.events.Event
 import com.blockstream.compose.events.Events
+import com.blockstream.compose.extensions.launchIn
 import com.blockstream.compose.models.GreenViewModel
 import com.blockstream.compose.sideeffects.SideEffect
 import kotlinx.coroutines.flow.MutableStateFlow

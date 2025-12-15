@@ -2,11 +2,11 @@ package com.blockstream.compose.screens.addresses
 
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.tooling.preview.Preview
-import com.blockstream.common.looks.account.AddressLook
-import com.blockstream.compose.models.addresses.AddressesViewModelPreview
 import com.blockstream.compose.GreenAndroidPreview
-import com.blockstream.compose.theme.GreenChromePreview
 import com.blockstream.compose.components.GreenColumn
+import com.blockstream.compose.looks.account.AddressLook
+import com.blockstream.compose.models.addresses.AddressesViewModelPreview
+import com.blockstream.compose.theme.GreenChromePreview
 
 @Composable
 @Preview

@@ -2,9 +2,9 @@ package com.blockstream.compose.sheets
 
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.tooling.preview.Preview
-import com.blockstream.common.data.FeePriority
+import com.blockstream.data.data.FeePriority
 import com.blockstream.compose.models.send.FeeViewModelPreview
-import com.blockstream.common.utils.feeRateWithUnit
+import com.blockstream.data.utils.feeRateWithUnit
 import com.blockstream.compose.GreenAndroidPreview
 import com.blockstream.compose.theme.GreenChromePreview
 import com.blockstream.compose.components.GreenColumn

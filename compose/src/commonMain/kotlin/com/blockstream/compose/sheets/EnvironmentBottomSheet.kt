@@ -7,8 +7,8 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import blockstream_green.common.generated.resources.Res
 import blockstream_green.common.generated.resources.id_select_network
-import com.blockstream.common.data.MenuEntry
-import com.blockstream.common.data.MenuEntryList
+import com.blockstream.data.data.MenuEntry
+import com.blockstream.data.data.MenuEntryList
 import com.blockstream.compose.navigation.NavigateDestinations
 import com.blockstream.compose.navigation.setResult
 import org.jetbrains.compose.resources.stringResource

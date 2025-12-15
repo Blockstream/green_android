@@ -3,7 +3,7 @@ package com.blockstream.compose.sideeffects
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.Stable
 import androidx.compose.runtime.remember
-import com.blockstream.common.database.wallet.LoginCredentials
+import com.blockstream.data.database.wallet.LoginCredentials
 import com.blockstream.compose.models.GreenViewModel
 import com.blockstream.compose.models.login.LoginViewModelAbstract
 

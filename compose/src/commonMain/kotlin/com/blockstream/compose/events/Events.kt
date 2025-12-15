@@ -1,13 +1,13 @@
 package com.blockstream.compose.events
 
-import com.blockstream.common.crypto.PlatformCipher
-import com.blockstream.common.data.DenominatedValue
-import com.blockstream.common.data.GreenWallet
-import com.blockstream.common.data.LogoutReason
-import com.blockstream.common.data.PopTo
-import com.blockstream.common.gdk.data.Account
-import com.blockstream.common.gdk.data.AccountAsset
-import com.blockstream.common.gdk.data.Network
+import com.blockstream.data.crypto.PlatformCipher
+import com.blockstream.data.data.DenominatedValue
+import com.blockstream.data.data.GreenWallet
+import com.blockstream.data.data.LogoutReason
+import com.blockstream.data.data.PopTo
+import com.blockstream.data.gdk.data.Account
+import com.blockstream.data.gdk.data.AccountAsset
+import com.blockstream.data.gdk.data.Network
 import com.blockstream.compose.navigation.NavigateDestination
 import com.blockstream.compose.sideeffects.SideEffect
 import com.blockstream.compose.sideeffects.SideEffects
@@ -30,7 +30,7 @@ object Events {
     object DismissSystemMessage : Event
     object DismissWalletBackupAlert : Event
     object ReconnectFailedNetworks : Event
-    data class Transaction(val transaction: com.blockstream.common.gdk.data.Transaction) : Event
+    data class Transaction(val transaction: com.blockstream.data.gdk.data.Transaction) : Event
     data class ChooseAccountType(val isFirstAccount: Boolean = false, val popTo: PopTo? = null) : Event
     data class HandleUserInput(val data: String, val isQr: Boolean = false) : Event
     object Continue : Event

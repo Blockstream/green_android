@@ -20,7 +20,7 @@ import blockstream_green.common.generated.resources.id_qr_airgapped_mode
 import blockstream_green.common.generated.resources.id_qr_pin_unlock
 import blockstream_green.common.generated.resources.id_unlock_jade_to_continue
 import blockstream_green.common.generated.resources.id_unlock_your_jade_to_continue
-import com.blockstream.common.Urls
+import com.blockstream.data.Urls
 import com.blockstream.compose.components.GreenBottomSheet
 import com.blockstream.compose.components.GreenButton
 import com.blockstream.compose.components.GreenButtonColor

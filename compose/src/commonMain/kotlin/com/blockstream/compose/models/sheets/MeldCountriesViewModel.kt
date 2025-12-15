@@ -2,11 +2,10 @@ package com.blockstream.compose.models.sheets
 
 import androidx.compose.runtime.Immutable
 import androidx.lifecycle.viewModelScope
-import com.blockstream.common.data.GreenWallet
 import com.blockstream.compose.models.GreenViewModel
-import com.blockstream.green.data.meld.models.Country
-import com.blockstream.green.domain.base.Result
-import com.blockstream.green.domain.meld.GetMeldCountries
+import com.blockstream.data.data.GreenWallet
+import com.blockstream.domain.base.Result
+import com.blockstream.domain.meld.GetMeldCountries
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.StateFlow
@@ -43,7 +42,7 @@ private fun meldCountriesUiState(
 
 @Immutable
 sealed interface MeldCountriesState {
-    data class Success(val countries: List<Country>) : MeldCountriesState
+    data class Success(val countries: List<com.blockstream.data.meld.models.Country>) : MeldCountriesState
     data object Loading : MeldCountriesState
     data class Error(val error: String) : MeldCountriesState
 }

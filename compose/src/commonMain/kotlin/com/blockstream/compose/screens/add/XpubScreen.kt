@@ -17,7 +17,7 @@ import blockstream_green.common.generated.resources.id_continue
 import blockstream_green.common.generated.resources.id_enter_your_xpub
 import blockstream_green.common.generated.resources.id_use_an_xpub_for_which_you_own
 import blockstream_green.common.generated.resources.id_xpub
-import com.blockstream.common.data.ScanResult
+import com.blockstream.data.data.ScanResult
 import com.blockstream.compose.components.GreenButton
 import com.blockstream.compose.components.GreenColumn
 import com.blockstream.compose.components.GreenTextField

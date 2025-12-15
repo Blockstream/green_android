@@ -36,6 +36,8 @@ if (localPropertiesFile.exists()) {
     localProperties.load(FileInputStream(localPropertiesFile))
 }
 
+val appKeys = rootProject.file("app_keys.txt").takeIf { it.exists() }?.readText() ?: ""
+
 android {
     namespace = "com.blockstream.green"
     compileSdk = libs.versions.androidCompileSdk.get().toInt()
@@ -79,6 +81,7 @@ android {
             // Development PIN code from local.properties
             val devPinCode = localProperties.getProperty("DEV_PIN_CODE") ?: ""
             buildConfigField("String", "DEV_PIN_CODE", """"$devPinCode"""")
+            buildConfigField("String", "APP_KEYS", """"$appKeys"""")
         }
 
         create("productionGoogle") {
@@ -93,6 +96,7 @@ android {
 
             // No development PIN for production
             buildConfigField("String", "DEV_PIN_CODE", "null")
+            buildConfigField("String", "APP_KEYS", """"$appKeys"""")
 
             ndk {
                 abiFilters.addAll(listOf("armeabi-v7a", "arm64-v8a"))
@@ -112,6 +116,7 @@ android {
 
             // No development PIN for production
             buildConfigField("String", "DEV_PIN_CODE", "null")
+            buildConfigField("String", "APP_KEYS", """"$appKeys"""")
 
             ndk {
                 abiFilters.addAll(listOf("armeabi-v7a", "arm64-v8a"))

@@ -23,21 +23,21 @@ import blockstream_green.common.generated.resources.id_confirm_on_your_device
 import blockstream_green.common.generated.resources.id_fee
 import blockstream_green.common.generated.resources.id_sent_to
 import blockstream_green.common.generated.resources.id_to_show_balances_and
-import com.blockstream.common.Urls
-import com.blockstream.compose.events.Events
-import com.blockstream.common.looks.transaction.TransactionConfirmLook
-import com.blockstream.compose.models.SimpleGreenViewModel
-import com.blockstream.common.utils.StringHolder
+import com.blockstream.data.Urls
 import com.blockstream.compose.components.GreenAddress
 import com.blockstream.compose.components.GreenAmount
 import com.blockstream.compose.components.GreenBottomSheet
+import com.blockstream.compose.components.GreenColumn
 import com.blockstream.compose.components.LearnMoreButton
+import com.blockstream.compose.events.Events
 import com.blockstream.compose.extensions.actionIcon
 import com.blockstream.compose.extensions.icon
+import com.blockstream.compose.looks.transaction.TransactionConfirmLook
+import com.blockstream.compose.models.SimpleGreenViewModel
 import com.blockstream.compose.theme.bodyLarge
 import com.blockstream.compose.theme.titleSmall
 import com.blockstream.compose.theme.whiteMedium
-import com.blockstream.compose.components.GreenColumn
+import com.blockstream.compose.utils.StringHolder
 import org.jetbrains.compose.resources.painterResource
 import org.jetbrains.compose.resources.stringResource
 

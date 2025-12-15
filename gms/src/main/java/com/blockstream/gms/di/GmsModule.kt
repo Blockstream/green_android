@@ -4,9 +4,9 @@ package com.blockstream.gms.di
 
 import com.blockstream.base.GooglePlay
 import com.blockstream.base.InstallReferrer
-import com.blockstream.common.ZendeskSdk
-import com.blockstream.common.data.AppConfig
-import com.blockstream.common.fcm.Firebase
+import com.blockstream.data.ZendeskSdk
+import com.blockstream.data.data.AppConfig
+import com.blockstream.data.fcm.Firebase
 import com.blockstream.gms.FirebaseImpl
 import com.blockstream.gms.GooglePlayImpl
 import com.blockstream.gms.InstallReferrerImpl

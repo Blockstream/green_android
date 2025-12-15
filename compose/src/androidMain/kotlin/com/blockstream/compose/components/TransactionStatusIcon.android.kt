@@ -10,9 +10,9 @@ import blockstream_green.common.generated.resources.bitcoin_lightning_testnet
 import blockstream_green.common.generated.resources.bitcoin_testnet
 import blockstream_green.common.generated.resources.liquid
 import blockstream_green.common.generated.resources.liquid_testnet
-import com.blockstream.common.looks.transaction.Completed
-import com.blockstream.common.looks.transaction.Failed
-import com.blockstream.common.looks.transaction.Unconfirmed
+import com.blockstream.compose.looks.transaction.Completed
+import com.blockstream.compose.looks.transaction.Failed
+import com.blockstream.compose.looks.transaction.Unconfirmed
 import com.blockstream.compose.theme.GreenChromePreview
 import org.jetbrains.compose.resources.painterResource
 

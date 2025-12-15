@@ -31,7 +31,7 @@ import blockstream_green.common.generated.resources.id_congratulations
 import blockstream_green.common.generated.resources.id_you_have_successfully_sent_a
 import blockstream_green.common.generated.resources.x
 import com.blockstream.base.GooglePlay
-import com.blockstream.common.Urls
+import com.blockstream.data.Urls
 import com.blockstream.compose.events.Events
 import com.blockstream.compose.models.GreenViewModel
 import com.blockstream.compose.models.SimpleGreenViewModelPreview

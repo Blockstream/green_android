@@ -9,38 +9,37 @@ import androidx.navigation.NavDeepLink
 import androidx.navigation.NavGraphBuilder
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.dialog
-import com.blockstream.common.AddressInputType
-import com.blockstream.common.SupportType
-import com.blockstream.common.data.DenominatedValue
-import com.blockstream.common.data.Denomination
-import com.blockstream.common.data.EnrichedAsset
-import com.blockstream.common.data.EnrichedAssetList
-import com.blockstream.common.data.GreenWallet
-import com.blockstream.common.data.LnUrlAuthRequestDataSerializable
-import com.blockstream.common.data.LnUrlWithdrawRequestSerializable
-import com.blockstream.common.data.MenuEntryList
-import com.blockstream.common.data.PopTo
-import com.blockstream.common.data.Promo
-import com.blockstream.common.data.SetupArgs
-import com.blockstream.common.data.SupportData
-import com.blockstream.common.data.TwoFactorMethod
-import com.blockstream.common.data.TwoFactorSetupAction
-import com.blockstream.common.devices.DeviceModel
-import com.blockstream.common.gdk.data.Account
-import com.blockstream.common.gdk.data.AccountAsset
-import com.blockstream.common.gdk.data.AccountAssetBalanceList
-import com.blockstream.common.gdk.data.AccountAssetList
-import com.blockstream.common.gdk.data.AssetBalance
-import com.blockstream.common.gdk.data.AssetBalanceList
-import com.blockstream.common.gdk.data.Network
-import com.blockstream.common.gdk.data.Transaction
-import com.blockstream.common.gdk.data.TwoFactorReset
-import com.blockstream.common.looks.transaction.TransactionConfirmLook
+import com.blockstream.compose.looks.transaction.TransactionConfirmLook
 import com.blockstream.compose.models.jade.JadeQrOperation
 import com.blockstream.compose.models.settings.WalletSettingsSection
 import com.blockstream.compose.models.sheets.NoteType
 import com.blockstream.compose.navigation.bottomsheet.bottomSheet
-import com.blockstream.green.data.meld.data.QuotesResponse
+import com.blockstream.data.AddressInputType
+import com.blockstream.data.SupportType
+import com.blockstream.data.data.DenominatedValue
+import com.blockstream.data.data.Denomination
+import com.blockstream.data.data.EnrichedAsset
+import com.blockstream.data.data.EnrichedAssetList
+import com.blockstream.data.data.GreenWallet
+import com.blockstream.data.data.LnUrlAuthRequestDataSerializable
+import com.blockstream.data.data.LnUrlWithdrawRequestSerializable
+import com.blockstream.data.data.MenuEntryList
+import com.blockstream.data.data.PopTo
+import com.blockstream.data.data.Promo
+import com.blockstream.data.data.SetupArgs
+import com.blockstream.data.data.SupportData
+import com.blockstream.data.data.TwoFactorMethod
+import com.blockstream.data.data.TwoFactorSetupAction
+import com.blockstream.data.devices.DeviceModel
+import com.blockstream.data.gdk.data.Account
+import com.blockstream.data.gdk.data.AccountAsset
+import com.blockstream.data.gdk.data.AccountAssetBalanceList
+import com.blockstream.data.gdk.data.AccountAssetList
+import com.blockstream.data.gdk.data.AssetBalance
+import com.blockstream.data.gdk.data.AssetBalanceList
+import com.blockstream.data.gdk.data.Network
+import com.blockstream.data.gdk.data.Transaction
+import com.blockstream.data.gdk.data.TwoFactorReset
 import kotlin.io.encoding.ExperimentalEncodingApi
 import kotlin.reflect.typeOf
 
@@ -80,7 +79,7 @@ val AppTypeMap = mapOf(
     typeOf<AccountAssetBalanceList>() to CustomNavType.create<AccountAssetBalanceList>(),
     typeOf<AssetBalanceList>() to CustomNavType.create<AssetBalanceList>(),
     typeOf<MenuEntryList>() to CustomNavType.create<MenuEntryList>(),
-    typeOf<QuotesResponse>() to CustomNavType.create<QuotesResponse>(),
+    typeOf<com.blockstream.data.meld.data.QuotesResponse>() to CustomNavType.create<com.blockstream.data.meld.data.QuotesResponse>(),
     typeOf<EnrichedAsset>() to CustomNavType.create<EnrichedAsset>(),
     typeOf<EnrichedAssetList>() to CustomNavType.create<EnrichedAssetList>(),
     typeOf<AccountAssetList>() to CustomNavType.create<AccountAssetList>()

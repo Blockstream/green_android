@@ -21,14 +21,13 @@ import com.blockstream.compose.navigation.NavigateDestinations
 import com.blockstream.compose.navigation.setResult
 import com.blockstream.compose.utils.ifTrue
 import com.blockstream.compose.utils.plus
-import com.blockstream.green.data.meld.data.QuoteResponse
 import org.jetbrains.compose.resources.stringResource
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun BuyQuotesBottomSheet(
     viewModel: GreenViewModel,
-    quotes: List<QuoteResponse>,
+    quotes: List<com.blockstream.data.meld.data.QuoteResponse>,
     selectedServiceProvider: String? = null,
     onDismissRequest: () -> Unit,
 ) {

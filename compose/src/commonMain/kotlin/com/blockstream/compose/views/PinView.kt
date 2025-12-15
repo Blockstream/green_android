@@ -37,8 +37,7 @@ import blockstream_green.common.generated.resources.arrows_counter_clockwise
 import blockstream_green.common.generated.resources.backspace
 import blockstream_green.common.generated.resources.clipboard
 import blockstream_green.common.generated.resources.id_invalid_clipboard_contents
-import com.blockstream.common.extensions.isDigitsOnly
-import com.blockstream.common.utils.stringResourceFromId
+import com.blockstream.data.extensions.isDigitsOnly
 import com.blockstream.compose.managers.LocalPlatformManager
 import com.blockstream.compose.theme.MonospaceFont
 import com.blockstream.compose.theme.displaySmall
@@ -52,6 +51,7 @@ import com.blockstream.compose.theme.whiteLow
 import com.blockstream.compose.utils.AnimatedNullableVisibility
 import com.blockstream.compose.utils.appTestTag
 import com.blockstream.compose.utils.ifTrue
+import com.blockstream.compose.utils.stringResourceFromId
 import kotlinx.coroutines.launch
 import org.jetbrains.compose.resources.getString
 import org.jetbrains.compose.resources.painterResource

@@ -17,7 +17,7 @@ import blockstream_green.common.generated.resources.id_not_vulnerable_to_brutefo
 import blockstream_green.common.generated.resources.id_qr_pin_unlock
 import blockstream_green.common.generated.resources.id_set_your_pin_via_qr
 import blockstream_green.common.generated.resources.id_start_scan_qr_on_jade_and
-import com.blockstream.common.devices.DeviceModel
+import com.blockstream.data.devices.DeviceModel
 import com.blockstream.compose.components.GreenButton
 import com.blockstream.compose.components.GreenButtonSize
 import com.blockstream.compose.components.GreenColumn

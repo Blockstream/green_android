@@ -65,11 +65,9 @@ import blockstream_green.common.generated.resources.id_your_transaction_failed_s
 import blockstream_green.common.generated.resources.id_your_transaction_was
 import blockstream_green.common.generated.resources.magnifying_glass
 import blockstream_green.common.generated.resources.pencil_simple_line
-import com.blockstream.common.data.MenuEntry
-import com.blockstream.common.data.MenuEntryList
-import com.blockstream.common.gdk.data.Transaction
-import com.blockstream.common.looks.transaction.Failed
-import com.blockstream.common.looks.transaction.Unconfirmed
+import com.blockstream.data.data.MenuEntry
+import com.blockstream.data.data.MenuEntryList
+import com.blockstream.data.gdk.data.Transaction
 import com.blockstream.compose.components.GreenAddress
 import com.blockstream.compose.components.GreenAmounts
 import com.blockstream.compose.components.GreenColumn
@@ -80,6 +78,8 @@ import com.blockstream.compose.extensions.assetIcon
 import com.blockstream.compose.extensions.color
 import com.blockstream.compose.extensions.icon
 import com.blockstream.compose.extensions.title
+import com.blockstream.compose.looks.transaction.Failed
+import com.blockstream.compose.looks.transaction.Unconfirmed
 import com.blockstream.compose.models.sheets.NoteType
 import com.blockstream.compose.models.transaction.TransactionViewModel
 import com.blockstream.compose.models.transaction.TransactionViewModelAbstract

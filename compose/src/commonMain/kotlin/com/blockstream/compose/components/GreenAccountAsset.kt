@@ -1,8 +1,18 @@
 package com.blockstream.compose.components
 
 import androidx.compose.foundation.Image
-import androidx.compose.foundation.layout.*
-import androidx.compose.material3.*
+import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.size
+import androidx.compose.material3.Checkbox
+import androidx.compose.material3.Icon
+import androidx.compose.material3.IconButton
+import androidx.compose.material3.Text
+import androidx.compose.material3.minimumInteractiveComponentSize
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -17,14 +27,22 @@ import blockstream_green.common.generated.resources.pencil_simple_line
 import com.adamglin.PhosphorIcons
 import com.adamglin.phosphoricons.Regular
 import com.adamglin.phosphoricons.regular.CaretRight
-import com.blockstream.common.extensions.previewAccountAsset
-import com.blockstream.common.gdk.GdkSession
-import com.blockstream.common.gdk.data.AccountAssetBalance
-import com.blockstream.common.utils.StringHolder
+import com.blockstream.compose.extensions.previewAccountAsset
+import com.blockstream.data.gdk.GdkSession
+import com.blockstream.data.gdk.data.AccountAssetBalance
 import com.blockstream.compose.GreenPreview
 import com.blockstream.compose.extensions.assetIcon
+import com.blockstream.compose.extensions.nameStringHolder
 import com.blockstream.compose.extensions.policyIcon
-import com.blockstream.compose.theme.*
+import com.blockstream.compose.theme.bodyMedium
+import com.blockstream.compose.theme.labelLarge
+import com.blockstream.compose.theme.labelMedium
+import com.blockstream.compose.theme.md_theme_errorContainer
+import com.blockstream.compose.theme.titleSmall
+import com.blockstream.compose.theme.whiteHigh
+import com.blockstream.compose.theme.whiteLow
+import com.blockstream.compose.theme.whiteMedium
+import com.blockstream.compose.utils.StringHolder
 import com.blockstream.compose.utils.ifTrue
 import org.jetbrains.compose.resources.painterResource
 import org.jetbrains.compose.resources.stringResource
@@ -125,7 +143,7 @@ fun GreenAccountAsset(
                                     it.padding(vertical = 16.dp)
                                 }) {
                             val primary =
-                                if (withAsset) accountAssetBalance.asset.name(session) else StringHolder.create(accountAssetBalance.account.name)
+                                if (withAsset) accountAssetBalance.asset.nameStringHolder(session) else StringHolder.create(accountAssetBalance.account.name)
                             val secondary = if (withAsset) accountAssetBalance.account.name else null
 
                             // Asset or Account

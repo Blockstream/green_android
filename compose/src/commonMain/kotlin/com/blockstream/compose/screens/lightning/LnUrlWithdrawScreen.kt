@@ -14,7 +14,7 @@ import blockstream_green.common.generated.resources.Res
 import blockstream_green.common.generated.resources.id_amount_to_receive
 import blockstream_green.common.generated.resources.id_description
 import blockstream_green.common.generated.resources.id_redeem
-import com.blockstream.common.data.DenominatedValue
+import com.blockstream.data.data.DenominatedValue
 import com.blockstream.compose.components.GreenAmountField
 import com.blockstream.compose.components.GreenButton
 import com.blockstream.compose.components.GreenColumn

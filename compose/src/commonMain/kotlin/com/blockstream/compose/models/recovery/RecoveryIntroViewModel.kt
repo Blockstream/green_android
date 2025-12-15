@@ -5,8 +5,8 @@ import blockstream_green.common.generated.resources.Res
 import blockstream_green.common.generated.resources.id_before_you_back_up
 import com.arkivanov.essenty.statekeeper.StateKeeper
 import com.arkivanov.essenty.statekeeper.StateKeeperDispatcher
-import com.blockstream.common.data.SetupArgs
-import com.blockstream.common.gdk.Gdk
+import com.blockstream.data.data.SetupArgs
+import com.blockstream.data.gdk.Gdk
 import com.blockstream.compose.events.Event
 import com.blockstream.compose.events.Events
 import com.blockstream.compose.models.GreenViewModel

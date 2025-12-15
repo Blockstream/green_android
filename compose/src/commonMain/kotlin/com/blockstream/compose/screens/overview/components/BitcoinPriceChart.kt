@@ -43,10 +43,10 @@ import com.adamglin.PhosphorIcons
 import com.adamglin.phosphoricons.Regular
 import com.adamglin.phosphoricons.regular.TrendDown
 import com.adamglin.phosphoricons.regular.TrendUp
-import com.blockstream.common.btcpricehistory.model.BitcoinChartData
-import com.blockstream.common.btcpricehistory.model.BitcoinChartPeriod
-import com.blockstream.common.data.DataState
-import com.blockstream.common.utils.DecimalFormat
+import com.blockstream.data.btcpricehistory.model.BitcoinChartData
+import com.blockstream.data.btcpricehistory.model.BitcoinChartPeriod
+import com.blockstream.data.data.DataState
+import com.blockstream.data.utils.DecimalFormat
 import com.blockstream.compose.components.GreenButton
 import com.blockstream.compose.components.GreenButtonSize
 import com.blockstream.compose.theme.bodyMedium

@@ -1,10 +1,10 @@
 package com.blockstream.compose.models.camera
 
-import com.blockstream.common.data.ScanResult
-import com.blockstream.common.data.SetupArgs
+import com.blockstream.data.data.ScanResult
+import com.blockstream.data.data.SetupArgs
 import com.blockstream.compose.models.abstract.AbstractScannerViewModel
 import com.blockstream.compose.sideeffects.SideEffects
-import com.blockstream.green.utils.Loggable
+import com.blockstream.utils.Loggable
 
 abstract class CameraViewModelAbstract(
     isDecodeContinuous: Boolean = false,

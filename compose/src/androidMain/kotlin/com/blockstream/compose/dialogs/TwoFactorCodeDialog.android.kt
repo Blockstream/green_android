@@ -2,7 +2,7 @@ package com.blockstream.compose.dialogs
 
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.tooling.preview.Preview
-import com.blockstream.common.gdk.data.AuthHandlerStatus
+import com.blockstream.data.gdk.data.AuthHandlerStatus
 import com.blockstream.compose.theme.GreenChromePreview
 
 @Composable

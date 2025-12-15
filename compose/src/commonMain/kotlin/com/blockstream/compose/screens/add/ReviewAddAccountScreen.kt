@@ -21,7 +21,7 @@ import blockstream_green.common.generated.resources.id_recovery_key_type
 import blockstream_green.common.generated.resources.id_recovery_phrase
 import blockstream_green.common.generated.resources.id_review_account_information
 import blockstream_green.common.generated.resources.id_xpub
-import com.blockstream.common.extensions.isNotBlank
+import com.blockstream.data.extensions.isNotBlank
 import com.blockstream.compose.components.GreenButton
 import com.blockstream.compose.components.GreenColumn
 import com.blockstream.compose.components.ScreenContainer

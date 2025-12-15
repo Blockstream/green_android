@@ -1,13 +1,14 @@
 package com.blockstream.compose.di
 
 import co.touchlab.kermit.Logger
-import com.blockstream.common.btcpricehistory.btcPriceHistoryModule
-import com.blockstream.common.data.AppConfig
-import com.blockstream.common.di.commonModule
-import com.blockstream.common.di.commonModules
-import com.blockstream.common.di.platformModule
 import com.blockstream.compose.navigation.NavigateToWallet
-import com.blockstream.green.data.config.AppInfo
+import com.blockstream.data.btcpricehistory.btcPriceHistoryModule
+import com.blockstream.data.config.AppInfo
+import com.blockstream.data.data.AppConfig
+import com.blockstream.data.di.commonModule
+import com.blockstream.data.di.commonModules
+import com.blockstream.data.di.platformModule
+import com.blockstream.domain.domainModule
 import org.koin.core.KoinApplication
 import org.koin.core.context.startKoin
 import org.koin.core.module.Module
@@ -29,6 +30,7 @@ fun initKoin(appInfo: AppInfo, appConfig: AppConfig, doOnStartup: () -> Unit = {
             }
         )
         modules(*appModules)
+        modules(domainModule)
         modules(commonModules(appConfig))
         modules(commonModule)
         modules(platformModule)

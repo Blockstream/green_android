@@ -35,8 +35,8 @@ import blockstream_green.common.generated.resources.id_latest_transactions
 import blockstream_green.common.generated.resources.id_learn_more_about_amp_the_assets
 import blockstream_green.common.generated.resources.id_your_transactions_will_be_shown
 import blockstream_green.common.generated.resources.shield_warning
-import com.blockstream.common.Urls
-import com.blockstream.common.data.ScanResult
+import com.blockstream.data.Urls
+import com.blockstream.data.data.ScanResult
 import com.blockstream.compose.components.GreenAccountCard
 import com.blockstream.compose.components.GreenAlert
 import com.blockstream.compose.components.GreenAsset

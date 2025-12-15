@@ -17,7 +17,7 @@ import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import blockstream_green.common.generated.resources.Res
 import blockstream_green.common.generated.resources.check_circle
 import blockstream_green.common.generated.resources.id_enter_amount_in
-import com.blockstream.common.data.DenominatedValue
+import com.blockstream.data.data.DenominatedValue
 import com.blockstream.compose.components.GreenBottomSheet
 import com.blockstream.compose.components.GreenRow
 import com.blockstream.compose.models.send.DenominationViewModelAbstract

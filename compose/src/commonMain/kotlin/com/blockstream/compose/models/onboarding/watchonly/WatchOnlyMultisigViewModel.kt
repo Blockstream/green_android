@@ -1,8 +1,8 @@
 package com.blockstream.compose.models.onboarding.watchonly
 
 import androidx.lifecycle.viewModelScope
-import com.blockstream.common.data.SetupArgs
-import com.blockstream.common.data.WatchOnlyCredentials
+import com.blockstream.data.data.SetupArgs
+import com.blockstream.data.data.WatchOnlyCredentials
 import com.blockstream.compose.events.Event
 import com.blockstream.compose.events.Events
 import com.blockstream.compose.models.GreenViewModel

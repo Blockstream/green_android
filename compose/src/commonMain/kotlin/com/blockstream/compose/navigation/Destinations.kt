@@ -1,34 +1,33 @@
 package com.blockstream.compose.navigation
 
-import com.blockstream.common.AddressInputType
-import com.blockstream.common.SupportType
-import com.blockstream.common.data.DenominatedValue
-import com.blockstream.common.data.EnrichedAsset
-import com.blockstream.common.data.EnrichedAssetList
-import com.blockstream.common.data.GreenWallet
-import com.blockstream.common.data.LnUrlAuthRequestDataSerializable
-import com.blockstream.common.data.LnUrlWithdrawRequestSerializable
-import com.blockstream.common.data.MenuEntryList
-import com.blockstream.common.data.PopTo
-import com.blockstream.common.data.SetupArgs
-import com.blockstream.common.data.SupportData
-import com.blockstream.common.data.TwoFactorMethod
-import com.blockstream.common.data.TwoFactorSetupAction
-import com.blockstream.common.devices.DeviceModel
-import com.blockstream.common.gdk.data.Account
-import com.blockstream.common.gdk.data.AccountAsset
-import com.blockstream.common.gdk.data.AccountAssetBalanceList
-import com.blockstream.common.gdk.data.AccountAssetList
-import com.blockstream.common.gdk.data.AssetBalance
-import com.blockstream.common.gdk.data.AssetBalanceList
-import com.blockstream.common.gdk.data.Network
-import com.blockstream.common.looks.transaction.TransactionConfirmLook
 import com.blockstream.compose.events.Event
+import com.blockstream.compose.looks.transaction.TransactionConfirmLook
 import com.blockstream.compose.models.GreenViewModel
 import com.blockstream.compose.models.jade.JadeQrOperation
 import com.blockstream.compose.models.settings.WalletSettingsSection
 import com.blockstream.compose.models.sheets.NoteType
-import com.blockstream.green.data.meld.data.QuotesResponse
+import com.blockstream.data.AddressInputType
+import com.blockstream.data.SupportType
+import com.blockstream.data.data.DenominatedValue
+import com.blockstream.data.data.EnrichedAsset
+import com.blockstream.data.data.EnrichedAssetList
+import com.blockstream.data.data.GreenWallet
+import com.blockstream.data.data.LnUrlAuthRequestDataSerializable
+import com.blockstream.data.data.LnUrlWithdrawRequestSerializable
+import com.blockstream.data.data.MenuEntryList
+import com.blockstream.data.data.PopTo
+import com.blockstream.data.data.SetupArgs
+import com.blockstream.data.data.SupportData
+import com.blockstream.data.data.TwoFactorMethod
+import com.blockstream.data.data.TwoFactorSetupAction
+import com.blockstream.data.devices.DeviceModel
+import com.blockstream.data.gdk.data.Account
+import com.blockstream.data.gdk.data.AccountAsset
+import com.blockstream.data.gdk.data.AccountAssetBalanceList
+import com.blockstream.data.gdk.data.AccountAssetList
+import com.blockstream.data.gdk.data.AssetBalance
+import com.blockstream.data.gdk.data.AssetBalanceList
+import com.blockstream.data.gdk.data.Network
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.IO
 import kotlinx.coroutines.withContext
@@ -266,7 +265,7 @@ sealed class NavigateDestinations : NavigateDestination() {
     data class TwoFactorReset(
         val greenWallet: GreenWallet,
         val network: Network,
-        val twoFactorReset: com.blockstream.common.gdk.data.TwoFactorReset? = null
+        val twoFactorReset: com.blockstream.data.gdk.data.TwoFactorReset? = null
     ) : NavigateDestination()
 
     @Serializable
@@ -287,7 +286,7 @@ sealed class NavigateDestinations : NavigateDestination() {
     ) : NavigateDestination()
 
     @Serializable
-    data class TransactionDetails(val greenWallet: GreenWallet, val transaction: com.blockstream.common.gdk.data.Transaction) :
+    data class TransactionDetails(val greenWallet: GreenWallet, val transaction: com.blockstream.data.gdk.data.Transaction) :
         NavigateDestination()
 
     @Serializable
@@ -384,7 +383,7 @@ sealed class NavigateDestinations : NavigateDestination() {
     data class SendConfirm(
         val greenWallet: GreenWallet,
         val accountAsset: AccountAsset,
-        val denomination: com.blockstream.common.data.Denomination? = null
+        val denomination: com.blockstream.data.data.Denomination? = null
     ) : NavigateDestination()
 
     @Serializable
@@ -422,7 +421,11 @@ sealed class NavigateDestinations : NavigateDestination() {
     data class Buy(val greenWallet: GreenWallet, val accountAsset: AccountAsset? = null) : NavigateDestination()
 
     @Serializable
-    data class BuyQuotes(val greenWallet: GreenWallet, val quotes: QuotesResponse, val selectedServiceProvider: String?) :
+    data class BuyQuotes(
+        val greenWallet: GreenWallet,
+        val quotes: com.blockstream.data.meld.data.QuotesResponse,
+        val selectedServiceProvider: String?
+    ) :
         NavigateDestination()
 
     @Serializable
@@ -440,7 +443,7 @@ sealed class NavigateDestinations : NavigateDestination() {
     @Serializable
     data class Transaction(
         val greenWallet: GreenWallet,
-        val transaction: com.blockstream.common.gdk.data.Transaction
+        val transaction: com.blockstream.data.gdk.data.Transaction
     ) : NavigateDestination()
 
     @Serializable
@@ -504,7 +507,7 @@ sealed class NavigateDestinations : NavigateDestination() {
     data class Note(val greenWallet: GreenWallet, val note: String, val noteType: NoteType) : NavigateDestination()
 
     @Serializable
-    data class Promo(val promo: com.blockstream.common.data.Promo, val greenWalletOrNull: GreenWallet? = null) : NavigateDestination()
+    data class Promo(val promo: com.blockstream.data.data.Promo, val greenWalletOrNull: GreenWallet? = null) : NavigateDestination()
 
     @Serializable
     data class DeviceInteraction(

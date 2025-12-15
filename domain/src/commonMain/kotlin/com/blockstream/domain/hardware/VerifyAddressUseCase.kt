@@ -1,0 +1,34 @@
+package com.blockstream.domain.hardware
+
+import com.blockstream.data.CountlyBase
+import com.blockstream.data.gdk.GdkSession
+import com.blockstream.data.gdk.data.Account
+import com.blockstream.data.gdk.data.Address
+import kotlinx.coroutines.sync.Mutex
+import kotlinx.coroutines.sync.withLock
+
+class VerifyAddressUseCase(private val countly: CountlyBase) {
+    private val mutex = Mutex()
+
+    suspend operator fun invoke(
+        session: GdkSession, account: Account, address: Address
+    ) {
+        mutex.withLock {
+            countly.verifyAddress(session, account)
+
+            session.gdkHwWallet?.apply {
+                getGreenAddress(
+                    network = account.network,
+                    hwInteraction = null,
+                    account = account,
+                    path = address.userPath ?: listOf(),
+                    csvBlocks = address.subType ?: 0
+                ).also {
+                    if (it != address.address) {
+                        throw Exception("id_the_addresses_dont_match")
+                    }
+                }
+            }
+        }
+    }
+}

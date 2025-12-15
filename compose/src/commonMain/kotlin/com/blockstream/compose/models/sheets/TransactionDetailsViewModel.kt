@@ -1,13 +1,14 @@
 package com.blockstream.compose.models.sheets
 
 import androidx.lifecycle.viewModelScope
-import com.blockstream.common.data.GreenWallet
-import com.blockstream.common.extensions.previewAccountAsset
-import com.blockstream.common.extensions.previewWallet
-import com.blockstream.common.gdk.data.AccountAsset
-import com.blockstream.common.gdk.data.Transaction
+import com.blockstream.data.data.GreenWallet
+import com.blockstream.data.gdk.data.AccountAsset
+import com.blockstream.data.gdk.data.Transaction
+import com.blockstream.compose.extensions.details
+import com.blockstream.compose.extensions.previewAccountAsset
+import com.blockstream.compose.extensions.previewWallet
 import com.blockstream.compose.models.GreenViewModel
-import com.blockstream.common.utils.StringHolder
+import com.blockstream.compose.utils.StringHolder
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow

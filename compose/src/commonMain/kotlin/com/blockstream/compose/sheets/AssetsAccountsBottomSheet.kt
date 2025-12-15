@@ -8,7 +8,7 @@ import androidx.compose.material3.rememberModalBottomSheetState
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
-import com.blockstream.common.gdk.data.AccountAssetBalanceList
+import com.blockstream.data.gdk.data.AccountAssetBalanceList
 import com.blockstream.compose.components.GreenAccountAsset
 import com.blockstream.compose.components.GreenBottomSheet
 import com.blockstream.compose.components.GreenColumn

@@ -1,13 +1,13 @@
 package com.blockstream.green.managers
 
 import android.content.Context
-import com.blockstream.common.data.GreenWallet
-import com.blockstream.common.di.ApplicationScope
-import com.blockstream.common.fcm.FcmCommon
-import com.blockstream.common.lightning.BreezNotification
-import com.blockstream.green.data.notifications.models.BoltzNotificationSimple
-import com.blockstream.green.data.notifications.models.MeldNotificationData
-import com.blockstream.green.utils.Loggable
+import com.blockstream.data.data.GreenWallet
+import com.blockstream.data.di.ApplicationScope
+import com.blockstream.data.fcm.FcmCommon
+import com.blockstream.data.lightning.BreezNotification
+import com.blockstream.data.notifications.models.BoltzNotificationSimple
+import com.blockstream.data.notifications.models.MeldNotificationData
+import com.blockstream.utils.Loggable
 import com.blockstream.green.work.BoltzWork
 import com.blockstream.green.work.LightningWork
 import com.blockstream.green.work.MeldPendingTransactionsWorker

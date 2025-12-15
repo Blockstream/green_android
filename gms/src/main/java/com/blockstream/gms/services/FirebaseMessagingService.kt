@@ -1,13 +1,13 @@
 package com.blockstream.gms.services
 
-import com.blockstream.common.extensions.tryCatchNull
-import com.blockstream.common.fcm.FcmCommon
-import com.blockstream.common.lightning.BreezNotification
-import com.blockstream.green.data.config.AppInfo
-import com.blockstream.green.data.notifications.models.BoltzNotificationSimple
-import com.blockstream.green.data.notifications.models.MeldNotificationData
-import com.blockstream.green.data.notifications.models.MeldNotificationType
-import com.blockstream.green.utils.Loggable
+import com.blockstream.data.config.AppInfo
+import com.blockstream.data.extensions.tryCatchNull
+import com.blockstream.data.fcm.FcmCommon
+import com.blockstream.data.lightning.BreezNotification
+import com.blockstream.data.notifications.models.BoltzNotificationSimple
+import com.blockstream.data.notifications.models.MeldNotificationData
+import com.blockstream.data.notifications.models.MeldNotificationType
+import com.blockstream.utils.Loggable
 import com.google.firebase.messaging.FirebaseMessagingService
 import com.google.firebase.messaging.RemoteMessage
 import kotlinx.serialization.json.Json

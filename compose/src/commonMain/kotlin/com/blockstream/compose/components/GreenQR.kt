@@ -32,7 +32,7 @@ import blockstream_green.common.generated.resources.Res
 import blockstream_green.common.generated.resources.eye
 import blockstream_green.common.generated.resources.id_show_qr_code
 import blockstream_green.common.generated.resources.qr_code
-import com.blockstream.common.extensions.isNotBlank
+import com.blockstream.data.extensions.isNotBlank
 import com.blockstream.compose.theme.green
 import com.blockstream.compose.theme.md_theme_surfaceTint
 import com.blockstream.compose.utils.ifTrue

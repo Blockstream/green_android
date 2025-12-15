@@ -1,10 +1,10 @@
 package com.blockstream.compose.models.wallet
 
 import androidx.lifecycle.viewModelScope
-import com.blockstream.common.data.GreenWallet
-import com.blockstream.common.extensions.cleanup
-import com.blockstream.common.extensions.isNotBlank
-import com.blockstream.common.extensions.previewWallet
+import com.blockstream.data.data.GreenWallet
+import com.blockstream.data.extensions.cleanup
+import com.blockstream.data.extensions.isNotBlank
+import com.blockstream.compose.extensions.previewWallet
 import com.blockstream.compose.events.Event
 import com.blockstream.compose.events.Events
 import com.blockstream.compose.models.GreenViewModel

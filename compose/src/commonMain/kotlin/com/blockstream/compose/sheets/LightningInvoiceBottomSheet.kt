@@ -29,8 +29,8 @@ import blockstream_green.common.generated.resources.id_share
 import com.adamglin.PhosphorIcons
 import com.adamglin.phosphoricons.Regular
 import com.adamglin.phosphoricons.regular.ShareNetwork
-import com.blockstream.common.data.MenuEntry
-import com.blockstream.common.data.MenuEntryList
+import com.blockstream.data.data.MenuEntry
+import com.blockstream.data.data.MenuEntryList
 import com.blockstream.compose.components.GreenAddress
 import com.blockstream.compose.components.GreenBottomSheet
 import com.blockstream.compose.components.GreenButton

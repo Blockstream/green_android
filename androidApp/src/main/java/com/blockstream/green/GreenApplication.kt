@@ -8,13 +8,13 @@ import androidx.annotation.RequiresApi
 import androidx.lifecycle.DefaultLifecycleObserver
 import androidx.lifecycle.LifecycleOwner
 import androidx.lifecycle.ProcessLifecycleOwner
-import com.blockstream.common.di.ApplicationScope
-import com.blockstream.common.fcm.Firebase
-import com.blockstream.common.managers.LifecycleManager
+import com.blockstream.data.di.ApplicationScope
+import com.blockstream.data.fcm.Firebase
+import com.blockstream.data.managers.LifecycleManager
 import com.blockstream.green.di.initKoinAndroid
 import com.blockstream.green.lifecycle.ActivityLifecycle
 import com.blockstream.green.settings.AndroidMigrator
-import com.blockstream.green.utils.Loggable
+import com.blockstream.utils.Loggable
 import com.blockstream.green.utils.isDevelopmentFlavor
 import kotlinx.coroutines.launch
 import org.koin.android.ext.android.get

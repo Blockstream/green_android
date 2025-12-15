@@ -1,20 +1,20 @@
 package com.blockstream.compose.managers
 
 import android.bluetooth.BluetoothAdapter
-import com.blockstream.common.devices.AndroidDevice
-import com.blockstream.common.devices.DeviceBrand
-import com.blockstream.common.devices.GreenDevice
-import com.blockstream.common.devices.toAndroidDevice
-import com.blockstream.common.gdk.Gdk
-import com.blockstream.common.gdk.Wally
-import com.blockstream.common.gdk.data.DeviceSupportsAntiExfilProtocol
-import com.blockstream.common.gdk.data.DeviceSupportsLiquid
-import com.blockstream.common.gdk.data.Network
-import com.blockstream.common.gdk.device.HardwareConnectInteraction
-import com.blockstream.common.interfaces.ConnectionResult
 import com.blockstream.compose.devices.LedgerDevice
 import com.blockstream.compose.devices.TrezorDevice
-import com.blockstream.green.data.config.AppInfo
+import com.blockstream.data.config.AppInfo
+import com.blockstream.data.devices.AndroidDevice
+import com.blockstream.data.devices.DeviceBrand
+import com.blockstream.data.devices.GreenDevice
+import com.blockstream.data.devices.toAndroidDevice
+import com.blockstream.data.gdk.Gdk
+import com.blockstream.data.gdk.Wally
+import com.blockstream.data.gdk.data.DeviceSupportsAntiExfilProtocol
+import com.blockstream.data.gdk.data.DeviceSupportsLiquid
+import com.blockstream.data.gdk.data.Network
+import com.blockstream.data.gdk.device.HardwareConnectInteraction
+import com.blockstream.data.interfaces.ConnectionResult
 import com.blockstream.jade.HttpRequestHandler
 import com.blockstream.jade.JadeAPI
 import com.blockstream.jade.Loggable
@@ -131,7 +131,7 @@ class DeviceConnectionManagerAndroid constructor(
     private fun onTrezorConnected(device: AndroidDevice, trezor: Trezor, firmwareVersion: String?): ConnectionResult {
         logger.d { "Creating Trezor HW wallet" }
 
-        val trezorDevice = com.blockstream.common.gdk.data.Device(
+        val trezorDevice = com.blockstream.data.gdk.data.Device(
             name = "Trezor",
             supportsArbitraryScripts = false,
             supportsLowR = false,
@@ -310,7 +310,7 @@ class DeviceConnectionManagerAndroid constructor(
 
         logger.i { "Creating Ledger HW wallet" + if (pin != null) " with PIN" else "" }
 
-        val ledgerDevice = com.blockstream.common.gdk.data.Device(
+        val ledgerDevice = com.blockstream.data.gdk.data.Device(
             name = "Ledger",
             supportsArbitraryScripts = true,
             supportsLowR = false,

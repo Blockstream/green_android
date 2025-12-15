@@ -34,7 +34,7 @@ import blockstream_green.common.generated.resources.eye
 import blockstream_green.common.generated.resources.eye_slash
 import blockstream_green.common.generated.resources.id_cancel
 import blockstream_green.common.generated.resources.id_ok
-import com.blockstream.common.utils.DecimalFormat
+import com.blockstream.data.utils.DecimalFormat
 import com.blockstream.compose.components.GreenButton
 import com.blockstream.compose.components.GreenButtonType
 import com.blockstream.compose.components.GreenCard

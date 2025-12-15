@@ -38,11 +38,11 @@ import blockstream_green.common.generated.resources.id_next
 import blockstream_green.common.generated.resources.id_recipient_address
 import blockstream_green.common.generated.resources.id_set_custom_fee_rate
 import blockstream_green.common.generated.resources.pencil_simple_line
-import com.blockstream.common.data.DenominatedValue
-import com.blockstream.common.data.FeePriority
-import com.blockstream.common.extensions.isNotBlank
-import com.blockstream.common.gdk.data.AccountAssetBalance
-import com.blockstream.common.utils.DecimalFormat
+import com.blockstream.data.data.DenominatedValue
+import com.blockstream.data.data.FeePriority
+import com.blockstream.data.extensions.isNotBlank
+import com.blockstream.data.gdk.data.AccountAssetBalance
+import com.blockstream.data.utils.DecimalFormat
 import com.blockstream.compose.components.Banner
 import com.blockstream.compose.components.GreenAccountAsset
 import com.blockstream.compose.components.GreenAmountField

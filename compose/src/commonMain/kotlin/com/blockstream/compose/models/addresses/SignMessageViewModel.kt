@@ -1,16 +1,16 @@
 package com.blockstream.compose.models.addresses
 
-import com.blockstream.common.data.GreenWallet
-import com.blockstream.common.extensions.ifConnected
-import com.blockstream.common.extensions.isNotBlank
-import com.blockstream.common.extensions.launchIn
-import com.blockstream.common.extensions.previewAccountAsset
-import com.blockstream.common.extensions.previewWallet
-import com.blockstream.common.gdk.data.AccountAsset
-import com.blockstream.common.gdk.device.DeviceResolver
-import com.blockstream.common.gdk.params.SignMessageParams
+import com.blockstream.data.data.GreenWallet
+import com.blockstream.data.extensions.ifConnected
+import com.blockstream.data.extensions.isNotBlank
+import com.blockstream.data.gdk.data.AccountAsset
+import com.blockstream.data.gdk.device.DeviceResolver
+import com.blockstream.data.gdk.params.SignMessageParams
 import com.blockstream.compose.events.Event
 import com.blockstream.compose.events.Events
+import com.blockstream.compose.extensions.launchIn
+import com.blockstream.compose.extensions.previewAccountAsset
+import com.blockstream.compose.extensions.previewWallet
 import com.blockstream.compose.models.GreenViewModel
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow

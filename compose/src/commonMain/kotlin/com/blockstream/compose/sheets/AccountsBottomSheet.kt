@@ -15,7 +15,7 @@ import androidx.compose.ui.unit.dp
 import blockstream_green.common.generated.resources.Res
 import blockstream_green.common.generated.resources.id_account_selector
 import blockstream_green.common.generated.resources.id_no_available_accounts
-import com.blockstream.common.gdk.data.AccountAssetBalanceList
+import com.blockstream.data.gdk.data.AccountAssetBalanceList
 import com.blockstream.compose.components.GreenAccountAsset
 import com.blockstream.compose.components.GreenBottomSheet
 import com.blockstream.compose.components.GreenColumn

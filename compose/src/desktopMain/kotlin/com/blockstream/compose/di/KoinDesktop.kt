@@ -2,20 +2,20 @@
 
 package com.blockstream.compose.di
 
-import com.blockstream.common.CountlyBase
-import com.blockstream.common.ZendeskSdk
-import com.blockstream.common.crypto.GreenKeystore
-import com.blockstream.common.crypto.NoKeystore
-import com.blockstream.common.data.AppConfig
-import com.blockstream.common.data.GreenWallet
-import com.blockstream.common.fcm.FcmCommon
-import com.blockstream.common.fcm.Firebase
-import com.blockstream.common.lightning.BreezNotification
-import com.blockstream.common.managers.BluetoothManager
-import com.blockstream.common.managers.DeviceManager
-import com.blockstream.green.data.config.AppInfo
-import com.blockstream.green.data.notifications.models.BoltzNotificationSimple
-import com.blockstream.green.data.notifications.models.MeldNotificationData
+import com.blockstream.data.CountlyBase
+import com.blockstream.data.ZendeskSdk
+import com.blockstream.data.config.AppInfo
+import com.blockstream.data.crypto.GreenKeystore
+import com.blockstream.data.crypto.NoKeystore
+import com.blockstream.data.data.AppConfig
+import com.blockstream.data.data.GreenWallet
+import com.blockstream.data.fcm.FcmCommon
+import com.blockstream.data.fcm.Firebase
+import com.blockstream.data.lightning.BreezNotification
+import com.blockstream.data.managers.BluetoothManager
+import com.blockstream.data.managers.DeviceManager
+import com.blockstream.data.notifications.models.BoltzNotificationSimple
+import com.blockstream.data.notifications.models.MeldNotificationData
 import org.koin.dsl.module
 import kotlin.uuid.ExperimentalUuidApi
 

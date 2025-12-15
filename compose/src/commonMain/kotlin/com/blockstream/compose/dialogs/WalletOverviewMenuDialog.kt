@@ -44,9 +44,9 @@ import com.adamglin.phosphoricons.regular.Headset
 import com.adamglin.phosphoricons.regular.Plus
 import com.adamglin.phosphoricons.regular.SignOut
 import com.adamglin.phosphoricons.regular.TextAa
-import com.blockstream.common.SupportType
-import com.blockstream.common.data.LogoutReason
-import com.blockstream.common.data.SupportData
+import com.blockstream.data.SupportType
+import com.blockstream.data.data.LogoutReason
+import com.blockstream.data.data.SupportData
 import com.blockstream.compose.components.GreenRow
 import com.blockstream.compose.events.Events
 import com.blockstream.compose.models.overview.WalletOverviewViewModel

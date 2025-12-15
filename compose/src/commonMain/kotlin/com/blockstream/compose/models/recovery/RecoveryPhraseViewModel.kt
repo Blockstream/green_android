@@ -4,11 +4,11 @@ import androidx.lifecycle.viewModelScope
 import blockstream_green.common.generated.resources.Res
 import blockstream_green.common.generated.resources.id_back_up_recovery_phrase
 import blockstream_green.common.generated.resources.id_lightning
-import com.blockstream.common.Urls
-import com.blockstream.common.data.GreenWallet
-import com.blockstream.common.extensions.ifConnectedSuspend
-import com.blockstream.common.extensions.previewWallet
-import com.blockstream.common.gdk.data.Credentials
+import com.blockstream.data.Urls
+import com.blockstream.data.data.GreenWallet
+import com.blockstream.data.extensions.ifConnectedSuspend
+import com.blockstream.compose.extensions.previewWallet
+import com.blockstream.data.gdk.data.Credentials
 import com.blockstream.compose.events.Event
 import com.blockstream.compose.events.Events
 import com.blockstream.compose.models.GreenViewModel

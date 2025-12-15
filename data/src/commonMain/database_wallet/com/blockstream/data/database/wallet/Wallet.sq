@@ -1,0 +1,86 @@
+import com.blockstream.data.data.DeviceIdentifier;
+import com.blockstream.data.data.WalletExtras;
+import kotlin.Boolean;
+import kotlin.collections.List;
+
+CREATE TABLE IF NOT EXISTS `wallet` (
+    `id` TEXT NOT NULL PRIMARY KEY,
+
+    `name` TEXT NOT NULL,
+
+    `xpub_hash_id` TEXT NOT NULL DEFAULT '',
+
+    `active_network` TEXT NOT NULL DEFAULT '',
+    `active_account` INTEGER NOT NULL DEFAULT 0,
+
+    `is_recovery_confirmed` INTEGER AS Boolean NOT NULL DEFAULT 1,
+
+    `is_testnet` INTEGER AS Boolean NOT NULL DEFAULT 0,
+    `is_hardware` INTEGER AS Boolean NOT NULL DEFAULT 0,
+    `is_lightning` INTEGER AS Boolean NOT NULL DEFAULT 0,
+
+    `ask_bip39_passphrase` INTEGER AS Boolean NOT NULL DEFAULT 0,
+
+    `watch_only_username` TEXT,
+    `device_identifiers` TEXT AS List<DeviceIdentifier>,
+    `extras` TEXT AS WalletExtras DEFAULT NULL,
+
+    `order` INTEGER NOT NULL DEFAULT 0
+);
+
+CREATE INDEX IF NOT EXISTS index_wallet_order ON wallet(`order`);
+CREATE INDEX IF NOT EXISTS index_wallet_is_hardware ON wallet(`is_hardware`);
+CREATE INDEX IF NOT EXISTS index_wallet_wallet_hash_id ON wallet(`xpub_hash_id`);
+
+insertWallet:
+INSERT INTO wallet(id, name, xpub_hash_id, active_network, active_account, is_recovery_confirmed, is_testnet, is_hardware, is_lightning, ask_bip39_passphrase, watch_only_username, device_identifiers, `order`)
+VALUES (?, ?, ?, ?, ?, ?, ?, ?,?, ?, ?, ?, ?);
+
+getWallet:
+SELECT * FROM wallet WHERE id = ?;
+
+getMainnetWalletWithXpubHashId:
+SELECT * FROM wallet WHERE xpub_hash_id = ? AND is_testnet = 0;
+
+getWalletWithXpubHashId:
+SELECT * FROM wallet WHERE xpub_hash_id = ? AND is_testnet = ? AND is_hardware = ? LIMIT 1;
+
+-- Not currently used, but is here not to miss that getWalletWithHashId returns no wo wallets
+getWalletWatchOnlyXpubHashId:
+SELECT * FROM wallet WHERE xpub_hash_id = ? AND active_network = ? AND is_hardware = ?;
+
+updateWallet:
+UPDATE wallet
+SET
+    name = ?,
+    xpub_hash_id = ?,
+    active_network = ?,
+    active_account = ?,
+    is_recovery_confirmed = ?,
+    is_testnet = ?,
+    is_hardware = ?,
+    is_lightning = ?,
+    ask_bip39_passphrase = ?,
+    watch_only_username = ?,
+    device_identifiers = ?,
+    extras = ?,
+    `order` = ?
+WHERE id = :id;
+
+deleteWallet:
+DELETE FROM wallet WHERE id = ?;
+
+walletExists:
+SELECT EXISTS(SELECT id FROM wallet WHERE xpub_hash_id = ? AND is_hardware = ? LIMIT 1);
+
+walletsExists:
+SELECT EXISTS(SELECT id FROM wallet LIMIT 1);
+
+getWallets:
+SELECT * FROM wallet WHERE is_hardware = ? ORDER BY `order`, id;
+
+getWalletsWithCredentialType:
+SELECT wallet.*, loginCredentials.credential_type FROM wallet LEFT JOIN loginCredentials ON wallet.id = loginCredentials.wallet_id AND loginCredentials.credential_type = ?  WHERE wallet.is_hardware = ? ORDER BY `order`, id;
+
+getAllWallets:
+SELECT * FROM wallet ORDER BY `order`, id;

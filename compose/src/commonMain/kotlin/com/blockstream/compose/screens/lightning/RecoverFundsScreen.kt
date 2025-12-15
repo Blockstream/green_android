@@ -26,11 +26,11 @@ import blockstream_green.common.generated.resources.id_receive_on
 import blockstream_green.common.generated.resources.id_receive_on_address
 import blockstream_green.common.generated.resources.id_refundable
 import blockstream_green.common.generated.resources.id_set_custom_fee_rate
-import com.blockstream.common.data.FeePriority
-import com.blockstream.common.data.ScanResult
-import com.blockstream.common.extensions.toggle
-import com.blockstream.common.gdk.data.AccountAssetBalance
-import com.blockstream.common.gdk.data.AccountAssetBalanceList
+import com.blockstream.data.data.FeePriority
+import com.blockstream.data.data.ScanResult
+import com.blockstream.data.extensions.toggle
+import com.blockstream.data.gdk.data.AccountAssetBalance
+import com.blockstream.data.gdk.data.AccountAssetBalanceList
 import com.blockstream.compose.components.GreenAccountAsset
 import com.blockstream.compose.components.GreenAmount
 import com.blockstream.compose.components.GreenColumn

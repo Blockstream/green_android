@@ -1,15 +1,15 @@
 package com.blockstream.compose.models.receive
 
 import androidx.lifecycle.viewModelScope
-import com.blockstream.common.data.Denomination
-import com.blockstream.common.data.GreenWallet
-import com.blockstream.common.extensions.isNotBlank
-import com.blockstream.common.extensions.isPolicyAsset
-import com.blockstream.common.gdk.data.AccountAsset
-import com.blockstream.common.utils.UserInput
-import com.blockstream.common.utils.getBitcoinOrLiquidUnit
-import com.blockstream.common.utils.getFiatCurrency
-import com.blockstream.common.utils.toAmountLook
+import com.blockstream.data.data.Denomination
+import com.blockstream.data.data.GreenWallet
+import com.blockstream.data.extensions.isNotBlank
+import com.blockstream.data.extensions.isPolicyAsset
+import com.blockstream.data.gdk.data.AccountAsset
+import com.blockstream.data.utils.UserInput
+import com.blockstream.data.utils.getBitcoinOrLiquidUnit
+import com.blockstream.data.utils.getFiatCurrency
+import com.blockstream.data.utils.toAmountLook
 import com.blockstream.compose.events.Event
 import com.blockstream.compose.events.Events
 import com.blockstream.compose.models.GreenViewModel

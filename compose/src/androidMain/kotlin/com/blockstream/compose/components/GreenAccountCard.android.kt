@@ -7,9 +7,9 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.tooling.preview.Preview
-import com.blockstream.common.BTC_POLICY_ASSET
-import com.blockstream.common.LBTC_POLICY_ASSET
-import com.blockstream.common.extensions.previewAccountBalance
+import com.blockstream.data.BTC_POLICY_ASSET
+import com.blockstream.data.LBTC_POLICY_ASSET
+import com.blockstream.compose.extensions.previewAccountBalance
 import com.blockstream.compose.theme.GreenChromePreview
 
 @Composable

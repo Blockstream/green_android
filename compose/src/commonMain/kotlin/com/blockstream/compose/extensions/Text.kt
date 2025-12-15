@@ -23,8 +23,8 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.rememberTextMeasurer
 import androidx.compose.ui.text.withStyle
 import androidx.compose.ui.unit.sp
-import com.blockstream.common.utils.lastNthIndexOf
-import com.blockstream.common.utils.nthIndexOf
+import com.blockstream.data.utils.lastNthIndexOf
+import com.blockstream.data.utils.nthIndexOf
 import com.blockstream.compose.theme.md_theme_primary
 import com.blockstream.compose.theme.textHigh
 import kotlin.math.sqrt

@@ -24,7 +24,7 @@ kotlin {
 dependencies {
     implementation(project(":base-gms"))
     /**  --- Modules ---------------------------------------------------------------------------- */
-    implementation(project(":common"))
+    implementation(project(":data"))
     /** ----------------------------------------------------------------------------------------- */
 
     /**  --- Google Mobile Services ------------------------------------------------------------- */

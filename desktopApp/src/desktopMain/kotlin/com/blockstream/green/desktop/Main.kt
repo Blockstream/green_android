@@ -7,14 +7,14 @@ import androidx.compose.ui.window.Window
 import androidx.compose.ui.window.application
 import ca.gosyer.appdirs.AppDirs
 import co.touchlab.kermit.Logger
-import com.blockstream.common.data.AppConfig
-import com.blockstream.compose.models.MainViewModel
 import com.blockstream.compose.GreenApp
 import com.blockstream.compose.di.initKoinDesktop
+import com.blockstream.compose.models.MainViewModel
 import com.blockstream.compose.theme.GreenChrome
 import com.blockstream.compose.theme.GreenTheme
 import com.blockstream.compose.utils.compatTestTagsAsResourceId
-import com.blockstream.green.data.config.AppInfo
+import com.blockstream.data.config.AppInfo
+import com.blockstream.data.data.AppConfig
 
 fun main() = application {
 
@@ -37,7 +37,8 @@ fun setupDesktop() {
         cacheDir = appDirs.getUserCacheDir(),
         analyticsFeatureEnabled = false,
         lightningFeatureEnabled = false,
-        storeRateEnabled = false
+        storeRateEnabled = false,
+        appKeysString = null
     )
 
     val appInfo = AppInfo(userAgent = "green_ios", "version", isDebug = true, isDevelopment = true)

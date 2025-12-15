@@ -3,7 +3,7 @@ package com.blockstream.compose.components
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.tooling.preview.Preview
 import com.blockstream.compose.GreenPreview
-import com.blockstream.green.data.banner.Banner
+import com.blockstream.data.banner.Banner
 
 @Composable
 @Preview

@@ -4,10 +4,10 @@ import androidx.lifecycle.viewModelScope
 import blockstream_green.common.generated.resources.Res
 import blockstream_green.common.generated.resources.id_firmware_version_s
 import blockstream_green.common.generated.resources.id_hash_s
-import com.blockstream.common.devices.DeviceState
-import com.blockstream.common.extensions.launchIn
-import com.blockstream.common.extensions.padHex
-import com.blockstream.common.managers.DeviceManager
+import com.blockstream.data.devices.DeviceState
+import com.blockstream.data.extensions.padHex
+import com.blockstream.data.managers.DeviceManager
+import com.blockstream.compose.extensions.launchIn
 import com.blockstream.compose.models.GreenViewModel
 import com.blockstream.compose.sideeffects.SideEffects
 import com.blockstream.jade.firmware.FirmwareUpdateState

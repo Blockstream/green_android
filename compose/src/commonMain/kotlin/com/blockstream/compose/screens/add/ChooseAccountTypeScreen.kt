@@ -37,10 +37,8 @@ import blockstream_green.common.generated.resources.id_hide_advanced_options
 import blockstream_green.common.generated.resources.id_show_advanced_options
 import blockstream_green.common.generated.resources.id_there_is_already_an_archived
 import blockstream_green.common.generated.resources.id_you_cannot_add_more_than_one
-import com.blockstream.common.extensions.toggle
-import com.blockstream.common.gdk.data.AssetBalance
-import com.blockstream.common.looks.AccountTypeLook
-import com.blockstream.common.utils.StringHolder
+import com.blockstream.data.extensions.toggle
+import com.blockstream.data.gdk.data.AssetBalance
 import com.blockstream.compose.LocalDialog
 import com.blockstream.compose.components.GreenArrow
 import com.blockstream.compose.components.GreenAsset
@@ -51,6 +49,7 @@ import com.blockstream.compose.components.GreenColumn
 import com.blockstream.compose.components.GreenRow
 import com.blockstream.compose.components.OnProgressStyle
 import com.blockstream.compose.extensions.drawDiagonalLabel
+import com.blockstream.compose.looks.AccountTypeLook
 import com.blockstream.compose.models.add.ChooseAccountTypeViewModel
 import com.blockstream.compose.models.add.ChooseAccountTypeViewModelAbstract
 import com.blockstream.compose.navigation.NavigateDestinations
@@ -68,6 +67,7 @@ import com.blockstream.compose.theme.titleLarge
 import com.blockstream.compose.theme.whiteHigh
 import com.blockstream.compose.theme.whiteMedium
 import com.blockstream.compose.utils.SetupScreen
+import com.blockstream.compose.utils.StringHolder
 import com.blockstream.compose.utils.ifTrue
 import com.blockstream.compose.utils.roundBackground
 import kotlinx.coroutines.launch

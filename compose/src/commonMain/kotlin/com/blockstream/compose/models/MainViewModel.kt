@@ -1,9 +1,9 @@
 package com.blockstream.compose.models
 
 import androidx.lifecycle.viewModelScope
-import com.blockstream.common.data.GreenWallet
-import com.blockstream.common.interfaces.JadeHttpRequestUrlValidator
-import com.blockstream.common.managers.LifecycleManager
+import com.blockstream.data.data.GreenWallet
+import com.blockstream.data.interfaces.JadeHttpRequestUrlValidator
+import com.blockstream.data.managers.LifecycleManager
 import com.blockstream.compose.events.Event
 import com.blockstream.compose.navigation.NavigateDestinations
 import com.blockstream.compose.navigation.NavigateToWallet

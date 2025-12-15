@@ -16,7 +16,6 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.unit.dp
-import com.blockstream.common.utils.stringResourceFromId
 import com.blockstream.compose.theme.GreenSmallBottom
 import com.blockstream.compose.theme.GreenSmallTop
 import com.blockstream.compose.theme.bodyMedium
@@ -24,6 +23,7 @@ import com.blockstream.compose.theme.md_theme_errorContainer
 import com.blockstream.compose.theme.whiteHigh
 import com.blockstream.compose.utils.AnimatedNullableVisibility
 import com.blockstream.compose.utils.appTestTag
+import com.blockstream.compose.utils.stringResourceFromId
 
 @Composable
 fun GreenCard(

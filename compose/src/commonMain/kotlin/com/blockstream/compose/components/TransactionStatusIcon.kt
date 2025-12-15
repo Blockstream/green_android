@@ -22,10 +22,10 @@ import blockstream_green.common.generated.resources.arrow_bend_right_up
 import blockstream_green.common.generated.resources.arrows_counter_clockwise_bold
 import blockstream_green.common.generated.resources.check_bold
 import blockstream_green.common.generated.resources.x_bold
-import com.blockstream.common.looks.transaction.Failed
-import com.blockstream.common.looks.transaction.TransactionStatus
-import com.blockstream.common.looks.transaction.Unconfirmed
 import com.blockstream.compose.extensions.color
+import com.blockstream.compose.looks.transaction.Failed
+import com.blockstream.compose.looks.transaction.TransactionStatus
+import com.blockstream.compose.looks.transaction.Unconfirmed
 import com.blockstream.compose.utils.Rotating
 import org.jetbrains.compose.resources.painterResource
 import kotlin.math.max

@@ -15,8 +15,11 @@ import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavHostController
 import androidx.navigation.compose.NavHost
 import androidx.navigation.toRoute
-import com.blockstream.common.devices.DeviceModel
-import com.blockstream.common.managers.DeviceManager
+import com.blockstream.data.devices.DeviceModel
+import com.blockstream.data.managers.DeviceManager
+import com.blockstream.compose.dialogs.TorWarningDialog
+import com.blockstream.compose.dialogs.UrlWarningDialog
+import com.blockstream.compose.managers.rememberStateKeeperFactory
 import com.blockstream.compose.models.MainViewModel
 import com.blockstream.compose.models.SimpleGreenViewModel
 import com.blockstream.compose.models.about.AboutViewModel
@@ -96,10 +99,8 @@ import com.blockstream.compose.models.transaction.TransactionViewModel
 import com.blockstream.compose.models.twofactor.ReEnable2FAViewModel
 import com.blockstream.compose.models.wallet.WalletDeleteViewModel
 import com.blockstream.compose.models.wallet.WalletNameViewModel
-import com.blockstream.common.utils.StringHolder
-import com.blockstream.compose.dialogs.TorWarningDialog
-import com.blockstream.compose.dialogs.UrlWarningDialog
-import com.blockstream.compose.managers.rememberStateKeeperFactory
+import com.blockstream.compose.navigation.bottomsheet.onDismissRequest
+import com.blockstream.compose.navigation.dialogs.GenericDialog
 import com.blockstream.compose.screens.HomeScreen
 import com.blockstream.compose.screens.about.AboutScreen
 import com.blockstream.compose.screens.add.Account2of3Screen
@@ -182,7 +183,6 @@ import com.blockstream.compose.sheets.FeeRateBottomSheet
 import com.blockstream.compose.sheets.JadeFirmwareUpdateBottomSheet
 import com.blockstream.compose.sheets.LightningNodeBottomSheet
 import com.blockstream.compose.sheets.MainMenuBottomSheet
-import com.blockstream.compose.sheets.SwapFeesBottomSheet
 import com.blockstream.compose.sheets.MeldCountriesBottomSheet
 import com.blockstream.compose.sheets.MenuBottomSheetView
 import com.blockstream.compose.sheets.NewJadeConnectedBottomSheet
@@ -193,14 +193,14 @@ import com.blockstream.compose.sheets.QrBottomSheet
 import com.blockstream.compose.sheets.RecoveryHelpBottomSheet
 import com.blockstream.compose.sheets.SecurityLevelBottomSheet
 import com.blockstream.compose.sheets.SignMessageBottomSheet
+import com.blockstream.compose.sheets.SwapFeesBottomSheet
 import com.blockstream.compose.sheets.SystemMessageBottomSheet
 import com.blockstream.compose.sheets.TransactionDetailsBottomSheet
 import com.blockstream.compose.sheets.TwoFactorResetBottomSheet
 import com.blockstream.compose.sheets.WalletDeleteBottomSheet
 import com.blockstream.compose.sheets.WalletRenameBottomSheet
 import com.blockstream.compose.sheets.WatchOnlyCredentialsSettingsBottomSheet
-import com.blockstream.compose.navigation.bottomsheet.onDismissRequest
-import com.blockstream.compose.navigation.dialogs.GenericDialog
+import com.blockstream.compose.utils.StringHolder
 import org.koin.compose.koinInject
 
 @Composable

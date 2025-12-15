@@ -5,7 +5,7 @@ import androidx.compose.material3.rememberModalBottomSheetState
 import androidx.compose.runtime.Composable
 import blockstream_green.common.generated.resources.Res
 import blockstream_green.common.generated.resources.id_scan_qr_code
-import com.blockstream.common.data.ScanResult
+import com.blockstream.data.data.ScanResult
 import com.blockstream.compose.components.GreenBottomSheet
 import com.blockstream.compose.components.GreenScanner
 import com.blockstream.compose.models.camera.CameraViewModelAbstract

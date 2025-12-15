@@ -28,8 +28,8 @@ import blockstream_green.common.generated.resources.id_continue
 import blockstream_green.common.generated.resources.id_create_a_pin
 import blockstream_green.common.generated.resources.id_enter_and_confirm_a_unique_pin
 import blockstream_green.common.generated.resources.id_set_up_your_jade
-import com.blockstream.common.data.MenuEntry
-import com.blockstream.common.data.MenuEntryList
+import com.blockstream.data.data.MenuEntry
+import com.blockstream.data.data.MenuEntryList
 import com.blockstream.compose.components.AppSettingsButton
 import com.blockstream.compose.components.GreenButton
 import com.blockstream.compose.components.GreenButtonSize

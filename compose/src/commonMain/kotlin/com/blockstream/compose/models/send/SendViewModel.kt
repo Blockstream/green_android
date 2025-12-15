@@ -8,47 +8,47 @@ import blockstream_green.common.generated.resources.id_payment_requested_by_s
 import blockstream_green.common.generated.resources.id_send
 import blockstream_green.common.generated.resources.id_transaction_sent
 import blockstream_green.common.generated.resources.note_pencil
-import com.blockstream.common.AddressInputType
-import com.blockstream.common.TransactionSegmentation
-import com.blockstream.common.TransactionType
-import com.blockstream.common.data.DenominatedValue
-import com.blockstream.common.data.Denomination
-import com.blockstream.common.data.ExceptionWithSupportData
-import com.blockstream.common.data.FeePriority
-import com.blockstream.common.data.GreenWallet
-import com.blockstream.common.data.SupportData
-import com.blockstream.common.extensions.ifConnected
-import com.blockstream.common.extensions.isBlank
-import com.blockstream.common.extensions.isNotBlank
-import com.blockstream.common.extensions.isPolicyAsset
-import com.blockstream.common.extensions.launchIn
-import com.blockstream.common.extensions.previewAccountAsset
-import com.blockstream.common.extensions.previewWallet
-import com.blockstream.common.extensions.startsWith
-import com.blockstream.common.extensions.tryCatch
-import com.blockstream.common.gdk.data.AccountAsset
-import com.blockstream.common.gdk.data.Network
-import com.blockstream.common.gdk.data.PendingTransaction
-import com.blockstream.common.gdk.params.CreateTransactionParams
-import com.blockstream.common.lightning.lnUrlPayDescription
-import com.blockstream.common.lightning.lnUrlPayImage
-import com.blockstream.common.utils.StringHolder
-import com.blockstream.common.utils.UserInput
-import com.blockstream.common.utils.feeRateWithUnit
-import com.blockstream.common.utils.getStringFromId
-import com.blockstream.common.utils.ifNotNull
-import com.blockstream.common.utils.toAmountLook
 import com.blockstream.compose.events.Event
 import com.blockstream.compose.events.Events
+import com.blockstream.compose.extensions.launchIn
+import com.blockstream.compose.extensions.previewAccountAsset
+import com.blockstream.compose.extensions.previewWallet
 import com.blockstream.compose.models.sheets.NoteType
 import com.blockstream.compose.navigation.NavAction
 import com.blockstream.compose.navigation.NavData
 import com.blockstream.compose.navigation.NavigateDestinations
 import com.blockstream.compose.sideeffects.SideEffects
+import com.blockstream.compose.utils.StringHolder
+import com.blockstream.compose.utils.getStringFromId
+import com.blockstream.data.AddressInputType
+import com.blockstream.data.TransactionSegmentation
+import com.blockstream.data.TransactionType
+import com.blockstream.data.banner.Banner
+import com.blockstream.data.data.DenominatedValue
+import com.blockstream.data.data.Denomination
+import com.blockstream.data.data.ExceptionWithSupportData
+import com.blockstream.data.data.FeePriority
+import com.blockstream.data.data.GreenWallet
+import com.blockstream.data.data.SupportData
+import com.blockstream.data.extensions.ifConnected
+import com.blockstream.data.extensions.isBlank
+import com.blockstream.data.extensions.isNotBlank
+import com.blockstream.data.extensions.isPolicyAsset
+import com.blockstream.data.extensions.startsWith
+import com.blockstream.data.extensions.tryCatch
+import com.blockstream.data.gdk.data.AccountAsset
+import com.blockstream.data.gdk.data.Network
+import com.blockstream.data.gdk.data.PendingTransaction
+import com.blockstream.data.gdk.params.CreateTransactionParams
+import com.blockstream.data.lightning.lnUrlPayDescription
+import com.blockstream.data.lightning.lnUrlPayImage
+import com.blockstream.data.utils.UserInput
+import com.blockstream.data.utils.feeRateWithUnit
+import com.blockstream.data.utils.ifNotNull
+import com.blockstream.data.utils.toAmountLook
 import com.blockstream.domain.boltz.BoltzUseCase
 import com.blockstream.domain.send.SendUseCase
-import com.blockstream.green.data.banner.Banner
-import com.blockstream.green.utils.Loggable
+import com.blockstream.utils.Loggable
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.GlobalScope
 import kotlinx.coroutines.IO
@@ -68,7 +68,7 @@ import kotlinx.coroutines.launch
 import kotlinx.coroutines.withTimeout
 import org.jetbrains.compose.resources.getString
 import org.koin.core.component.inject
-import saschpe.kase64.base64DecodedBytes
+import kotlin.io.encoding.Base64
 import kotlin.math.absoluteValue
 import kotlin.time.Duration.Companion.minutes
 
@@ -601,7 +601,7 @@ class SendViewModelPreview(greenWallet: GreenWallet, isLightning: Boolean = fals
     override val isSendAll: MutableStateFlow<Boolean> = MutableStateFlow(false)
     override val supportsSendAll: Boolean = true
     override val metadataDomain: StateFlow<String?> = MutableStateFlow("id_payment_requested_by_s|blockstream.com")
-    override val metadataImage: StateFlow<ByteArray?> = MutableStateFlow(base64Png.base64DecodedBytes)
+    override val metadataImage: StateFlow<ByteArray?> = MutableStateFlow(Base64.decode(base64Png))
     override val metadataDescription: StateFlow<String?> = MutableStateFlow("Metadata Description")
     override val description: StateFlow<String?> = MutableStateFlow(null)
     override val isNoteEditable: StateFlow<Boolean> = MutableStateFlow(true)

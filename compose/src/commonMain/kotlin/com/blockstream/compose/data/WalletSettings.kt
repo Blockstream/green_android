@@ -1,6 +1,6 @@
 package com.blockstream.compose.data
 
-import com.blockstream.common.gdk.data.Network
+import com.blockstream.data.gdk.data.Network
 import com.blockstream.compose.events.Event
 
 sealed class WalletSetting {
@@ -26,7 +26,7 @@ sealed class WalletSetting {
     data object RecoveryPhrase : WalletSetting()
     data class Version(val version: String) : WalletSetting()
     data class TwoFactorMethod(
-        val method: com.blockstream.common.data.TwoFactorMethod,
+        val method: com.blockstream.data.data.TwoFactorMethod,
         val data: String?,
         val enabled: Boolean
     ) : WalletSetting()

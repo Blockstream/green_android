@@ -7,8 +7,8 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.tooling.preview.Preview
-import com.blockstream.common.data.MenuEntry
-import com.blockstream.common.data.MenuEntryList
+import com.blockstream.data.data.MenuEntry
+import com.blockstream.data.data.MenuEntryList
 import com.blockstream.compose.GreenAndroidPreview
 import com.blockstream.compose.components.GreenButton
 import com.blockstream.compose.components.GreenColumn

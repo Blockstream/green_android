@@ -3,10 +3,10 @@ package com.blockstream.compose.models.settings
 import androidx.lifecycle.viewModelScope
 import blockstream_green.common.generated.resources.Res
 import blockstream_green.common.generated.resources.id_2fa_methods
-import com.blockstream.common.data.GreenWallet
-import com.blockstream.common.extensions.previewNetwork
-import com.blockstream.common.extensions.previewWallet
-import com.blockstream.common.gdk.data.Network
+import com.blockstream.data.data.GreenWallet
+import com.blockstream.compose.extensions.previewNetwork
+import com.blockstream.compose.extensions.previewWallet
+import com.blockstream.data.gdk.data.Network
 import com.blockstream.compose.models.GreenViewModel
 import com.blockstream.compose.navigation.NavData
 import kotlinx.coroutines.launch

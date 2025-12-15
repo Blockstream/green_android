@@ -3,8 +3,8 @@ package com.blockstream.compose.models.devices
 import androidx.lifecycle.viewModelScope
 import blockstream_green.common.generated.resources.Res
 import blockstream_green.common.generated.resources.id_setup_guide
-import com.blockstream.common.devices.DeviceModel
-import com.blockstream.common.devices.GreenDevice
+import com.blockstream.data.devices.DeviceModel
+import com.blockstream.data.devices.GreenDevice
 import com.blockstream.compose.events.Event
 import com.blockstream.compose.events.Events
 import com.blockstream.compose.navigation.NavAction

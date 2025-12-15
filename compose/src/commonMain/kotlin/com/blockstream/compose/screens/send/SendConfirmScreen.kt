@@ -36,8 +36,8 @@ import blockstream_green.common.generated.resources.id_you_are_paying_this_light
 import blockstream_green.common.generated.resources.id_your_redeposit_address
 import blockstream_green.common.generated.resources.info
 import blockstream_green.common.generated.resources.pencil_simple_line
-import com.blockstream.common.data.GreenWallet
-import com.blockstream.common.extensions.isNotBlank
+import com.blockstream.data.data.GreenWallet
+import com.blockstream.data.extensions.isNotBlank
 import com.blockstream.compose.components.Banner
 import com.blockstream.compose.components.GreenAccountAsset
 import com.blockstream.compose.components.GreenAmount

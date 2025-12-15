@@ -24,18 +24,18 @@ import blockstream_green.common.generated.resources.id_attempts_remaining_d
 import blockstream_green.common.generated.resources.id_cancel
 import blockstream_green.common.generated.resources.id_help
 import blockstream_green.common.generated.resources.id_please_provide_your_1s_code
-import com.blockstream.common.data.TwoFactorMethod
-import com.blockstream.common.extensions.twoFactorMethodsLocalized
-import com.blockstream.common.gdk.data.AuthHandlerStatus
+import com.blockstream.data.data.TwoFactorMethod
+import com.blockstream.data.gdk.data.AuthHandlerStatus
 import com.blockstream.compose.components.GreenButton
 import com.blockstream.compose.components.GreenButtonType
+import com.blockstream.compose.components.GreenColumn
 import com.blockstream.compose.extensions.colorText
 import com.blockstream.compose.extensions.getIcon
+import com.blockstream.compose.extensions.twoFactorMethodsLocalized
 import com.blockstream.compose.theme.bodyMedium
 import com.blockstream.compose.theme.titleMedium
 import com.blockstream.compose.theme.whiteMedium
 import com.blockstream.compose.views.PinView
-import com.blockstream.compose.components.GreenColumn
 import org.jetbrains.compose.resources.painterResource
 import org.jetbrains.compose.resources.stringResource
 

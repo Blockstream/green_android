@@ -2,14 +2,14 @@ package com.blockstream.gms
 
 import android.content.Context
 import android.os.Build
-import com.blockstream.common.CountlyBase
-import com.blockstream.common.SupportType
-import com.blockstream.common.ZendeskSdk
-import com.blockstream.common.data.SupportData
-import com.blockstream.common.di.ApplicationScope
-import com.blockstream.common.extensions.logException
-import com.blockstream.green.data.config.AppInfo
-import com.blockstream.green.utils.Loggable
+import com.blockstream.data.CountlyBase
+import com.blockstream.data.SupportType
+import com.blockstream.data.ZendeskSdk
+import com.blockstream.data.config.AppInfo
+import com.blockstream.data.data.SupportData
+import com.blockstream.data.di.ApplicationScope
+import com.blockstream.data.extensions.logException
+import com.blockstream.utils.Loggable
 import com.zendesk.service.ErrorResponse
 import com.zendesk.service.ZendeskCallback
 import kotlinx.coroutines.delay

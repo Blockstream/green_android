@@ -31,10 +31,9 @@ import blockstream_green.common.generated.resources.id_next
 import blockstream_green.common.generated.resources.id_redeposit
 import blockstream_green.common.generated.resources.id_set_custom_fee_rate
 import blockstream_green.common.generated.resources.id_total_spent
-import com.blockstream.common.data.DenominatedValue
-import com.blockstream.common.data.FeePriority
-import com.blockstream.common.utils.DecimalFormat
-import com.blockstream.common.utils.stringResourceFromId
+import com.blockstream.data.data.DenominatedValue
+import com.blockstream.data.data.FeePriority
+import com.blockstream.data.utils.DecimalFormat
 import com.blockstream.compose.components.GreenAccountAsset
 import com.blockstream.compose.components.GreenButton
 import com.blockstream.compose.components.GreenColumn
@@ -54,6 +53,7 @@ import com.blockstream.compose.theme.whiteHigh
 import com.blockstream.compose.theme.whiteMedium
 import com.blockstream.compose.utils.AnimatedNullableVisibility
 import com.blockstream.compose.utils.SetupScreen
+import com.blockstream.compose.utils.stringResourceFromId
 import org.jetbrains.compose.resources.stringResource
 
 @Composable

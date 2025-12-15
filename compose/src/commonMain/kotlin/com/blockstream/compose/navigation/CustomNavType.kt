@@ -6,7 +6,7 @@ import androidx.navigation.NavType
 import androidx.savedstate.SavedState
 import androidx.savedstate.read
 import androidx.savedstate.write
-import com.blockstream.common.gdk.GreenJson
+import com.blockstream.data.gdk.GreenJson
 import kotlinx.serialization.InternalSerializationApi
 import kotlinx.serialization.serializer
 import kotlin.io.encoding.Base64

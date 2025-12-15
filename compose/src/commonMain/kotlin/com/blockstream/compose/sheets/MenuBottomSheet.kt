@@ -7,8 +7,8 @@ import androidx.compose.material3.Icon
 import androidx.compose.material3.Text
 import androidx.compose.material3.rememberModalBottomSheetState
 import androidx.compose.runtime.Composable
-import com.blockstream.common.data.MenuEntry
-import com.blockstream.common.data.MenuEntryList
+import com.blockstream.data.data.MenuEntry
+import com.blockstream.data.data.MenuEntryList
 import com.blockstream.compose.components.GreenBottomSheet
 import com.blockstream.compose.extensions.toImageVector
 

@@ -2,7 +2,7 @@ import androidx.compose.runtime.remember
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.uikit.ComposeUIViewControllerDelegate
 import androidx.compose.ui.window.ComposeUIViewController
-import com.blockstream.common.managers.LifecycleManager
+import com.blockstream.data.managers.LifecycleManager
 import com.blockstream.compose.models.MainViewModel
 import com.blockstream.compose.GreenApp
 import com.blockstream.compose.di.startKoin

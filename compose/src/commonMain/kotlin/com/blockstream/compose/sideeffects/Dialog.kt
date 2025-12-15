@@ -18,10 +18,10 @@ import blockstream_green.common.generated.resources.id_cancel
 import blockstream_green.common.generated.resources.id_contact_support
 import blockstream_green.common.generated.resources.id_error
 import blockstream_green.common.generated.resources.id_ok
-import com.blockstream.common.data.SupportData
-import com.blockstream.common.utils.StringHolder
+import com.blockstream.data.data.SupportData
 import com.blockstream.compose.dialogs.SingleChoiceDialog
 import com.blockstream.compose.theme.whiteHigh
+import com.blockstream.compose.utils.StringHolder
 import kotlinx.coroutines.CancellableContinuation
 import kotlinx.coroutines.suspendCancellableCoroutine
 import kotlinx.coroutines.sync.Mutex

@@ -1,10 +1,10 @@
 package com.blockstream.green.utils
 
-import com.blockstream.common.data.Denomination
-import com.blockstream.common.gdk.GdkSession
-import com.blockstream.common.gdk.data.Pricing
-import com.blockstream.common.gdk.data.Settings
-import com.blockstream.common.utils.UserInput
+import com.blockstream.data.data.Denomination
+import com.blockstream.data.gdk.GdkSession
+import com.blockstream.data.gdk.data.Pricing
+import com.blockstream.data.gdk.data.Settings
+import com.blockstream.data.utils.UserInput
 import org.junit.Assert
 import org.junit.Test
 import org.junit.runner.RunWith

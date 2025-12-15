@@ -2,7 +2,7 @@ package com.blockstream.compose.components
 
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.tooling.preview.Preview
-import com.blockstream.common.data.FeePriority
+import com.blockstream.data.data.FeePriority
 import com.blockstream.compose.theme.GreenChromePreview
 
 @Preview

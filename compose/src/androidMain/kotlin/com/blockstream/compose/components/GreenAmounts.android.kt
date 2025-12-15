@@ -3,8 +3,8 @@ package com.blockstream.compose.components
 import androidx.compose.material3.HorizontalDivider
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.tooling.preview.Preview
-import com.blockstream.common.BTC_POLICY_ASSET
-import com.blockstream.common.looks.AmountAssetLook
+import com.blockstream.data.BTC_POLICY_ASSET
+import com.blockstream.data.looks.AmountAssetLook
 import com.blockstream.compose.theme.GreenChromePreview
 
 @Preview

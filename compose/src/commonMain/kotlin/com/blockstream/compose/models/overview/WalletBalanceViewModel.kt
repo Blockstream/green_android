@@ -1,11 +1,11 @@
 package com.blockstream.compose.models.overview
 
 import androidx.lifecycle.viewModelScope
-import com.blockstream.common.data.Denomination
-import com.blockstream.common.data.GreenWallet
-import com.blockstream.common.extensions.launchIn
-import com.blockstream.common.utils.toAmountLook
+import com.blockstream.data.data.Denomination
+import com.blockstream.data.data.GreenWallet
+import com.blockstream.data.utils.toAmountLook
 import com.blockstream.compose.events.Event
+import com.blockstream.compose.extensions.launchIn
 import com.blockstream.compose.models.GreenViewModel
 import com.blockstream.compose.models.IPostEvent
 import kotlinx.coroutines.flow.MutableStateFlow

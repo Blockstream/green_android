@@ -10,12 +10,6 @@ import androidx.compose.runtime.remember
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
 import androidx.navigation.compose.rememberNavController
-import com.blockstream.common.crypto.GreenKeystore
-import com.blockstream.common.managers.BluetoothManager
-import com.blockstream.common.managers.LifecycleManager
-import com.blockstream.common.managers.LocaleManager
-import com.blockstream.common.managers.SettingsManager
-import com.blockstream.common.utils.AndroidKeystore
 import com.blockstream.compose.managers.LocalPlatformManager
 import com.blockstream.compose.managers.rememberPlatformManager
 import com.blockstream.compose.navigation.LocalNavigator
@@ -23,7 +17,13 @@ import com.blockstream.compose.navigation.bottomsheet.rememberBottomSheetNavigat
 import com.blockstream.compose.sideeffects.DialogHost
 import com.blockstream.compose.sideeffects.DialogState
 import com.blockstream.compose.theme.GreenTheme
-import com.blockstream.green.data.config.AppInfo
+import com.blockstream.data.config.AppInfo
+import com.blockstream.data.crypto.GreenKeystore
+import com.blockstream.data.managers.BluetoothManager
+import com.blockstream.data.managers.LifecycleManager
+import com.blockstream.data.managers.LocaleManager
+import com.blockstream.data.managers.SettingsManager
+import com.blockstream.data.utils.AndroidKeystore
 import com.russhwolf.settings.ObservableSettings
 import com.russhwolf.settings.SharedPreferencesSettings
 import org.koin.android.ext.koin.androidContext

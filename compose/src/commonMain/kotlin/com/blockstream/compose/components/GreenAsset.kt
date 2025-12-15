@@ -24,9 +24,10 @@ import blockstream_green.common.generated.resources.Res
 import blockstream_green.common.generated.resources.id_select_asset
 import blockstream_green.common.generated.resources.pencil_simple_line
 import blockstream_green.common.generated.resources.unknown
-import com.blockstream.common.gdk.GdkSession
-import com.blockstream.common.gdk.data.AssetBalance
+import com.blockstream.data.gdk.GdkSession
+import com.blockstream.data.gdk.data.AssetBalance
 import com.blockstream.compose.extensions.assetIcon
+import com.blockstream.compose.extensions.nameStringHolder
 import com.blockstream.compose.theme.bodyMedium
 import com.blockstream.compose.theme.green
 import com.blockstream.compose.theme.labelLarge
@@ -102,7 +103,7 @@ fun GreenAsset(
                         Column(modifier = Modifier.weight(1f)) {
                             // Asset
                             Text(
-                                text = assetBalance.asset.name(session).string(),
+                                text = assetBalance.asset.nameStringHolder(session).string(),
                                 style = titleSmall,
                                 color = whiteHigh,
                                 maxLines = 1,

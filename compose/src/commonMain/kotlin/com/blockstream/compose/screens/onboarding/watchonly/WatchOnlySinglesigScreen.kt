@@ -30,7 +30,7 @@ import blockstream_green.common.generated.resources.id_paste_descriptors_placeho
 import blockstream_green.common.generated.resources.id_scan_or_paste_xpub_descriptor
 import blockstream_green.common.generated.resources.id_set_up_watchonly_wallet
 import blockstream_green.common.generated.resources.id_set_up_with_username_and_password
-import com.blockstream.common.data.ScanResult
+import com.blockstream.data.data.ScanResult
 import com.blockstream.compose.LocalBiometricState
 import com.blockstream.compose.components.GreenButton
 import com.blockstream.compose.components.GreenButtonSize

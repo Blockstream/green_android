@@ -3,10 +3,10 @@ package com.blockstream.compose.models.add
 import androidx.lifecycle.viewModelScope
 import blockstream_green.common.generated.resources.Res
 import blockstream_green.common.generated.resources.id_invalid_xpub
-import com.blockstream.common.data.SetupArgs
-import com.blockstream.common.extensions.isBlank
-import com.blockstream.common.extensions.previewWallet
-import com.blockstream.common.gdk.Wally
+import com.blockstream.data.data.SetupArgs
+import com.blockstream.data.extensions.isBlank
+import com.blockstream.compose.extensions.previewWallet
+import com.blockstream.data.gdk.Wally
 import com.blockstream.compose.events.Event
 import com.blockstream.compose.events.Events
 import com.blockstream.compose.navigation.NavData

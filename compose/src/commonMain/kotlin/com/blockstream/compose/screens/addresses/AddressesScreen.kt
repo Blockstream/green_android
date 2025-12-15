@@ -41,8 +41,7 @@ import blockstream_green.common.generated.resources.signature
 import com.adamglin.PhosphorIcons
 import com.adamglin.phosphoricons.Regular
 import com.adamglin.phosphoricons.regular.Copy
-import com.blockstream.common.data.GreenWallet
-import com.blockstream.common.looks.account.AddressLook
+import com.blockstream.data.data.GreenWallet
 import com.blockstream.compose.components.GreenColumn
 import com.blockstream.compose.components.GreenRow
 import com.blockstream.compose.components.GreenSearchField
@@ -50,6 +49,7 @@ import com.blockstream.compose.components.MenuEntry
 import com.blockstream.compose.components.PopupMenu
 import com.blockstream.compose.components.PopupState
 import com.blockstream.compose.extensions.onValueChange
+import com.blockstream.compose.looks.account.AddressLook
 import com.blockstream.compose.managers.LocalPlatformManager
 import com.blockstream.compose.models.addresses.AddressesViewModel
 import com.blockstream.compose.models.addresses.AddressesViewModelAbstract

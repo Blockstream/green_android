@@ -1,16 +1,16 @@
 package com.blockstream.compose.managers
 
-import com.blockstream.common.devices.GreenDevice
-import com.blockstream.common.devices.JadeDevice
-import com.blockstream.common.gdk.Gdk
-import com.blockstream.common.gdk.Wally
-import com.blockstream.common.gdk.data.DeviceSupportsAntiExfilProtocol
-import com.blockstream.common.gdk.data.DeviceSupportsLiquid
-import com.blockstream.common.gdk.device.GdkHardwareWallet
-import com.blockstream.common.gdk.device.HardwareConnectInteraction
-import com.blockstream.common.interfaces.ConnectionResult
-import com.blockstream.common.interfaces.DeviceConnectionInterface
-import com.blockstream.common.jade.JadeHWWallet
+import com.blockstream.data.devices.GreenDevice
+import com.blockstream.data.devices.JadeDevice
+import com.blockstream.data.gdk.Gdk
+import com.blockstream.data.gdk.Wally
+import com.blockstream.data.gdk.data.DeviceSupportsAntiExfilProtocol
+import com.blockstream.data.gdk.data.DeviceSupportsLiquid
+import com.blockstream.data.gdk.device.GdkHardwareWallet
+import com.blockstream.data.gdk.device.HardwareConnectInteraction
+import com.blockstream.data.interfaces.ConnectionResult
+import com.blockstream.data.interfaces.DeviceConnectionInterface
+import com.blockstream.data.jade.JadeHWWallet
 import com.blockstream.jade.HttpRequestHandler
 import com.blockstream.jade.JadeAPI
 import com.blockstream.jade.data.JadeError
@@ -83,7 +83,7 @@ open class DeviceConnectionManager(
     }
 
     private suspend fun onJadeConnected(device: GreenDevice, jade: JadeAPI): ConnectionResult {
-        val jadeDevice = com.blockstream.common.gdk.data.Device(
+        val jadeDevice = com.blockstream.data.gdk.data.Device(
             name = "Jade",
             supportsArbitraryScripts = true,
             supportsLowR = true,

@@ -6,7 +6,7 @@ import androidx.room.Ignore
 import androidx.room.Index
 import androidx.room.PrimaryKey
 import androidx.room.TypeConverters
-import com.blockstream.common.data.DeviceIdentifier
+import com.blockstream.data.data.DeviceIdentifier
 
 typealias WalletId = Long
 

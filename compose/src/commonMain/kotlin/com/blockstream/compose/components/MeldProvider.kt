@@ -27,7 +27,6 @@ import com.blockstream.compose.theme.green
 import com.blockstream.compose.theme.labelLarge
 import com.blockstream.compose.theme.titleSmall
 import com.blockstream.compose.theme.whiteMedium
-import com.blockstream.green.data.meld.data.QuoteResponse
 import com.blockstream.compose.utils.ifTrue
 import org.jetbrains.compose.resources.painterResource
 import org.jetbrains.compose.resources.stringResource
@@ -35,7 +34,7 @@ import org.jetbrains.compose.resources.stringResource
 @Composable
 fun MeldProvider(
     modifier: Modifier = Modifier,
-    quote: QuoteResponse?,
+    quote: com.blockstream.data.meld.data.QuoteResponse?,
     title: String? = null,
     badge: String? = null,
     error: String? = null,

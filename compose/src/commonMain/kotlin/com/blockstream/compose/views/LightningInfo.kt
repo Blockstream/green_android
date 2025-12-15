@@ -14,16 +14,16 @@ import blockstream_green.common.generated.resources.Res
 import blockstream_green.common.generated.resources.id_learn_more
 import blockstream_green.common.generated.resources.id_transfer_funds
 import blockstream_green.common.generated.resources.info
-import com.blockstream.common.looks.account.LightningInfoLook
 import com.blockstream.compose.components.GreenButton
 import com.blockstream.compose.components.GreenButtonSize
 import com.blockstream.compose.components.GreenButtonType
 import com.blockstream.compose.components.GreenCard
+import com.blockstream.compose.components.GreenColumn
+import com.blockstream.compose.components.GreenRow
+import com.blockstream.compose.looks.account.LightningInfoLook
 import com.blockstream.compose.theme.labelMedium
 import com.blockstream.compose.theme.md_theme_brandSurface
 import com.blockstream.compose.theme.whiteMedium
-import com.blockstream.compose.components.GreenColumn
-import com.blockstream.compose.components.GreenRow
 import org.jetbrains.compose.resources.painterResource
 import org.jetbrains.compose.resources.stringResource
 

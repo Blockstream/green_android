@@ -28,21 +28,21 @@ import blockstream_green.common.generated.resources.id_payment_received
 import blockstream_green.common.generated.resources.id_payment_sent
 import blockstream_green.common.generated.resources.id_swaps_notifications
 import blockstream_green.common.generated.resources.id_transactions_notifications
-import com.blockstream.common.data.GreenWallet
-import com.blockstream.common.data.LogoutReason
-import com.blockstream.common.database.Database
-import com.blockstream.common.di.ApplicationScope
-import com.blockstream.common.extensions.getWallet
-import com.blockstream.common.extensions.logException
-import com.blockstream.common.gdk.GdkSession
-import com.blockstream.common.managers.SessionManager
-import com.blockstream.common.managers.SettingsManager
 import com.blockstream.compose.theme.md_theme_primary
+import com.blockstream.data.data.GreenWallet
+import com.blockstream.data.data.LogoutReason
+import com.blockstream.data.database.Database
+import com.blockstream.data.di.ApplicationScope
+import com.blockstream.data.extensions.getWallet
+import com.blockstream.data.extensions.logException
+import com.blockstream.data.gdk.GdkSession
+import com.blockstream.data.managers.SessionManager
+import com.blockstream.data.managers.SettingsManager
+import com.blockstream.data.notifications.models.MeldNotificationData
 import com.blockstream.green.BuildConfig
 import com.blockstream.green.GreenActivity
 import com.blockstream.green.R
-import com.blockstream.green.data.notifications.models.MeldNotificationData
-import com.blockstream.green.utils.Loggable
+import com.blockstream.utils.Loggable
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.SupervisorJob
 import kotlinx.coroutines.flow.launchIn
@@ -57,7 +57,7 @@ class NotificationManagerAndroid constructor(
     private val sessionManager: SessionManager,
     private val settingsManager: SettingsManager,
     private val database: Database,
-) : com.blockstream.common.managers.NotificationManager(), DefaultLifecycleObserver {
+) : com.blockstream.data.managers.NotificationManager(), DefaultLifecycleObserver {
     private var scope: CoroutineScope = CoroutineScope(SupervisorJob())
 
     private var isOnForeground: Boolean = false

@@ -38,7 +38,7 @@ import androidx.constraintlayout.compose.ConstraintLayout
 import com.adamglin.PhosphorIcons
 import com.adamglin.phosphoricons.Regular
 import com.adamglin.phosphoricons.regular.Wallet
-import com.blockstream.common.extensions.isNotBlank
+import com.blockstream.data.extensions.isNotBlank
 import com.blockstream.compose.navigation.LocalNavigator
 import com.blockstream.compose.navigation.NavData
 import com.blockstream.compose.navigation.NavigateDestinations

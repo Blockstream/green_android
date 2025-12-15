@@ -1,16 +1,16 @@
 package com.blockstream.compose.models.abstract
 
 import androidx.lifecycle.viewModelScope
-import com.blockstream.common.data.GreenWallet
-import com.blockstream.common.data.ScanResult
-import com.blockstream.common.extensions.logException
-import com.blockstream.common.gdk.BcurResolver
-import com.blockstream.common.gdk.params.BcurDecodeParams
+import com.blockstream.data.data.GreenWallet
+import com.blockstream.data.data.ScanResult
+import com.blockstream.data.extensions.logException
+import com.blockstream.data.gdk.BcurResolver
+import com.blockstream.data.gdk.params.BcurDecodeParams
 import com.blockstream.compose.events.Event
 import com.blockstream.compose.events.Events
 import com.blockstream.compose.models.GreenViewModel
 import com.blockstream.compose.sideeffects.SideEffects
-import com.blockstream.green.utils.Loggable
+import com.blockstream.utils.Loggable
 import kotlinx.coroutines.CancellationException
 import kotlinx.coroutines.CompletableDeferred
 import kotlinx.coroutines.flow.MutableStateFlow

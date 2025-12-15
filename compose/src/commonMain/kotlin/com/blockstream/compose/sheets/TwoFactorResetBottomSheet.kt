@@ -26,10 +26,10 @@ import blockstream_green.common.generated.resources.id_the_waiting_period_is_nec
 import blockstream_green.common.generated.resources.id_undo_2fa_dispute
 import blockstream_green.common.generated.resources.id_your_wallet_is_locked_for_a
 import blockstream_green.common.generated.resources.id_your_wallet_is_locked_under_2fa
-import com.blockstream.common.data.TwoFactorMethod
-import com.blockstream.common.data.TwoFactorSetupAction
-import com.blockstream.common.gdk.data.Network
-import com.blockstream.common.gdk.data.TwoFactorReset
+import com.blockstream.data.data.TwoFactorMethod
+import com.blockstream.data.data.TwoFactorSetupAction
+import com.blockstream.data.gdk.data.Network
+import com.blockstream.data.gdk.data.TwoFactorReset
 import com.blockstream.compose.components.GreenBottomSheet
 import com.blockstream.compose.components.GreenButton
 import com.blockstream.compose.components.GreenColumn

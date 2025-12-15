@@ -8,8 +8,8 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.tooling.preview.Preview
-import com.blockstream.common.extensions.previewAccountAsset
-import com.blockstream.common.extensions.previewWallet
+import com.blockstream.compose.extensions.previewAccountAsset
+import com.blockstream.compose.extensions.previewWallet
 import com.blockstream.compose.models.SimpleGreenViewModelPreview
 import com.blockstream.compose.GreenAndroidPreview
 import com.blockstream.compose.components.GreenButton

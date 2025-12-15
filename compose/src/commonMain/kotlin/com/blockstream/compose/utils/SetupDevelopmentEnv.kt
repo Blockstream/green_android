@@ -1,13 +1,12 @@
 package com.blockstream.compose.utils
 
 import androidx.lifecycle.viewModelScope
-import com.blockstream.common.data.DataState
-import com.blockstream.common.utils.StringHolder
 import com.blockstream.compose.events.Events
 import com.blockstream.compose.models.login.LoginViewModel
 import com.blockstream.compose.models.login.LoginViewModelAbstract
 import com.blockstream.compose.sideeffects.SideEffects
-import com.blockstream.green.data.config.AppInfo
+import com.blockstream.data.config.AppInfo
+import com.blockstream.data.data.DataState
 import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.launch
 import org.koin.core.component.KoinComponent

@@ -10,7 +10,7 @@ import blockstream_green.common.generated.resources.Res
 import blockstream_green.common.generated.resources.id_2fa_isnt_set_up_yetnnyou_can
 import blockstream_green.common.generated.resources.id_enable_2fa
 import blockstream_green.common.generated.resources.id_set_up_2fa_now
-import com.blockstream.common.gdk.data.Network
+import com.blockstream.data.gdk.data.Network
 import com.blockstream.compose.components.GreenBottomSheet
 import com.blockstream.compose.components.GreenButton
 import com.blockstream.compose.models.GreenViewModel

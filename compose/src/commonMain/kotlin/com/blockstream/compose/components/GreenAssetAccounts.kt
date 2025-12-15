@@ -35,13 +35,14 @@ import blockstream_green.common.generated.resources.id_you_need_a_liquid_account
 import blockstream_green.common.generated.resources.id_you_need_an_amp_account_in
 import blockstream_green.common.generated.resources.liquid_asset
 import blockstream_green.common.generated.resources.shield_warning
-import com.blockstream.common.data.EnrichedAsset
-import com.blockstream.common.extensions.getAssetNameOrNull
-import com.blockstream.common.extensions.isPolicyAsset
-import com.blockstream.common.gdk.GdkSession
-import com.blockstream.common.gdk.data.Account
-import com.blockstream.common.gdk.data.AccountAsset
+import com.blockstream.data.data.EnrichedAsset
+import com.blockstream.data.extensions.getAssetNameOrNull
+import com.blockstream.data.extensions.isPolicyAsset
+import com.blockstream.data.gdk.GdkSession
+import com.blockstream.data.gdk.data.Account
+import com.blockstream.data.gdk.data.AccountAsset
 import com.blockstream.compose.extensions.assetIcon
+import com.blockstream.compose.extensions.nameStringHolder
 import com.blockstream.compose.extensions.policyAndType
 import com.blockstream.compose.extensions.policyIcon
 import com.blockstream.compose.theme.green
@@ -150,7 +151,7 @@ fun GreenAssetAccounts(
                             Column(modifier = Modifier.weight(1f)) {
                                 // Asset
                                 Text(
-                                    text = asset.name(session).string(),
+                                    text = asset.nameStringHolder(session).string(),
                                     style = titleSmall,
                                     maxLines = 1,
                                     overflow = TextOverflow.Ellipsis

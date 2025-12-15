@@ -6,7 +6,7 @@ import androidx.compose.foundation.verticalScroll
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
-import com.blockstream.common.gdk.data.AssetBalance
+import com.blockstream.data.gdk.data.AssetBalance
 import com.blockstream.compose.models.send.SendChooseAssetViewModelAbstract
 import com.blockstream.compose.models.send.SendChooseAssetViewModelPreview
 import com.blockstream.compose.GreenPreview

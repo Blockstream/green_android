@@ -2,7 +2,7 @@ package com.blockstream.green.utils
 
 import android.content.Context
 import androidx.lifecycle.MutableLiveData
-import com.blockstream.common.gdk.data.Notification
+import com.blockstream.data.gdk.data.Notification
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.MutableSharedFlow

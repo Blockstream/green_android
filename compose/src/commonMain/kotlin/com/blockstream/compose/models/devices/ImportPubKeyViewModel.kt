@@ -1,15 +1,15 @@
 package com.blockstream.compose.models.devices
 
-import com.blockstream.common.Urls
-import com.blockstream.common.data.WatchOnlyCredentials
-import com.blockstream.common.devices.DeviceModel
-import com.blockstream.common.gdk.data.Network
+import com.blockstream.data.Urls
+import com.blockstream.data.data.WatchOnlyCredentials
+import com.blockstream.data.devices.DeviceModel
+import com.blockstream.data.gdk.data.Network
 import com.blockstream.compose.events.Event
 import com.blockstream.compose.models.GreenViewModel
 import com.blockstream.compose.models.jade.JadeQrOperation
 import com.blockstream.compose.navigation.NavigateDestinations
 import com.blockstream.compose.sideeffects.SideEffects
-import com.blockstream.green.utils.Loggable
+import com.blockstream.utils.Loggable
 
 abstract class ImportPubKeyViewModelAbstract(val deviceModel: DeviceModel) : GreenViewModel() {
     override fun screenName(): String = "ImportPubKey"

@@ -3,9 +3,9 @@ package com.blockstream.green.services
 import android.app.Service
 import android.content.Intent
 import android.os.IBinder
-import com.blockstream.common.managers.SessionManager
+import com.blockstream.data.managers.SessionManager
 import com.blockstream.green.managers.NotificationManagerAndroid
-import com.blockstream.green.utils.Loggable
+import com.blockstream.utils.Loggable
 import org.koin.android.ext.android.inject
 
 class TaskService : Service() {

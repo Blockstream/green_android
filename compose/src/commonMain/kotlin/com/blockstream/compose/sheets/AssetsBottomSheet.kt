@@ -20,12 +20,13 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import blockstream_green.common.generated.resources.Res
 import blockstream_green.common.generated.resources.id_empty
-import com.blockstream.common.extensions.isBlank
-import com.blockstream.common.gdk.data.AssetBalanceList
+import com.blockstream.data.extensions.isBlank
+import com.blockstream.data.gdk.data.AssetBalanceList
 import com.blockstream.compose.components.GreenAsset
 import com.blockstream.compose.components.GreenBottomSheet
 import com.blockstream.compose.components.GreenColumn
 import com.blockstream.compose.components.GreenSearchField
+import com.blockstream.compose.extensions.nameStringHolder
 import com.blockstream.compose.models.GreenViewModel
 import com.blockstream.compose.navigation.NavigateDestinations
 import com.blockstream.compose.navigation.setResult
@@ -54,7 +55,7 @@ fun AssetsBottomSheet(
                     assetBalance.list
                 } else {
                     assetBalance.list.filter {
-                        it.asset.name(viewModel.sessionOrNull).fallbackString().contains(query) || it.assetId.contains(query)
+                        it.asset.nameStringHolder(viewModel.sessionOrNull).fallbackString().contains(query) || it.assetId.contains(query)
                     }
                 }
             }

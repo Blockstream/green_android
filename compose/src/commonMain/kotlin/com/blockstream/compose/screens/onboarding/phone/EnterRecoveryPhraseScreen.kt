@@ -51,8 +51,8 @@ import blockstream_green.common.generated.resources.id_invalid_mnemonic
 import blockstream_green.common.generated.resources.id_passphrase
 import blockstream_green.common.generated.resources.id_type_the_next_word
 import blockstream_green.common.generated.resources.info
-import com.blockstream.common.data.ScanResult
-import com.blockstream.common.extensions.isNotBlank
+import com.blockstream.data.data.ScanResult
+import com.blockstream.data.extensions.isNotBlank
 import com.blockstream.compose.LocalSnackbar
 import com.blockstream.compose.components.GreenButton
 import com.blockstream.compose.components.GreenButtonSize

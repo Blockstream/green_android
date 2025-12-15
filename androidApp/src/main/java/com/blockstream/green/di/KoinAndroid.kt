@@ -3,16 +3,16 @@ package com.blockstream.green.di
 import android.app.Application
 import android.content.Context
 import androidx.lifecycle.LifecycleObserver
-import com.blockstream.common.CountlyBase
-import com.blockstream.common.data.AppConfig
 import com.blockstream.compose.di.initKoin
+import com.blockstream.data.CountlyBase
+import com.blockstream.data.config.AppInfo
+import com.blockstream.data.data.AppConfig
 import com.blockstream.gms.di.gmsModule
 import com.blockstream.green.BuildConfig
 import com.blockstream.green.R
 import com.blockstream.green.data.Countly
 import com.blockstream.green.data.CountlyAndroid
 import com.blockstream.green.data.CountlyNoOp
-import com.blockstream.green.data.config.AppInfo
 import com.blockstream.green.lifecycle.ActivityLifecycle
 import com.blockstream.green.settings.AndroidMigrator
 import com.blockstream.green.utils.QATester
@@ -35,7 +35,8 @@ fun initKoinAndroid(context: Context, doOnStartup: () -> Unit = {}) {
         cacheDir = context.cacheDir.absolutePath,
         analyticsFeatureEnabled = context.resources.getBoolean(R.bool.feature_analytics),
         lightningFeatureEnabled = context.resources.getBoolean(R.bool.feature_lightning),
-        storeRateEnabled = context.resources.getBoolean(R.bool.feature_rate_google_play)
+        storeRateEnabled = context.resources.getBoolean(R.bool.feature_rate_google_play),
+        appKeysString = BuildConfig.APP_KEYS
     )
 
     initKoin(

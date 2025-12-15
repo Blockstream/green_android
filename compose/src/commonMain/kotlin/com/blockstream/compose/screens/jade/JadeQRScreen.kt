@@ -32,8 +32,8 @@ import blockstream_green.common.generated.resources.id_step_1s
 import blockstream_green.common.generated.resources.id_troubleshoot
 import blockstream_green.common.generated.resources.qr_code
 import blockstream_green.common.generated.resources.scan
-import com.blockstream.common.data.MenuEntry
-import com.blockstream.common.data.MenuEntryList
+import com.blockstream.data.data.MenuEntry
+import com.blockstream.data.data.MenuEntryList
 import com.blockstream.compose.GreenPreview
 import com.blockstream.compose.components.GreenButton
 import com.blockstream.compose.components.GreenButtonColor

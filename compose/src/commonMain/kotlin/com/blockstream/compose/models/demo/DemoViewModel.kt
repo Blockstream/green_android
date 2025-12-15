@@ -1,10 +1,10 @@
 package com.blockstream.compose.models.demo
 
 import androidx.lifecycle.viewModelScope
-import com.blockstream.common.Urls
-import com.blockstream.common.data.DataState
-import com.blockstream.common.gdk.GdkSession
-import com.blockstream.common.utils.toAmountLookOrNa
+import com.blockstream.data.Urls
+import com.blockstream.data.data.DataState
+import com.blockstream.data.gdk.GdkSession
+import com.blockstream.data.utils.toAmountLookOrNa
 import com.blockstream.compose.events.Event
 import com.blockstream.compose.models.GreenViewModel
 import com.blockstream.compose.sideeffects.SideEffect

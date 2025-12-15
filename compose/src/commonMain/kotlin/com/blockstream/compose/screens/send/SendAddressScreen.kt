@@ -12,8 +12,8 @@ import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import blockstream_green.common.generated.resources.Res
 import blockstream_green.common.generated.resources.id_next
 import blockstream_green.common.generated.resources.id_recipient_address
-import com.blockstream.common.AddressInputType
-import com.blockstream.common.data.ScanResult
+import com.blockstream.data.AddressInputType
+import com.blockstream.data.data.ScanResult
 import com.blockstream.compose.GreenPreview
 import com.blockstream.compose.components.Banner
 import com.blockstream.compose.components.GreenButton

@@ -5,9 +5,9 @@ import androidx.room.Entity
 import androidx.room.ForeignKey
 import androidx.room.ForeignKey.Companion.CASCADE
 import androidx.room.TypeConverters
-import com.blockstream.common.data.CredentialType
-import com.blockstream.common.data.EncryptedData
-import com.blockstream.common.gdk.data.PinData
+import com.blockstream.data.data.CredentialType
+import com.blockstream.data.data.EncryptedData
+import com.blockstream.data.gdk.data.PinData
 
 @Entity(
     tableName = "login_credentials",

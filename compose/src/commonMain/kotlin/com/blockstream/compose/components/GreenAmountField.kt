@@ -52,11 +52,11 @@ import com.adamglin.phosphoricons.Fill
 import com.adamglin.phosphoricons.Regular
 import com.adamglin.phosphoricons.fill.CaretDown
 import com.adamglin.phosphoricons.regular.XCircle
-import com.blockstream.common.data.Denomination
-import com.blockstream.common.extensions.isNotBlank
-import com.blockstream.common.extensions.isPolicyAsset
-import com.blockstream.common.gdk.GdkSession
-import com.blockstream.common.utils.DecimalFormat
+import com.blockstream.data.data.Denomination
+import com.blockstream.data.extensions.isNotBlank
+import com.blockstream.data.extensions.isPolicyAsset
+import com.blockstream.data.gdk.GdkSession
+import com.blockstream.data.utils.DecimalFormat
 import com.blockstream.compose.theme.bodyMedium
 import com.blockstream.compose.theme.bodySmall
 import com.blockstream.compose.theme.green

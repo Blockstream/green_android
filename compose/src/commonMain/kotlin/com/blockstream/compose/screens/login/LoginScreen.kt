@@ -61,8 +61,8 @@ import blockstream_green.common.generated.resources.x
 import com.adamglin.PhosphorIcons
 import com.adamglin.phosphoricons.Regular
 import com.adamglin.phosphoricons.regular.Fingerprint
-import com.blockstream.common.extensions.isNotBlank
-import com.blockstream.common.managers.LifecycleManager
+import com.blockstream.data.extensions.isNotBlank
+import com.blockstream.data.managers.LifecycleManager
 import com.blockstream.compose.GreenPreview
 import com.blockstream.compose.LocalBiometricState
 import com.blockstream.compose.components.AppSettingsButton

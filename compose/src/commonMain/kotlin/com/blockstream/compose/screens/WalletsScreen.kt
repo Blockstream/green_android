@@ -25,11 +25,11 @@ import blockstream_green.common.generated.resources.id_set_up_a_new_wallet
 import com.adamglin.PhosphorIcons
 import com.adamglin.phosphoricons.Regular
 import com.adamglin.phosphoricons.regular.CaretRight
-import com.blockstream.common.data.GreenWallet
-import com.blockstream.common.looks.wallet.WalletListLook
+import com.blockstream.data.data.GreenWallet
 import com.blockstream.compose.components.GreenCard
 import com.blockstream.compose.components.GreenColumn
 import com.blockstream.compose.components.Promo
+import com.blockstream.compose.looks.wallet.WalletListLook
 import com.blockstream.compose.models.home.HomeViewModel
 import com.blockstream.compose.models.home.HomeViewModelAbstract
 import com.blockstream.compose.navigation.NavigateDestinations

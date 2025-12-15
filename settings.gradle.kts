@@ -29,7 +29,6 @@ include(
     ":base-gms",
     ":gms",
     ":no-gms",
-    ":common",
     ":gdk",
     ":desktopApp",
     ":data",

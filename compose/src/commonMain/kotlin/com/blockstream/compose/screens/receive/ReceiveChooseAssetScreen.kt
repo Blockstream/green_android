@@ -8,7 +8,7 @@ import androidx.compose.runtime.getValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
-import com.blockstream.common.gdk.data.AssetBalance
+import com.blockstream.data.gdk.data.AssetBalance
 import com.blockstream.compose.models.receive.ReceiveChooseAssetViewModelAbstract
 import com.blockstream.compose.models.receive.ReceiveChooseAssetViewModelPreview
 import com.blockstream.compose.GreenPreview

@@ -41,8 +41,8 @@ import com.adamglin.phosphoricons.regular.Bug
 import com.adamglin.phosphoricons.regular.Copy
 import com.adamglin.phosphoricons.regular.Fire
 import com.adamglin.phosphoricons.regular.Swap
-import com.blockstream.common.SupportType
-import com.blockstream.common.data.SupportData
+import com.blockstream.data.SupportType
+import com.blockstream.data.data.SupportData
 import com.blockstream.compose.components.GreenButton
 import com.blockstream.compose.components.GreenButtonSize
 import com.blockstream.compose.components.GreenButtonType

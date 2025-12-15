@@ -39,8 +39,8 @@ import blockstream_green.common.generated.resources.Res
 import blockstream_green.common.generated.resources.arrow_right
 import blockstream_green.common.generated.resources.id_copy_id
 import blockstream_green.common.generated.resources.shield_warning
-import com.blockstream.common.gdk.GdkSession
-import com.blockstream.common.gdk.data.AccountBalance
+import com.blockstream.data.gdk.GdkSession
+import com.blockstream.data.gdk.data.AccountBalance
 import com.blockstream.compose.extensions.assetIcon
 import com.blockstream.compose.extensions.getAccountColor
 import com.blockstream.compose.extensions.policyAndType

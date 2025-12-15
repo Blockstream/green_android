@@ -1,6 +1,6 @@
 package com.blockstream.compose.models.onboarding.hardware
 
-import com.blockstream.common.Urls
+import com.blockstream.data.Urls
 import com.blockstream.compose.events.Event
 import com.blockstream.compose.events.Events
 import com.blockstream.compose.models.GreenViewModel

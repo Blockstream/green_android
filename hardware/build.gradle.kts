@@ -23,7 +23,7 @@ kotlin {
 
 dependencies {
     /**  --- Modules ---------------------------------------------------------------------------- */
-    implementation(project(":common"))
+    implementation(project(":data"))
     implementation(project(":gdk"))
     /** ----------------------------------------------------------------------------------------- */
 

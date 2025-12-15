@@ -28,7 +28,7 @@ import blockstream_green.common.generated.resources.id_give_bluetooth_permission
 import blockstream_green.common.generated.resources.id_looking_for_device
 import blockstream_green.common.generated.resources.id_more_info
 import blockstream_green.common.generated.resources.id_unlock_your_device_to_continue
-import com.blockstream.common.managers.BluetoothState
+import com.blockstream.data.managers.BluetoothState
 import com.blockstream.compose.components.GreenButton
 import com.blockstream.compose.components.GreenButtonColor
 import com.blockstream.compose.components.GreenButtonSize

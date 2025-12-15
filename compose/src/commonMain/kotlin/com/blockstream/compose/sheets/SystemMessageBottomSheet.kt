@@ -24,7 +24,7 @@ import blockstream_green.common.generated.resources.id_accept
 import blockstream_green.common.generated.resources.id_i_confirm_i_have_read_and
 import blockstream_green.common.generated.resources.id_system_message
 import com.blockstream.compose.events.Events
-import com.blockstream.common.gdk.data.Network
+import com.blockstream.data.gdk.data.Network
 import com.blockstream.compose.models.GreenViewModel
 import com.blockstream.compose.components.GreenBottomSheet
 import com.blockstream.compose.components.GreenButton

@@ -1,7 +1,7 @@
 package com.blockstream.green.utils
 
 import androidx.test.ext.junit.runners.AndroidJUnit4
-import com.blockstream.common.utils.AndroidKeystore
+import com.blockstream.data.utils.AndroidKeystore
 import org.junit.Assert
 import org.junit.Before
 import org.junit.Test

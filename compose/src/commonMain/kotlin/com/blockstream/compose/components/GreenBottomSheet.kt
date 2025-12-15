@@ -23,7 +23,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.navigation.get
-import com.blockstream.common.extensions.isNotBlank
+import com.blockstream.data.extensions.isNotBlank
 import com.blockstream.compose.models.GreenViewModel
 import com.blockstream.compose.navigation.LocalNavigator
 import com.blockstream.compose.navigation.bottomsheet.BottomSheetNavigator

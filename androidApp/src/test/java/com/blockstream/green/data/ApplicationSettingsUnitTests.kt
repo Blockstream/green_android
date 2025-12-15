@@ -1,6 +1,6 @@
 package com.blockstream.green.data
 
-import com.blockstream.common.data.ApplicationSettings
+import com.blockstream.data.data.ApplicationSettings
 import com.russhwolf.settings.Settings
 import org.junit.Assert
 import org.junit.Test

@@ -39,7 +39,7 @@ import blockstream_green.common.generated.resources.qr_code
 import com.adamglin.PhosphorIcons
 import com.adamglin.phosphoricons.Regular
 import com.adamglin.phosphoricons.regular.Copy
-import com.blockstream.common.extensions.isNotBlank
+import com.blockstream.data.extensions.isNotBlank
 import com.blockstream.compose.GreenPreview
 import com.blockstream.compose.components.GreenButton
 import com.blockstream.compose.components.GreenButtonColor

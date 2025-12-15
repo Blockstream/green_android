@@ -14,7 +14,7 @@ import com.adamglin.phosphoricons.regular.Warning
 import com.blockstream.compose.events.Events
 import com.blockstream.compose.models.GreenViewModel
 import com.blockstream.compose.utils.AnimatedNullableVisibility
-import com.blockstream.green.data.banner.Banner
+import com.blockstream.data.banner.Banner
 import org.jetbrains.compose.resources.stringResource
 
 @Composable

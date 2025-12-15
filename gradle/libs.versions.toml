@@ -36,7 +36,6 @@ espresso-core = "3.7.0"
 installreferrer = "2.2"
 jackson = "2.9.6"
 junit = "4.13.2"
-kase64 = "1.3.1"
 kermit = "2.0.8"
 splash-screen = "1.1.0-rc01"
 koin-bom = "4.1.1"
@@ -145,7 +144,6 @@ guava = { module = "com.google.guava:guava", version.ref = "guava" }
 installreferrer = { module = "com.android.installreferrer:installreferrer", version.ref = "installreferrer" }
 jackson-datatype-json-org = { module = "com.fasterxml.jackson.datatype:jackson-datatype-json-org", version.ref = "jackson" }
 junit = { module = "junit:junit", version.ref = "junit" }
-kase64 = { module = "de.peilicke.sascha:kase64", version.ref = "kase64" }
 kermit = { module = "co.touchlab:kermit", version.ref = "kermit" }
 koin-bom = { module = "io.insert-koin:koin-bom", version.ref = "koin-bom" }
 koin-android = { module = "io.insert-koin:koin-android" }

@@ -23,18 +23,18 @@ import blockstream_green.common.generated.resources.id_message
 import blockstream_green.common.generated.resources.id_paste_here_the_message_to_be
 import blockstream_green.common.generated.resources.id_sign_message
 import blockstream_green.common.generated.resources.id_signature
-import com.blockstream.compose.events.Events
-import com.blockstream.compose.models.addresses.SignMessageViewModelAbstract
-import com.blockstream.common.utils.StringHolder
 import com.blockstream.compose.components.GreenBottomSheet
 import com.blockstream.compose.components.GreenButton
+import com.blockstream.compose.components.GreenColumn
 import com.blockstream.compose.components.GreenTextField
 import com.blockstream.compose.components.Rive
 import com.blockstream.compose.components.RiveAnimation
+import com.blockstream.compose.events.Events
 import com.blockstream.compose.extensions.onValueChange
+import com.blockstream.compose.models.addresses.SignMessageViewModelAbstract
 import com.blockstream.compose.theme.titleSmall
+import com.blockstream.compose.utils.StringHolder
 import com.blockstream.compose.views.DataListItem
-import com.blockstream.compose.components.GreenColumn
 import org.jetbrains.compose.resources.stringResource
 
 @OptIn(ExperimentalMaterial3Api::class)

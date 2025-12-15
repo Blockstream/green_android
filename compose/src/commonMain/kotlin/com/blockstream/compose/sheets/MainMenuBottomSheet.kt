@@ -24,7 +24,7 @@ import com.adamglin.phosphoricons.regular.ArrowULeftDown
 import com.adamglin.phosphoricons.regular.ArrowsDownUp
 import com.adamglin.phosphoricons.regular.Coins
 import com.adamglin.phosphoricons.regular.QrCode
-import com.blockstream.common.CountlyBase
+import com.blockstream.data.CountlyBase
 import com.blockstream.compose.LocalAppInfo
 import com.blockstream.compose.components.GreenArrow
 import com.blockstream.compose.components.GreenBottomSheet

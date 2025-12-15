@@ -1,10 +1,10 @@
 package com.blockstream.compose.models.login
 
 import androidx.lifecycle.viewModelScope
-import com.blockstream.common.Urls
-import com.blockstream.common.data.GreenWallet
-import com.blockstream.common.extensions.logException
-import com.blockstream.common.extensions.previewWallet
+import com.blockstream.data.Urls
+import com.blockstream.data.data.GreenWallet
+import com.blockstream.data.extensions.logException
+import com.blockstream.compose.extensions.previewWallet
 import com.blockstream.compose.events.Event
 import com.blockstream.compose.events.Events
 import com.blockstream.compose.models.GreenViewModel

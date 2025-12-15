@@ -12,35 +12,32 @@ import blockstream_green.common.generated.resources.id_select_your_region
 import blockstream_green.common.generated.resources.id_something_went_wrong
 import blockstream_green.common.generated.resources.id_the_address_is_valid
 import blockstream_green.common.generated.resources.id_verify_address
-import com.blockstream.common.data.DenominatedValue
-import com.blockstream.common.data.Denomination
-import com.blockstream.common.data.GreenWallet
-import com.blockstream.common.extensions.ifConnected
-import com.blockstream.common.extensions.launchIn
-import com.blockstream.common.extensions.previewAccountAsset
-import com.blockstream.common.extensions.previewWallet
-import com.blockstream.common.gdk.data.AccountAsset
-import com.blockstream.common.gdk.data.AccountAssetBalanceList
-import com.blockstream.common.gdk.data.Address
-import com.blockstream.common.managers.LocaleManager
-import com.blockstream.common.utils.StringHolder
-import com.blockstream.common.utils.UserInput
 import com.blockstream.compose.events.Event
 import com.blockstream.compose.events.Events
+import com.blockstream.compose.extensions.launchIn
+import com.blockstream.compose.extensions.previewAccountAsset
+import com.blockstream.compose.extensions.previewWallet
 import com.blockstream.compose.models.send.CreateTransactionViewModelAbstract
 import com.blockstream.compose.navigation.NavAction
 import com.blockstream.compose.navigation.NavData
 import com.blockstream.compose.navigation.NavigateDestinations
 import com.blockstream.compose.sideeffects.OpenBrowserType
 import com.blockstream.compose.sideeffects.SideEffects
+import com.blockstream.compose.utils.StringHolder
+import com.blockstream.data.data.DenominatedValue
+import com.blockstream.data.data.Denomination
+import com.blockstream.data.data.GreenWallet
+import com.blockstream.data.extensions.ifConnected
+import com.blockstream.data.gdk.data.AccountAsset
+import com.blockstream.data.gdk.data.AccountAssetBalanceList
+import com.blockstream.data.gdk.data.Address
+import com.blockstream.data.managers.LocaleManager
+import com.blockstream.data.utils.UserInput
 import com.blockstream.domain.hardware.VerifyAddressUseCase
 import com.blockstream.domain.meld.GetLastSuccessfulPurchaseExchange
 import com.blockstream.domain.meld.MeldUseCase
-import com.blockstream.green.data.meld.data.QuoteResponse
-import com.blockstream.green.data.meld.data.QuotesResponse
-import com.blockstream.green.data.meld.models.Country
-import com.blockstream.green.network.dataOrThrow
-import com.blockstream.green.utils.Loggable
+import com.blockstream.utils.Loggable
+import com.blockstream.network.dataOrThrow
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.SharingStarted
@@ -82,10 +79,10 @@ abstract class BuyViewModelAbstract(
 
     internal val address = MutableStateFlow<Address?>(null)
 
-    internal val _quote = MutableStateFlow<QuoteResponse?>(null)
-    val quote: StateFlow<QuoteResponse?> = _quote
+    internal val _quote = MutableStateFlow<com.blockstream.data.meld.data.QuoteResponse?>(null)
+    val quote: StateFlow<com.blockstream.data.meld.data.QuoteResponse?> = _quote
 
-    internal val quotes = MutableStateFlow<List<QuoteResponse>>(emptyList())
+    internal val quotes = MutableStateFlow<List<com.blockstream.data.meld.data.QuoteResponse>>(emptyList())
 
     internal val limits = MutableStateFlow<List<String>>(emptyList())
 
@@ -95,19 +92,19 @@ abstract class BuyViewModelAbstract(
     internal val _onProgressBuy = MutableStateFlow(false)
     val onProgressBuy: StateFlow<Boolean> = _onProgressBuy
 
-    fun changeCountry(country: Country) {
+    fun changeCountry(country: com.blockstream.data.meld.models.Country) {
         this.country.value = country.countryCode.uppercase().also {
             settingsManager.setCountry(it)
         }
     }
 
-    fun changeQuote(quote: QuoteResponse? = null) {
+    fun changeQuote(quote: com.blockstream.data.meld.data.QuoteResponse? = null) {
         if (quote == null) {
             postSideEffect(
                 SideEffects.NavigateTo(
                     NavigateDestinations.BuyQuotes(
                         greenWallet = greenWallet,
-                        quotes = QuotesResponse(quotes = quotes.value),
+                        quotes = com.blockstream.data.meld.data.QuotesResponse(quotes = quotes.value),
                         selectedServiceProvider = this._quote.value?.serviceProvider
                     )
                 )
@@ -215,7 +212,10 @@ class BuyViewModel(greenWallet: GreenWallet, initialAccountAsset: AccountAsset? 
         }
 
 
-        combine(quotes, getLastSuccessfulPurchaseExchange.observe()) { quotesList: List<QuoteResponse>, lastProvider: String? ->
+        combine(
+            quotes,
+            getLastSuccessfulPurchaseExchange.observe()
+        ) { quotesList: List<com.blockstream.data.meld.data.QuoteResponse>, lastProvider: String? ->
             _quote.value = quote.value?.takeIf { userPickedQuote.value }?.let { quote ->
                 // keep the same provider if user picked it
                 quotesList.find {
@@ -411,7 +411,7 @@ class BuyViewModelPreview(greenWallet: GreenWallet) :
 
         accountAsset.value = previewAccountAsset()
 
-        QuoteResponse(
+        com.blockstream.data.meld.data.QuoteResponse(
             transactionType = "",
             sourceAmount = "1.0",
             sourceAmountWithoutFees = "1.0",

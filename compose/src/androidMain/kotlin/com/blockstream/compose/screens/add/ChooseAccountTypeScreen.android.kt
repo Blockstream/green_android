@@ -2,12 +2,12 @@ package com.blockstream.compose.screens.add
 
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.tooling.preview.Preview
-import com.blockstream.common.gdk.data.AccountType
-import com.blockstream.common.looks.AccountTypeLook
-import com.blockstream.compose.models.add.ChooseAccountTypeViewModelPreview
+import com.blockstream.data.gdk.data.AccountType
 import com.blockstream.compose.GreenAndroidPreview
-import com.blockstream.compose.theme.GreenChromePreview
 import com.blockstream.compose.components.GreenColumn
+import com.blockstream.compose.looks.AccountTypeLook
+import com.blockstream.compose.models.add.ChooseAccountTypeViewModelPreview
+import com.blockstream.compose.theme.GreenChromePreview
 
 @Composable
 @Preview

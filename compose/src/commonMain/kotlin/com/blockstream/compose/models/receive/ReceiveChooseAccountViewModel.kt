@@ -4,10 +4,10 @@ import androidx.lifecycle.viewModelScope
 import blockstream_green.common.generated.resources.Res
 import blockstream_green.common.generated.resources.id_receive
 import blockstream_green.common.generated.resources.id_select_account
-import com.blockstream.common.data.GreenWallet
-import com.blockstream.common.extensions.previewAccountAsset
-import com.blockstream.common.extensions.previewWallet
-import com.blockstream.common.gdk.data.AccountAsset
+import com.blockstream.data.data.GreenWallet
+import com.blockstream.compose.extensions.previewAccountAsset
+import com.blockstream.compose.extensions.previewWallet
+import com.blockstream.data.gdk.data.AccountAsset
 import com.blockstream.compose.models.GreenViewModel
 import com.blockstream.compose.navigation.NavData
 import com.blockstream.compose.navigation.NavigateDestinations

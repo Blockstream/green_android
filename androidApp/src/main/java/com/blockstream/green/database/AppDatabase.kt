@@ -5,11 +5,11 @@ import androidx.room.Database
 import androidx.room.Room
 import androidx.room.RoomDatabase
 import androidx.room.TypeConverter
-import com.blockstream.common.data.CredentialType
-import com.blockstream.common.data.DeviceIdentifier
-import com.blockstream.common.data.EncryptedData
-import com.blockstream.common.gdk.JsonConverter.Companion.JsonDeserializer
-import com.blockstream.common.gdk.data.PinData
+import com.blockstream.data.data.CredentialType
+import com.blockstream.data.data.DeviceIdentifier
+import com.blockstream.data.data.EncryptedData
+import com.blockstream.data.gdk.JsonConverter.Companion.JsonDeserializer
+import com.blockstream.data.gdk.data.PinData
 
 @Database(
     entities = [Wallet::class, LoginCredentials::class],

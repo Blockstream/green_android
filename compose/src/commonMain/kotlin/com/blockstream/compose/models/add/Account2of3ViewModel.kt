@@ -1,8 +1,8 @@
 package com.blockstream.compose.models.add
 
 import androidx.lifecycle.viewModelScope
-import com.blockstream.common.data.SetupArgs
-import com.blockstream.common.extensions.previewWallet
+import com.blockstream.data.data.SetupArgs
+import com.blockstream.compose.extensions.previewWallet
 import com.blockstream.compose.events.Event
 import com.blockstream.compose.navigation.NavData
 import com.blockstream.compose.navigation.NavigateDestinations

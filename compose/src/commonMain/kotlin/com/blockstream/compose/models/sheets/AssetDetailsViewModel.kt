@@ -11,16 +11,17 @@ import blockstream_green.common.generated.resources.id_no_registered_name_for_th
 import blockstream_green.common.generated.resources.id_precision
 import blockstream_green.common.generated.resources.id_ticker
 import blockstream_green.common.generated.resources.id_total_balance
-import com.blockstream.common.data.EnrichedAsset
-import com.blockstream.common.data.GreenWallet
-import com.blockstream.common.extensions.isPolicyAsset
-import com.blockstream.common.extensions.networkForAsset
-import com.blockstream.common.extensions.previewAccountAsset
-import com.blockstream.common.extensions.previewWallet
-import com.blockstream.common.gdk.data.AccountAsset
+import com.blockstream.data.data.EnrichedAsset
+import com.blockstream.data.data.GreenWallet
+import com.blockstream.data.extensions.isPolicyAsset
+import com.blockstream.data.extensions.networkForAsset
+import com.blockstream.data.gdk.data.AccountAsset
+import com.blockstream.data.utils.toAmountLookOrNa
+import com.blockstream.compose.extensions.nameStringHolderOrNull
+import com.blockstream.compose.extensions.previewAccountAsset
+import com.blockstream.compose.extensions.previewWallet
 import com.blockstream.compose.models.GreenViewModel
-import com.blockstream.common.utils.StringHolder
-import com.blockstream.common.utils.toAmountLookOrNa
+import com.blockstream.compose.utils.StringHolder
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
@@ -62,7 +63,8 @@ class AssetDetailsViewModel(
                         val isPolicyAsset = it.assetId.isPolicyAsset(session = session)
                         add(
                             StringHolder(stringResource = Res.string.id_name)
-                                    to (it.nameOrNull(session) ?: StringHolder(stringResource = Res.string.id_no_registered_name_for_this))
+                                    to (it.nameStringHolderOrNull(session)
+                                ?: StringHolder(stringResource = Res.string.id_no_registered_name_for_this))
                         )
 
                         if (!isPolicyAsset) {

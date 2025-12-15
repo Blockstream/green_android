@@ -1,15 +1,15 @@
 package com.blockstream.green
 
 import androidx.arch.core.executor.testing.InstantTaskExecutorRule
-import com.blockstream.common.CountlyBase
-import com.blockstream.common.database.Database
-import com.blockstream.common.gdk.GdkSession
-import com.blockstream.common.managers.PromoManager
-import com.blockstream.common.managers.SessionManager
-import com.blockstream.common.managers.SettingsManager
 import com.blockstream.compose.models.GreenViewModel
+import com.blockstream.data.CountlyBase
+import com.blockstream.data.config.AppInfo
+import com.blockstream.data.database.Database
+import com.blockstream.data.gdk.GdkSession
+import com.blockstream.data.managers.PromoManager
+import com.blockstream.data.managers.SessionManager
+import com.blockstream.data.managers.SettingsManager
 import com.blockstream.domain.promo.GetPromoUseCase
-import com.blockstream.green.data.config.AppInfo
 import io.mockk.every
 import io.mockk.mockk
 import io.mockk.mockkClass

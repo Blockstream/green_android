@@ -2,21 +2,21 @@
 
 package com.blockstream.compose.di
 
-import com.blockstream.common.ZendeskSdk
-import com.blockstream.common.crypto.GreenKeystore
-import com.blockstream.common.crypto.NoKeystore
-import com.blockstream.common.data.AppConfig
-import com.blockstream.common.data.GreenWallet
-import com.blockstream.common.fcm.FcmCommon
-import com.blockstream.common.fcm.Firebase
-import com.blockstream.common.interfaces.DeviceConnectionInterface
-import com.blockstream.common.lightning.BreezNotification
-import com.blockstream.common.managers.DeviceManager
-import com.blockstream.common.managers.NotificationManager
 import com.blockstream.compose.managers.DeviceConnectionManager
-import com.blockstream.green.data.config.AppInfo
-import com.blockstream.green.data.notifications.models.BoltzNotificationSimple
-import com.blockstream.green.data.notifications.models.MeldNotificationData
+import com.blockstream.data.ZendeskSdk
+import com.blockstream.data.config.AppInfo
+import com.blockstream.data.crypto.GreenKeystore
+import com.blockstream.data.crypto.NoKeystore
+import com.blockstream.data.data.AppConfig
+import com.blockstream.data.data.GreenWallet
+import com.blockstream.data.fcm.FcmCommon
+import com.blockstream.data.fcm.Firebase
+import com.blockstream.data.interfaces.DeviceConnectionInterface
+import com.blockstream.data.lightning.BreezNotification
+import com.blockstream.data.managers.DeviceManager
+import com.blockstream.data.managers.NotificationManager
+import com.blockstream.data.notifications.models.BoltzNotificationSimple
+import com.blockstream.data.notifications.models.MeldNotificationData
 import com.blockstream.jade.connection.JadeBleConnection
 import kotlinx.cinterop.ExperimentalForeignApi
 import org.koin.dsl.binds
@@ -56,7 +56,8 @@ fun startKoin(doOnStartup: () -> Unit = {}) {
         cacheDir = cachesDirectory?.path ?: "",
         analyticsFeatureEnabled = true,
         lightningFeatureEnabled = true,
-        storeRateEnabled = false
+        storeRateEnabled = false,
+        appKeysString = null
     )
 
     val appInfo = AppInfo(userAgent = "green_ios", version, isDebug = true, isDevelopment = true)

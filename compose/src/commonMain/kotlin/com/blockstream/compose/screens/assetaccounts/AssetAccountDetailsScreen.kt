@@ -24,7 +24,7 @@ import blockstream_green.common.generated.resources.Res
 import blockstream_green.common.generated.resources.id_transactions
 import blockstream_green.common.generated.resources.id_your_transactions_will_be_shown
 import com.blockstream.compose.events.Events
-import com.blockstream.common.extensions.isNotBlank
+import com.blockstream.data.extensions.isNotBlank
 import com.blockstream.compose.models.assetaccounts.AssetAccountDetailsViewModel
 import com.blockstream.compose.models.assetaccounts.AssetAccountDetailsViewModelAbstract
 import com.blockstream.compose.components.GreenTransaction

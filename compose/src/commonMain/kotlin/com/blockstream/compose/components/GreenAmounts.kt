@@ -24,10 +24,10 @@ import androidx.compose.ui.unit.sp
 import blockstream_green.common.generated.resources.Res
 import blockstream_green.common.generated.resources.arrow_down_left
 import blockstream_green.common.generated.resources.arrow_up_right
-import com.blockstream.common.extensions.isNotBlank
-import com.blockstream.common.gdk.GdkSession
-import com.blockstream.common.looks.AmountAssetLook
-import com.blockstream.common.utils.DecimalFormat
+import com.blockstream.data.extensions.isNotBlank
+import com.blockstream.data.gdk.GdkSession
+import com.blockstream.data.looks.AmountAssetLook
+import com.blockstream.data.utils.DecimalFormat
 import com.blockstream.compose.extensions.assetIcon
 import com.blockstream.compose.theme.bodyLarge
 import com.blockstream.compose.theme.green

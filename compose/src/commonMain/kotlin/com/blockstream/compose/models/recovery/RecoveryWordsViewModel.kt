@@ -1,14 +1,14 @@
 package com.blockstream.compose.models.recovery
 
 import androidx.lifecycle.viewModelScope
-import com.blockstream.common.data.SetupArgs
+import com.blockstream.data.data.SetupArgs
 import com.blockstream.compose.events.Event
 import com.blockstream.compose.events.Events
 import com.blockstream.compose.models.GreenViewModel
 import com.blockstream.compose.navigation.NavData
 import com.blockstream.compose.navigation.NavigateDestinations
 import com.blockstream.compose.sideeffects.SideEffects
-import com.blockstream.green.utils.Loggable
+import com.blockstream.utils.Loggable
 import kotlinx.coroutines.launch
 
 abstract class RecoveryWordsViewModelAbstract(val setupArgs: SetupArgs) :

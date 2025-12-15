@@ -1,10 +1,10 @@
 package com.blockstream.compose.navigation
 
-import com.blockstream.common.data.CredentialType
-import com.blockstream.common.data.GreenWallet
-import com.blockstream.common.database.Database
-import com.blockstream.common.gdk.GdkSession
-import com.blockstream.common.managers.SessionManager
+import com.blockstream.data.data.CredentialType
+import com.blockstream.data.data.GreenWallet
+import com.blockstream.data.database.Database
+import com.blockstream.data.gdk.GdkSession
+import com.blockstream.data.managers.SessionManager
 
 class NavigateToWallet(
     private val sessionManager: SessionManager,

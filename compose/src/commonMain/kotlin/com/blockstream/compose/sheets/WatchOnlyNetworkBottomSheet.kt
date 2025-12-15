@@ -23,8 +23,8 @@ import blockstream_green.common.generated.resources.id_select_network
 import com.adamglin.PhosphorIcons
 import com.adamglin.phosphoricons.Regular
 import com.adamglin.phosphoricons.regular.CaretRight
-import com.blockstream.common.data.SetupArgs
-import com.blockstream.common.gdk.data.Network
+import com.blockstream.data.data.SetupArgs
+import com.blockstream.data.gdk.data.Network
 import com.blockstream.compose.components.GreenBottomSheet
 import com.blockstream.compose.components.GreenCard
 import com.blockstream.compose.components.GreenColumn

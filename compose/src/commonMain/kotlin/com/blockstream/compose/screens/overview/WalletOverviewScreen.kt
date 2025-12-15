@@ -32,7 +32,7 @@ import blockstream_green.common.generated.resources.id_continue
 import blockstream_green.common.generated.resources.id_welcome_to_blockstream
 import blockstream_green.common.generated.resources.id_you_dont_have_any_assets_yet
 import blockstream_green.common.generated.resources.id_your_wallet_has_been_created
-import com.blockstream.common.data.ScanResult
+import com.blockstream.data.data.ScanResult
 import com.blockstream.compose.components.GreenAlert
 import com.blockstream.compose.components.GreenAsset
 import com.blockstream.compose.components.GreenButton

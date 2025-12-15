@@ -42,8 +42,8 @@ import com.adamglin.phosphoricons.regular.Lightning
 import com.adamglin.phosphoricons.regular.Password
 import com.adamglin.phosphoricons.regular.Warning
 import com.adamglin.phosphoricons.regular.X
-import com.blockstream.common.data.AlertType
-import com.blockstream.common.data.SetupArgs
+import com.blockstream.data.data.AlertType
+import com.blockstream.data.data.SetupArgs
 import com.blockstream.compose.GreenPreview
 import com.blockstream.compose.events.Events
 import com.blockstream.compose.models.GreenViewModel

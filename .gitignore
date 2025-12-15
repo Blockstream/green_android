@@ -28,8 +28,8 @@ gdk_commit
 local.keystore
 app_keys.txt
 
-common/src/include
-common/src/libs
+data/src/include
+data/src/libs
 
 .kotlin/
 

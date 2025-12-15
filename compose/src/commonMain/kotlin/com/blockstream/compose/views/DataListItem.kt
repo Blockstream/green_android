@@ -14,17 +14,17 @@ import androidx.compose.ui.unit.dp
 import com.adamglin.PhosphorIcons
 import com.adamglin.phosphoricons.Regular
 import com.adamglin.phosphoricons.regular.Copy
-import com.blockstream.common.utils.StringHolder
+import com.blockstream.compose.components.GreenColumn
 import com.blockstream.compose.components.GreenDataLayout
+import com.blockstream.compose.components.GreenRow
 import com.blockstream.compose.managers.LocalPlatformManager
 import com.blockstream.compose.theme.bodyLarge
 import com.blockstream.compose.theme.labelLarge
 import com.blockstream.compose.theme.whiteHigh
 import com.blockstream.compose.theme.whiteLow
 import com.blockstream.compose.theme.whiteMedium
+import com.blockstream.compose.utils.StringHolder
 import com.blockstream.compose.utils.noRippleClickable
-import com.blockstream.compose.components.GreenColumn
-import com.blockstream.compose.components.GreenRow
 import kotlinx.coroutines.launch
 
 @Composable

@@ -5,7 +5,7 @@ import androidx.compose.foundation.verticalScroll
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.tooling.preview.Preview
-import com.blockstream.common.data.Promo
+import com.blockstream.data.data.Promo
 import com.blockstream.compose.models.SimpleGreenViewModelPreview
 import com.blockstream.compose.GreenPreview
 

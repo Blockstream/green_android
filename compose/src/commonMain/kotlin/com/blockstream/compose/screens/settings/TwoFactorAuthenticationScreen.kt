@@ -21,10 +21,10 @@ import androidx.compose.ui.Modifier
 import blockstream_green.common.generated.resources.Res
 import blockstream_green.common.generated.resources.id_enable_twofactor_authentication
 import blockstream_green.common.generated.resources.id_we_recommend_you_enable_more
-import com.blockstream.common.extensions.indexOfOrNull
-import com.blockstream.common.extensions.previewNetwork
-import com.blockstream.common.extensions.previewWallet
-import com.blockstream.common.gdk.data.Network
+import com.blockstream.data.extensions.indexOfOrNull
+import com.blockstream.compose.extensions.previewNetwork
+import com.blockstream.compose.extensions.previewWallet
+import com.blockstream.data.gdk.data.Network
 import com.blockstream.compose.models.settings.TwoFactorAuthenticationViewModel
 import com.blockstream.compose.models.settings.TwoFactorAuthenticationViewModelAbstract
 import com.blockstream.compose.models.settings.WalletSettingsViewModelAbstract

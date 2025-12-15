@@ -5,11 +5,11 @@ package com.blockstream.green.di
 import android.content.Context
 import android.hardware.usb.UsbDevice
 import android.hardware.usb.UsbManager
-import com.blockstream.common.devices.DeviceManagerAndroid
-import com.blockstream.common.fcm.FcmCommon
-import com.blockstream.common.interfaces.DeviceConnectionInterface
-import com.blockstream.common.managers.DeviceManager
-import com.blockstream.common.managers.NotificationManager
+import com.blockstream.data.devices.DeviceManagerAndroid
+import com.blockstream.data.fcm.FcmCommon
+import com.blockstream.data.interfaces.DeviceConnectionInterface
+import com.blockstream.data.managers.DeviceManager
+import com.blockstream.data.managers.NotificationManager
 import com.blockstream.compose.devices.LedgerDevice
 import com.blockstream.compose.devices.TrezorDevice
 import com.blockstream.compose.managers.DeviceConnectionManager

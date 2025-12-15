@@ -4,37 +4,37 @@ import androidx.lifecycle.viewModelScope
 import blockstream_green.common.generated.resources.Res
 import blockstream_green.common.generated.resources.id_home
 import breez_sdk.HealthCheckStatus
-import com.blockstream.common.btcpricehistory.model.BitcoinChartData
-import com.blockstream.common.data.AlertType
-import com.blockstream.common.data.DataState
-import com.blockstream.common.data.Denomination
-import com.blockstream.common.data.EnrichedAsset
-import com.blockstream.common.data.GreenWallet
-import com.blockstream.common.extensions.filterForAsset
-import com.blockstream.common.extensions.hasHistory
-import com.blockstream.common.extensions.ifConnected
-import com.blockstream.common.extensions.launchIn
-import com.blockstream.common.extensions.previewAccountAsset
-import com.blockstream.common.extensions.previewAssetBalance
-import com.blockstream.common.extensions.previewWallet
-import com.blockstream.common.fcm.FcmCommon
-import com.blockstream.common.gdk.data.Account
-import com.blockstream.common.gdk.data.AccountAsset
-import com.blockstream.common.gdk.data.AccountAssetBalance
-import com.blockstream.common.gdk.data.AssetBalance
-import com.blockstream.common.gdk.data.Settings
-import com.blockstream.common.gdk.data.WalletEvents
-import com.blockstream.common.looks.transaction.TransactionLook
-import com.blockstream.common.utils.AppReviewHelper
+import com.blockstream.data.btcpricehistory.model.BitcoinChartData
+import com.blockstream.data.data.AlertType
+import com.blockstream.data.data.DataState
+import com.blockstream.data.data.Denomination
+import com.blockstream.data.data.EnrichedAsset
+import com.blockstream.data.data.GreenWallet
+import com.blockstream.data.extensions.filterForAsset
+import com.blockstream.data.extensions.hasHistory
+import com.blockstream.data.extensions.ifConnected
+import com.blockstream.data.fcm.FcmCommon
+import com.blockstream.data.gdk.data.Account
+import com.blockstream.data.gdk.data.AccountAsset
+import com.blockstream.data.gdk.data.AccountAssetBalance
+import com.blockstream.data.gdk.data.AssetBalance
+import com.blockstream.data.gdk.data.Settings
+import com.blockstream.data.gdk.data.WalletEvents
+import com.blockstream.data.utils.AppReviewHelper
 import com.blockstream.compose.events.Event
 import com.blockstream.compose.events.Events
+import com.blockstream.compose.extensions.launchIn
+import com.blockstream.compose.extensions.previewAccountAsset
+import com.blockstream.compose.extensions.previewAssetBalance
+import com.blockstream.compose.extensions.previewWallet
+import com.blockstream.compose.looks.transaction.TransactionLook
 import com.blockstream.compose.navigation.NavData
 import com.blockstream.compose.navigation.NavigateDestinations
 import com.blockstream.compose.sideeffects.SideEffect
 import com.blockstream.compose.sideeffects.SideEffects
 import com.blockstream.domain.bitcoinpricehistory.ObserveBitcoinPriceHistory
-import com.blockstream.green.domain.notifications.RegisterFCMToken
-import com.blockstream.green.utils.Loggable
+import com.blockstream.domain.notifications.RegisterFCMToken
+import com.blockstream.utils.Loggable
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.StateFlow
@@ -199,7 +199,7 @@ class WalletOverviewViewModel(
 
     private val hideWalletBackupAlert = MutableStateFlow(false)
 
-    override val alerts: StateFlow<List<AlertType>> = com.blockstream.common.extensions.combine(
+    override val alerts: StateFlow<List<AlertType>> = com.blockstream.data.extensions.combine(
         greenWalletFlow.filterNotNull()
             .stateIn(viewModelScope, SharingStarted.WhileSubscribed(), greenWallet),
         _twoFactorState,

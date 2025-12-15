@@ -19,9 +19,6 @@ import blockstream_green.common.generated.resources.id_exchange
 import com.adamglin.PhosphorIcons
 import com.adamglin.phosphoricons.Regular
 import com.adamglin.phosphoricons.regular.ArrowSquareOut
-import com.blockstream.common.data.AlertType
-import com.blockstream.common.data.DenominatedValue
-import com.blockstream.common.gdk.data.AccountAssetBalance
 import com.blockstream.compose.components.GreenAccountSelector
 import com.blockstream.compose.components.GreenAlert
 import com.blockstream.compose.components.GreenAmountField
@@ -44,8 +41,9 @@ import com.blockstream.compose.sideeffects.SideEffects
 import com.blockstream.compose.theme.green20
 import com.blockstream.compose.utils.OpenKeyboard
 import com.blockstream.compose.utils.SetupScreen
-import com.blockstream.green.data.meld.data.QuoteResponse
-import com.blockstream.green.data.meld.models.Country
+import com.blockstream.data.data.AlertType
+import com.blockstream.data.data.DenominatedValue
+import com.blockstream.data.gdk.data.AccountAssetBalance
 import org.jetbrains.compose.resources.stringResource
 
 @Composable
@@ -56,7 +54,7 @@ fun BuyScreen(
         viewModel.postEvent(Events.SetDenominatedValue(it))
     }
 
-    NavigateDestinations.MeldCountries.getResult<Country> {
+    NavigateDestinations.MeldCountries.getResult<com.blockstream.data.meld.models.Country> {
         viewModel.changeCountry(it)
     }
 
@@ -64,7 +62,7 @@ fun BuyScreen(
         viewModel.accountAsset.value = it.accountAsset
     }
 
-    NavigateDestinations.BuyQuotes.getResult<QuoteResponse> {
+    NavigateDestinations.BuyQuotes.getResult<com.blockstream.data.meld.data.QuoteResponse> {
         viewModel.changeQuote(it)
     }
 

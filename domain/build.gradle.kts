@@ -26,10 +26,6 @@ kotlin {
     iosSimulatorArm64()
 
     sourceSets {
-        androidMain.dependencies {
-            api(libs.koin.android)
-        }
-
         commonMain.dependencies {
             api(project(":data"))
             api(project.dependencies.platform(libs.koin.bom))
@@ -38,6 +34,10 @@ kotlin {
 
         commonTest.dependencies {
             implementation(libs.kotlin.test)
+        }
+
+        androidMain.dependencies {
+            api(libs.koin.android)
         }
 
         getByName("androidDeviceTest").dependencies {

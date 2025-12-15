@@ -2,15 +2,15 @@ package com.blockstream.compose.devices
 
 import android.content.Context
 import android.hardware.usb.UsbDevice
-import com.blockstream.common.devices.AndroidDevice
-import com.blockstream.common.devices.ConnectionType
-import com.blockstream.common.devices.DeviceBrand
-import com.blockstream.common.devices.DeviceManagerAndroid
-import com.blockstream.common.devices.GreenDevice
-import com.blockstream.common.gdk.Gdk
-import com.blockstream.common.gdk.data.Network
-import com.blockstream.common.gdk.device.HardwareConnectInteraction
-import com.blockstream.green.utils.Loggable
+import com.blockstream.data.devices.AndroidDevice
+import com.blockstream.data.devices.ConnectionType
+import com.blockstream.data.devices.DeviceBrand
+import com.blockstream.data.devices.DeviceManagerAndroid
+import com.blockstream.data.devices.GreenDevice
+import com.blockstream.data.gdk.Gdk
+import com.blockstream.data.gdk.data.Network
+import com.blockstream.data.gdk.device.HardwareConnectInteraction
+import com.blockstream.utils.Loggable
 import com.juul.kable.Peripheral
 
 class TrezorDevice constructor(

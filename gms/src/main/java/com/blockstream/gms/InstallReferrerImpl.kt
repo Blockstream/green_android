@@ -4,10 +4,10 @@ import android.content.Context
 import com.android.installreferrer.api.InstallReferrerClient
 import com.android.installreferrer.api.InstallReferrerStateListener
 import com.blockstream.base.InstallReferrer
-import com.blockstream.common.CountlyBase.Companion.GOOGLE_PLAY_ORGANIC_DEVELOPMENT
-import com.blockstream.common.CountlyBase.Companion.GOOGLE_PLAY_ORGANIC_PRODUCTION
-import com.blockstream.green.data.config.AppInfo
-import com.blockstream.green.utils.Loggable
+import com.blockstream.data.CountlyBase.Companion.GOOGLE_PLAY_ORGANIC_DEVELOPMENT
+import com.blockstream.data.CountlyBase.Companion.GOOGLE_PLAY_ORGANIC_PRODUCTION
+import com.blockstream.data.config.AppInfo
+import com.blockstream.utils.Loggable
 import kotlinx.serialization.json.buildJsonObject
 import kotlinx.serialization.json.put
 import ly.count.android.sdk.ModuleAttribution

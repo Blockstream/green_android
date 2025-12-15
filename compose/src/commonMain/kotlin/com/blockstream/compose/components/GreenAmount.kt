@@ -12,7 +12,7 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.unit.dp
-import com.blockstream.common.gdk.GdkSession
+import com.blockstream.data.gdk.GdkSession
 import com.blockstream.compose.extensions.assetIcon
 import com.blockstream.compose.theme.bodyLarge
 import com.blockstream.compose.theme.titleMedium

@@ -4,7 +4,7 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.tooling.preview.Preview
 import blockstream_green.common.generated.resources.Res
 import blockstream_green.common.generated.resources.id_asset
-import com.blockstream.common.extensions.previewAssetBalance
+import com.blockstream.compose.extensions.previewAssetBalance
 import com.blockstream.compose.GreenAndroidPreview
 import org.jetbrains.compose.resources.stringResource
 
