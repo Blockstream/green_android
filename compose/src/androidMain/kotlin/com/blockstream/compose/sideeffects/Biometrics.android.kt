@@ -129,12 +129,11 @@ actual class BiometricsState(
 
         val isV4Authentication = loginCredentials.keystore.isNullOrBlank()
 
-        if (isV4Authentication && androidKeystore.isBiometricsAuthenticationRequired()) {
+        if (!onlyDeviceCredentials && isV4Authentication && androidKeystore.isBiometricsAuthenticationRequired()) {
             authenticateWithBiometrics(object :
                 AuthenticationCallback(state = this@BiometricsState) {
                 override fun onAuthenticationSucceeded(result: BiometricPrompt.AuthenticationResult) {
                     super.onAuthenticationSucceeded(result)
-                    // authenticateUserIfRequired = false prevent eternal loops
                     scope.launch {
                         launchBiometricPrompt(
                             loginCredentials = loginCredentials,
@@ -269,8 +268,7 @@ actual class BiometricsState(
     }
 
     actual suspend fun getBiometricsCipher(viewModel: GreenViewModel, onlyDeviceCredentials: Boolean) {
-
-        if (androidKeystore.isBiometricsAuthenticationRequired()) {
+        if (!onlyDeviceCredentials && androidKeystore.isBiometricsAuthenticationRequired()) {
             authenticateWithBiometrics(object :
                 AuthenticationCallback(state = this@BiometricsState) {
                 override fun onAuthenticationSucceeded(result: BiometricPrompt.AuthenticationResult) {
