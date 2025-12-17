@@ -3,6 +3,12 @@ package com.blockstream.compose.models.send
 import androidx.lifecycle.viewModelScope
 import blockstream_green.common.generated.resources.Res
 import blockstream_green.common.generated.resources.id_sweep
+import com.blockstream.compose.events.Event
+import com.blockstream.compose.extensions.launchIn
+import com.blockstream.compose.extensions.previewAccountAsset
+import com.blockstream.compose.extensions.previewAccountAssetBalance
+import com.blockstream.compose.extensions.previewWallet
+import com.blockstream.compose.navigation.NavData
 import com.blockstream.data.AddressInputType
 import com.blockstream.data.TransactionSegmentation
 import com.blockstream.data.TransactionType
@@ -21,12 +27,6 @@ import com.blockstream.data.gdk.params.CreateTransactionParams
 import com.blockstream.data.gdk.params.toJsonElement
 import com.blockstream.data.utils.feeRateWithUnit
 import com.blockstream.data.utils.toAmountLook
-import com.blockstream.compose.events.Event
-import com.blockstream.compose.extensions.launchIn
-import com.blockstream.compose.extensions.previewAccountAsset
-import com.blockstream.compose.extensions.previewAccountAssetBalance
-import com.blockstream.compose.extensions.previewWallet
-import com.blockstream.compose.navigation.NavData
 import com.blockstream.utils.Loggable
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -100,9 +100,10 @@ class SweepViewModel(greenWallet: GreenWallet, privateKey: String?, accountAsset
             }.launchIn(this)
 
             combine(accountAsset, this.privateKey, _feePriorityPrimitive, _feeEstimation) { accountAsset, privateKey, _, _ ->
-                _showFeeSelector.value = accountAsset != null
-                        && privateKey.isNotBlank()
-                        && (accountAsset.account.network.isBitcoin || (accountAsset.account.network.isLiquid && getFeeRate(FeePriority.High()) > accountAsset.account.network.defaultFee))
+                _showFeeSelector.value = privateKey.isNotBlank() && sendUseCase.showFeeSelectorUseCase(
+                    session = session,
+                    network = accountAsset?.account?.network
+                )
 
                 createTransactionParams.value = tryCatch(context = Dispatchers.Default) { createTransactionParams() }
             }.launchIn(this)

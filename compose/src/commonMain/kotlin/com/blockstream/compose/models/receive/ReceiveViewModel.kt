@@ -21,6 +21,19 @@ import blockstream_green.common.generated.resources.note_pencil
 import blockstream_green.common.generated.resources.qr_code
 import blockstream_green.common.generated.resources.question
 import blockstream_green.common.generated.resources.text_aa
+import com.blockstream.compose.events.Event
+import com.blockstream.compose.events.Events
+import com.blockstream.compose.extensions.launchIn
+import com.blockstream.compose.extensions.previewAccountAsset
+import com.blockstream.compose.extensions.previewEnrichedAsset
+import com.blockstream.compose.extensions.previewWallet
+import com.blockstream.compose.models.GreenViewModel
+import com.blockstream.compose.models.sheets.NoteType
+import com.blockstream.compose.navigation.NavAction
+import com.blockstream.compose.navigation.NavData
+import com.blockstream.compose.navigation.NavigateDestinations
+import com.blockstream.compose.sideeffects.SideEffects
+import com.blockstream.compose.utils.StringHolder
 import com.blockstream.data.AddressType
 import com.blockstream.data.MediaType
 import com.blockstream.data.Urls
@@ -42,27 +55,14 @@ import com.blockstream.data.lightning.expireIn
 import com.blockstream.data.lightning.receiveAmountSatoshi
 import com.blockstream.data.lightning.satoshi
 import com.blockstream.data.platformFileSystem
+import com.blockstream.data.receive.ReceiveAmountData
 import com.blockstream.data.utils.UserInput
 import com.blockstream.data.utils.formatAuto
 import com.blockstream.data.utils.toAmountLook
 import com.blockstream.data.utils.toAmountLookOrNa
-import com.blockstream.compose.events.Event
-import com.blockstream.compose.events.Events
-import com.blockstream.compose.extensions.launchIn
-import com.blockstream.compose.extensions.previewAccountAsset
-import com.blockstream.compose.extensions.previewEnrichedAsset
-import com.blockstream.compose.extensions.previewWallet
-import com.blockstream.compose.models.GreenViewModel
-import com.blockstream.compose.models.sheets.NoteType
-import com.blockstream.compose.navigation.NavAction
-import com.blockstream.compose.navigation.NavData
-import com.blockstream.compose.navigation.NavigateDestinations
-import com.blockstream.compose.sideeffects.SideEffects
-import com.blockstream.compose.utils.StringHolder
-import com.blockstream.domain.boltz.BoltzUseCase
 import com.blockstream.domain.hardware.VerifyAddressUseCase
 import com.blockstream.domain.receive.GetReceiveAmountUseCase
-import com.blockstream.domain.receive.ReceiveAmountData
+import com.blockstream.domain.swap.SwapUseCase
 import com.blockstream.utils.Loggable
 import com.eygraber.uri.Uri
 import kotlinx.coroutines.Dispatchers
@@ -129,7 +129,7 @@ abstract class ReceiveViewModelAbstract(greenWallet: GreenWallet, accountAssetOr
 class ReceiveViewModel(greenWallet: GreenWallet, accountAsset: AccountAsset) :
     ReceiveViewModelAbstract(greenWallet = greenWallet, accountAssetOrNull = accountAsset) {
     internal val verifyAddressUseCase: VerifyAddressUseCase by inject()
-    internal val boltzUseCase: BoltzUseCase by inject()
+    internal val boltzUseCase: SwapUseCase by inject()
     internal val getReceiveAmountUseCase: GetReceiveAmountUseCase by inject {
         parametersOf(session, accountAsset)
     }
@@ -622,10 +622,13 @@ class ReceiveViewModel(greenWallet: GreenWallet, accountAsset: AccountAsset) :
                 val invoice = boltzUseCase.createReverseSubmarineSwapUseCase(
                     wallet = greenWallet,
                     session = session,
+                    isAutoSwap = true,
                     account = account,
                     amount = amount,
                     description = null
                 )
+
+                countly.swapReceive(session, from = accountAsset.value!!)
 
                 // Fee is lockup fee + boltz fee + claim fee. We hardcode claim value for 1in 1out tx
                 val fee = (invoice.fee()?.toLong() ?: 0) + 22

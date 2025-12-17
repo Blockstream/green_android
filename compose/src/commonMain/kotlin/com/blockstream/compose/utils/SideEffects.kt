@@ -36,18 +36,6 @@ import blockstream_green.common.generated.resources.id_the_new_firmware_requires
 import blockstream_green.common.generated.resources.id_try_again
 import blockstream_green.common.generated.resources.id_try_again_using_another_2fa
 import blockstream_green.common.generated.resources.id_warning
-import com.blockstream.data.SupportType
-import com.blockstream.data.data.LogoutReason
-import com.blockstream.data.data.PopTo
-import com.blockstream.data.data.SupportData
-import com.blockstream.data.data.TwoFactorMethod
-import com.blockstream.data.data.TwoFactorResolverData
-import com.blockstream.data.data.TwoFactorSetupAction
-import com.blockstream.data.devices.DeviceBrand
-import com.blockstream.data.extensions.handleException
-import com.blockstream.data.extensions.isNotBlank
-import com.blockstream.data.gdk.data.Network
-import com.blockstream.data.utils.createNewTicketUrl
 import com.blockstream.compose.LocalAppCoroutine
 import com.blockstream.compose.LocalBiometricState
 import com.blockstream.compose.LocalDialog
@@ -67,6 +55,18 @@ import com.blockstream.compose.sideeffects.OpenDialogData
 import com.blockstream.compose.sideeffects.SideEffect
 import com.blockstream.compose.sideeffects.SideEffects
 import com.blockstream.compose.sideeffects.openBrowser
+import com.blockstream.data.SupportType
+import com.blockstream.data.data.LogoutReason
+import com.blockstream.data.data.PopTo
+import com.blockstream.data.data.SupportData
+import com.blockstream.data.data.TwoFactorMethod
+import com.blockstream.data.data.TwoFactorResolverData
+import com.blockstream.data.data.TwoFactorSetupAction
+import com.blockstream.data.devices.DeviceBrand
+import com.blockstream.data.extensions.handleException
+import com.blockstream.data.extensions.isNotBlank
+import com.blockstream.data.gdk.data.Network
+import com.blockstream.data.utils.createNewTicketUrl
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.collect
@@ -210,6 +210,7 @@ fun HandleSideEffect(
                         NavigateDestinations.FeeRate(
                             greenWallet = it.greenWallet,
                             accountAsset = it.accountAsset,
+                            isFeeRateOnly = it.isFeeRateOnly,
                             useBreezFees = it.useBreezFees
                         )
                     )

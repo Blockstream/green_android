@@ -17,6 +17,10 @@ import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.layout.ContentScale
@@ -35,24 +39,28 @@ import blockstream_green.common.generated.resources.id_you_need_a_liquid_account
 import blockstream_green.common.generated.resources.id_you_need_an_amp_account_in
 import blockstream_green.common.generated.resources.liquid_asset
 import blockstream_green.common.generated.resources.shield_warning
-import com.blockstream.data.data.EnrichedAsset
-import com.blockstream.data.extensions.getAssetNameOrNull
-import com.blockstream.data.extensions.isPolicyAsset
-import com.blockstream.data.gdk.GdkSession
-import com.blockstream.data.gdk.data.Account
-import com.blockstream.data.gdk.data.AccountAsset
 import com.blockstream.compose.extensions.assetIcon
 import com.blockstream.compose.extensions.nameStringHolder
 import com.blockstream.compose.extensions.policyAndType
 import com.blockstream.compose.extensions.policyIcon
+import com.blockstream.compose.extensions.previewAccount
+import com.blockstream.compose.extensions.previewEnrichedAsset
+import com.blockstream.compose.theme.GreenChromePreview
 import com.blockstream.compose.theme.green
 import com.blockstream.compose.theme.green20
 import com.blockstream.compose.theme.labelLarge
 import com.blockstream.compose.theme.labelMedium
 import com.blockstream.compose.theme.titleSmall
 import com.blockstream.compose.theme.whiteMedium
+import com.blockstream.data.data.EnrichedAsset
+import com.blockstream.data.extensions.getAssetNameOrNull
+import com.blockstream.data.extensions.isPolicyAsset
+import com.blockstream.data.gdk.GdkSession
+import com.blockstream.data.gdk.data.Account
+import com.blockstream.data.gdk.data.AccountAsset
 import org.jetbrains.compose.resources.painterResource
 import org.jetbrains.compose.resources.stringResource
+import org.jetbrains.compose.ui.tooling.preview.Preview
 
 @Composable
 fun GreenAssetAccounts(
@@ -215,7 +223,7 @@ fun GreenAssetAccounts(
                                 }
                             }
 
-                            GreenArrow()
+                            CaretRight()
                         }
 
                         HorizontalDivider()
@@ -234,11 +242,63 @@ fun GreenAssetAccounts(
                                 modifier = Modifier.weight(1f).padding(start = 6.dp)
                             )
 
-                            GreenArrow()
+                            CaretRight()
                         }
                     }
                 }
             }
+        }
+    }
+}
+
+@Preview
+@Composable
+fun GreenAssetAccountsPreview() {
+    GreenChromePreview {
+        GreenColumn {
+            var selected by remember {
+                mutableStateOf(0)
+            }
+            GreenAssetAccounts(
+                accounts = listOf(previewAccount(), previewAccount()),
+                asset = previewEnrichedAsset(),
+                isExpanded = selected == 0,
+                onExpandClick = {
+                    selected = 0
+                }
+            )
+            GreenAssetAccounts(
+                accounts = listOf(previewAccount(), previewAccount()),
+                asset = previewEnrichedAsset(isLiquid = true),
+                isExpanded = selected == 1,
+                onExpandClick = {
+                    selected = 1
+                }
+            )
+            GreenAssetAccounts(
+                accounts = listOf(previewAccount()),
+                asset = previewEnrichedAsset(isLiquid = true),
+                isExpanded = selected == 2,
+                onExpandClick = {
+                    selected = 2
+                }
+            )
+            GreenAssetAccounts(
+                asset = previewEnrichedAsset(true).copy(
+                    name = "123456789098765432112345678987654321234567890",
+                ),
+                isExpanded = selected == 3,
+                onExpandClick = {
+                    selected = 3
+                }
+            )
+            GreenAssetAccounts(
+                asset = previewEnrichedAsset(true).copy(isAnyAsset = true),
+                isExpanded = selected == 5,
+                onExpandClick = {
+                    selected = 5
+                }
+            )
         }
     }
 }

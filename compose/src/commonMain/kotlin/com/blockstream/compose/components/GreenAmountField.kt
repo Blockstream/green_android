@@ -20,6 +20,7 @@ import androidx.compose.material3.TextButton
 import androidx.compose.material3.TextFieldDefaults
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.SideEffect
+import androidx.compose.runtime.derivedStateOf
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
@@ -52,11 +53,7 @@ import com.adamglin.phosphoricons.Fill
 import com.adamglin.phosphoricons.Regular
 import com.adamglin.phosphoricons.fill.CaretDown
 import com.adamglin.phosphoricons.regular.XCircle
-import com.blockstream.data.data.Denomination
-import com.blockstream.data.extensions.isNotBlank
-import com.blockstream.data.extensions.isPolicyAsset
-import com.blockstream.data.gdk.GdkSession
-import com.blockstream.data.utils.DecimalFormat
+import com.blockstream.compose.GreenPreview
 import com.blockstream.compose.theme.bodyMedium
 import com.blockstream.compose.theme.bodySmall
 import com.blockstream.compose.theme.green
@@ -65,8 +62,14 @@ import com.blockstream.compose.theme.whiteMedium
 import com.blockstream.compose.utils.DecimalFormatter
 import com.blockstream.compose.utils.appTestTag
 import com.blockstream.compose.utils.ifTrue
+import com.blockstream.data.data.Denomination
+import com.blockstream.data.extensions.isNotBlank
+import com.blockstream.data.extensions.isPolicyAsset
+import com.blockstream.data.gdk.GdkSession
+import com.blockstream.data.utils.DecimalFormat
 import org.jetbrains.compose.resources.painterResource
 import org.jetbrains.compose.resources.stringResource
+import org.jetbrains.compose.ui.tooling.preview.Preview
 
 @Composable
 fun GreenAmountField(
@@ -328,5 +331,64 @@ fun GreenAmountField(
         }
 
         footerContent?.invoke()
+    }
+}
+
+@Preview
+@Composable
+fun GreenAmountFieldPreview() {
+    GreenPreview {
+
+        GreenColumn {
+            var amount by remember {
+                mutableStateOf("")
+            }
+            val secondaryValue by remember {
+                derivedStateOf {
+                    amount
+                }
+            }
+            GreenAmountField(amount, {
+                amount = it
+            }, secondaryValue = secondaryValue, denomination = Denomination.BTC)
+
+            GreenAmountField(
+                amount,
+                {
+                    amount = it
+                },
+                secondaryValue = "~ 1.131.00 EUR",
+                helperText = "id_invalid_amount",
+                denomination = Denomination.SATOSHI
+            )
+
+            GreenAmountField(amount, {
+                amount = it
+            }, isAmountLocked = true, denomination = Denomination.MBTC)
+
+            var isSendAll by remember {
+                mutableStateOf(false)
+            }
+            GreenAmountField(amount, {
+                amount = it
+            }, sendAll = isSendAll, supportsSendAll = true, onSendAllClick = {
+                isSendAll = !isSendAll
+            }, denomination = Denomination.MBTC)
+
+            GreenAmountField(
+                amount,
+                {
+                    amount = it
+                },
+                secondaryValue = "",
+                sendAll = isSendAll,
+                isReadyOnly = true,
+                supportsSendAll = true,
+                onSendAllClick = {
+                    isSendAll = !isSendAll
+                },
+                denomination = Denomination.MBTC
+            )
+        }
     }
 }

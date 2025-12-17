@@ -12,7 +12,6 @@ import com.blockstream.compose.events.Event
 import com.blockstream.compose.extensions.launchIn
 import com.blockstream.compose.extensions.previewAccountAsset
 import com.blockstream.compose.extensions.previewWallet
-import com.blockstream.compose.looks.transaction.TransactionConfirmLook
 import com.blockstream.compose.models.sheets.NoteType
 import com.blockstream.compose.navigation.NavAction
 import com.blockstream.compose.navigation.NavData
@@ -20,13 +19,13 @@ import com.blockstream.compose.navigation.NavigateDestinations
 import com.blockstream.compose.sideeffects.SideEffects
 import com.blockstream.compose.utils.StringHolder
 import com.blockstream.data.BTC_POLICY_ASSET
-import com.blockstream.data.banner.Banner
 import com.blockstream.data.data.Denomination
 import com.blockstream.data.data.GreenWallet
 import com.blockstream.data.extensions.ifConnected
 import com.blockstream.data.extensions.isNotBlank
 import com.blockstream.data.gdk.data.AccountAsset
 import com.blockstream.data.gdk.data.UtxoView
+import com.blockstream.data.transaction.TransactionConfirmation
 import com.blockstream.utils.Loggable
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
@@ -45,7 +44,7 @@ abstract class SendConfirmViewModelAbstract(greenWallet: GreenWallet, accountAss
             account = account
         )
     }
-    abstract val transactionConfirmLook: StateFlow<TransactionConfirmLook?>
+    abstract val transactionConfirmation: StateFlow<TransactionConfirmation?>
     abstract val showVerifyOnDevice: StateFlow<Boolean>
 }
 
@@ -57,11 +56,11 @@ class SendConfirmViewModel constructor(
     private val _showVerifyOnDevice = MutableStateFlow(false)
     override val showVerifyOnDevice = _showVerifyOnDevice
 
-    private val _transactionConfirmLook: MutableStateFlow<TransactionConfirmLook?> =
+    private val _transactionConfirmation: MutableStateFlow<TransactionConfirmation?> =
         MutableStateFlow(null)
 
-    override val transactionConfirmLook: StateFlow<TransactionConfirmLook?> =
-        _transactionConfirmLook.asStateFlow()
+    override val transactionConfirmation: StateFlow<TransactionConfirmation?> =
+        _transactionConfirmation.asStateFlow()
 
     class LocalEvents {
         object Note : Event
@@ -109,7 +108,7 @@ class SendConfirmViewModel constructor(
                         logger.d { "Transaction: ${it.transaction}" }
                     }
 
-                    _transactionConfirmLook.value = TransactionConfirmLook.create(
+                    _transactionConfirmation.value = sendUseCase.getTransactionConfirmationUseCase(
                         params = it.params,
                         transaction = it.transaction,
                         account = account,
@@ -178,12 +177,12 @@ class SendConfirmViewModel constructor(
             }
 
             is LocalEvents.ClickTotalFees -> {
-                _transactionConfirmLook.value?.let { look ->
+                _transactionConfirmation.value?.let { look ->
                     postSideEffect(
                         SideEffects.NavigateTo(
                             NavigateDestinations.SwapFees(
-                                serviceFee = look.serviceFee ?: "",
-                                networkFee = look.fee ?: "",
+                                swapFee = look.swapFee ?: "",
+                                networkFee = look.networkFee ?: "",
                                 totalFees = look.totalFees ?: "",
                                 totalFeesFiat = look.totalFeesFiat
                             )
@@ -244,22 +243,22 @@ class SendConfirmViewModel constructor(
 
 class SendConfirmViewModelPreview(
     greenWallet: GreenWallet,
-    transactionConfirmLook: TransactionConfirmLook? = null
+    transactionConfirmation: TransactionConfirmation? = null
 ) : SendConfirmViewModelAbstract(greenWallet = greenWallet, accountAsset = previewAccountAsset()) {
 
-    override val transactionConfirmLook: StateFlow<TransactionConfirmLook?> =
-        MutableStateFlow(transactionConfirmLook)
+    override val transactionConfirmation: StateFlow<TransactionConfirmation?> =
+        MutableStateFlow(transactionConfirmation)
 
     override val showVerifyOnDevice: StateFlow<Boolean> = MutableStateFlow(false)
 
     init {
-        banner.value = Banner.preview3
-        note.value = "Note"
+        // banner.value = Banner.preview3
+        // note.value = "Note"
     }
 
     companion object {
         fun preview() = SendConfirmViewModelPreview(
-            previewWallet(), transactionConfirmLook = TransactionConfirmLook(
+            previewWallet(), transactionConfirmation = TransactionConfirmation(
                 from = previewAccountAsset(),
                 utxos = listOf(
                     UtxoView(
@@ -278,7 +277,7 @@ class SendConfirmViewModelPreview(
         )
 
         fun previewAccountExchange() = SendConfirmViewModelPreview(
-            previewWallet(), transactionConfirmLook = TransactionConfirmLook(
+            previewWallet(), transactionConfirmation = TransactionConfirmation(
                 from = previewAccountAsset(),
                 to = previewAccountAsset(),
                 amount = "2.123 BTC",
@@ -288,6 +287,45 @@ class SendConfirmViewModelPreview(
                 feeRate = "1 vbyte/sats",
                 total = "5.5 BTC",
                 totalFiat = "143,234 USD"
+            )
+        )
+
+        fun previewSwap() = SendConfirmViewModelPreview(
+            previewWallet(), transactionConfirmation = TransactionConfirmation(
+                from = previewAccountAsset(),
+                to = previewAccountAsset(),
+                amount = "2.123 BTC",
+                amountFiat = "43.312 USD",
+                recipientReceives = "2.123 BTC",
+                recipientReceivesFiat = "43.312 USD",
+                fee = "0.0123 BTC",
+                feeFiat = "13,03 USD",
+                feeRate = "1 vbyte/sats",
+                totalFees = "0.0001 sats",
+                totalFeesFiat = "0.10 USD",
+                total = "5.5 BTC",
+                totalFiat = "143,234 USD",
+                swapFee = "0.0001 sats",
+                isSwap = true
+            )
+        )
+
+        fun previewLBTCSwap() = SendConfirmViewModelPreview(
+            previewWallet(), transactionConfirmation = TransactionConfirmation(
+                from = previewAccountAsset(),
+                amount = "2.123 BTC",
+                amountFiat = "43.312 USD",
+                fee = "0.0123 BTC",
+                feeFiat = "13,03 USD",
+                feeRate = "1 vbyte/sats",
+                recipientReceives = "2.123 BTC",
+                recipientReceivesFiat = "43.312 USD",
+                totalFees = "0.0001 sats",
+                totalFeesFiat = "0.10 USD",
+                total = "5.5 BTC",
+                totalFiat = "143,234 USD",
+                swapFee = "0.0001 sats",
+                isLiquidToLightningSwap = true
             )
         )
     }

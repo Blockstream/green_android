@@ -53,7 +53,7 @@ data class CreateTransaction constructor(
 
     fun isSweep(): Boolean = privateKey?.isNotBlank() ?: false
 
-    fun isSwap(): Boolean = signWith.containsAll(listOf("user", "green-backend")) || signWith.contains("all")
+    fun isAtomicSwap(): Boolean = signWith.containsAll(listOf("user", "green-backend")) || signWith.contains("all")
 
     suspend fun utxoViews(
         session: GdkSession,

@@ -72,11 +72,15 @@ class RestoreWalletUseCase(
             // Used in Swaps
             saveDerivedBoltzMnemonicUseCase.invoke(session = session, wallet = wallet)
 
+            val bitcoinAddress = session.accounts.value.firstOrNull { it.isBitcoin }?.let {
+                session.getReceiveAddressAsString(it)
+            }
+
             val liquidAddress = session.accounts.value.firstOrNull { it.isLiquid }?.let {
                 session.getReceiveAddressAsString(it)
             }
 
-            session.initLwkIfNeeded(wallet = wallet, restoreSwapsAddress = liquidAddress)
+            session.initLwkIfNeeded(wallet = wallet, bitcoinAddress = bitcoinAddress, liquidAddress = liquidAddress)
 
             if (session.hasLightning) {
                 walletSettingsManager.setLightningEnabled(walletId = wallet.id, true)

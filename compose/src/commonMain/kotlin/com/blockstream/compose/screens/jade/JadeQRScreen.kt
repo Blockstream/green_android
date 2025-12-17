@@ -32,8 +32,6 @@ import blockstream_green.common.generated.resources.id_step_1s
 import blockstream_green.common.generated.resources.id_troubleshoot
 import blockstream_green.common.generated.resources.qr_code
 import blockstream_green.common.generated.resources.scan
-import com.blockstream.data.data.MenuEntry
-import com.blockstream.data.data.MenuEntryList
 import com.blockstream.compose.GreenPreview
 import com.blockstream.compose.components.GreenButton
 import com.blockstream.compose.components.GreenButtonColor
@@ -54,6 +52,7 @@ import com.blockstream.compose.navigation.getResult
 import com.blockstream.compose.navigation.setResult
 import com.blockstream.compose.sideeffects.SideEffects
 import com.blockstream.compose.theme.GreenTheme
+import com.blockstream.compose.theme.bodyMedium
 import com.blockstream.compose.theme.green
 import com.blockstream.compose.theme.headlineSmall
 import com.blockstream.compose.theme.labelLarge
@@ -61,6 +60,9 @@ import com.blockstream.compose.theme.textHigh
 import com.blockstream.compose.theme.textMedium
 import com.blockstream.compose.utils.SetupScreen
 import com.blockstream.compose.utils.bottom
+import com.blockstream.data.data.MenuEntry
+import com.blockstream.data.data.MenuEntryList
+import com.blockstream.data.data.Redact
 import kotlinx.coroutines.launch
 import kotlinx.serialization.Serializable
 import org.jetbrains.compose.resources.getString
@@ -71,8 +73,10 @@ import org.jetbrains.compose.ui.tooling.preview.Preview
 @Serializable
 data class JadeQRResult(
     val pinUnlock: Boolean? = null,
-    val result: String = ""
-)
+    val result: String = "",
+    val lightningMnemonic: String? = null,
+    val boltzMnemonic: String? = null
+) : Redact
 
 @OptIn(ExperimentalComposeUiApi::class)
 @Composable
@@ -107,20 +111,26 @@ fun JadeQRScreen(
         withBottomInsets = false,
         onProgressStyle = OnProgressStyle.Disabled,
         sideEffectsHandler = {
-        when (it) {
-            is SideEffects.Success -> {
-                if (viewModel.operation is JadeQrOperation.PinUnlock) {
-                    NavigateDestinations.JadeQR.setResult(JadeQRResult(pinUnlock = true))
-                } else {
-                    NavigateDestinations.JadeQR.setResult(JadeQRResult(result = it.data as String))
+            when (it) {
+                is SideEffects.Success -> {
+                    if (viewModel.operation is JadeQrOperation.PinUnlock) {
+                        NavigateDestinations.JadeQR.setResult(JadeQRResult(pinUnlock = true))
+                    } else {
+                        NavigateDestinations.JadeQR.setResult(JadeQRResult(result = it.data as String))
+                    }
+                }
+
+                is SideEffects.Mnemonic -> {
+                    when (viewModel.operation) {
+                        JadeQrOperation.LightningMnemonicExport -> JadeQRResult(lightningMnemonic = it.mnemonic)
+                        JadeQrOperation.BoltzMnemonicExport -> JadeQRResult(boltzMnemonic = it.mnemonic)
+                        else -> throw Exception("Invalid operation")
+                    }.also { jadeQRResult ->
+                        NavigateDestinations.JadeQR.setResult(jadeQRResult)
+                    }
                 }
             }
-
-            is SideEffects.Mnemonic -> {
-                NavigateDestinations.JadeQR.setResult(JadeQRResult(result = it.mnemonic))
-            }
-        }
-    }) {
+        }) {
 
         GreenTheme(isLight = isLightTheme) {
 
@@ -170,12 +180,22 @@ fun JadeQRScreen(
                         Text(
                             text = stringResource(step.title),
                             style = headlineSmall,
-                            color = textHigh
+                            color = textHigh,
+                            textAlign = TextAlign.Center
                         )
+
+                        step.subtitle?.also { subtitle ->
+                            Text(
+                                text = stringResource(subtitle),
+                                style = bodyMedium,
+                                color = textMedium,
+                                textAlign = TextAlign.Center
+                            )
+                        }
 
                         Text(
                             text = stringResource(step.message),
-                            style = labelLarge,
+                            style = bodyMedium,
                             color = textMedium,
                             textAlign = TextAlign.Center
                         )
@@ -236,7 +256,7 @@ fun JadeQRScreen(
                             }
                         } else {
                             if (viewModel.operation is JadeQrOperation.Psbt) {
-                                if ((viewModel.operation as? JadeQrOperation.Psbt)?.transactionConfirmLook != null) {
+                                if ((viewModel.operation as? JadeQrOperation.Psbt)?.transactionConfirmation != null) {
                                     GreenButton(
                                         text = stringResource(Res.string.id_check_transaction_details),
                                         modifier = Modifier
@@ -313,5 +333,21 @@ fun JadeQRScreen(
 fun QrPinUnlockScreenPreview() {
     GreenPreview {
         JadeQRScreen(JadeQRViewModelPreview.preview())
+    }
+}
+
+@Composable
+@Preview
+fun QrLightningScreenPreview() {
+    GreenPreview {
+        JadeQRScreen(JadeQRViewModelPreview.previewLightning())
+    }
+}
+
+@Composable
+@Preview
+fun QrSwapScreenPreview() {
+    GreenPreview {
+        JadeQRScreen(JadeQRViewModelPreview.previewSwap())
     }
 }

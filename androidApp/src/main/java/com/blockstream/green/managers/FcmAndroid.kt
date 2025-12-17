@@ -7,10 +7,10 @@ import com.blockstream.data.fcm.FcmCommon
 import com.blockstream.data.lightning.BreezNotification
 import com.blockstream.data.notifications.models.BoltzNotificationSimple
 import com.blockstream.data.notifications.models.MeldNotificationData
-import com.blockstream.utils.Loggable
 import com.blockstream.green.work.BoltzWork
 import com.blockstream.green.work.LightningWork
 import com.blockstream.green.work.MeldPendingTransactionsWorker
+import com.blockstream.utils.Loggable
 import org.koin.core.component.inject
 
 class FcmAndroid constructor(
@@ -41,14 +41,19 @@ class FcmAndroid constructor(
         notificationManager.createOpenWalletNotification(context, wallet)
     }
 
-    override suspend fun showSwapReceiveNotification(wallet: GreenWallet) {
-        logger.d { "showSwapReceiveNotification $wallet" }
-        notificationManager.createSwapPaymentReceiveNotification(context, wallet)
+    override suspend fun showSwapPaymentReceivedNotification(wallet: GreenWallet) {
+        logger.d { "showSwapPaymentReceivedNotification $wallet" }
+        notificationManager.showSwapPaymentReceivedNotification(context, wallet)
     }
 
-    override suspend fun showSwapSendNotification(wallet: GreenWallet) {
-        logger.d { "showSwapSendNotification $wallet" }
-        notificationManager.createSwapSendReceiveNotification(context, wallet)
+    override suspend fun showSwapPaymentSentNotification(wallet: GreenWallet) {
+        logger.d { "showSwapPaymentSentNotification $wallet" }
+        notificationManager.showSwapPaymentSentNotification(context, wallet)
+    }
+
+    override suspend fun showSwapNotification(wallet: GreenWallet) {
+        logger.d { "showSwapNotification $wallet" }
+        notificationManager.showSwapNotification(context, wallet)
     }
 
     override suspend fun showLightningPaymentNotification(

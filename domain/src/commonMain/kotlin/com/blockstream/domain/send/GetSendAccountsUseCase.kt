@@ -5,8 +5,7 @@ import com.blockstream.data.data.GreenWallet
 import com.blockstream.data.gdk.GdkSession
 import com.blockstream.data.gdk.data.AccountAsset
 import com.blockstream.data.gdk.data.AccountAssetBalance
-import com.blockstream.domain.boltz.IsAddressSwappableUseCase
-import com.blockstream.domain.boltz.IsSwapsEnabledUseCase
+import com.blockstream.domain.swap.IsLiquidToLightningSwapUseCase
 
 /**
  * Determines which accounts can fund a send for the given [EnrichedAsset].
@@ -36,8 +35,7 @@ import com.blockstream.domain.boltz.IsSwapsEnabledUseCase
  * Thread-safety: read‑only; safe to call from coroutines.
  */
 class GetSendAccountsUseCase(
-    private val isSwapsEnabledUseCase: IsSwapsEnabledUseCase,
-    private val isAddressSwappableUseCase: IsAddressSwappableUseCase,
+    private val isLiquidToLightningSwapUseCase: IsLiquidToLightningSwapUseCase
 ) {
 
     /**
@@ -56,25 +54,28 @@ class GetSendAccountsUseCase(
     suspend operator fun invoke(
         session: GdkSession, wallet: GreenWallet, asset: EnrichedAsset, address: String
     ): List<AccountAssetBalance> {
-        val isSwapsEnabled = isSwapsEnabledUseCase(wallet = wallet)
 
         return session.accounts.value.filter { account ->
             when {
-                asset.isBitcoin -> account.isBitcoin
+                // Same Policy Asset
+                asset.assetId == account.network.policyAsset -> true
+
                 asset.isLiquidNetwork(session) && !asset.isAmp -> account.isLiquid
                 asset.isLiquidNetwork(session) && asset.isAmp -> account.isAmp
-                asset.isLightning -> {
-                    when {
-                        account.isLightning -> true
-                        (isSwapsEnabled && account.isLiquid) -> isAddressSwappableUseCase(address = address)
-                        else -> false
-                    }
-                }
+
+                isLiquidToLightningSwapUseCase(
+                    wallet = wallet,
+                    asset = asset,
+                    address = address,
+                    accountAsset = account.accountAsset,
+                    session = session
+                ) -> true
 
                 else -> false
             }
         }.mapNotNull {
-            val accountAsset = if (asset.isLightning && it.accountAsset.account.isLiquid) {
+
+            val accountAsset = if (asset.isPolicyAsset(session) && asset.assetId != it.accountAsset.assetId) {
                 it.accountAsset // Swap
             } else {
                 AccountAsset.fromAccountAsset(account = it, assetId = asset.assetId, session = session)

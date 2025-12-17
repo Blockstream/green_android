@@ -37,10 +37,7 @@ import blockstream_green.common.generated.resources.id_receive
 import blockstream_green.common.generated.resources.id_send
 import blockstream_green.common.generated.resources.id_set_custom_fee_rate
 import blockstream_green.common.generated.resources.id_to
-import com.blockstream.data.data.DenominatedValue
-import com.blockstream.data.data.FeePriority
-import com.blockstream.data.gdk.data.AccountAssetBalance
-import com.blockstream.data.utils.DecimalFormat
+import com.blockstream.compose.GreenPreview
 import com.blockstream.compose.components.GreenAccountAsset
 import com.blockstream.compose.components.GreenAmountField
 import com.blockstream.compose.components.GreenButton
@@ -51,6 +48,7 @@ import com.blockstream.compose.dialogs.TextDialog
 import com.blockstream.compose.events.Events
 import com.blockstream.compose.models.exchange.AccountExchangeViewModel
 import com.blockstream.compose.models.exchange.AccountExchangeViewModelAbstract
+import com.blockstream.compose.models.exchange.AccountExchangeViewModelPreview
 import com.blockstream.compose.models.send.CreateTransactionViewModelAbstract
 import com.blockstream.compose.navigation.NavigateDestinations
 import com.blockstream.compose.navigation.getResult
@@ -63,8 +61,13 @@ import com.blockstream.compose.utils.AnimatedNullableVisibility
 import com.blockstream.compose.utils.HandleSideEffect
 import com.blockstream.compose.utils.stringResourceFromId
 import com.blockstream.compose.utils.stringResourceFromIdOrNull
+import com.blockstream.data.data.DenominatedValue
+import com.blockstream.data.data.FeePriority
+import com.blockstream.data.gdk.data.AccountAssetBalance
+import com.blockstream.data.utils.DecimalFormat
 import org.jetbrains.compose.resources.painterResource
 import org.jetbrains.compose.resources.stringResource
+import org.jetbrains.compose.ui.tooling.preview.Preview
 
 @Composable
 fun AccountExchangeScreen(
@@ -284,5 +287,13 @@ fun AccountExchangeScreen(
                 viewModel.postEvent(Events.Continue)
             }
         }
+    }
+}
+
+@Composable
+@Preview
+fun ExchangeScreenPreview() {
+    GreenPreview {
+        AccountExchangeScreen(viewModel = AccountExchangeViewModelPreview.preview())
     }
 }

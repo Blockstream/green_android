@@ -27,7 +27,6 @@ import com.blockstream.data.banner.Banner
 import com.blockstream.data.data.DenominatedValue
 import com.blockstream.data.data.Denomination
 import com.blockstream.data.data.ExceptionWithSupportData
-import com.blockstream.data.data.FeePriority
 import com.blockstream.data.data.GreenWallet
 import com.blockstream.data.data.SupportData
 import com.blockstream.data.extensions.ifConnected
@@ -46,8 +45,7 @@ import com.blockstream.data.utils.UserInput
 import com.blockstream.data.utils.feeRateWithUnit
 import com.blockstream.data.utils.ifNotNull
 import com.blockstream.data.utils.toAmountLook
-import com.blockstream.domain.boltz.BoltzUseCase
-import com.blockstream.domain.send.SendUseCase
+import com.blockstream.domain.swap.SwapUseCase
 import com.blockstream.utils.Loggable
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.GlobalScope
@@ -117,8 +115,7 @@ class SendViewModel(
     addressType: AddressInputType,
     accountAsset: AccountAsset
 ) : SendViewModelAbstract(greenWallet = greenWallet, accountAsset = accountAsset) {
-    internal val boltzUseCase: BoltzUseCase by inject()
-    internal val sendUseCase: SendUseCase by inject()
+    internal val boltzUseCase: SwapUseCase by inject()
 
     override val supportsSendAll: Boolean = !accountAsset.account.isLightning
 
@@ -243,8 +240,7 @@ class SendViewModel(
                 // Prefer account network as this can be a swap
                 val accountNetwork = accountAsset.account.network
 
-                _showFeeSelector.value =
-                    (accountNetwork.isBitcoin || (accountNetwork.isLiquid && getFeeRate(FeePriority.High()) > accountNetwork.defaultFee))
+                _showFeeSelector.value = sendUseCase.showFeeSelectorUseCase(session = session, network = accountNetwork)
 
                 _showAmount.value = !isSwapsEnabled || !(addressNetwork.value?.isLightning == true && accountAsset.account.network.isLiquid)
 
@@ -317,7 +313,7 @@ class SendViewModel(
         }
     }
 
-    override suspend fun createTransactionParams(): CreateTransactionParams? {
+    override suspend fun createTransactionParams(): CreateTransactionParams {
         return sendUseCase.prepareTransactionUseCase(
             greenWallet = greenWallet,
             session = session,

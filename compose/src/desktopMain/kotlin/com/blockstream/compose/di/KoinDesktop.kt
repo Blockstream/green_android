@@ -127,11 +127,11 @@ fun initKoinDesktop(appConfig: AppConfig, appInfo: AppInfo, doOnStartup: () -> U
 
                     }
 
-                    override suspend fun showSwapReceiveNotification(wallet: GreenWallet) {
+                    override suspend fun showSwapPaymentReceivedNotification(wallet: GreenWallet) {
 
                     }
 
-                    override suspend fun showSwapSendNotification(wallet: GreenWallet) {
+                    override suspend fun showSwapPaymentSentNotification(wallet: GreenWallet) {
                         
                     }
 

@@ -32,14 +32,16 @@ import blockstream_green.common.generated.resources.Res
 import blockstream_green.common.generated.resources.eye
 import blockstream_green.common.generated.resources.id_show_qr_code
 import blockstream_green.common.generated.resources.qr_code
-import com.blockstream.data.extensions.isNotBlank
+import com.blockstream.compose.GreenPreview
 import com.blockstream.compose.theme.green
 import com.blockstream.compose.theme.md_theme_surfaceTint
 import com.blockstream.compose.utils.ifTrue
+import com.blockstream.data.extensions.isNotBlank
 import io.github.alexzhirkevich.qrose.options.QrErrorCorrectionLevel
 import io.github.alexzhirkevich.qrose.rememberQrCodePainter
 import org.jetbrains.compose.resources.painterResource
 import org.jetbrains.compose.resources.stringResource
+import org.jetbrains.compose.ui.tooling.preview.Preview
 
 @OptIn(ExperimentalFoundationApi::class)
 @Composable
@@ -177,6 +179,31 @@ fun GreenQR(
             ZoomButton {
                 isFullscreen = true
             }
+        }
+    }
+}
+
+@Composable
+@Preview
+fun GreenQRPreview() {
+    GreenPreview {
+        GreenColumn(modifier = Modifier.fillMaxWidth(), horizontalAlignment = Alignment.CenterHorizontally) {
+            GreenQR(
+                data = "",
+                modifier = Modifier.weight(1f)
+            )
+
+            GreenQR(
+                data = "chalk verb patch cube sell west penalty fish park worry tribe tourist chalk verb patch cube sell west penalty fish park worry tribe tourist",
+                isJadeQR = true,
+                modifier = Modifier.fillMaxWidth()
+            )
+
+            GreenQR(
+                data = "chalk verb patch cube sell west penalty fish park worry tribe tourist chalk verb patch cube sell west penalty fish park worry tribe tourist",
+                isVisible = false,
+                modifier = Modifier.weight(1f)
+            )
         }
     }
 }

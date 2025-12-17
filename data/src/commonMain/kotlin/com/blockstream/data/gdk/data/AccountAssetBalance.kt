@@ -17,7 +17,8 @@ data class AccountAssetBalance constructor(
     val asset: EnrichedAsset,
     val denomination: Denomination? = null,
     val balance: String? = null,
-    val balanceExchange: String? = null
+    val balanceExchange: String? = null,
+    val satoshi: Long? = null
 ) : GreenJson<AccountAssetBalance>() {
     override fun kSerializer() = serializer()
 
@@ -62,7 +63,8 @@ data class AccountAssetBalance constructor(
                         assetId = accountAsset.assetId,
                         withUnit = true,
                         denomination = Denomination.exchange(session, denomination),
-                    )
+                    ),
+                    satoshi = balance
                 )
             }
         }
@@ -91,7 +93,8 @@ data class AccountAssetBalance constructor(
                         assetId = accountAsset.assetId,
                         withUnit = true,
                         denomination = Denomination.exchange(session, denomination)
-                    )
+                    ),
+                    satoshi = balance
                 )
             }
         }

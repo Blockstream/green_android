@@ -16,11 +16,11 @@ import com.blockstream.compose.utils.StringHolder
 import com.blockstream.data.TransactionSegmentation
 import com.blockstream.data.TransactionType
 import com.blockstream.data.banner.Banner
-import com.blockstream.data.data.FeePriority
 import com.blockstream.data.data.GreenWallet
 import com.blockstream.data.extensions.ifConnected
 import com.blockstream.data.extensions.isBlank
 import com.blockstream.data.extensions.isNotBlank
+import com.blockstream.data.extensions.launchSafe
 import com.blockstream.data.extensions.tryCatch
 import com.blockstream.data.gdk.data.AccountAsset
 import com.blockstream.data.gdk.data.PendingTransaction
@@ -71,8 +71,12 @@ class RedepositViewModel(
             )
         } else {
             session.ifConnected {
-                _showFeeSelector.value = accountAsset.account.network.isBitcoin
-                        || (accountAsset.account.network.isLiquid && getFeeRate(FeePriority.High()) > accountAsset.account.network.defaultFee)
+                viewModelScope.launchSafe {
+                    _showFeeSelector.value = sendUseCase.showFeeSelectorUseCase(
+                        session = session,
+                        network = accountAsset.account.network
+                    )
+                }
 
                 _network.value = accountAsset.account.network
 

@@ -3,15 +3,14 @@ package com.blockstream.domain.send
 import com.blockstream.data.data.EnrichedAsset
 import com.blockstream.data.data.EnrichedAssetList
 import com.blockstream.data.data.GreenWallet
-import com.blockstream.data.extensions.tryCatch
 import com.blockstream.data.gdk.GdkSession
 import com.blockstream.data.gdk.data.AccountAsset
 import com.blockstream.data.gdk.data.AccountAssetBalanceList
-import com.blockstream.domain.boltz.BoltzUseCase
+import com.blockstream.domain.swap.SwapUseCase
 import com.blockstream.jade.Loggable
 
 class GetSendFlowUseCase(
-    private val boltzUseCase: BoltzUseCase,
+    private val boltzUseCase: SwapUseCase,
     private val getSendAssetsUseCase: GetSendAssetsUseCase,
     private val getSendAccountsUseCase: GetSendAccountsUseCase,
     private val prepareTransactionUseCase: PrepareTransactionUseCase
@@ -37,7 +36,7 @@ class GetSendFlowUseCase(
                 if (asset.isLiquidPolicyAsset(session) &&
                     assets.size == 1 &&
                     assets.first().isLightning &&
-                    boltzUseCase.isAddressSwappableUseCase(address = address)
+                    boltzUseCase.isInvoiceSwappableUseCase(address = address, session = session)
                 ) {
                     // Change asset to Lightning
                     asset = assets.first()
@@ -63,7 +62,7 @@ class GetSendFlowUseCase(
             when {
                 accounts.isEmpty() -> {
                     // Asest is Lightning but address is not swappable (LNURL)
-                    if (asset.isLightning && !boltzUseCase.isAddressSwappableUseCase(address = address)) {
+                    if (asset.isLightning && !boltzUseCase.isInvoiceSwappableUseCase(address = address, session = session)) {
                         throw Exception("id_invalid_address")
                     } else {
                         throw Exception("id_insufficient_funds")
@@ -79,13 +78,14 @@ class GetSendFlowUseCase(
             }
         }
 
-        val isSwap = if (account.account.network.isLiquid) {
-            tryCatch {
-                assets.first().isLightning &&
-                        boltzUseCase.isSwapsEnabledUseCase(wallet = greenWallet) &&
-                        boltzUseCase.isAddressSwappableUseCase(address = address)
-            } ?: false
-        } else false
+        val isSwap =
+            boltzUseCase.isLiquidToLightningSwapUseCase(
+                wallet = greenWallet,
+                asset = asset,
+                address = address,
+                accountAsset = account,
+                session = session
+            )
 
         if (isSwap) {
             val params = prepareTransactionUseCase(

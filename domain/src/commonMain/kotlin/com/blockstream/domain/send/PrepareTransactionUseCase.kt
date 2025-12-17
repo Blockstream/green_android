@@ -9,9 +9,9 @@ import com.blockstream.data.gdk.data.AccountAsset
 import com.blockstream.data.gdk.params.AddressParams
 import com.blockstream.data.gdk.params.CreateTransactionParams
 import com.blockstream.data.gdk.params.toJsonElement
-import com.blockstream.data.lwk.NormalSubmarineSwap
+import com.blockstream.data.swap.SwapDetails
 import com.blockstream.data.utils.UserInput
-import com.blockstream.domain.boltz.BoltzUseCase
+import com.blockstream.domain.swap.SwapUseCase
 import com.blockstream.jade.Loggable
 import kotlinx.serialization.json.buildJsonObject
 
@@ -40,7 +40,7 @@ import kotlinx.serialization.json.buildJsonObject
  * - For Lightning accounts we include a `utxos` map with the policy asset to force param refresh.
  * - This use case does not broadcast; it only prepares parameters for transaction creation.
  */
-class PrepareTransactionUseCase(private val boltzUseCase: BoltzUseCase) {
+class PrepareTransactionUseCase(private val swapUseCase: SwapUseCase) {
 
     /**
      * Prepare a `CreateTransactionParams` instance for the given destination and amount.
@@ -92,27 +92,26 @@ class PrepareTransactionUseCase(private val boltzUseCase: BoltzUseCase) {
             val isGreedy: Boolean
             val satoshi: Long?
             val toAddress: String
-            var swap: NormalSubmarineSwap? = null
+            var swap: SwapDetails? = null
 
-            val parsedAddress = session.parseInput(address)
+            val isLiquidToLightningSwap = tryCatch {
+                accountAsset.account.network.isLiquid &&
+                        session.parseInput(address)?.first?.isLightning == true &&
+                        swapUseCase.isSwapsEnabledUseCase(wallet = greenWallet)
+            } ?: false
 
-            val isSwap = if (accountAsset.account.network.isLiquid) {
-                tryCatch { parsedAddress?.first?.isLightning } ?: false && boltzUseCase.isSwapsEnabledUseCase(wallet = greenWallet)
-            } else false
-
-            if (isSwap) {
-
-                swap = boltzUseCase.createNormalSubmarineSwapUseCase(
+            if (isLiquidToLightningSwap) {
+                swap = swapUseCase.createNormalSubmarineSwapUseCase(
                     wallet = greenWallet,
                     session = session,
+                    isAutoSwap = true,
                     account = accountAsset.account,
                     invoice = address
                 )
-                logger.d { "Swap: $swap" }
 
                 isGreedy = false
                 toAddress = swap.address
-                satoshi = swap.satoshi
+                satoshi = swap.fromAmount
             } else {
                 isGreedy = isSendAll
                 toAddress = address
@@ -137,7 +136,8 @@ class PrepareTransactionUseCase(private val boltzUseCase: BoltzUseCase) {
                     addressees = listOf(params).toJsonElement(),
                     feeRate = feeRate,
                     utxos = unspentOutputs.unspentOutputs,
-                    submarineSwap = swap
+                    swap = swap,
+                    isLiquidToLightningSwap = isLiquidToLightningSwap
                 )
             }
         })

@@ -3,6 +3,10 @@ package com.blockstream.compose.models.send
 import androidx.lifecycle.viewModelScope
 import blockstream_green.common.generated.resources.Res
 import blockstream_green.common.generated.resources.id_network_fee
+import com.blockstream.compose.extensions.launchIn
+import com.blockstream.compose.extensions.previewAccountAsset
+import com.blockstream.compose.extensions.previewWallet
+import com.blockstream.compose.navigation.NavData
 import com.blockstream.data.data.FeePriority
 import com.blockstream.data.data.GreenWallet
 import com.blockstream.data.extensions.ifConnected
@@ -10,18 +14,19 @@ import com.blockstream.data.gdk.data.AccountAsset
 import com.blockstream.data.gdk.params.CreateTransactionParams
 import com.blockstream.data.lightning.fee
 import com.blockstream.data.utils.feeRateWithUnit
-import com.blockstream.compose.extensions.launchIn
-import com.blockstream.compose.extensions.previewAccountAsset
-import com.blockstream.compose.extensions.previewWallet
-import com.blockstream.compose.navigation.NavData
 import com.blockstream.utils.Loggable
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
-import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.filterNotNull
 import kotlinx.coroutines.flow.onEach
+import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 import org.jetbrains.compose.resources.getString
+
+data class FeeUiState(
+    val feePriorities: List<FeePriority> = listOf(),
+    val isFeeRateOnly: Boolean = false
+)
 
 abstract class FeeViewModelAbstract(
     greenWallet: GreenWallet,
@@ -35,18 +40,19 @@ abstract class FeeViewModelAbstract(
     override fun segmentation(): HashMap<String, Any>? {
         return countly.accountSegmentation(session = session, account = accountOrNull)
     }
-    abstract val feePriorities: StateFlow<List<FeePriority>>
+
+    abstract val uiState: StateFlow<FeeUiState>
 }
 
 class FeeViewModel(
     greenWallet: GreenWallet,
     accountAssetOrNull: AccountAsset?,
+    private val isFeeRateOnly: Boolean,
     private val useBreezFees: Boolean
 ) : FeeViewModelAbstract(greenWallet = greenWallet, accountAssetOrNull = accountAssetOrNull) {
 
-    private val _feePriorities: MutableStateFlow<List<FeePriority>> =
-        MutableStateFlow(listOf(FeePriority.High(), FeePriority.Medium(), FeePriority.Low()))
-    override val feePriorities: StateFlow<List<FeePriority>> = _feePriorities.asStateFlow()
+    final override val uiState: StateFlow<FeeUiState>
+        field = MutableStateFlow(FeeUiState())
 
     private var params: CreateTransactionParams? = null
 
@@ -55,6 +61,12 @@ class FeeViewModel(
         viewModelScope.launch {
             _navData.value = NavData(
                 title = getString(Res.string.id_network_fee)
+            )
+        }
+
+        uiState.update { uiState ->
+            uiState.copy(
+                isFeeRateOnly = isFeeRateOnly
             )
         }
 
@@ -105,7 +117,11 @@ class FeeViewModel(
             }
         }, onSuccess = { fees ->
             fees?.also {
-                _feePriorities.value = it
+                uiState.update { uiState ->
+                    uiState.copy(
+                        feePriorities = it
+                    )
+                }
             }
         })
     }
@@ -144,7 +160,11 @@ class FeeViewModel(
                 }
             }
         }, onSuccess = {
-            _feePriorities.value = it
+            uiState.update { uiState ->
+                uiState.copy(
+                    feePriorities = it
+                )
+            }
         })
     }
 
@@ -154,8 +174,7 @@ class FeeViewModel(
 class FeeViewModelPreview(greenWallet: GreenWallet) :
     FeeViewModelAbstract(greenWallet = greenWallet, accountAssetOrNull = previewAccountAsset()) {
 
-    override val feePriorities: StateFlow<List<FeePriority>> =
-        MutableStateFlow(listOf(FeePriority.High(error = "id_insufficient_funds"), FeePriority.Medium(), FeePriority.Low()))
+    override val uiState: StateFlow<FeeUiState> = MutableStateFlow(FeeUiState())
 
     companion object {
         fun preview() = FeeViewModelPreview(previewWallet())

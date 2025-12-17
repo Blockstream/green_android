@@ -18,6 +18,7 @@ import androidx.navigation.toRoute
 import com.blockstream.compose.dialogs.TorWarningDialog
 import com.blockstream.compose.dialogs.UrlWarningDialog
 import com.blockstream.compose.managers.rememberStateKeeperFactory
+import com.blockstream.compose.models.GreenViewModel
 import com.blockstream.compose.models.MainViewModel
 import com.blockstream.compose.models.SimpleGreenViewModel
 import com.blockstream.compose.models.about.AboutViewModel
@@ -94,6 +95,7 @@ import com.blockstream.compose.models.sheets.NoteViewModel
 import com.blockstream.compose.models.sheets.RecoveryHelpViewModel
 import com.blockstream.compose.models.sheets.TransactionDetailsViewModel
 import com.blockstream.compose.models.support.SupportViewModel
+import com.blockstream.compose.models.swap.SwapViewModel
 import com.blockstream.compose.models.transaction.TransactionViewModel
 import com.blockstream.compose.models.twofactor.ReEnable2FAViewModel
 import com.blockstream.compose.models.wallet.WalletDeleteViewModel
@@ -161,6 +163,7 @@ import com.blockstream.compose.screens.settings.TwoFactorSetupScreen
 import com.blockstream.compose.screens.settings.WalletSettingsScreen
 import com.blockstream.compose.screens.settings.WatchOnlyScreen
 import com.blockstream.compose.screens.support.SupportScreen
+import com.blockstream.compose.screens.swap.SwapScreen
 import com.blockstream.compose.screens.transaction.TransactionScreen
 import com.blockstream.compose.screens.twofactor.ReEnable2FAScreen
 import com.blockstream.compose.sheets.AccountRenameBottomSheet
@@ -178,6 +181,7 @@ import com.blockstream.compose.sheets.ChooseAssetAccountBottomSheet
 import com.blockstream.compose.sheets.CountriesBottomSheet
 import com.blockstream.compose.sheets.DenominationBottomSheet
 import com.blockstream.compose.sheets.DeviceInteractionBottomSheet
+import com.blockstream.compose.sheets.EnableJadeFeatureBottomSheet
 import com.blockstream.compose.sheets.EnvironmentBottomSheet
 import com.blockstream.compose.dialogs.HwWatchOnlyDialog
 import com.blockstream.compose.sheets.FeeRateBottomSheet
@@ -537,6 +541,15 @@ fun Router(
                 AccountExchangeScreen(viewModel {
                     AccountExchangeViewModel(
                         greenWallet = args.greenWallet
+                    )
+                })
+            }
+            appComposable<NavigateDestinations.Swap> {
+                val args = it.toRoute<NavigateDestinations.Swap>()
+                SwapScreen(viewModel {
+                    SwapViewModel(
+                        greenWallet = args.greenWallet,
+                        accountAssetOrNull = args.accountAsset
                     )
                 })
             }
@@ -1009,7 +1022,7 @@ fun Router(
 
                 val screenName = when {
                     args.verifyAddress != null -> "VerifyAddress"
-                    args.transactionConfirmLook != null -> "VerifyTransaction"
+                    args.transactionConfirmation != null -> "VerifyTransaction"
                     else -> null
                 }
 
@@ -1023,7 +1036,7 @@ fun Router(
 
                 DeviceInteractionBottomSheet(
                     viewModel = viewModel,
-                    transactionConfirmLook = args.transactionConfirmLook,
+                    transactionConfirmation = args.transactionConfirmation,
                     verifyAddress = args.verifyAddress,
                     isMasterBlindingKeyRequest = args.isMasterBlindingKeyRequest,
                     message = StringHolder.create(args.message),
@@ -1152,8 +1165,8 @@ fun Router(
             appBottomSheet<NavigateDestinations.SwapFees> {
                 val args = it.toRoute<NavigateDestinations.SwapFees>()
                 SwapFeesBottomSheet(
-                    serviceFee = args.serviceFee,
                     networkFee = args.networkFee,
+                    swapFee = args.swapFee,
                     totalFees = args.totalFees,
                     totalFeesFiat = args.totalFeesFiat,
                     onDismissRequest = navController.onDismissRequest()
@@ -1218,7 +1231,20 @@ fun Router(
                         FeeViewModel(
                             greenWallet = args.greenWallet,
                             accountAssetOrNull = args.accountAsset,
+                            isFeeRateOnly = args.isFeeRateOnly,
                             useBreezFees = args.useBreezFees
+                        )
+                    },
+                    onDismissRequest = navController.onDismissRequest()
+                )
+            }
+            appBottomSheet<NavigateDestinations.EnableJadeFeature> {
+                val args = it.toRoute<NavigateDestinations.EnableJadeFeature>()
+                EnableJadeFeatureBottomSheet(
+                    viewModel = viewModel {
+                        SimpleGreenViewModel(
+                            greenWalletOrNull = args.greenWallet,
+                            accountAssetOrNull = args.accountAsset,
                         )
                     },
                     onDismissRequest = navController.onDismissRequest()

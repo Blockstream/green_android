@@ -32,6 +32,18 @@ fun PaddingValues.excludeTop(): PaddingValues {
 }
 
 @Composable
+fun PaddingValues.excludeStart(): PaddingValues {
+    val layoutDirection = LocalLayoutDirection.current
+
+    return PaddingValues(
+        top = calculateTopPadding(),
+        start = 0.dp,
+        end = calculateEndPadding(layoutDirection),
+        bottom = calculateBottomPadding()
+    )
+}
+
+@Composable
 fun PaddingValues.excludeBottom(): PaddingValues {
     val layoutDirection = LocalLayoutDirection.current
 

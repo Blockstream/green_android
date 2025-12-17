@@ -1,4 +1,5 @@
 import kotlin.Boolean;
+import com.blockstream.data.data.SwapType;
 
 CREATE TABLE IF NOT EXISTS `boltzSwaps` (
     `id` TEXT NOT NULL,
@@ -7,6 +8,8 @@ CREATE TABLE IF NOT EXISTS `boltzSwaps` (
     `invoice` TEXT DEFAULT NULL,
     `tx_hash` TEXT DEFAULT NULL,
     `is_pending` INTEGER AS Boolean NOT NULL DEFAULT 1,
+    `swap_type` TEXT AS SwapType NOT NULL DEFAULT 'NormalSubmarine',
+    `is_auto_swap` INTEGER AS Boolean NOT NULL DEFAULT 1,
     `data` TEXT NOT NULL,
      PRIMARY KEY(`id`)
 );
@@ -28,14 +31,20 @@ getSwapFromInvoice:
 SELECT * FROM boltzSwaps WHERE invoice = ? AND xpub_hash_id = ?;
 
 setSwap:
-INSERT OR REPLACE INTO boltzSwaps(id, wallet_id, xpub_hash_id, invoice, data)
-VALUES (?, ?, ?, ?, ?);
+INSERT OR REPLACE INTO boltzSwaps(id, wallet_id, xpub_hash_id, invoice, swap_type, is_auto_swap, data)
+VALUES (?, ?, ?, ?, ?, ?, ?);
+
+setSwapType:
+UPDATE boltzSwaps SET swap_type = ? WHERE id = ?;
 
 setSwapComplete:
 UPDATE boltzSwaps SET is_pending = 0 WHERE id = ?;
 
 setSwapTxHash:
 UPDATE boltzSwaps SET tx_hash = ? WHERE id = ?;
+
+getAllSwaps:
+SELECT * FROM boltzSwaps;
 
 deleteSwap:
 DELETE FROM boltzSwaps WHERE id = ?;

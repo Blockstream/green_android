@@ -19,7 +19,6 @@ import com.blockstream.data.TransactionType
 import com.blockstream.data.banner.Banner
 import com.blockstream.data.data.DenominatedValue
 import com.blockstream.data.data.Denomination
-import com.blockstream.data.data.FeePriority
 import com.blockstream.data.data.GreenWallet
 import com.blockstream.data.extensions.ifConnected
 import com.blockstream.data.extensions.isBlank
@@ -241,12 +240,10 @@ class AccountExchangeViewModel(
             }.launchIn(this)
 
             combine(fromAccountAsset, toAccount, _feeEstimation) { fromAccountAsset, toAccountAsset, _ ->
-                val fromNetwork = fromAccountAsset?.account?.network
-
-                _showFeeSelector.value =
-                    fromAccountAsset != null
-                            && toAccountAsset != null
-                            && (fromNetwork?.isBitcoin == true || (fromNetwork?.isLiquid == true && getFeeRate(FeePriority.High()) > fromNetwork.defaultFee))
+                _showFeeSelector.value = toAccountAsset != null && sendUseCase.showFeeSelectorUseCase(
+                    session = session,
+                    network = fromAccountAsset?.account?.network
+                )
 
             }.launchIn(this)
 
@@ -390,6 +387,7 @@ class AccountExchangeViewModel(
                 CreateTransactionParams(
                     from = fromAccountAsset,
                     to = toAccountAsset.value,
+                    isAccountTransfer = true,
                     addressees = listOf(params).toJsonElement(),
                     feeRate = getFeeRate(),
                     utxos = unspentOutputs.unspentOutputs

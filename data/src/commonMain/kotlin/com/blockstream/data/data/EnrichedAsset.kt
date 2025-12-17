@@ -96,6 +96,8 @@ data class EnrichedAsset constructor(
     val isLightning
         get() = assetId == LN_BTC_POLICY_ASSET
 
+    fun isPolicyAsset(session: GdkSession) = assetId.isPolicyAsset(session)
+
     fun isLiquidPolicyAsset(session: GdkSession) = !isAnyAsset && assetId.isPolicyAsset(session.liquid)
 
     fun isLiquidNetwork(session: GdkSession) = assetId.networkForAsset(session)?.isLiquid == true

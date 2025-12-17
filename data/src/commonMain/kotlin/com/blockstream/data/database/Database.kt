@@ -1,11 +1,14 @@
 package com.blockstream.data.database
 
+import app.cash.sqldelight.EnumColumnAdapter
 import app.cash.sqldelight.coroutines.asFlow
 import app.cash.sqldelight.db.SqlDriver
 import com.blockstream.data.data.CredentialType
 import com.blockstream.data.data.GreenWallet
+import com.blockstream.data.data.SwapType
 import com.blockstream.data.data.toGreenWallet
 import com.blockstream.data.database.local.LocalDB
+import com.blockstream.data.database.wallet.BoltzSwaps
 import com.blockstream.data.database.wallet.LoginCredentials
 import com.blockstream.data.database.wallet.Wallet
 import com.blockstream.data.database.wallet.WalletDB
@@ -37,7 +40,8 @@ fun createWalletDatabase(driverFactory: DriverFactory): WalletDB {
             pin_dataAdapter = pinDataAdapter,
             encrypted_dataAdapter = encryptedDataAdapter
         ),
-        walletAdapter = Wallet.Adapter(device_identifiersAdapter = deviceIdentifierAdapter, extrasAdapter = walletExtrasTypeAdapter)
+        walletAdapter = Wallet.Adapter(device_identifiersAdapter = deviceIdentifierAdapter, extrasAdapter = walletExtrasTypeAdapter),
+        boltzSwapsAdapter = BoltzSwaps.Adapter(swap_typeAdapter = EnumColumnAdapter())
     )
 
     return database
@@ -331,8 +335,31 @@ class Database(driverFactory: DriverFactory, val settingsManager: SettingsManage
         }
     }
 
-    suspend fun setSwap(id: String, walletId: String, xPubHashId: String, invoice: String? = null, data: String) = io {
-        walletDB.boltzSwapsQueries.setSwap(id = id, wallet_id = walletId, xpub_hash_id = xPubHashId, invoice = invoice, data_ = data)
+    suspend fun setSwap(
+        id: String,
+        walletId: String,
+        xPubHashId: String,
+        invoice: String? = null,
+        swapType: SwapType,
+        isAutoSwap: Boolean,
+        data: String
+    ) = io {
+        walletDB.boltzSwapsQueries.setSwap(
+            id = id,
+            wallet_id = walletId,
+            xpub_hash_id = xPubHashId,
+            invoice = invoice,
+            swap_type = swapType,
+            is_auto_swap = isAutoSwap,
+            data_ = data
+        )
+    }
+
+    suspend fun setSwapType(id: String, swapType: SwapType) = io {
+        walletDB.boltzSwapsQueries.setSwapType(
+            id = id,
+            swap_type = swapType
+        )
     }
 
     suspend fun setSwapComplete(id: String) = io {
@@ -341,6 +368,10 @@ class Database(driverFactory: DriverFactory, val settingsManager: SettingsManage
 
     suspend fun setSwapTxHash(id: String, txHash: String) = io {
         walletDB.boltzSwapsQueries.setSwapTxHash(id = id, tx_hash = txHash)
+    }
+
+    suspend fun getAllSwaps(): List<BoltzSwaps> = io {
+        walletDB.boltzSwapsQueries.getAllSwaps().executeAsList()
     }
 
     suspend fun deleteSwap(id: String) = io {

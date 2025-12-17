@@ -3,28 +3,24 @@ package com.blockstream.domain.receive
 import com.blockstream.data.data.Denomination
 import com.blockstream.data.extensions.isBlank
 import com.blockstream.data.extensions.isNotBlank
-import com.blockstream.data.extensions.tryCatch
 import com.blockstream.data.gdk.GdkSession
 import com.blockstream.data.gdk.data.AccountAsset
 import com.blockstream.data.lightning.feeSatoshi
 import com.blockstream.data.lightning.maxReceivableSatoshi
 import com.blockstream.data.lightning.totalInboundLiquiditySatoshi
-import com.blockstream.data.lwk.BoltzLimits
+import com.blockstream.data.receive.ReceiveAmountData
+import com.blockstream.data.swap.QuoteMode
+import com.blockstream.data.swap.SwapAsset
 import com.blockstream.data.utils.UserInput
 import com.blockstream.data.utils.toAmountLook
 import com.blockstream.data.utils.toAmountLookOrNa
-import com.github.michaelbull.retry.policy.constantDelay
-import com.github.michaelbull.retry.policy.plus
-import com.github.michaelbull.retry.policy.stopAtAttempts
-import com.github.michaelbull.retry.retry
-import kotlinx.coroutines.CoroutineScope
-import kotlinx.coroutines.Dispatchers
+import com.blockstream.domain.swap.GetQuoteUseCase
+import com.blockstream.domain.swap.toSwapAsset
 import kotlinx.coroutines.flow.Flow
-import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.flow.flowOf
-import kotlinx.coroutines.launch
+import kotlinx.coroutines.flow.map
 
 /**
  * Use case that determines which assets are relevant for a send flow given a raw input string.
@@ -47,27 +43,11 @@ import kotlinx.coroutines.launch
  *   message `id_invalid_address`.
  */
 
-data class ReceiveAmountData(
-    val isValid: Boolean = false,
-    val exchange: String = "",
-    val liquidityFee: String? = null,
-    val hint: String? = null,
-    val error: String? = null
-)
-
-class GetReceiveAmountUseCase(private val session: GdkSession, private val accountAsset: AccountAsset) {
-    private var limits: MutableStateFlow<BoltzLimits?> = MutableStateFlow<BoltzLimits?>(null)
-    private val scope = CoroutineScope(context = Dispatchers.Default)
-
-    init {
-        scope.launch {
-            tryCatch {
-                retry(stopAtAttempts<Throwable>(3) + constantDelay<Throwable>(delayMillis = 5000L)) {
-                    limits.value = session.lwkOrNull?.fetchSwapsInfo()
-                }
-            }
-        }
-    }
+class GetReceiveAmountUseCase(
+    private val session: GdkSession,
+    private val accountAsset: AccountAsset,
+    private val getQuoteUseCase: GetQuoteUseCase
+) {
 
     operator fun invoke(
         amount: StateFlow<String>,
@@ -75,12 +55,31 @@ class GetReceiveAmountUseCase(private val session: GdkSession, private val accou
         isReverseSubmarineSwap: StateFlow<Boolean>
     ): Flow<ReceiveAmountData> {
 
+        val balance = combine(amount, denomination) { amount, denomination ->
+            amount.takeIf { it.isNotBlank() }?.let {
+                UserInput.parseUserInputSafe(
+                    session = session, input = it, assetId = accountAsset.asset.assetId, denomination = denomination
+                ).getBalance()
+            }
+        }
+
+        val quote = getQuoteUseCase(
+            session = session,
+            from = flowOf(accountAsset.toSwapAsset()),
+            to = flowOf(SwapAsset.Lightning),
+            satoshi = balance.map {
+                it?.satoshi ?: 0
+            },
+            quoteMode = flowOf(QuoteMode.SEND)
+        )
+
         return combine(
             amount,
             denomination,
-            isReverseSubmarineSwap, limits,
+            isReverseSubmarineSwap,
+            quote,
             session.lightningSdkOrNull?.nodeInfoStateFlow ?: flowOf(null)
-        ) { amount, denomination, isReverseSubmarineSwap, swapLimits, nodeInfo ->
+        ) { amount, denomination, isReverseSubmarineSwap, quote, nodeInfo ->
 
             var response = ReceiveAmountData()
 
@@ -204,16 +203,16 @@ class GetReceiveAmountUseCase(private val session: GdkSession, private val accou
                 }
             } else if (accountAsset.account.isLiquid && isReverseSubmarineSwap) {
 
-                val isValid = balance != null && balance.satoshi > 0 && (balance.satoshi >= (swapLimits?.limits?.minimal
-                    ?: 0)) && (balance.satoshi <= (swapLimits?.limits?.maximal ?: Long.MAX_VALUE))
+                val isValid = balance != null && balance.satoshi > 0 && (balance.satoshi >= (quote?.minimal
+                    ?: 0)) && (balance.satoshi <= (quote?.maximal ?: Long.MAX_VALUE))
 
                 val hint = when {
                     balance == null -> null
-                    balance.satoshi >= (swapLimits?.limits?.minimal ?: 0) -> {
-                        swapLimits?.limits?.maximal.toAmountLook(
+                    balance.satoshi >= (quote?.minimal ?: 0) -> {
+                        quote?.maximal.toAmountLook(
                             session = session,
                             assetId = accountAsset.account.network.policyAsset,
-                            denomination = denomination,
+                            denomination = denomination.notFiat(),
                             withUnit = true
                         )?.let {
                             "id_max_limit_s|$it"
@@ -221,32 +220,32 @@ class GetReceiveAmountUseCase(private val session: GdkSession, private val accou
                     }
 
                     else -> {
-                        swapLimits?.limits?.minimal.toAmountLook(
+                        quote?.minimal.toAmountLook(
                             session = session,
                             assetId = accountAsset.account.network.policyAsset,
-                            denomination = denomination,
+                            denomination = denomination.notFiat(),
                             withUnit = true
                         )?.let {
-                            "id_min_limit_s|$it"
+                            "id_amount_too_low_s|$it"
                         }
                     }
                 }
 
                 val error = when {
                     balance == null -> null
-                    balance.satoshi < (swapLimits?.limits?.minimal ?: 0) -> {
-                        swapLimits?.limits?.minimal.toAmountLook(
+                    balance.satoshi < (quote?.minimal ?: 0) -> {
+                        quote?.minimal.toAmountLook(
                             session = session,
                             assetId = accountAsset.account.network.policyAsset,
                             denomination = denomination,
                             withUnit = true
                         )?.let {
-                            "id_min_limit_s|$it"
+                            "id_amount_too_high_s|$it"
                         }
                     }
 
-                    balance.satoshi > (swapLimits?.limits?.maximal ?: Long.MAX_VALUE) -> {
-                        swapLimits?.limits?.maximal.toAmountLook(
+                    balance.satoshi > (quote?.maximal ?: Long.MAX_VALUE) -> {
+                        quote?.maximal.toAmountLook(
                             session = session,
                             assetId = accountAsset.account.network.policyAsset,
                             denomination = denomination,

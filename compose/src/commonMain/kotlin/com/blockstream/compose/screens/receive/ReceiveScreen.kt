@@ -57,13 +57,7 @@ import com.adamglin.PhosphorIcons
 import com.adamglin.phosphoricons.Regular
 import com.adamglin.phosphoricons.regular.SealCheck
 import com.adamglin.phosphoricons.regular.ShareNetwork
-import com.blockstream.data.data.AlertType
-import com.blockstream.data.data.DenominatedValue
-import com.blockstream.data.data.GreenWallet
-import com.blockstream.data.data.MenuEntry
-import com.blockstream.data.data.MenuEntryList
-import com.blockstream.data.extensions.isNotBlank
-import com.blockstream.data.gdk.data.AssetBalance
+import com.blockstream.compose.GreenPreview
 import com.blockstream.compose.components.GreenAddress
 import com.blockstream.compose.components.GreenAlert
 import com.blockstream.compose.components.GreenAmountField
@@ -83,6 +77,7 @@ import com.blockstream.compose.extensions.onValueChange
 import com.blockstream.compose.managers.rememberPlatformManager
 import com.blockstream.compose.models.receive.ReceiveViewModel
 import com.blockstream.compose.models.receive.ReceiveViewModelAbstract
+import com.blockstream.compose.models.receive.ReceiveViewModelPreview
 import com.blockstream.compose.navigation.LocalNavigator
 import com.blockstream.compose.navigation.NavigateDestinations
 import com.blockstream.compose.navigation.bottomsheet.BottomSheetNavigator
@@ -99,6 +94,13 @@ import com.blockstream.compose.theme.whiteMedium
 import com.blockstream.compose.utils.AnimatedNullableVisibility
 import com.blockstream.compose.utils.SetupScreen
 import com.blockstream.compose.utils.appTestTag
+import com.blockstream.data.data.AlertType
+import com.blockstream.data.data.DenominatedValue
+import com.blockstream.data.data.GreenWallet
+import com.blockstream.data.data.MenuEntry
+import com.blockstream.data.data.MenuEntryList
+import com.blockstream.data.extensions.isNotBlank
+import com.blockstream.data.gdk.data.AssetBalance
 import io.github.alexzhirkevich.qrose.QrCodePainter
 import io.github.alexzhirkevich.qrose.toByteArray
 import kotlinx.coroutines.delay
@@ -106,6 +108,7 @@ import kotlinx.coroutines.launch
 import org.jetbrains.compose.resources.getString
 import org.jetbrains.compose.resources.painterResource
 import org.jetbrains.compose.resources.stringResource
+import org.jetbrains.compose.ui.tooling.preview.Preview
 
 @Composable
 fun ReceiveScreen(
@@ -536,5 +539,13 @@ fun ReceiveScreen(
                 )
             }
         }
+    }
+}
+
+@Composable
+@Preview
+fun ReceiveScreenPreview() {
+    GreenPreview {
+        ReceiveScreen(viewModel = ReceiveViewModelPreview.preview())
     }
 }

@@ -4,9 +4,10 @@
 
 You need to have the following Android developer tools installed:
 
-- "Android Command-line tools" version 9477386 recommended
-- "Android SDK Build-tools" version 33.0.1
-- "Android SDK Platform Tools" version 33.0.3 recommended
+- "Android Command-line tools" (latest version recommended)
+- "Android SDK Build-tools" version 36.0.0
+- "Android SDK Platform-tools" (latest version recommended)
+- "Android SDK Platform" API 36
 
 The above tools can be installed from the Android SDK manager.
 

@@ -23,22 +23,22 @@ import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import blockstream_green.common.generated.resources.Res
 import blockstream_green.common.generated.resources.id_transactions
 import blockstream_green.common.generated.resources.id_your_transactions_will_be_shown
-import com.blockstream.compose.events.Events
-import com.blockstream.data.extensions.isNotBlank
-import com.blockstream.compose.models.assetaccounts.AssetAccountDetailsViewModel
-import com.blockstream.compose.models.assetaccounts.AssetAccountDetailsViewModelAbstract
 import com.blockstream.compose.components.GreenTransaction
 import com.blockstream.compose.components.ListHeader
 import com.blockstream.compose.components.TransactionActionButtons
+import com.blockstream.compose.events.Events
 import com.blockstream.compose.extensions.itemsSpaced
+import com.blockstream.compose.models.assetaccounts.AssetAccountDetailsViewModel
+import com.blockstream.compose.models.assetaccounts.AssetAccountDetailsViewModelAbstract
+import com.blockstream.compose.navigation.LocalInnerPadding
 import com.blockstream.compose.screens.assetaccounts.components.AssetOverview
 import com.blockstream.compose.theme.bodyMedium
 import com.blockstream.compose.utils.SetupScreen
-import com.blockstream.compose.views.LightningInfo
-import com.blockstream.compose.navigation.LocalInnerPadding
 import com.blockstream.compose.utils.bottom
 import com.blockstream.compose.utils.plus
 import com.blockstream.compose.utils.reachedBottom
+import com.blockstream.compose.views.LightningInfo
+import com.blockstream.data.extensions.isNotBlank
 import org.jetbrains.compose.resources.stringResource
 
 @Composable
@@ -52,6 +52,7 @@ fun AssetAccountDetailsScreen(
         val totalBalance by viewModel.totalBalance.collectAsStateWithLifecycle()
         val totalBalanceFiat by viewModel.totalBalanceFiat.collectAsStateWithLifecycle()
         val showBuyButton = viewModel.showBuyButton
+        val showSwapButton = viewModel.showSwapButton
         val isSendEnabled by viewModel.isSendEnabled.collectAsStateWithLifecycle()
         val hasMoreTransactions by viewModel.hasMoreTransactions.collectAsStateWithLifecycle()
         val lightningInfo by viewModel.lightningInfo.collectAsStateWithLifecycle()
@@ -87,10 +88,12 @@ fun AssetAccountDetailsScreen(
             item(key = "ButtonsRow") {
                 TransactionActionButtons(
                     showBuyButton = showBuyButton,
+                    showSwapButton = showSwapButton,
                     sendEnabled = isSendEnabled,
                     onBuy = { viewModel.postEvent(AssetAccountDetailsViewModel.LocalEvents.ClickBuy) },
                     onSend = { viewModel.postEvent(AssetAccountDetailsViewModel.LocalEvents.ClickSend) },
-                    onReceive = { viewModel.postEvent(AssetAccountDetailsViewModel.LocalEvents.ClickReceive) }
+                    onReceive = { viewModel.postEvent(AssetAccountDetailsViewModel.LocalEvents.ClickReceive) },
+                    onSwap = { viewModel.postEvent(AssetAccountDetailsViewModel.LocalEvents.ClickSwap) }
                 )
             }
 

@@ -37,10 +37,8 @@ import blockstream_green.common.generated.resources.id_hide_advanced_options
 import blockstream_green.common.generated.resources.id_show_advanced_options
 import blockstream_green.common.generated.resources.id_there_is_already_an_archived
 import blockstream_green.common.generated.resources.id_you_cannot_add_more_than_one
-import com.blockstream.data.extensions.toggle
-import com.blockstream.data.gdk.data.AssetBalance
 import com.blockstream.compose.LocalDialog
-import com.blockstream.compose.components.GreenArrow
+import com.blockstream.compose.components.CaretRight
 import com.blockstream.compose.components.GreenAsset
 import com.blockstream.compose.components.GreenButton
 import com.blockstream.compose.components.GreenButtonType
@@ -70,6 +68,8 @@ import com.blockstream.compose.utils.SetupScreen
 import com.blockstream.compose.utils.StringHolder
 import com.blockstream.compose.utils.ifTrue
 import com.blockstream.compose.utils.roundBackground
+import com.blockstream.data.extensions.toggle
+import com.blockstream.data.gdk.data.AssetBalance
 import kotlinx.coroutines.launch
 import org.jetbrains.compose.resources.getString
 import org.jetbrains.compose.resources.painterResource
@@ -87,7 +87,7 @@ fun ChooseAccountTypeScreen(
     }
 
     NavigateDestinations.JadeQR.getResult<JadeQRResult> {
-        viewModel.postEvent(ChooseAccountTypeViewModel.LocalEvents.CreateLightningAccount(it.result))
+        viewModel.postEvent(ChooseAccountTypeViewModel.LocalEvents.CreateLightningAccount(it.lightningMnemonic ?: ""))
     }
 
     SetupScreen(viewModel = viewModel, sideEffectsHandler = {
@@ -269,7 +269,7 @@ fun AccountType(accountType: AccountTypeLook, onClick: () -> Unit = {}) {
                 }
 
                 GreenRow(modifier = Modifier.align(Alignment.CenterVertically)) {
-                    GreenArrow()
+                    CaretRight()
                 }
             }
         }

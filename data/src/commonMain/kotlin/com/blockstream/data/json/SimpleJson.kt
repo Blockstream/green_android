@@ -2,6 +2,7 @@ package com.blockstream.data.json
 
 import kotlinx.serialization.KSerializer
 import kotlinx.serialization.json.JsonElement
+import kotlinx.serialization.json.decodeFromJsonElement
 
 abstract class SimpleJson<T> {
     abstract fun kSerializer(): KSerializer<T>
@@ -23,6 +24,13 @@ abstract class SimpleJson<T> {
     companion object {
         inline fun <reified T> fromString(jsonString: String?): T? = try {
             DefaultJson.decodeFromString(jsonString ?: "")
+        } catch (e: Exception) {
+            e.printStackTrace()
+            null
+        }
+
+        inline fun <reified T> fromJsonElement(jsonElement: JsonElement): T? = try {
+            DefaultJson.decodeFromJsonElement(jsonElement)
         } catch (e: Exception) {
             e.printStackTrace()
             null

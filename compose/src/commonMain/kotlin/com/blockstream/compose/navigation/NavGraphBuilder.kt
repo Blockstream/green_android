@@ -9,7 +9,6 @@ import androidx.navigation.NavDeepLink
 import androidx.navigation.NavGraphBuilder
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.dialog
-import com.blockstream.compose.looks.transaction.TransactionConfirmLook
 import com.blockstream.compose.models.jade.JadeQrOperation
 import com.blockstream.compose.models.settings.WalletSettingsSection
 import com.blockstream.compose.models.sheets.NoteType
@@ -40,6 +39,7 @@ import com.blockstream.data.gdk.data.AssetBalanceList
 import com.blockstream.data.gdk.data.Network
 import com.blockstream.data.gdk.data.Transaction
 import com.blockstream.data.gdk.data.TwoFactorReset
+import com.blockstream.data.transaction.TransactionConfirmation
 import kotlin.io.encoding.ExperimentalEncodingApi
 import kotlin.reflect.typeOf
 
@@ -62,7 +62,7 @@ val AppTypeMap = mapOf(
     typeOf<Denomination?>() to CustomNavType.create<Denomination>(),
     typeOf<DenominatedValue>() to CustomNavType.create<DenominatedValue>(),
     typeOf<Promo>() to CustomNavType.create<Promo>(),
-    typeOf<TransactionConfirmLook?>() to CustomNavType.create<TransactionConfirmLook>(),
+    typeOf<TransactionConfirmation?>() to CustomNavType.create<TransactionConfirmation>(),
     typeOf<JadeQrOperation>() to CustomNavType.create<JadeQrOperation>(),
     typeOf<TwoFactorReset?>() to CustomNavType.create<TwoFactorReset>(),
     typeOf<LnUrlAuthRequestDataSerializable>() to CustomNavType.create<LnUrlAuthRequestDataSerializable>(),

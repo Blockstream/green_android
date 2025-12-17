@@ -3,18 +3,20 @@ package com.blockstream.compose.models.overview
 import androidx.lifecycle.viewModelScope
 import blockstream_green.common.generated.resources.Res
 import blockstream_green.common.generated.resources.id_transact
-import com.blockstream.data.data.DataState
-import com.blockstream.data.data.GreenWallet
-import com.blockstream.data.gdk.data.Transaction
-import com.blockstream.data.gdk.data.toTransaction
 import com.blockstream.compose.extensions.launchIn
 import com.blockstream.compose.extensions.previewTransactionLook
 import com.blockstream.compose.extensions.previewWallet
 import com.blockstream.compose.looks.transaction.TransactionLook
 import com.blockstream.compose.navigation.NavData
 import com.blockstream.compose.navigation.NavigateDestinations
+import com.blockstream.data.data.DataState
+import com.blockstream.data.data.GreenWallet
+import com.blockstream.data.extensions.ifConnected
+import com.blockstream.data.gdk.data.Transaction
+import com.blockstream.data.gdk.data.toTransaction
 import com.blockstream.domain.base.Result
 import com.blockstream.domain.meld.GetPendingMeldTransactions
+import com.blockstream.domain.swap.IsSwapAvailableUseCase
 import com.blockstream.utils.Loggable
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.delay
@@ -36,6 +38,9 @@ abstract class TransactViewModelAbstract(
 ) : WalletBalanceViewModel(greenWallet = greenWallet) {
 
     override fun screenName(): String = "TransactTab"
+
+    abstract val showSwapButton: Boolean
+
     abstract val transactions: StateFlow<DataState<List<TransactionLook>>>
 
     fun buy() {
@@ -51,12 +56,17 @@ abstract class TransactViewModelAbstract(
 
 class TransactViewModel(greenWallet: GreenWallet) :
     TransactViewModelAbstract(greenWallet = greenWallet) {
-    
+
+    private val isSwapAvailableUseCase: IsSwapAvailableUseCase by inject()
     private val getPendingMeldTransactions: GetPendingMeldTransactions by inject()
     private var refreshJob: Job? = null
     
     override fun segmentation(): HashMap<String, Any> =
         countly.sessionSegmentation(session = session)
+
+    override val showSwapButton: Boolean = session.ifConnected {
+        isSwapAvailableUseCase(wallet = greenWallet, session = session)
+    } ?: false
 
     private val _meldTransactions: StateFlow<List<Transaction>> =
         greenWallet.xPubHashId.let {
@@ -166,6 +176,8 @@ class TransactViewModel(greenWallet: GreenWallet) :
 
 class TransactViewModelPreview(val isEmpty: Boolean = false) :
     TransactViewModelAbstract(greenWallet = previewWallet()) {
+
+    override val showSwapButton: Boolean = true
 
     override val transactions: StateFlow<DataState<List<TransactionLook>>> = MutableStateFlow(
         DataState.Success(

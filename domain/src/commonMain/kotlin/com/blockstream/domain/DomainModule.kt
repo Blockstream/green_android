@@ -3,7 +3,6 @@ package com.blockstream.domain
 import com.blockstream.domain.account.accountModule
 import com.blockstream.domain.banner.GetBannerUseCase
 import com.blockstream.domain.bitcoinpricehistory.ObserveBitcoinPriceHistory
-import com.blockstream.domain.boltz.boltzModule
 import com.blockstream.domain.hardware.VerifyAddressUseCase
 import com.blockstream.domain.lightning.LightningNodeIdUseCase
 import com.blockstream.domain.meld.CreateCryptoQuoteUseCase
@@ -16,13 +15,14 @@ import com.blockstream.domain.notifications.notificationsDomainModule
 import com.blockstream.domain.promo.GetPromoUseCase
 import com.blockstream.domain.receive.receiveModule
 import com.blockstream.domain.send.sendModule
+import com.blockstream.domain.swap.swapModule
 import com.blockstream.domain.wallet.walletModule
 import org.koin.dsl.module
 
 val domainModule = module {
     includes(notificationsDomainModule)
     includes(meldDomainModule)
-    includes(boltzModule)
+    includes(swapModule)
     includes(sendModule)
     includes(receiveModule)
     includes(walletModule)

@@ -6,6 +6,14 @@ import blockstream_green.common.generated.resources.id_sending
 import blockstream_green.common.generated.resources.id_signing
 import blockstream_green.common.generated.resources.id_transaction_already_confirmed
 import blockstream_green.common.generated.resources.id_transaction_sent
+import com.blockstream.compose.events.Event
+import com.blockstream.compose.extensions.launchIn
+import com.blockstream.compose.models.GreenViewModel
+import com.blockstream.compose.models.jade.JadeQrOperation
+import com.blockstream.compose.navigation.NavigateDestinations
+import com.blockstream.compose.sideeffects.SideEffect
+import com.blockstream.compose.sideeffects.SideEffects
+import com.blockstream.compose.utils.StringHolder
 import com.blockstream.data.AddressInputType
 import com.blockstream.data.TransactionSegmentation
 import com.blockstream.data.data.Denomination
@@ -30,15 +38,7 @@ import com.blockstream.data.gdk.params.BroadcastTransactionParams
 import com.blockstream.data.gdk.params.CreateTransactionParams
 import com.blockstream.data.utils.ifNotNull
 import com.blockstream.data.utils.toAmountLook
-import com.blockstream.compose.events.Event
-import com.blockstream.compose.extensions.launchIn
-import com.blockstream.compose.looks.transaction.TransactionConfirmLook
-import com.blockstream.compose.models.GreenViewModel
-import com.blockstream.compose.models.jade.JadeQrOperation
-import com.blockstream.compose.navigation.NavigateDestinations
-import com.blockstream.compose.sideeffects.SideEffect
-import com.blockstream.compose.sideeffects.SideEffects
-import com.blockstream.compose.utils.StringHolder
+import com.blockstream.domain.send.SendUseCase
 import com.blockstream.utils.Loggable
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.SharingStarted
@@ -57,6 +57,7 @@ import kotlinx.serialization.json.JsonObject
 import kotlinx.serialization.json.JsonPrimitive
 import kotlinx.serialization.json.jsonObject
 import org.jetbrains.compose.resources.getString
+import org.koin.core.component.inject
 
 @Serializable
 sealed class PendingAction {
@@ -67,6 +68,8 @@ abstract class CreateTransactionViewModelAbstract(
     greenWallet: GreenWallet,
     accountAssetOrNull: AccountAsset? = null,
 ) : GreenViewModel(greenWalletOrNull = greenWallet, accountAssetOrNull = accountAssetOrNull) {
+
+    protected val sendUseCase: SendUseCase by inject()
 
     var pendingAction: PendingAction? = null
 
@@ -123,6 +126,8 @@ abstract class CreateTransactionViewModelAbstract(
 
     val note = MutableStateFlow(sessionOrNull?.pendingTransaction?.transaction?.memo ?: "")
 
+    //    final val error: StateFlow<String?>
+//        field = MutableStateFlow(null)
     protected val _error: MutableStateFlow<String?> = MutableStateFlow(null)
     val error: StateFlow<String?> = _error.asStateFlow()
 
@@ -136,7 +141,7 @@ abstract class CreateTransactionViewModelAbstract(
     open fun createTransaction(params: CreateTransactionParams?, finalCheckBeforeContinue: Boolean = false) {}
 
     class LocalEvents {
-        data class ClickFeePriority(val showCustomFeeRateDialog: Boolean = false) : Event
+        data class ClickFeePriority(val showCustomFeeRateDialog: Boolean = false, val isFeeRateOnly: Boolean = false) : Event
         data class SetFeeRate(val feePriority: FeePriority) : Event
         data class SetCustomFeeRate(val amount: String) : Event
         data class SetAddressInputType(val inputType: AddressInputType) : Event
@@ -192,7 +197,7 @@ abstract class CreateTransactionViewModelAbstract(
                 _feePriority.value = event.feePriority
             }
         } else if (event is LocalEvents.ClickFeePriority) {
-            ifNotNull(accountAsset.value, createTransactionParams.value) { acc, params ->
+            accountAsset.value?.also { acc ->
                 if (event.showCustomFeeRateDialog && feePriority.value is FeePriority.Custom) {
                     showCustomFeeRateDialog()
                 } else {
@@ -200,7 +205,8 @@ abstract class CreateTransactionViewModelAbstract(
                         SideEffects.OpenFeeBottomSheet(
                             greenWallet = greenWallet,
                             accountAsset = acc,
-                            params = params
+                            isFeeRateOnly = event.isFeeRateOnly,
+                            params = createTransactionParams.value
                         )
                     )
                 }
@@ -336,7 +342,7 @@ abstract class CreateTransactionViewModelAbstract(
         }
 
     private suspend fun transactionConfirmLook() = session.pendingTransaction?.let {
-        TransactionConfirmLook.create(
+        sendUseCase.getTransactionConfirmationUseCase(
             params = it.params,
             transaction = it.transaction,
             account = account,
@@ -380,7 +386,7 @@ abstract class CreateTransactionViewModelAbstract(
 
             var transaction = originalTransaction
 
-            val isSwap = transaction.isSwap()
+            val isAtomicSwap = transaction.isAtomicSwap()
 
             // If liquid, blind the transaction before signing
             if (network.isLiquid && !transaction.isBump() && !transaction.isSweep()) {
@@ -397,20 +403,20 @@ abstract class CreateTransactionViewModelAbstract(
                             NavigateDestinations.DeviceInteraction(
                                 greenWalletOrNull = greenWalletOrNull,
                                 deviceId = sessionOrNull?.device?.connectionIdentifier,
-                                transactionConfirmLook = transactionConfirmLook()
+                                transactionConfirmation = transactionConfirmLook()
                             )
                         )
                     )
                 }
 
-                if (!isSwap) {
+                if (!isAtomicSwap) {
                     // Sign transaction
                     transaction = session.signTransaction(account.network, transaction)
                 }
 
                 // Broadcast or just sign
                 if (broadcast) {
-                    if (isSwap || transaction.isSweep()) {
+                    if (isAtomicSwap || transaction.isSweep()) {
                         session.broadcastTransaction(
                             network = network,
                             broadcastTransaction = BroadcastTransactionParams(
@@ -437,7 +443,7 @@ abstract class CreateTransactionViewModelAbstract(
                             isBump = transaction.isBump(),
                             twoFactorResolver = this
                         ).also {
-                            params.submarineSwap?.swapId?.also { swapId ->
+                            params.swap?.swapId?.also { swapId ->
                                 it.txHash?.also { txHash ->
                                     database.setSwapTxHash(swapId, txHash)
                                 }
@@ -468,7 +474,7 @@ abstract class CreateTransactionViewModelAbstract(
                             greenWalletOrNull = greenWalletOrNull,
                             operation = JadeQrOperation.Psbt(
                                 psbt = it.psbt!!,
-                                transactionConfirmLook = transactionConfirmLook(),
+                                transactionConfirmation = transactionConfirmLook(),
                                 askForJadeUnlock = true
                             ),
                             deviceModel = session.deviceModel
@@ -482,7 +488,17 @@ abstract class CreateTransactionViewModelAbstract(
                     transactionSegmentation = segmentation,
                     withMemo = note.value.isNotBlank()
                 )
-                
+
+                if (params?.isSwap == true) {
+                    ifNotNull(params.from, params.to) { from, to ->
+                        countly.swapInternal(session, from, to)
+                    }
+                } else if (params?.isLiquidToLightningSwap == true) {
+                    params.from?.let { from ->
+                        countly.swapSend(session, from)
+                    }
+                }
+
                 session.pendingTransaction = null // clear pending transaction
                 postSideEffect(SideEffects.Snackbar(StringHolder.create(Res.string.id_transaction_sent)))
                 postSideEffect(SideEffects.NavigateAfterSendTransaction)

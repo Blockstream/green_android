@@ -4,6 +4,7 @@ import breez_sdk.BreezEvent
 import com.blockstream.data.config.AppInfo
 import com.blockstream.data.crypto.GreenKeystore
 import com.blockstream.data.data.GreenWallet
+import com.blockstream.data.data.SwapType
 import com.blockstream.data.database.Database
 import com.blockstream.data.di.ApplicationScope
 import com.blockstream.data.extensions.launchSafe
@@ -48,11 +49,15 @@ abstract class FcmCommon constructor(val applicationScope: ApplicationScope) : K
         boltzNotificationData: BoltzNotificationSimple
     )
 
-    abstract suspend fun showSwapReceiveNotification(
+    abstract suspend fun showSwapPaymentReceivedNotification(
         wallet: GreenWallet
     )
 
-    abstract suspend fun showSwapSendNotification(
+    abstract suspend fun showSwapPaymentSentNotification(
+        wallet: GreenWallet
+    )
+
+    abstract suspend fun showSwapNotification(
         wallet: GreenWallet
     )
 
@@ -77,7 +82,7 @@ abstract class FcmCommon constructor(val applicationScope: ApplicationScope) : K
     )
 
     protected suspend fun wallet(walletId: String) = database.getWallet(walletId)
-    
+
     suspend fun doLightningBackgroundWork(walletId: String, breezNotification: BreezNotification) {
         logger.d { "doLightningBackgroundWork for walletId:$walletId with data: $breezNotification" }
 
@@ -151,16 +156,29 @@ abstract class FcmCommon constructor(val applicationScope: ApplicationScope) : K
         applicationScope.launchSafe {
 
             val swap = database.getSwap(id = notification.id)
-            val wallet = swap?.let { database.getWallet(id = it.wallet_id) ?: database.getMainnetWalletWithXpubHashId(xPubHashId = it.xpub_hash_id) }
+            val wallet =
+                swap?.let { database.getWallet(id = it.wallet_id) ?: database.getMainnetWalletWithXpubHashId(xPubHashId = it.xpub_hash_id) }
 
             if (wallet != null) {
-                when (notification.status) {
-                    "invoice.settled" -> {
-                        showSwapReceiveNotification(wallet = wallet)
-                    }
+                val status = notification.status
 
-                    "invoice.paid" -> {
-                        showSwapSendNotification(wallet = wallet)
+                val isSwapComplete = when {
+                    swap.swap_type == SwapType.NormalSubmarine && status == "invoice.paid" -> true
+                    swap.swap_type == SwapType.ReverseSubmarine && status == "invoice.settled" -> true
+                    swap.swap_type == SwapType.Chain && status == "transaction.claimed" -> true
+                    else -> false
+                }
+
+                if (isSwapComplete) {
+                    when {
+                        !swap.is_auto_swap -> showSwapNotification(wallet = wallet) // It's user initiated swap
+                        swap.swap_type == SwapType.NormalSubmarine -> {
+                            showSwapPaymentSentNotification(wallet = wallet)
+                        }
+
+                        swap.swap_type == SwapType.ReverseSubmarine -> {
+                            showSwapPaymentReceivedNotification(wallet = wallet)
+                        }
                     }
                 }
             }

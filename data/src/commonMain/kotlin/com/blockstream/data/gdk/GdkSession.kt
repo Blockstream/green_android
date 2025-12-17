@@ -1034,13 +1034,18 @@ class GdkSession constructor(
         }
     }
 
-    suspend fun initLwkIfNeeded(wallet: GreenWallet, restoreSwapsAddress: String? = null, mnemonic: String? = null) {
+    suspend fun initLwkIfNeeded(
+        wallet: GreenWallet,
+        bitcoinAddress: String? = null,
+        liquidAddress: String? = null,
+        mnemonic: String? = null
+    ) {
         if (lwkOrNull == null) {
             val lwk = lwkManager.getLwk(wallet = wallet).also {
                 lwkOrNull = it
             }
 
-            lwk.connect(mnemonic = mnemonic ?: deriveBoltzMnemonic(), restoreSwapsAddress = restoreSwapsAddress)
+            lwk.connect(mnemonic = mnemonic ?: deriveBoltzMnemonic(), bitcoinAddress = bitcoinAddress, liquidAddress = liquidAddress)
 
             lwk.invoicePaidSharedFlow.onEach {
                 _lastInvoicePaid.value = it
@@ -1563,7 +1568,7 @@ class GdkSession constructor(
                         wallet?.also {
                             val boltzMnemonic =
                                 derivedBoltzMnemonic
-                                    ?: deriveBoltzMnemonic(Credentials.fromLoginCredentialsParam(loginCredentialsParams))
+                                    ?: deriveBoltzMnemonic(credentials = Credentials.fromLoginCredentialsParam(loginCredentialsParams))
 
                             initLwkIfNeeded(wallet = wallet, mnemonic = boltzMnemonic)
                         }
@@ -3299,14 +3304,14 @@ class GdkSession constructor(
 
         return bcurEncode(params)
     }
-    
-    suspend fun jadeBip8539Request(): Pair<ByteArray, BcurEncodedData> {
+
+    suspend fun jadeBip8539Request(index: Long): Pair<ByteArray, BcurEncodedData> {
         val privateKey = createEcPrivateKey()
 
         val params = BcurEncodeParams(
             urType = "jade-bip8539-request",
             numWords = 12,
-            index = 0,
+            index = index,
             privateKey = privateKey.toHex()
         )
 

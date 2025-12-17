@@ -94,7 +94,7 @@ fun previewEnrichedAsset(isLiquid: Boolean = false) = if (isLiquid) EnrichedAsse
 
 var _accountId = 0L
 fun previewAccount(isLightning: Boolean = false) = Account(
-    gdkName = "Account #$_accountId",
+    gdkName = if (isLightning) "Lightning" else "Account #$_accountId",
     pointer = _accountId++,
     type = if (isLightning) AccountType.LIGHTNING else AccountType.BIP84_SEGWIT,
     networkInjected = previewNetwork(),
@@ -114,10 +114,12 @@ fun previewAssetBalance(isLiquid: Boolean = false) = AssetBalance(
     if (isLiquid) "1 LBTC" else "1 BTC", "150.000 USD"
 )
 
-fun previewAccountAssetBalance() = AccountAssetBalance(
-    account = previewAccount(),
+fun previewAccountAssetBalance(account: Account? = null) = AccountAssetBalance(
+    account = account ?: previewAccount(),
     asset = EnrichedAsset.PreviewBTC,
-    Denomination.BTC, "1 BTC", "150.000 USD"
+    Denomination.BTC, "1 BTC",
+    "150.000 USD",
+    satoshi = 123456789L
 )
 
 fun previewTransaction() = Transaction(

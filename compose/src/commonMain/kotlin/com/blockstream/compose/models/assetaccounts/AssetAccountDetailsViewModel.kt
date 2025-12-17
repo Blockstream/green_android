@@ -10,6 +10,15 @@ import blockstream_green.common.generated.resources.id_rename_account
 import blockstream_green.common.generated.resources.id_watchonly
 import blockstream_green.common.generated.resources.info
 import blockstream_green.common.generated.resources.text_aa
+import com.blockstream.compose.events.Event
+import com.blockstream.compose.events.Events
+import com.blockstream.compose.looks.account.LightningInfoLook
+import com.blockstream.compose.looks.transaction.TransactionLook
+import com.blockstream.compose.models.GreenViewModel
+import com.blockstream.compose.navigation.NavAction
+import com.blockstream.compose.navigation.NavData
+import com.blockstream.compose.navigation.NavigateDestinations
+import com.blockstream.compose.sideeffects.SideEffects
 import com.blockstream.data.data.DataState
 import com.blockstream.data.data.Denomination
 import com.blockstream.data.data.EnrichedAsset
@@ -21,15 +30,7 @@ import com.blockstream.data.gdk.data.AccountAsset
 import com.blockstream.data.gdk.data.AccountBalance
 import com.blockstream.data.lightning.onchainBalanceSatoshi
 import com.blockstream.data.utils.toAmountLook
-import com.blockstream.compose.events.Event
-import com.blockstream.compose.events.Events
-import com.blockstream.compose.looks.account.LightningInfoLook
-import com.blockstream.compose.looks.transaction.TransactionLook
-import com.blockstream.compose.models.GreenViewModel
-import com.blockstream.compose.navigation.NavAction
-import com.blockstream.compose.navigation.NavData
-import com.blockstream.compose.navigation.NavigateDestinations
-import com.blockstream.compose.sideeffects.SideEffects
+import com.blockstream.domain.swap.IsSwapAvailableUseCase
 import com.blockstream.utils.Loggable
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.SharingStarted
@@ -45,6 +46,7 @@ import kotlinx.coroutines.flow.onEach
 import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.launch
 import org.jetbrains.compose.resources.getString
+import org.koin.core.component.inject
 
 abstract class AssetAccountDetailsViewModelAbstract(
     greenWallet: GreenWallet, accountAssetOrNull: AccountAsset? = null
@@ -62,6 +64,7 @@ abstract class AssetAccountDetailsViewModelAbstract(
     abstract val totalBalanceFiat: StateFlow<String?>
 
     abstract val showBuyButton: Boolean
+    abstract val showSwapButton: Boolean
 
     abstract val isSendEnabled: StateFlow<Boolean>
 
@@ -91,8 +94,11 @@ class AssetAccountDetailsViewModel(
         object ClickBuy : Event
         object ClickSend : Event
         object ClickReceive : Event
+        object ClickSwap : Event
         object LoadMoreTransactions : Event
     }
+
+    private val isSwapAvailableUseCase: IsSwapAvailableUseCase by inject()
 
     override val asset: EnrichedAsset = accountAsset.asset
 
@@ -101,6 +107,10 @@ class AssetAccountDetailsViewModel(
     }.stateIn(viewModelScope, SharingStarted.WhileSubscribed(), AccountBalance.create(account = account))
 
     override val showBuyButton: Boolean = accountAsset.asset.isBitcoin
+
+    override val showSwapButton: Boolean = session.ifConnected {
+        isSwapAvailableUseCase(wallet = greenWallet, session = session, asset = accountAsset.asset)
+    } ?: false
 
     override val accounts: StateFlow<List<Account>> =
         session.accounts.filter { session.isConnected }
@@ -241,6 +251,16 @@ class AssetAccountDetailsViewModel(
                 postSideEffect(
                     SideEffects.NavigateTo(
                         NavigateDestinations.Receive(
+                            greenWallet = greenWallet, accountAsset = accountAsset.value!!
+                        )
+                    )
+                )
+            }
+
+            is LocalEvents.ClickSwap -> {
+                postSideEffect(
+                    SideEffects.NavigateTo(
+                        NavigateDestinations.Swap(
                             greenWallet = greenWallet, accountAsset = accountAsset.value!!
                         )
                     )

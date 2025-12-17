@@ -70,6 +70,7 @@ import blockstream_green.common.generated.resources.id_request_recovery_transact
 import blockstream_green.common.generated.resources.id_set_an_email_for_recovery
 import blockstream_green.common.generated.resources.id_set_twofactor_threshold
 import blockstream_green.common.generated.resources.id_support_id
+import blockstream_green.common.generated.resources.id_swaps
 import blockstream_green.common.generated.resources.id_there_is_already_an_archived
 import blockstream_green.common.generated.resources.id_touch_to_display
 import blockstream_green.common.generated.resources.id_verify_the_authenticity_of
@@ -81,15 +82,6 @@ import com.adamglin.phosphoricons.Regular
 import com.adamglin.phosphoricons.regular.CaretRight
 import com.adamglin.phosphoricons.regular.Copy
 import com.adamglin.phosphoricons.regular.Info
-import com.blockstream.data.SupportType
-import com.blockstream.data.data.LogoutReason
-import com.blockstream.data.data.SupportData
-import com.blockstream.data.data.TwoFactorMethod
-import com.blockstream.data.data.TwoFactorSetupAction
-import com.blockstream.data.gdk.data.AccountAssetBalance
-import com.blockstream.data.gdk.data.AccountAssetBalanceList
-import com.blockstream.data.gdk.data.AccountType
-import com.blockstream.data.utils.getBitcoinOrLiquidUnit
 import com.blockstream.compose.LocalBiometricState
 import com.blockstream.compose.LocalDialog
 import com.blockstream.compose.components.GreenAlert
@@ -139,6 +131,15 @@ import com.blockstream.compose.utils.appTestTag
 import com.blockstream.compose.utils.bottom
 import com.blockstream.compose.utils.ifTrue
 import com.blockstream.compose.utils.plus
+import com.blockstream.data.SupportType
+import com.blockstream.data.data.LogoutReason
+import com.blockstream.data.data.SupportData
+import com.blockstream.data.data.TwoFactorMethod
+import com.blockstream.data.data.TwoFactorSetupAction
+import com.blockstream.data.gdk.data.AccountAssetBalance
+import com.blockstream.data.gdk.data.AccountAssetBalanceList
+import com.blockstream.data.gdk.data.AccountType
+import com.blockstream.data.utils.getBitcoinOrLiquidUnit
 import kotlinx.coroutines.launch
 import org.jetbrains.compose.resources.getString
 import org.jetbrains.compose.resources.painterResource
@@ -259,7 +260,10 @@ fun WalletSettingsScreen(
     }
 
     NavigateDestinations.JadeQR.getResult<JadeQRResult> {
-        viewModel.postEvent(LocalEvents.CreateLightningAccount(it.result))
+        when {
+            it.lightningMnemonic != null -> viewModel.postEvent(LocalEvents.CreateLightningAccount(it.lightningMnemonic))
+            it.boltzMnemonic != null -> viewModel.postEvent(LocalEvents.EnableSwaps(mnemonic = it.boltzMnemonic))
+        }
     }
 
     NavigateDestinations.Accounts.getResult<AccountAssetBalance> {
@@ -720,6 +724,16 @@ fun WalletSettingsScreen(
                                 } else {
                                     viewModel.postEvent(LocalEvents.DisableLightning)
                                 }
+                            },
+                        )
+                    }
+
+                    is WalletSetting.Swaps -> {
+                        Setting(
+                            title = stringResource(Res.string.id_swaps),
+                            checked = item.enabled,
+                            onCheckedChange = {
+                                viewModel.postEvent(if (it) LocalEvents.EnableSwaps() else LocalEvents.DisableSwaps)
                             },
                         )
                     }

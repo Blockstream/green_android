@@ -7,6 +7,7 @@ import com.blockstream.data.database.Database
 import com.blockstream.data.extensions.createLoginCredentials
 import com.blockstream.data.extensions.tryCatch
 import com.blockstream.data.gdk.GdkSession
+import com.blockstream.data.gdk.data.Credentials
 import com.blockstream.data.lwk.Lwk
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.IO
@@ -61,7 +62,9 @@ class SaveDerivedBoltzMnemonicUseCase(
     ) {
         tryCatch {
             val encryptedData = withContext(context = Dispatchers.IO) {
-                greenKeystore.encryptData(session.deriveBoltzMnemonic().encodeToByteArray())
+                greenKeystore.encryptData(
+                    session.deriveBoltzMnemonic(credentials = mnemonic?.let { Credentials(mnemonic = mnemonic) }).encodeToByteArray()
+                )
             }
 
             database.replaceLoginCredential(

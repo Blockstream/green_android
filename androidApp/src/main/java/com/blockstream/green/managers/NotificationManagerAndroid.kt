@@ -26,6 +26,7 @@ import blockstream_green.common.generated.resources.id_logout
 import blockstream_green.common.generated.resources.id_open_wallet_to_receive_a_payment
 import blockstream_green.common.generated.resources.id_payment_received
 import blockstream_green.common.generated.resources.id_payment_sent
+import blockstream_green.common.generated.resources.id_swap_completed
 import blockstream_green.common.generated.resources.id_swaps_notifications
 import blockstream_green.common.generated.resources.id_transactions_notifications
 import com.blockstream.compose.theme.md_theme_primary
@@ -283,33 +284,44 @@ class NotificationManagerAndroid constructor(
             }
     }
 
-    suspend fun createSwapPaymentReceiveNotification(
+    suspend fun showSwapPaymentReceivedNotification(
         context: Context, wallet: GreenWallet
     ): Notification {
-        val intent = Intent(context, GreenActivity::class.java).also {
-            it.action = GreenActivity.OPEN_WALLET
-            it.putExtra(GreenActivity.WALLET, wallet.toJson())
-        }
-        val pendingIntent = PendingIntent.getActivity(
-            context, requestCode(wallet), intent, PendingIntent.FLAG_IMMUTABLE
+        return showSwapNotification(
+            context = context,
+            wallet = wallet,
+            text = getString(Res.string.id_payment_received),
+            notificationType = NotificationType.SWAPS_PAYMENT_RECEIVED
         )
-
-        return NotificationCompat.Builder(context, SWAPS_CHANNEL_ID)
-            .setSmallIcon(R.drawable.ic_stat_green).setContentTitle(wallet.name)
-            .setContentText(getString(Res.string.id_payment_received))
-            .setContentIntent(pendingIntent).setColorized(true).setColor(md_theme_primary.toArgb())
-            .setPriority(NotificationCompat.PRIORITY_DEFAULT).setAutoCancel(true)
-            .setVisibility(NotificationCompat.VISIBILITY_PUBLIC).build().also {
-                androidNotificationManager.notify(
-                    notificationId(
-                        wallet, NotificationType.SWAPS_PAYMENT_RECEIVED
-                    ), it
-                )
-            }
     }
 
-    suspend fun createSwapSendReceiveNotification(
+    suspend fun showSwapPaymentSentNotification(
         context: Context, wallet: GreenWallet
+    ): Notification {
+        return showSwapNotification(
+            context = context,
+            wallet = wallet,
+            text = getString(Res.string.id_payment_sent),
+            notificationType = NotificationType.SWAPS_PAYMENT_SENT
+        )
+    }
+
+    suspend fun showSwapNotification(
+        context: Context, wallet: GreenWallet
+    ): Notification {
+        return showSwapNotification(
+            context = context,
+            wallet = wallet,
+            text = getString(Res.string.id_swap_completed),
+            notificationType = NotificationType.SWAP_COMPLETE
+        )
+    }
+
+    private fun showSwapNotification(
+        context: Context,
+        wallet: GreenWallet,
+        text: String,
+        notificationType: NotificationType
     ): Notification {
         val intent = Intent(context, GreenActivity::class.java).also {
             it.action = GreenActivity.OPEN_WALLET
@@ -321,13 +333,13 @@ class NotificationManagerAndroid constructor(
 
         return NotificationCompat.Builder(context, SWAPS_CHANNEL_ID)
             .setSmallIcon(R.drawable.ic_stat_green).setContentTitle(wallet.name)
-            .setContentText(getString(Res.string.id_payment_sent))
+            .setContentText(text)
             .setContentIntent(pendingIntent).setColorized(true).setColor(md_theme_primary.toArgb())
             .setPriority(NotificationCompat.PRIORITY_DEFAULT).setAutoCancel(true)
             .setVisibility(NotificationCompat.VISIBILITY_PUBLIC).build().also {
                 androidNotificationManager.notify(
                     notificationId(
-                        wallet, NotificationType.SWAPS_PAYMENT_SENT
+                        wallet, notificationType
                     ), it
                 )
             }
@@ -375,7 +387,7 @@ class NotificationManagerAndroid constructor(
     }
 
     enum class NotificationType {
-        CONNECTED, OPEN_WALLET, LIGHTNING_PAYMENT_RECEIVED, SWAPS_PAYMENT_RECEIVED, SWAPS_PAYMENT_SENT, ONCHAIN_TRANSACTION_CONFIRMED
+        CONNECTED, OPEN_WALLET, LIGHTNING_PAYMENT_RECEIVED, SWAPS_PAYMENT_RECEIVED, SWAPS_PAYMENT_SENT, SWAP_COMPLETE
     }
 
     private fun notificationId(

@@ -1,7 +1,7 @@
 package com.blockstream.compose.data
 
-import com.blockstream.data.gdk.data.Network
 import com.blockstream.compose.events.Event
+import com.blockstream.data.gdk.data.Network
 
 sealed class WalletSetting {
     data object Logout : WalletSetting()
@@ -18,6 +18,7 @@ sealed class WalletSetting {
     data class RecoveryTransactionEmails(val enabled: Boolean) : WalletSetting()
     data object ChangePin : WalletSetting()
     data class Lightning(val enabled: Boolean) : WalletSetting()
+    data class Swaps(val enabled: Boolean) : WalletSetting()
     data class LoginWithBiometrics(val enabled: Boolean, val canEnable: Boolean) : WalletSetting()
     data object TwoFactorAuthentication : WalletSetting()
     data class PgpKey(val enabled: Boolean) : WalletSetting()

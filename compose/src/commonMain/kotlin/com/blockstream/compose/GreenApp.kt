@@ -6,6 +6,9 @@ import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.animation.EnterTransition
 import androidx.compose.animation.fadeOut
 import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.consumeWindowInsets
+import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.padding
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.SnackbarDuration
 import androidx.compose.material3.SnackbarHostState
@@ -244,8 +247,9 @@ fun GreenPreview(content: @Composable () -> Unit) {
     }
 
     val dialogState = remember { DialogState() }
-    val navController = rememberNavController()
     val platformManager = rememberPlatformManager()
+    val bottomSheetNavigator = rememberBottomSheetNavigator()
+    val navController = rememberNavController(bottomSheetNavigator)
 
     // Coil preview faker
     val previewHandler = AsyncImagePreviewHandler {
@@ -260,8 +264,20 @@ fun GreenPreview(content: @Composable () -> Unit) {
             LocalPlatformManager provides platformManager,
             LocalAsyncImagePreviewHandler provides previewHandler
         ) {
+            // Bottom Sheets
+            ModalBottomSheetLayout(bottomSheetNavigator = bottomSheetNavigator)
             DialogHost(state = dialogState)
-            Scaffold { content() }
+            Scaffold { innerPadding ->
+
+                Box(
+                    modifier = Modifier
+                        .fillMaxSize()
+                        .consumeWindowInsets(innerPadding)
+                        .padding(innerPadding)
+                ) {
+                    content()
+                }
+            }
         }
     }
 }

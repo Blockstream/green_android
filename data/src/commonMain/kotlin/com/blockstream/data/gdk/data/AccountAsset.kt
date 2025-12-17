@@ -24,6 +24,9 @@ data class AccountAsset constructor(
     val assetBalance
         get() = AssetBalance.create(this.asset)
 
+    val network
+        get() = account.network
+
     fun balance(session: GdkSession) = session.accountAssets(account).value.balance(assetId)
 
     companion object {

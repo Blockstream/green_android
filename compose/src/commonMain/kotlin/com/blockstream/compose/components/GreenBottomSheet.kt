@@ -20,10 +20,10 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.navigation.get
-import com.blockstream.data.extensions.isNotBlank
 import com.blockstream.compose.models.GreenViewModel
 import com.blockstream.compose.navigation.LocalNavigator
 import com.blockstream.compose.navigation.bottomsheet.BottomSheetNavigator
@@ -36,6 +36,7 @@ import com.blockstream.compose.theme.whiteMedium
 import com.blockstream.compose.utils.HandleSideEffect
 import com.blockstream.compose.utils.compatTestTagsAsResourceId
 import com.blockstream.compose.utils.ifTrue
+import com.blockstream.data.extensions.isNotBlank
 import kotlinx.coroutines.CoroutineScope
 
 @OptIn(ExperimentalMaterial3Api::class)
@@ -70,6 +71,7 @@ fun GreenBottomSheet(
         onDismissRequest = onDismissRequest,
         containerColor = MaterialTheme.colorScheme.background,
         sheetState = sheetState,
+        scrimColor = Color.Black.copy(alpha = 0.65f),
         properties = properties
     ) {
         GreenColumn(

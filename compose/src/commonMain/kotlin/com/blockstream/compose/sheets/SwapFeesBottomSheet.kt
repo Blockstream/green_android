@@ -18,15 +18,15 @@ import androidx.compose.ui.text.style.TextDecoration
 import androidx.compose.ui.unit.dp
 import blockstream_green.common.generated.resources.Res
 import blockstream_green.common.generated.resources.arrow_square_out
+import blockstream_green.common.generated.resources.id_covers_swap_service
 import blockstream_green.common.generated.resources.id_fees_are_not_collected_by_short
-import blockstream_green.common.generated.resources.id_includes_swap_and_lightning_routing
-import blockstream_green.common.generated.resources.id_liquid_onchain
-import blockstream_green.common.generated.resources.id_miner_fee_to_send_lbtc_on_liquid
-import blockstream_green.common.generated.resources.id_network_fee_and_swap_fee
+import blockstream_green.common.generated.resources.id_network_fee
+import blockstream_green.common.generated.resources.id_paid_for_transaction_confirmation
 import blockstream_green.common.generated.resources.id_read_more
+import blockstream_green.common.generated.resources.id_swap_fee
 import blockstream_green.common.generated.resources.id_total
 import blockstream_green.common.generated.resources.id_total_fees
-import com.blockstream.data.Urls
+import com.blockstream.compose.GreenPreview
 import com.blockstream.compose.components.GreenBottomSheet
 import com.blockstream.compose.components.GreenColumn
 import com.blockstream.compose.managers.LocalPlatformManager
@@ -38,14 +38,16 @@ import com.blockstream.compose.theme.labelLarge
 import com.blockstream.compose.theme.titleSmall
 import com.blockstream.compose.theme.whiteHigh
 import com.blockstream.compose.theme.whiteMedium
+import com.blockstream.data.Urls
 import org.jetbrains.compose.resources.painterResource
 import org.jetbrains.compose.resources.stringResource
+import org.jetbrains.compose.ui.tooling.preview.Preview
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun SwapFeesBottomSheet(
-    serviceFee: String,
     networkFee: String,
+    swapFee: String,
     totalFees: String,
     totalFeesFiat: String?,
     onDismissRequest: () -> Unit,
@@ -74,18 +76,18 @@ fun SwapFeesBottomSheet(
                 ) {
                     Column(modifier = Modifier.weight(1f)) {
                         Text(
-                            text = stringResource(Res.string.id_network_fee_and_swap_fee),
+                            text = stringResource(Res.string.id_network_fee),
                             style = labelLarge,
                             color = whiteHigh
                         )
                         Text(
-                            text = stringResource(Res.string.id_includes_swap_and_lightning_routing),
+                            text = stringResource(Res.string.id_paid_for_transaction_confirmation),
                             style = bodySmall,
                             color = whiteMedium
                         )
                     }
                     Text(
-                        text = serviceFee,
+                        text = networkFee,
                         style = labelLarge,
                         color = whiteHigh
                     )
@@ -99,18 +101,18 @@ fun SwapFeesBottomSheet(
                 ) {
                     Column(modifier = Modifier.weight(1f)) {
                         Text(
-                            text = stringResource(Res.string.id_liquid_onchain),
+                            text = stringResource(Res.string.id_swap_fee),
                             style = labelLarge,
                             color = whiteHigh
                         )
                         Text(
-                            text = stringResource(Res.string.id_miner_fee_to_send_lbtc_on_liquid),
+                            text = stringResource(Res.string.id_covers_swap_service),
                             style = bodySmall,
                             color = whiteMedium
                         )
                     }
                     Text(
-                        text = networkFee,
+                        text = swapFee,
                         style = labelLarge,
                         color = whiteHigh
                     )
@@ -174,5 +176,21 @@ fun SwapFeesBottomSheet(
                 }
             }
         }
+    }
+}
+
+@Composable
+@Preview
+fun SwapFeesBottomSheetPreview() {
+    GreenPreview {
+        SwapFeesBottomSheet(
+            networkFee = "0.00000020 BTC",
+            swapFee = "0.00012646 BTC",
+            totalFees = "0.00013003 BTC",
+            totalFeesFiat = "≈ 12.09 USD",
+            onDismissRequest = {
+
+            }
+        )
     }
 }

@@ -347,6 +347,20 @@ abstract class CountlyBase(
         }
     }
 
+    private fun swapNetwork(network: Network) = when {
+        network.isBitcoin -> "mainnet"
+        network.isLiquid -> "liquid"
+        network.isLightning -> "lightning"
+        else -> "n/a"
+    }
+
+    fun swapSegmentation(session: GdkSession, from: Network, to: Network): HashMap<String, Any> =
+        sessionSegmentation(session)
+            .also { segmentation ->
+                segmentation[PARAM_FROM] = swapNetwork(from)
+                segmentation[PARAM_TO] = swapNetwork(to)
+            }
+
     private fun apmEvent(event: Events): String {
         return if (settingsManager.appSettings.tor) {
             "${event}_tor"
@@ -703,6 +717,22 @@ abstract class CountlyBase(
         )
     }
 
+    fun swapToggle(session: GdkSession, from: AccountAsset, to: AccountAsset) {
+        eventRecord(Events.SWAP_TOGGLE.toString(), swapSegmentation(session, from.network, to.network))
+    }
+
+    fun swapReceive(session: GdkSession, from: AccountAsset) {
+        eventRecord(Events.SWAP_RECEIVE.toString(), swapSegmentation(session, from.network, session.lightning))
+    }
+
+    fun swapSend(session: GdkSession, from: AccountAsset) {
+        eventRecord(Events.SWAP_SEND.toString(), swapSegmentation(session, from.network, session.lightning))
+    }
+
+    fun swapInternal(session: GdkSession, from: AccountAsset, to: AccountAsset) {
+        eventRecord(Events.SWAP_INTERNAL.toString(), swapSegmentation(session, from.network, to.network))
+    }
+
     fun getRemoteConfigValueAsJsonElement(key: String): JsonElement? {
         return getRemoteConfigValueAsString(key)?.let {
             Json.parseToJsonElement(it)
@@ -918,7 +948,11 @@ abstract class CountlyBase(
 
         SEND_TRANSACTION("send_transaction"),
         FAILED_TRANSACTION("failed_transaction"),
-        FAILED_RECOVERY_PHRASE_CHECK("failed_recovery_phrase_check");
+        FAILED_RECOVERY_PHRASE_CHECK("failed_recovery_phrase_check"),
+        SWAP_TOGGLE("swap_toggle"),
+        SWAP_RECEIVE("swap_receive"),
+        SWAP_SEND("swap_send"),
+        SWAP_INTERNAL("swap_internal");
 
         override fun toString(): String = event
     }
@@ -976,6 +1010,9 @@ abstract class CountlyBase(
         const val PARAM_ACCOUNTS = "accounts"
         const val PARAM_ACCOUNTS_TYPES = "accounts_types"
         const val PARAM_ACCOUNTS_FUNDED = "accounts_funded"
+
+        const val PARAM_FROM = "from"
+        const val PARAM_TO = "to"
 
         const val LOGIN_TYPE_PIN = "pin"
         const val LOGIN_TYPE_BIOMETRICS = "biometrics"
@@ -1046,7 +1083,8 @@ enum class TransactionType(val string: String) {
 enum class AddressInputType(val string: String) {
     PASTE("paste"),
     SCAN("scan"),
-    BIP21("bip21");
+    BIP21("bip21"),
+    INTERNAL("internal"), ;
 
     override fun toString(): String = string
 }

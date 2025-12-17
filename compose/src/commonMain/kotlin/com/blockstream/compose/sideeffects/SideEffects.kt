@@ -1,5 +1,8 @@
 package com.blockstream.compose.sideeffects
 
+import com.blockstream.compose.events.Event
+import com.blockstream.compose.navigation.NavigateDestination
+import com.blockstream.compose.utils.StringHolder
 import com.blockstream.data.data.GreenWallet
 import com.blockstream.data.data.LogoutReason
 import com.blockstream.data.data.PopTo
@@ -10,9 +13,6 @@ import com.blockstream.data.gdk.data.Account
 import com.blockstream.data.gdk.data.AccountAsset
 import com.blockstream.data.gdk.data.ProcessedTransactionDetails
 import com.blockstream.data.gdk.params.CreateTransactionParams
-import com.blockstream.compose.events.Event
-import com.blockstream.compose.navigation.NavigateDestination
-import com.blockstream.compose.utils.StringHolder
 import com.blockstream.jade.firmware.FirmwareUpgradeRequest
 import io.github.vinceglb.filekit.PlatformFile
 import kotlinx.coroutines.CompletableDeferred
@@ -34,6 +34,7 @@ object SideEffects {
         val greenWallet: GreenWallet,
         val accountAsset: AccountAsset?,
         val params: CreateTransactionParams?,
+        val isFeeRateOnly: Boolean = false,
         val useBreezFees: Boolean = false
     ) : SideEffect
 

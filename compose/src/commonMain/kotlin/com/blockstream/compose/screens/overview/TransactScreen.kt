@@ -38,6 +38,8 @@ fun TransactScreen(viewModel: TransactViewModelAbstract) {
 
     SetupScreen(viewModel = viewModel, withPadding = false, withBottomInsets = false) {
 
+        val isMainnet = viewModel.greenWallet.isMainnet
+        val showSwapButton = viewModel.showSwapButton
         val transactions by viewModel.transactions.collectAsStateWithLifecycle()
         val isMultisigWatchOnly by viewModel.isMultisigWatchOnly.collectAsStateWithLifecycle()
         val innerPadding = LocalInnerPadding.current
@@ -56,7 +58,9 @@ fun TransactScreen(viewModel: TransactViewModelAbstract) {
 
             item(key = "ButtonsRow") {
                 TransactionActionButtons(
-                    showBuyButton = true,
+                    modifier = Modifier.padding(top = 16.dp),
+                    showBuyButton = isMainnet,
+                    showSwapButton = showSwapButton,
                     sendEnabled = !isMultisigWatchOnly,
                     onBuy = { viewModel.buy() },
                     onSend = { viewModel.postEvent(NavigateDestinations.SendAddress(greenWallet = viewModel.greenWallet)) },
@@ -67,7 +71,13 @@ fun TransactScreen(viewModel: TransactViewModelAbstract) {
                             )
                         )
                     },
-                    modifier = Modifier.padding(top = 16.dp)
+                    onSwap = {
+                        viewModel.postEvent(
+                            NavigateDestinations.Swap(
+                                greenWallet = viewModel.greenWallet
+                            )
+                        )
+                    }
                 )
             }
 

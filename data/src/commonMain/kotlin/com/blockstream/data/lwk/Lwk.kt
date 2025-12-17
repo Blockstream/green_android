@@ -2,16 +2,21 @@ package com.blockstream.data.lwk
 
 import com.blockstream.data.config.AppInfo
 import com.blockstream.data.data.GreenWallet
+import com.blockstream.data.data.SwapType
 import com.blockstream.data.database.Database
 import com.blockstream.data.extensions.cancelChildren
 import com.blockstream.data.extensions.launchSafe
 import com.blockstream.data.extensions.tryCatch
 import com.blockstream.data.lightning.satoshi
+import com.blockstream.data.swap.Quote
+import com.blockstream.data.swap.QuoteMode
+import com.blockstream.data.swap.SwapAsset
 import com.blockstream.utils.Loggable
 import com.github.michaelbull.retry.policy.fullJitterBackoff
 import com.github.michaelbull.retry.retry
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.IO
 import kotlinx.coroutines.channels.BufferOverflow
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.MutableSharedFlow
@@ -20,16 +25,18 @@ import kotlinx.coroutines.flow.asSharedFlow
 import kotlinx.coroutines.flow.launchIn
 import kotlinx.coroutines.flow.onEach
 import kotlinx.coroutines.isActive
+import kotlinx.coroutines.withContext
 import kotlinx.serialization.json.Json
-import kotlinx.serialization.json.decodeFromJsonElement
 import kotlinx.serialization.json.jsonObject
 import kotlinx.serialization.json.jsonPrimitive
 import lwk.Address
 import lwk.AnyClient
+import lwk.BitcoinAddress
 import lwk.BoltzSession
 import lwk.BoltzSessionBuilder
 import lwk.InvoiceResponse
 import lwk.LightningPayment
+import lwk.LockupResponse
 import lwk.LogLevel
 import lwk.Logging
 import lwk.LwkException
@@ -47,10 +54,9 @@ class Lwk(
 
     private val appInfo: AppInfo by inject()
     private val database: Database by inject()
-    private val json: Json by inject()
     private lateinit var boltzSession: BoltzSession
 
-    private val scope = CoroutineScope(context = Dispatchers.Default)
+    private val scope = CoroutineScope(context = Dispatchers.IO)
 
     private val monitor = mutableSetOf<String>()
 
@@ -65,7 +71,7 @@ class Lwk(
     val invoicePaidSharedFlow
         get() = _invoicePaidSharedFlow.asSharedFlow()
 
-    fun connect(mnemonic: String, restoreSwapsAddress: String? = null) {
+    fun connect(mnemonic: String, bitcoinAddress: String? = null, liquidAddress: String? = null) {
         scope.launchSafe {
             if (!isConnected) {
                 logger.d { "Connect to Boltz using LWK" }
@@ -94,29 +100,57 @@ class Lwk(
 
                         // Restore
                         tryCatch {
-                            restoreSwapsAddress?.let { Address(it) }?.also {
-                                logger.d { "Restoring swaps, recover address $it" }
+
+                            liquidAddress?.let { Address(it) }?.also { liquidAddress ->
                                 val list = boltzSession.swapRestore()
-                                boltzSession.restorableReverseSwaps(list, it).forEach { reverseSwap ->
+
+                                logger.d { "Restoring swaps, recover address $liquidAddress" }
+                                boltzSession.restorableReverseSwaps(list, liquidAddress).forEach { reverseSwap ->
                                     val invoice = boltzSession.restoreInvoice(reverseSwap)
 
                                     database.setSwap(
                                         id = invoice.swapId(),
                                         walletId = wallet.id,
                                         xPubHashId = wallet.xPubHashId,
+                                        swapType = SwapType.ReverseSubmarine,
+                                        isAutoSwap = false,
                                         data = invoice.serialize()
                                     )
                                 }
 
-                                boltzSession.restorableSubmarineSwaps(list, it).forEach { submarineSwap ->
+                                boltzSession.restorableSubmarineSwaps(list, liquidAddress).forEach { submarineSwap ->
                                     val pay = boltzSession.restorePreparePay(submarineSwap)
 
                                     database.setSwap(
                                         id = pay.swapId(),
                                         walletId = wallet.id,
                                         xPubHashId = wallet.xPubHashId,
+                                        swapType = SwapType.NormalSubmarine,
+                                        isAutoSwap = false,
                                         data = pay.serialize()
                                     )
+                                }
+
+                                bitcoinAddress?.let { BitcoinAddress(it) }?.also { bitcoinAddress ->
+                                    logger.d { "Restoring swaps, recover address $bitcoinAddress" }
+
+                                    (boltzSession.restorableLbtcToBtcSwaps(
+                                        list, bitcoinAddress, liquidAddress
+                                    ) + boltzSession.restorableBtcToLbtcSwaps(
+                                        list, liquidAddress, bitcoinAddress
+                                    )).forEach { data ->
+
+                                        val lockup = boltzSession.restoreLockup(data)
+
+                                        database.setSwap(
+                                            id = lockup.swapId(),
+                                            walletId = wallet.id,
+                                            xPubHashId = wallet.xPubHashId,
+                                            swapType = SwapType.Chain,
+                                            isAutoSwap = false,
+                                            data = lockup.serialize()
+                                        )
+                                    }
                                 }
                             }
                         }
@@ -169,6 +203,12 @@ class Lwk(
                     handleInvoice(response)
                 }
 
+                SWAP_TYPE_CHAIN -> {
+                    logger.d { "Restoring chain swap $swapId..." }
+                    val response = boltzSession.restoreLockup(data)
+                    handleChainLockup(response)
+                }
+
                 else -> {
                     logger.d { "Unknown swap type: $type , $data" }
                     database.deleteSwap(swapId)
@@ -187,30 +227,83 @@ class Lwk(
         }
     }
 
-    fun restorePreparePay(data: String) = boltzSession.restorePreparePay(data)
+    suspend fun restorePreparePay(data: String) = ioExceptionHandler {
+        boltzSession.restorePreparePay(data)
+    }
 
     // Reverse Submarine Swaps (Lightning -> Chain)
-    suspend fun createReverseSubmarineSwap(address: String, amount: Long, description: String?): InvoiceResponse {
-        checkBoltzSession()
-
-        return cleanupBoltzExceptionMessage {
-            boltzSession.invoice(amount = amount.toULong(), description = description, claimAddress = Address(address), webhook = webhook())
-        }
+    suspend fun createReverseSubmarineSwap(address: String, amount: Long, description: String?): InvoiceResponse = ioExceptionHandler {
+        boltzSession.invoice(amount = amount.toULong(), description = description, claimAddress = Address(address), webhook = webhook())
     }
 
     // Normal Submarine Swaps (Chain -> Lightning)
-    suspend fun createNormalSubmarineSwap(bolt11Invoice: String, refundAddress: String): PreparePayResponse {
-        checkBoltzSession()
+    suspend fun createNormalSubmarineSwap(bolt11Invoice: String, refundAddress: String): PreparePayResponse = ioExceptionHandler {
 
-        return cleanupBoltzExceptionMessage {
-            boltzSession.preparePay(
-                lightningPayment = LightningPayment(bolt11Invoice), refundAddress = Address(refundAddress), webhook = webhook()
-            )
-        }
-
+        boltzSession.preparePay(
+            lightningPayment = LightningPayment(bolt11Invoice), refundAddress = Address(refundAddress), webhook = webhook()
+        )
     }
 
-    fun handleInvoice(invoice: InvoiceResponse) {
+    suspend fun btcToLbtc(amount: Long, refundAddress: String, claimAddress: String): LockupResponse = ioExceptionHandler {
+        boltzSession.btcToLbtc(
+            amount = amount.toULong(),
+            refundAddress = BitcoinAddress(refundAddress),
+            claimAddress = Address(claimAddress),
+            webhook = webhook()
+        )
+    }
+
+    suspend fun lbtcToBtc(amount: Long, refundAddress: String, claimAddress: String): LockupResponse = ioExceptionHandler {
+        boltzSession.lbtcToBtc(
+            amount = amount.toULong(),
+            refundAddress = Address(refundAddress),
+            claimAddress = BitcoinAddress(claimAddress),
+            webhook = webhook()
+        )
+    }
+
+    fun handleChainLockup(lockup: LockupResponse) {
+        scope.launchSafe {
+            val swapId = lockup.swapId()
+            logger.d { "Handle lockup $swapId" }
+            do {
+                val state = try {
+                    logger.d { "Handling lockup $swapId" }
+
+                    val state = lockup.advance()
+
+                    logger.d { "Lockup $swapId state: $state" }
+
+                    when (state) {
+                        PaymentState.CONTINUE -> {
+                            // continue
+                        }
+
+                        PaymentState.SUCCESS, PaymentState.FAILED -> {
+                            database.setSwapComplete(swapId)
+                        }
+                    }
+
+                    state
+                } catch (_: LwkException.NoBoltzUpdate) {
+                    logger.d { "No boltz update for lockup $swapId... waiting" }
+                    delay(10_000)
+                    PaymentState.CONTINUE
+                } catch (e: LwkException.ObjectConsumed) {
+                    // This thors
+                    e.printStackTrace()
+                    database.setSwapComplete(swapId)
+                    PaymentState.FAILED
+                } catch (e: Exception) {
+                    e.printStackTrace()
+                    PaymentState.FAILED
+                }
+
+            } while (isActive && state == PaymentState.CONTINUE)
+        }
+    }
+
+    private fun handleInvoice(invoice: InvoiceResponse) {
         scope.launchSafe {
             val swapId = invoice.swapId()
             logger.d { "Handle invoice $swapId" }
@@ -257,7 +350,7 @@ class Lwk(
         }
     }
 
-    fun handlePay(pay: PreparePayResponse) {
+    private fun handlePay(pay: PreparePayResponse) {
         scope.launchSafe {
             val swapId = pay.swapId()
             logger.d { "Handle invoice $swapId" }
@@ -296,16 +389,15 @@ class Lwk(
         }
     }
 
-    suspend fun fetchSwapsInfo(): BoltzLimits? {
-        checkBoltzSession()
+    suspend fun refreshSwapInfo(): Unit = ioExceptionHandler {
+        boltzSession.refreshSwapInfo()
+    }
 
-        return tryCatch {
-            json.parseToJsonElement(boltzSession.fetchSwapsInfo()).let { jsonElement ->
-                jsonElement.jsonObject["reverse"]?.jsonObject["BTC"]?.jsonObject["L-BTC"]?.jsonObject
-            }?.let {
-                json.decodeFromJsonElement<BoltzLimits>(it)
-            }
-        }
+    suspend fun quote(satoshi: Long, quoteMode: QuoteMode, send: SwapAsset, receive: SwapAsset): Quote = ioExceptionHandler {
+        val builder = if (quoteMode.isSend) boltzSession.quote(satoshi.toULong()) else boltzSession.quoteReceive(satoshi.toULong())
+        builder.send(send.toLwk());
+        builder.receive(receive.toLwk());
+        builder.build().let { Quote.from(it) }
     }
 
     fun disconnect() {
@@ -321,16 +413,18 @@ class Lwk(
         }
     }
 
-    suspend fun <T> cleanupBoltzExceptionMessage(block: suspend () -> T): T {
-        return try {
-            block()
-        } catch (e: LwkException.Generic) {
-            e.printStackTrace()
+    suspend fun <T> ioExceptionHandler(block: suspend () -> T): T {
+        checkBoltzSession()
 
+        return try {
+            withContext(context = Dispatchers.IO) {
+                block()
+            }
+        } catch (e: LwkException.Generic) {
             val cleanMessage = e.msg.replace("BoltzApi(HTTP(\"\\\"", "").replace("\\\"\"))", "")
                 .replaceFirstChar { if (it.isLowerCase()) it.titlecase() else it.toString() }
 
-            throw Exception(cleanMessage)
+            throw Exception(cleanMessage, e.cause)
         }
     }
 
@@ -339,10 +433,17 @@ class Lwk(
         const val BOLTZ_BIP85_INDEX = 26589L
         private const val SWAP_TYPE_SUBMARINE = "submarine"
         private const val SWAP_TYPE_REVERSE_SUBMARINE = "reverse"
+        private const val SWAP_TYPE_CHAIN = "chain"
 
         const val BASE_URL = "https://green-webhooks.blockstream.com/"
         const val DEV_BASE_URL = "https://green-webhooks.dev.blockstream.com/"
     }
+}
+
+private fun SwapAsset.toLwk(): lwk.SwapAsset = when (this) {
+    SwapAsset.Bitcoin -> lwk.SwapAsset.ONCHAIN
+    SwapAsset.Liquid -> lwk.SwapAsset.LIQUID
+    SwapAsset.Lightning -> lwk.SwapAsset.LIGHTNING
 }
 
 

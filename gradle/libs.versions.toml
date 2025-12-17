@@ -15,7 +15,7 @@ kotlinx-atomicfu = "0.29.0"
 kable = "0.41.0"
 coil = "3.3.0"
 ktor = "3.3.3"
-lwk = "0.12.8"
+lwk = "0.14.1-SNAPSHOT"
 phosphorIcon = "1.0.0"
 tuulbox-coroutines = "8.1.0"
 android-gradle-plugin = "9.0.0"
@@ -179,6 +179,7 @@ androidx-media3-exoplayer = { module = "androidx.media3:media3-exoplayer", versi
 androidx-media3-ui = { module = "androidx.media3:media3-ui", version.ref = "media3" }
 navigation-compose = { module = "org.jetbrains.androidx.navigation:navigation-compose", version.ref = "navigation" }
 compose-backhandler = { module = "org.jetbrains.compose.ui:ui-backhandler", version.ref = "jetbrains-compose" }
+ui-tooling-preview = { module = "org.jetbrains.compose.ui:ui-tooling-preview", version.ref = "jetbrains-compose" }
 kotlin-test = { group = "org.jetbrains.kotlin", name = "kotlin-test", version.ref = "kotlin" }
 androidx-runner = { group = "androidx.test", name = "runner", version.ref = "runner" }
 androidx-core = { group = "androidx.test", name = "core", version.ref = "core" }

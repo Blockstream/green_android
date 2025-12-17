@@ -10,6 +10,11 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.unit.dp
 import com.blockstream.compose.managers.LocalPlatformManager
 import com.blockstream.compose.managers.rememberPlatformManager
+import com.blockstream.data.config.AppInfo
+import com.blockstream.data.managers.BluetoothManager
+import org.koin.core.context.startKoin
+import org.koin.dsl.module
+import org.koin.mp.KoinPlatformTools
 
 internal val GreenColors = ColorScheme(
     primary = md_theme_primary,
@@ -80,6 +85,21 @@ fun GreenChrome(isLight: Boolean = false)
 fun GreenChromePreview(
     content: @Composable () -> Unit
 ) {
+
+    KoinPlatformTools.defaultContext().getOrNull() ?: startKoin {
+        modules(module {
+            single<BluetoothManager?> { null }
+            single {
+                AppInfo(
+                    userAgent = "GreenAndroidPreview",
+                    version = "1.0.0-preview",
+                    isDebug = true,
+                    isDevelopment = true
+                )
+            }
+        })
+    }
+
     val platformManager = rememberPlatformManager()
 
     CompositionLocalProvider(

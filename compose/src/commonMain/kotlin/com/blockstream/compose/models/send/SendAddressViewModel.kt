@@ -21,7 +21,6 @@ import com.blockstream.data.extensions.ifConnected
 import com.blockstream.data.gdk.data.AccountAsset
 import com.blockstream.data.gdk.data.PendingTransaction
 import com.blockstream.domain.send.SendFlow
-import com.blockstream.domain.send.SendUseCase
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.filterNotNull
@@ -29,7 +28,6 @@ import kotlinx.coroutines.flow.onEach
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
 import org.jetbrains.compose.resources.getString
-import org.koin.core.component.inject
 
 abstract class SendAddressViewModelAbstract(greenWallet: GreenWallet, accountAssetOrNull: AccountAsset? = null) :
     CreateTransactionViewModelAbstract(greenWallet = greenWallet, accountAssetOrNull = accountAssetOrNull) {
@@ -48,7 +46,6 @@ class SendAddressViewModel(
     addressType: AddressInputType? = null,
     initialAccountAsset: AccountAsset? = null
 ) : SendAddressViewModelAbstract(greenWallet = greenWallet, accountAssetOrNull = initialAccountAsset) {
-    internal val sendUseCase: SendUseCase by inject()
 
     override val address: MutableStateFlow<String> = MutableStateFlow(initAddress ?: "")
 

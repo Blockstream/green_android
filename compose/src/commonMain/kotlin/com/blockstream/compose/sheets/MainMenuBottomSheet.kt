@@ -7,6 +7,10 @@ import androidx.compose.material3.Icon
 import androidx.compose.material3.Text
 import androidx.compose.material3.rememberModalBottomSheetState
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.unit.dp
@@ -24,10 +28,11 @@ import com.adamglin.phosphoricons.regular.ArrowULeftDown
 import com.adamglin.phosphoricons.regular.ArrowsDownUp
 import com.adamglin.phosphoricons.regular.Coins
 import com.adamglin.phosphoricons.regular.QrCode
-import com.blockstream.data.CountlyBase
+import com.blockstream.compose.GreenPreview
 import com.blockstream.compose.LocalAppInfo
-import com.blockstream.compose.components.GreenArrow
+import com.blockstream.compose.components.CaretRight
 import com.blockstream.compose.components.GreenBottomSheet
+import com.blockstream.compose.components.GreenButton
 import com.blockstream.compose.components.GreenCard
 import com.blockstream.compose.components.GreenColumn
 import com.blockstream.compose.components.GreenRow
@@ -35,7 +40,9 @@ import com.blockstream.compose.navigation.NavigateDestinations
 import com.blockstream.compose.navigation.setResult
 import com.blockstream.compose.theme.titleSmall
 import com.blockstream.compose.theme.whiteLow
+import com.blockstream.data.CountlyBase
 import org.jetbrains.compose.resources.stringResource
+import org.jetbrains.compose.ui.tooling.preview.Preview
 import org.koin.compose.koinInject
 
 enum class MainMenuEntry {
@@ -55,7 +62,7 @@ fun MainMenuItem(title: String, subtitle: String, icon: ImageVector, onClick: ((
                 Text(title, style = titleSmall)
                 Text(subtitle, color = whiteLow)
             }
-            GreenArrow()
+            CaretRight()
         }
     }
 }
@@ -124,6 +131,32 @@ fun MainMenuBottomSheet(
                     onDismissRequest()
                 }
             )
+        }
+    }
+}
+
+@Composable
+@Preview
+fun MainMenuBottomSheetPreview() {
+    GreenPreview {
+        GreenColumn {
+            var showBottomSheet by remember { mutableStateOf(true) }
+
+            GreenButton(text = "Show BottomSheet") {
+                showBottomSheet = true
+            }
+
+            var environment by remember { mutableStateOf("-") }
+            Text("MenuBottomSheetPreview env: $environment")
+
+            if (showBottomSheet) {
+                MainMenuBottomSheet(
+                    isTestnet = false,
+                    onDismissRequest = {
+                        showBottomSheet = false
+                    }
+                )
+            }
         }
     }
 }

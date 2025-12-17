@@ -126,9 +126,6 @@ data class Network(
     fun isSameNetwork(other: Network): Boolean =
         (isBitcoin && other.isBitcoin) || (isLightning && other.isLightning) || (isLiquid && other.isLiquid)
 
-    fun isSameNetworkOrSwap(other: Network, isSwapsEnabled: Boolean = false): Boolean =
-        isSameNetwork(other = other) || (isSwapsEnabled && isLightning && other.isLiquid)
-
     override fun kSerializer() = serializer()
 
     companion object {

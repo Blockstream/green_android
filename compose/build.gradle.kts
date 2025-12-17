@@ -1,4 +1,3 @@
-
 import org.jetbrains.kotlin.gradle.plugin.mpp.apple.XCFramework
 
 plugins {
@@ -18,6 +17,7 @@ compose.resources {
 kotlin {
     compilerOptions {
         freeCompilerArgs.add("-Xexpect-actual-classes")
+        freeCompilerArgs.add("-Xexplicit-backing-fields")
     }
 
     jvmToolchain(libs.versions.jvm.get().toInt())
@@ -92,8 +92,6 @@ kotlin {
         }
 
         androidMain.dependencies {
-            implementation(compose.preview)
-
             /**  --- Modules ---------------------------------------------------------------------------- */
             implementation(project(":base-gms"))
             api(project(":hardware"))
@@ -148,6 +146,6 @@ android {
         buildConfig = true
     }
     dependencies {
-        debugImplementation(compose.uiTooling)
+        debugImplementation(libs.ui.tooling.preview)
     }
 }

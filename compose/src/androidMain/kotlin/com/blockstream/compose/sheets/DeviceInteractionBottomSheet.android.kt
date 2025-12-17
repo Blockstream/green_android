@@ -2,11 +2,11 @@ package com.blockstream.compose.sheets
 
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.tooling.preview.Preview
-import com.blockstream.data.gdk.data.UtxoView
 import com.blockstream.compose.GreenAndroidPreview
-import com.blockstream.compose.looks.transaction.TransactionConfirmLook
 import com.blockstream.compose.models.SimpleGreenViewModelPreview
 import com.blockstream.compose.utils.StringHolder
+import com.blockstream.data.gdk.data.UtxoView
+import com.blockstream.data.transaction.TransactionConfirmation
 
 @Composable
 @Preview
@@ -15,7 +15,7 @@ fun VerifyOnDeviceTransactionBottomSheetPreview() {
         DeviceInteractionBottomSheet(
             viewModel = SimpleGreenViewModelPreview(),
             verifyAddress = null,
-            transactionConfirmLook = TransactionConfirmLook(
+            transactionConfirmation = TransactionConfirmation(
                 utxos = listOf(
                     UtxoView(
                         address = "bc1qaqtq80759n35gk6ftc57vh7du83nwvt5lgkznu",

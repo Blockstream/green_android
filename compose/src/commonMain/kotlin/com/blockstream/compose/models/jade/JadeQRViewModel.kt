@@ -2,8 +2,10 @@ package com.blockstream.compose.models.jade
 
 import androidx.lifecycle.viewModelScope
 import blockstream_green.common.generated.resources.Res
+import blockstream_green.common.generated.resources.id_enable_swaps
 import blockstream_green.common.generated.resources.id_get_watch_only_information_from
 import blockstream_green.common.generated.resources.id_initiate_oracle_communication
+import blockstream_green.common.generated.resources.id_jade_keeps_your_private_keys_secure
 import blockstream_green.common.generated.resources.id_jade_will_securely_create_and
 import blockstream_green.common.generated.resources.id_psbt_saved_to_files
 import blockstream_green.common.generated.resources.id_qr_pin_unlock
@@ -14,8 +16,15 @@ import blockstream_green.common.generated.resources.id_scan_qr_with_jade
 import blockstream_green.common.generated.resources.id_scan_your_xpub_on_jade
 import blockstream_green.common.generated.resources.id_validate_pin_and_unlock
 import blockstream_green.common.generated.resources.id_validate_the_transaction_details
+import com.blockstream.compose.events.Event
+import com.blockstream.compose.events.Events
+import com.blockstream.compose.extensions.launchIn
+import com.blockstream.compose.models.abstract.AbstractScannerViewModel
+import com.blockstream.compose.navigation.NavData
+import com.blockstream.compose.navigation.NavigateDestinations
+import com.blockstream.compose.sideeffects.SideEffects
+import com.blockstream.compose.utils.StringHolder
 import com.blockstream.data.Urls
-import com.blockstream.data.data.AppConfig
 import com.blockstream.data.data.GreenWallet
 import com.blockstream.data.data.ScanResult
 import com.blockstream.data.devices.DeviceModel
@@ -27,15 +36,9 @@ import com.blockstream.data.jade.HandshakeInit
 import com.blockstream.data.jade.HandshakeInitResponse
 import com.blockstream.data.jade.QrData
 import com.blockstream.data.jade.QrDataResponse
-import com.blockstream.compose.events.Event
-import com.blockstream.compose.events.Events
-import com.blockstream.compose.extensions.launchIn
-import com.blockstream.compose.looks.transaction.TransactionConfirmLook
-import com.blockstream.compose.models.abstract.AbstractScannerViewModel
-import com.blockstream.compose.navigation.NavData
-import com.blockstream.compose.navigation.NavigateDestinations
-import com.blockstream.compose.sideeffects.SideEffects
-import com.blockstream.compose.utils.StringHolder
+import com.blockstream.data.lwk.Lwk
+import com.blockstream.data.transaction.TransactionConfirmation
+import com.blockstream.domain.wallet.SaveDerivedBoltzMnemonicUseCase
 import com.blockstream.utils.Loggable
 import io.github.vinceglb.filekit.FileKit
 import io.github.vinceglb.filekit.PlatformFile
@@ -80,12 +83,15 @@ sealed class JadeQrOperation {
     @Serializable
     data class Psbt(
         val psbt: String,
-        val transactionConfirmLook: TransactionConfirmLook? = null,
+        val transactionConfirmation: TransactionConfirmation? = null,
         val askForJadeUnlock: Boolean
     ) : JadeQrOperation()
 
     @Serializable
     data object LightningMnemonicExport : JadeQrOperation()
+
+    @Serializable
+    data object BoltzMnemonicExport : JadeQrOperation()
 
     @Serializable
     data object ExportXpub : JadeQrOperation()
@@ -96,6 +102,7 @@ sealed class JadeQrOperation {
 
 data class StepInfo(
     val title: StringResource = Res.string.id_scan_qr_on_jade,
+    val subtitle: StringResource? = null,
     val message: StringResource = Res.string.id_initiate_oracle_communication,
     val step: Int = 1,
     val isScan: Boolean = false
@@ -107,7 +114,7 @@ data class Scenario(
     val allowReset: Boolean = true
 ) {
     val isPinUnlock
-        get() = this == JadeQRViewModel.Companion.PinUnlockScenarioQuatro || this == JadeQRViewModel.Companion.PinUnlockScenarioDuo
+        get() = this == JadeQRViewModel.PinUnlockScenarioQuatro || this == JadeQRViewModel.PinUnlockScenarioDuo
 }
 
 abstract class JadeQRViewModelAbstract(
@@ -120,6 +127,7 @@ abstract class JadeQRViewModelAbstract(
     override fun screenName(): String = when (operation) {
         JadeQrOperation.ExportXpub -> "ExportXpub"
         JadeQrOperation.LightningMnemonicExport -> "ExportLightningKey"
+        JadeQrOperation.BoltzMnemonicExport -> "ExportBoltzKey"
         JadeQrOperation.PinUnlock -> "PinUnlock"
         is JadeQrOperation.Psbt -> "JadeQR"
     }
@@ -131,10 +139,11 @@ abstract class JadeQRViewModelAbstract(
     val scenario: StateFlow<Scenario> = _scenario
 
     internal fun scenarionForOperation() = when (operation) {
-        JadeQrOperation.ExportXpub -> if (deviceModel.isJade) JadeQRViewModel.Companion.ExportXpubScenarioJade else JadeQRViewModel.Companion.ExportXpubScenarioGeneric
-        JadeQrOperation.LightningMnemonicExport -> JadeQRViewModel.Companion.ExportLightningScenario
-        JadeQrOperation.PinUnlock -> JadeQRViewModel.Companion.PinUnlockScenarioQuatro
-        is JadeQrOperation.Psbt -> JadeQRViewModel.Companion.PsbtScenario
+        JadeQrOperation.ExportXpub -> if (deviceModel.isJade) JadeQRViewModel.ExportXpubScenarioJade else JadeQRViewModel.ExportXpubScenarioGeneric
+        JadeQrOperation.LightningMnemonicExport -> JadeQRViewModel.ExportLightningScenario
+        JadeQrOperation.BoltzMnemonicExport -> JadeQRViewModel.ExportBoltzScenario
+        JadeQrOperation.PinUnlock -> JadeQRViewModel.PinUnlockScenarioQuatro
+        is JadeQrOperation.Psbt -> JadeQRViewModel.PsbtScenario
     }
 }
 
@@ -148,7 +157,7 @@ class JadeQRViewModel(
     deviceModel = deviceModel,
     greenWalletOrNull = greenWalletOrNull
 ) {
-    private val appConfig: AppConfig by inject()
+    private val saveDerivedBoltzMnemonicUseCase: SaveDerivedBoltzMnemonicUseCase by inject()
 
     private var _urParts = MutableStateFlow<List<String>?>(null)
 
@@ -238,7 +247,8 @@ class JadeQRViewModel(
         _stepInfo.value = scenario.value.steps.first()
 
         when (operation) {
-            JadeQrOperation.LightningMnemonicExport -> prepareBip8539Request()
+            JadeQrOperation.LightningMnemonicExport -> prepareBip8539Request(index = 0)
+            JadeQrOperation.BoltzMnemonicExport -> prepareBip8539Request(Lwk.BOLTZ_BIP85_INDEX)
             is JadeQrOperation.Psbt -> preparePsbtRequest()
             else -> {
 
@@ -269,9 +279,9 @@ class JadeQRViewModel(
         })
     }
 
-    private fun prepareBip8539Request() {
+    private fun prepareBip8539Request(index: Long) {
         doAsync({
-            session.jadeBip8539Request()
+            session.jadeBip8539Request(index)
         }, onSuccess = {
             _privateKey = it.first
             _urParts.value = it.second.parts
@@ -399,7 +409,7 @@ class JadeQRViewModel(
                         NavigateDestinations.DeviceInteraction(
                             greenWalletOrNull = greenWalletOrNull,
                             deviceId = null,
-                            transactionConfirmLook = (operation as? JadeQrOperation.Psbt)?.transactionConfirmLook
+                            transactionConfirmation = (operation as? JadeQrOperation.Psbt)?.transactionConfirmation
                         )
                     )
                 )
@@ -423,8 +433,8 @@ class JadeQRViewModel(
         logger.d { "scanResult: $scanResult" }
 
         when (operation) {
-            JadeQrOperation.LightningMnemonicExport -> {
-                decryptLightningMnemonic(scanResult)
+            JadeQrOperation.LightningMnemonicExport, JadeQrOperation.BoltzMnemonicExport -> {
+                decryptBip8539Mnemonic(scanResult)
             }
 
             is JadeQrOperation.Psbt -> {
@@ -483,18 +493,40 @@ class JadeQRViewModel(
         })
     }
 
-    private fun decryptLightningMnemonic(scanResult: ScanResult) {
+    private fun decryptBip8539Mnemonic(scanResult: ScanResult) {
         doAsync({
-            val lightningMnemonic = session.jadeBip8539Reply(
+            val mnemonic = session.jadeBip8539Reply(
                 privateKey = _privateKey!!,
                 publicKey = scanResult.bcur!!.publicΚey!!.hexToByteArray(),
                 encrypted = scanResult.bcur!!.encrypted!!.hexToByteArray()
             )
-            lightningMnemonic ?: throw Exception("id_decoding_error_try_again_by_scanning")
-        }, onSuccess = { lightningMnemonic: String ->
-            postSideEffect(SideEffects.Mnemonic(lightningMnemonic))
+
+            checkNotNull(mnemonic) {
+                "id_decoding_error_try_again_by_scanning"
+            }
+
+            if (operation == JadeQrOperation.BoltzMnemonicExport) {
+                saveDerivedBoltzMnemonicUseCase.invoke(session = session, wallet = greenWallet, mnemonic = mnemonic)
+                session.initLwkIfNeeded(wallet = greenWallet, mnemonic = mnemonic)
+                null
+            } else {
+                mnemonic
+            }
+
+        }, onSuccess = { mnemonic: String? ->
+            if (mnemonic == null) {
+                postSideEffect(SideEffects.Success(true))
+            } else {
+                postSideEffect(SideEffects.Mnemonic(mnemonic))
+            }
             postSideEffect(SideEffects.NavigateBack())
         })
+    }
+
+    private fun enableSwaps(mnemonic: String) {
+
+        postSideEffect(SideEffects.Mnemonic(mnemonic))
+        postSideEffect(SideEffects.NavigateBack())
     }
 
     companion object : Loggable() {
@@ -508,6 +540,25 @@ class JadeQRViewModel(
                 ),
                 StepInfo(
                     title = Res.string.id_scan_qr_on_jade,
+                    message = Res.string.id_jade_will_securely_create_and,
+                    step = 2,
+                    isScan = true
+                ),
+            ), showStepCounter = false
+        )
+
+        val ExportBoltzScenario = Scenario(
+            listOf(
+                StepInfo(
+                    title = Res.string.id_enable_swaps,
+                    subtitle = Res.string.id_scan_qr_with_jade,
+                    message = Res.string.id_jade_keeps_your_private_keys_secure,
+                    step = 1,
+                    isScan = false
+                ),
+                StepInfo(
+                    title = Res.string.id_enable_swaps,
+                    subtitle = Res.string.id_scan_qr_on_jade,
                     message = Res.string.id_jade_will_securely_create_and,
                     step = 2,
                     isScan = true
@@ -603,13 +654,13 @@ class JadeQRViewModel(
 class JadeQRViewModelPreview(
     operation: JadeQrOperation = JadeQrOperation.Psbt(
         psbt = "psbt",
-        transactionConfirmLook = TransactionConfirmLook(),
+        transactionConfirmation = TransactionConfirmation(),
         askForJadeUnlock = true
     )
 ) : JadeQRViewModelAbstract(
     operation = operation, deviceModel = DeviceModel.BlockstreamGeneric
 ) {
-    override val stepInfo = MutableStateFlow(JadeQRViewModel.Companion.PsbtScenario.steps.first())
+    override val stepInfo = MutableStateFlow(scenario.value.steps.first())
     override val urPart =
         MutableStateFlow("Lorem ipsum dolor sit amet, consectetur adipiscing elit.")
 
@@ -640,6 +691,7 @@ class JadeQRViewModelPreview(
     companion object : Loggable() {
         fun preview() = JadeQRViewModelPreview()
         fun previewLightning() = JadeQRViewModelPreview(operation = JadeQrOperation.LightningMnemonicExport)
+        fun previewSwap() = JadeQRViewModelPreview(operation = JadeQrOperation.BoltzMnemonicExport)
     }
 }
 

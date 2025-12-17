@@ -812,7 +812,7 @@
     <string name="id_jade_is_trying_to_connect_to_a">Jade is trying to connect to a non-default blind PIN oracle. Contact support immediately for further information.</string>
     <string name="id_jade_unlocked">Jade unlocked</string>
     <string name="id_jade_was_initialized_for_testnet">Jade was initialized for testnet</string>
-    <string name="id_jade_will_securely_create_and">Jade will securely create and transfer a new key to your Green app. Jade will not be needed to authorize lightning transactions, because Green will use this new key for your lightning transactions.\n\nDon&apos;t worry about any new backups, your existing recovery phrase backup will be sufficient to restore both your funds onchain and on lightning.</string>
+    <string name="id_jade_will_securely_create_and">Jade will securely create and transfer a new key to your Blockstream app. Jade will not be needed to authorize lightning transactions, because Green will use this new key for your lightning transactions.\n\nDon&apos;t worry about any new backups, your existing recovery phrase backup will be sufficient to restore both your funds onchain and on lightning.</string>
     <string name="id_just_a_few_more_steps_to_get">Just a few more steps to get you set up.</string>
     <string name="id_keep_your_keys_encrypted_on">Keep your keys encrypted on Jade, easily accessible with PIN</string>
     <string name="id_keep_your_recovery_phrase_fully">Keep your recovery phrase fully offline and stored somewhere secret. Anyone with a copy of these words can steal your funds.</string>
@@ -1549,7 +1549,7 @@
     <string name="id_timeout">Timeout</string>
     <string name="id_tip_we_recommend_you_enable">Tip: We recommend you enable more than one 2FA method. If you only set up one 2FA method and then lose it, you&apos;ll have to wait at least one year until the 2FA expires.</string>
     <string name="id_tip_you_can_use_the">Tip: You can use the xPub/yPub/zPub to view your watch-only wallet in Green, or you may import it to another platform. Each account in your wallet has a separate xPub/yPub/zPub.</string>
-    <string name="id_to">TO</string>
+    <string name="id_to">To</string>
     <string name="id_to_authorize_the_transaction">To authorize the transaction you need to enter your 2FA code.</string>
     <string name="id_to_keep_you_in_control_of_your">To keep you in control of your funds, Two-Factor Authentication protection expires after roughly %1$d days since your last payment. You will be prompted to make a Two-Factor Reactivation transaction, if you don&apos;t move funds often enough.</string>
     <string name="id_to_show_balances_and">to show balances and transactions on Liquid accounts up to 10x faster at every login, and it&apos;s necessary to use Liquid singlesig accounts.</string>
@@ -1950,9 +1950,10 @@
     <string name="id_you_are_paying_this_lightning_invoice">You are paying this Lightning invoice with Liquid bitcoin</string>
     <string name="id_no_amount_less_invoices_supported">No amount-less invoices supported</string>
     <string name="id_swap_id">Swap ID</string>
-    <string name="id_network_fee_and_swap_fee">Network fee and Swap fee</string>
+    <string name="id_paid_for_transaction_confirmation">Paid for transaction confirmation</string>
     <string name="id_includes_swap_and_lightning_routing">Includes service and Lightning routing.</string>
-    <string name="id_liquid_onchain">Liquid on-chain</string>
+    <string name="id_swap_fee">Swap Fee</string>
+    <string name="id_covers_swap_service">Covers swap service</string>
     <string name="id_miner_fee_to_send_lbtc_on_liquid">Miner fee to send L-BTC on Liquid.</string>
     <string name="id_service_fee">Service Fee</string>
     <string name="id_amount_you_will_receive">Amount you will Receive</string>
@@ -1961,4 +1962,12 @@
     <string name="id_your_keys_stay_on_jade">Your keys stay on Jade, and you will still need it to send or approve transactions.</string>
     <string name="id_enable_biometrics">Enable Biometrics</string>
     <string name="id_require_jade_connection">Require Jade Connection</string>
+    <string name="id_total_to_receive">Total to Receive</string>
+    <string name="id_amount_too_low_s">Amount too low. Min %1$s</string>
+    <string name="id_amount_too_high_s">Amount too high. Max %1$s</string>
+    <string name="id_enable_swaps">Enable Swaps</string>
+    <string name="id_jade_keeps_your_private_keys_secure">Jade keeps your private keys secure.</string>
+    <string name="id_get_more_out_of_jade">Get More Out of Jade</string>
+    <string name="id_unlock_swaps_from_this_wallet">Unlock swaps for this wallet.</string>
+    <string name="id_swap_completed">Swap completed!</string>
 </resources>

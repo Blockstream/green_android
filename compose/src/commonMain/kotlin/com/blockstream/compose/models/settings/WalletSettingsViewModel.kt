@@ -28,9 +28,23 @@ import blockstream_green.common.generated.resources.id_settings
 import blockstream_green.common.generated.resources.id_wallet_settings
 import blockstream_green.common.generated.resources.id_your_2fa_expires_so_that_if_you
 import blockstream_green.common.generated.resources.id_your_wallet_is_locked_for_a
+import com.blockstream.compose.data.WalletSetting
+import com.blockstream.compose.events.Event
+import com.blockstream.compose.events.Events
+import com.blockstream.compose.extensions.launchIn
+import com.blockstream.compose.extensions.previewWallet
+import com.blockstream.compose.looks.AccountTypeLook
+import com.blockstream.compose.models.GreenViewModel
+import com.blockstream.compose.models.jade.JadeQrOperation
+import com.blockstream.compose.navigation.NavData
+import com.blockstream.compose.navigation.NavigateDestinations
+import com.blockstream.compose.sideeffects.SideEffect
+import com.blockstream.compose.sideeffects.SideEffects
+import com.blockstream.compose.utils.StringHolder
 import com.blockstream.data.BTC_UNIT
 import com.blockstream.data.Urls
 import com.blockstream.data.crypto.PlatformCipher
+import com.blockstream.data.data.AppConfig
 import com.blockstream.data.data.CredentialType
 import com.blockstream.data.data.EnrichedAsset
 import com.blockstream.data.data.GreenWallet
@@ -60,21 +74,9 @@ import com.blockstream.data.usecases.SetBiometricsUseCase
 import com.blockstream.data.usecases.SetPinUseCase
 import com.blockstream.data.utils.UserInput
 import com.blockstream.data.utils.toAmountLook
-import com.blockstream.compose.data.WalletSetting
-import com.blockstream.compose.events.Event
-import com.blockstream.compose.events.Events
-import com.blockstream.compose.extensions.launchIn
-import com.blockstream.compose.extensions.previewWallet
-import com.blockstream.compose.looks.AccountTypeLook
-import com.blockstream.compose.models.GreenViewModel
-import com.blockstream.compose.models.jade.JadeQrOperation
-import com.blockstream.compose.navigation.NavData
-import com.blockstream.compose.navigation.NavigateDestinations
-import com.blockstream.compose.sideeffects.SideEffect
-import com.blockstream.compose.sideeffects.SideEffects
-import com.blockstream.compose.utils.StringHolder
 import com.blockstream.domain.account.CreateAccountUseCase
-import com.blockstream.domain.boltz.IsSwapsEnabledUseCase
+import com.blockstream.domain.swap.IsSwapsEnabledUseCase
+import com.blockstream.domain.wallet.SaveDerivedBoltzMnemonicUseCase
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.IO
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -118,8 +120,10 @@ class WalletSettingsViewModel(
     private val network: Network? = null,
     isRecoveryConfirmation: Boolean = false
 ) : WalletSettingsViewModelAbstract(greenWallet = greenWallet, section = section, isRecoveryConfirmation = isRecoveryConfirmation) {
+    private val appConfig: AppConfig by inject()
     private val createAccountUseCase: CreateAccountUseCase by inject()
     private val setBiometricsUseCase: SetBiometricsUseCase by inject()
+    private val saveDerivedBoltzMnemonicUseCase: SaveDerivedBoltzMnemonicUseCase by inject()
     private val setPinUseCase: SetPinUseCase by inject()
     private val isSwapsEnabledUseCase: IsSwapsEnabledUseCase by inject()
 
@@ -156,6 +160,8 @@ class WalletSettingsViewModel(
         data class CopyAmpId(val account: Account? = null) : Event
         data class ChooseAccountType(val accountType: AccountType) : Event
         data object DisableLightning : Event
+        data class EnableSwaps(val mnemonic: String? = null) : Event
+        data object DisableSwaps : Event
         data class CreateAccount(val accountType: AccountType, val asset: EnrichedAsset? = null) : Event
         data class CreateLightningAccount(val lightningMnemonic: String) : Event, Redact
         object CreateNewAccount : Event
@@ -203,13 +209,14 @@ class WalletSettingsViewModel(
                 _hasBiometrics.value = it.biometricsPinData != null || it.biometricsMnemonic != null
             }.launchIn(viewModelScope)
 
-            combine(
+            com.blockstream.data.extensions.combine(
                 session.settings(network = network ?: session.defaultNetwork),
                 network?.takeIf { it.isMultisig }?.let { session.twoFactorConfig(network) } ?: flowOf(null),
                 walletSettingsManager.getWalletSettings(walletId = greenWallet.id), // Update on wallet settings changes
                 session.allAccounts,
                 _hasBiometrics,
-            ) { settings, twoFactorConfig, _, _, _ ->
+                database.getLoginCredentialsFlow(greenWallet.id) // Swaps
+            ) { settings, twoFactorConfig, _, _, _, _ ->
                 _items.value = withContext(Dispatchers.IO) {
                     build(settings, twoFactorConfig)
                 }
@@ -377,7 +384,9 @@ class WalletSettingsViewModel(
                     list += WalletSetting.Text(getString(Res.string.id_account_settings))
                     list += listOfNotNull(
                         WalletSetting.Lightning(enabled = session.hasLightning)
-                            .takeIf { settingsManager.appSettings.experimentalFeatures || session.hasLightning },
+                            .takeIf { appConfig.lightningFeatureEnabled && (settingsManager.appSettings.experimentalFeatures || session.hasLightning) },
+                        WalletSetting.Swaps(enabled = isSwapsEnabledUseCase(wallet = greenWallet))
+                            .takeIf { session.isHardwareWallet },
                         WalletSetting.CreateAmpAccount.takeIf { session.accounts.value.find { it.type == AccountType.AMP_ACCOUNT } == null },
                         WalletSetting.CopyAmpId.takeIf { session.accounts.value.any { it.type == AccountType.AMP_ACCOUNT } },
                     )
@@ -433,6 +442,31 @@ class WalletSettingsViewModel(
                             removeAccount(it)
                         }
                     }
+                })
+            }
+
+            is LocalEvents.EnableSwaps -> {
+                if (event.mnemonic == null) {
+                    postSideEffect(
+                        SideEffects.NavigateTo(
+                            NavigateDestinations.JadeQR(
+                                greenWalletOrNull = greenWalletOrNull,
+                                operation = JadeQrOperation.BoltzMnemonicExport,
+                                deviceModel = DeviceModel.BlockstreamGeneric
+                            )
+                        )
+                    )
+                } else {
+                    doAsync({
+                        saveDerivedBoltzMnemonicUseCase.invoke(session = session, wallet = greenWallet, mnemonic = event.mnemonic)
+                        session.initLwkIfNeeded(wallet = greenWallet, mnemonic = event.mnemonic)
+                    })
+                }
+            }
+
+            is LocalEvents.DisableSwaps -> {
+                doAsync({
+                    database.deleteLoginCredentials(walletId = greenWallet.id, type = CredentialType.BOLTZ_MNEMONIC)
                 })
             }
 

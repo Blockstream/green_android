@@ -1,7 +1,5 @@
 # Blockstream App - A native bitcoin wallet for Android
 
-[![Build Status](https://travis-ci.org/Blockstream/green_android.png?branch=master)](https://travis-ci.org/Blockstream/green_android)
-
 ## What is Blockstream App?
 
 Blockstream App is a non-custodial Bitcoin wallet - it allows you to safely store, send, and receive your Bitcoin. 

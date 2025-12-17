@@ -4,22 +4,20 @@ import androidx.lifecycle.viewModelScope
 import blockstream_green.common.generated.resources.Res
 import blockstream_green.common.generated.resources.id_select_asset
 import blockstream_green.common.generated.resources.id_send
+import com.blockstream.compose.extensions.previewWallet
+import com.blockstream.compose.navigation.NavData
+import com.blockstream.compose.navigation.NavigateDestinations
+import com.blockstream.compose.sideeffects.SideEffects
 import com.blockstream.data.AddressInputType
 import com.blockstream.data.TransactionSegmentation
 import com.blockstream.data.TransactionType
 import com.blockstream.data.data.EnrichedAsset
 import com.blockstream.data.data.GreenWallet
-import com.blockstream.compose.extensions.previewWallet
 import com.blockstream.data.gdk.data.AccountAsset
 import com.blockstream.data.gdk.data.PendingTransaction
-import com.blockstream.compose.navigation.NavData
-import com.blockstream.compose.navigation.NavigateDestinations
-import com.blockstream.compose.sideeffects.SideEffects
 import com.blockstream.domain.send.SendFlow
-import com.blockstream.domain.send.SendUseCase
 import kotlinx.coroutines.launch
 import org.jetbrains.compose.resources.getString
-import org.koin.core.component.inject
 
 abstract class SendChooseAssetViewModelAbstract(
     greenWallet: GreenWallet, accountAssetOrNull: AccountAsset? = null
@@ -38,8 +36,6 @@ class SendChooseAssetViewModel(
     override val assets: List<EnrichedAsset>,
     accountAssetOrNull: AccountAsset? = null
 ) : SendChooseAssetViewModelAbstract(greenWallet = greenWallet, accountAssetOrNull = accountAssetOrNull) {
-
-    internal val sendUseCase: SendUseCase by inject()
 
     init {
         viewModelScope.launch {

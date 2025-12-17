@@ -27,13 +27,11 @@ import blockstream_green.common.generated.resources.pencil_simple_line
 import com.adamglin.PhosphorIcons
 import com.adamglin.phosphoricons.Regular
 import com.adamglin.phosphoricons.regular.CaretRight
-import com.blockstream.compose.extensions.previewAccountAsset
-import com.blockstream.data.gdk.GdkSession
-import com.blockstream.data.gdk.data.AccountAssetBalance
 import com.blockstream.compose.GreenPreview
 import com.blockstream.compose.extensions.assetIcon
 import com.blockstream.compose.extensions.nameStringHolder
 import com.blockstream.compose.extensions.policyIcon
+import com.blockstream.compose.extensions.previewAccountAsset
 import com.blockstream.compose.theme.bodyMedium
 import com.blockstream.compose.theme.labelLarge
 import com.blockstream.compose.theme.labelMedium
@@ -44,6 +42,8 @@ import com.blockstream.compose.theme.whiteLow
 import com.blockstream.compose.theme.whiteMedium
 import com.blockstream.compose.utils.StringHolder
 import com.blockstream.compose.utils.ifTrue
+import com.blockstream.data.gdk.GdkSession
+import com.blockstream.data.gdk.data.AccountAssetBalance
 import org.jetbrains.compose.resources.painterResource
 import org.jetbrains.compose.resources.stringResource
 import org.jetbrains.compose.ui.tooling.preview.Preview
@@ -257,7 +257,8 @@ fun GreenAccountAssetPreview() {
                     account = it.account,
                     asset = it.asset,
                     balance = "123 BTC",
-                    balanceExchange = "45,000 USD"
+                    balanceExchange = "45,000 USD",
+                    satoshi = 123456789L
                 )
             })
             GreenAccountAsset(accountAssetBalance = previewAccountAsset().let {
@@ -265,7 +266,8 @@ fun GreenAccountAssetPreview() {
                     account = it.account,
                     asset = it.asset,
                     balance = "123 BTC",
-                    balanceExchange = "45,000 USD"
+                    balanceExchange = "45,000 USD",
+                    satoshi = 123456789L
                 )
             }, withAsset = false)
             GreenAccountAsset(accountAssetBalance = previewAccountAsset().let {
@@ -273,7 +275,8 @@ fun GreenAccountAssetPreview() {
                     account = it.account,
                     asset = it.asset,
                     balance = "123 BTC",
-                    balanceExchange = "45,000 USD"
+                    balanceExchange = "45,000 USD",
+                    satoshi = 123456789L
                 )
             }, withEditIcon = true)
 
@@ -286,7 +289,8 @@ fun GreenAccountAssetPreview() {
                         name = "Bitcoin with Quite Large Name"
                     ),
                     balance = "1,123,1231 BTC",
-                    balanceExchange = "23,432,425,445 USD"
+                    balanceExchange = "23,432,425,445 USD",
+                    satoshi = 123456789L
                 )
             }, withEditIcon = true)
             GreenAccountAsset(

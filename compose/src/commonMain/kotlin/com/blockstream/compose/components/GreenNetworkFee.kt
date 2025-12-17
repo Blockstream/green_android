@@ -16,16 +16,18 @@ import androidx.compose.ui.unit.dp
 import blockstream_green.common.generated.resources.Res
 import blockstream_green.common.generated.resources.id_network_fee
 import blockstream_green.common.generated.resources.pencil_simple_line
-import com.blockstream.data.data.FeePriority
 import com.blockstream.compose.extensions.title
+import com.blockstream.compose.theme.GreenChromePreview
 import com.blockstream.compose.theme.bodyMedium
 import com.blockstream.compose.theme.labelLarge
 import com.blockstream.compose.theme.titleSmall
 import com.blockstream.compose.theme.whiteMedium
 import com.blockstream.compose.utils.AnimatedNullableVisibility
 import com.blockstream.compose.utils.roundBackground
+import com.blockstream.data.data.FeePriority
 import org.jetbrains.compose.resources.painterResource
 import org.jetbrains.compose.resources.stringResource
+import org.jetbrains.compose.ui.tooling.preview.Preview
 
 @Composable
 fun GreenNetworkFee(
@@ -101,6 +103,29 @@ fun GreenNetworkFee(
                     }
                 }
             }
+        }
+    }
+}
+
+@Preview
+@Composable
+fun GreenNetworkFeePreview() {
+    GreenChromePreview {
+        GreenColumn {
+            GreenNetworkFee(FeePriority.High(), onClick = {})
+            GreenNetworkFee(
+                FeePriority.Medium(
+                    fee = "1 BTC",
+                    feeFiat = "12,00 USD",
+                    feeRate = "1 sats/vbyte"
+                ), onClick = {})
+            GreenNetworkFee(FeePriority.Low(error = "id_insufficient_funds"), onClick = {})
+            GreenNetworkFee(
+                FeePriority.High(
+                    fee = "1 BTC",
+                    feeFiat = "12,00 USD",
+                    feeRate = "1 sats/vbyte"
+                ), withEditIcon = false, onClick = {})
         }
     }
 }

@@ -6,6 +6,7 @@ import android.util.Base64
 import androidx.core.content.edit
 import com.blockstream.data.data.CredentialType
 import com.blockstream.data.data.EncryptedData
+import com.blockstream.data.data.SwapType
 import com.blockstream.data.data.toGreenWallet
 import com.blockstream.data.database.Database
 import com.blockstream.data.gdk.Gdk
@@ -49,6 +50,7 @@ class AndroidMigrator(
                 migrateAppDataV2()
                 migrateAppDataV3()
                 migrateAppDataV4()
+                migrateAppDataV5()
             }
         }
     }
@@ -310,6 +312,24 @@ class AndroidMigrator(
         }
     }
 
+    private suspend fun migrateAppDataV5() {
+        if (sharedPreferences.getLong(Preferences.APP_DATA_VERSION, 0) < 5) {
+            logger.i { "Migrating AppData to v5" }
+
+            database.getAllSwaps().forEach { swap ->
+
+                if (swap.invoice == null) {
+                    database.setSwapType(
+                        id = swap.id,
+                        swapType = SwapType.ReverseSubmarine,
+                    )
+                }
+            }
+
+            sharedPreferences.edit { putLong(Preferences.APP_DATA_VERSION, 5) }
+        }
+    }
+
     private fun fromV3PreferenceValues(pin: SharedPreferences): PinData? {
         try {
             val pinIdentifier = pin.getString("ident", null)!!
@@ -345,7 +365,7 @@ class AndroidMigrator(
     }
 
     companion object : Loggable() {
-        const val APP_DATA_VERSION = 4
+        const val APP_DATA_VERSION = 5
         const val NETWORK_ID_ACTIVE = "network_id_active"
         const val VERSION = "version"
         const val PROXY_ENABLED = "proxy_enabled"

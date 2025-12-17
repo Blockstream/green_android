@@ -48,6 +48,7 @@ import com.blockstream.data.data.data
 import com.blockstream.data.data.isEmpty
 import com.blockstream.data.database.wallet.LoginCredentials
 import com.blockstream.data.extensions.biometrics
+import com.blockstream.data.extensions.boltzMnemonic
 import com.blockstream.data.extensions.hwWatchOnlyCredentials
 import com.blockstream.data.extensions.isConnectionError
 import com.blockstream.data.extensions.isNotAuthorized
@@ -536,7 +537,7 @@ class LoginViewModel constructor(
                 val derivedBoltzMnemonic = database.getLoginCredential(
                     id = greenWallet.id,
                     credentialType = CredentialType.BOLTZ_MNEMONIC
-                )?.lightningMnemonic(greenKeystore) {
+                )?.boltzMnemonic(greenKeystore) {
                     postSideEffect(SideEffects.ErrorSnackbar(it))
                 }
 

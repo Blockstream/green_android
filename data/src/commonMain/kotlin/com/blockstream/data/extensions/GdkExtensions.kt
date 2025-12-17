@@ -14,12 +14,35 @@ import com.blockstream.data.gdk.data.AccountType
 import com.blockstream.data.gdk.data.Network
 import com.blockstream.data.managers.SessionManager
 import com.blockstream.data.utils.getBitcoinOrLiquidUnit
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.CoroutineStart
+import kotlinx.coroutines.Job
+import kotlinx.coroutines.launch
+import kotlin.coroutines.CoroutineContext
+import kotlin.coroutines.EmptyCoroutineContext
 
 inline fun <T : Any> GdkSession.ifConnected(block: () -> T?): T? {
     return if (this.isConnected) {
         block()
     } else {
         null
+    }
+}
+
+fun CoroutineScope.ifConnected(
+    session: GdkSession,
+    context: CoroutineContext = EmptyCoroutineContext,
+    start: CoroutineStart = CoroutineStart.DEFAULT,
+    block: suspend CoroutineScope.() -> Unit
+): Job {
+    return launch(context = context, start = start) {
+        session.ifConnectedSuspend {
+            try {
+                block()
+            } catch (e: Exception) {
+                e.printStackTrace()
+            }
+        }
     }
 }
 

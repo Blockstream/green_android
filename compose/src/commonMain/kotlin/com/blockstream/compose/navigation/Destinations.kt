@@ -1,7 +1,6 @@
 package com.blockstream.compose.navigation
 
 import com.blockstream.compose.events.Event
-import com.blockstream.compose.looks.transaction.TransactionConfirmLook
 import com.blockstream.compose.models.GreenViewModel
 import com.blockstream.compose.models.jade.JadeQrOperation
 import com.blockstream.compose.models.settings.WalletSettingsSection
@@ -28,6 +27,7 @@ import com.blockstream.data.gdk.data.AccountAssetList
 import com.blockstream.data.gdk.data.AssetBalance
 import com.blockstream.data.gdk.data.AssetBalanceList
 import com.blockstream.data.gdk.data.Network
+import com.blockstream.data.transaction.TransactionConfirmation
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.IO
 import kotlinx.coroutines.withContext
@@ -209,7 +209,7 @@ sealed class NavigateDestinations : NavigateDestination() {
                             ),
                             EnrichedAsset.createOrNull(
                                 session = viewModel.session,
-                                viewModel.session.lightning?.policyAsset
+                                viewModel.session.lightning.policyAsset
                             ).takeIf { viewModel.session.hasLightning },
                             EnrichedAsset.createOrNull(
                                 session = viewModel.session,
@@ -286,7 +286,7 @@ sealed class NavigateDestinations : NavigateDestination() {
 
     @Serializable
     data class SwapFees(
-        val serviceFee: String,
+        val swapFee: String,
         val networkFee: String,
         val totalFees: String,
         val totalFeesFiat: String?
@@ -419,6 +419,9 @@ sealed class NavigateDestinations : NavigateDestination() {
     ) : NavigateDestination()
 
     @Serializable
+    data class Swap(val greenWallet: GreenWallet, val accountAsset: AccountAsset? = null) : NavigateDestination()
+
+    @Serializable
     data class AccountExchange(val greenWallet: GreenWallet) : NavigateDestination()
 
     @Serializable
@@ -520,7 +523,7 @@ sealed class NavigateDestinations : NavigateDestination() {
     data class DeviceInteraction(
         val greenWalletOrNull: GreenWallet? = null,
         val deviceId: String? = null,
-        val transactionConfirmLook: TransactionConfirmLook? = null,
+        val transactionConfirmation: TransactionConfirmation? = null,
         val verifyAddress: String? = null,
         val isMasterBlindingKeyRequest: Boolean = false,
         val message: String? = null
@@ -546,8 +549,12 @@ sealed class NavigateDestinations : NavigateDestination() {
     data class FeeRate(
         val greenWallet: GreenWallet,
         val accountAsset: AccountAsset? = null,
+        val isFeeRateOnly: Boolean = false,
         val useBreezFees: Boolean
     ) : NavigateDestination()
+
+    @Serializable
+    data class EnableJadeFeature(val greenWallet: GreenWallet, val accountAsset: AccountAsset? = null) : NavigateDestination()
 
     @Serializable
     data object DevicePin : NavigateDestination()

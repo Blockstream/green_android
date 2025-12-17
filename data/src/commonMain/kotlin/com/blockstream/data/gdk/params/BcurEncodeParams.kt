@@ -15,7 +15,7 @@ data class BcurEncodeParams constructor(
     @SerialName("num_words")
     val numWords: Int? = null,
     @SerialName("index")
-    val index: Int? = null,
+    val index: Long? = null,
     @SerialName("private_key")
     val privateKey: String? = null,
     @SerialName("max_fragment_len")

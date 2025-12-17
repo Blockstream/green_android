@@ -13,7 +13,7 @@ import com.blockstream.data.extensions.logException
 import com.blockstream.data.extensions.tryCatch
 import com.blockstream.data.json.SimpleJson
 import com.blockstream.data.notifications.models.BoltzNotificationSimple
-import com.blockstream.domain.boltz.BoltzUseCase
+import com.blockstream.domain.swap.SwapUseCase
 import com.blockstream.green.managers.NotificationManagerAndroid
 import com.blockstream.utils.Loggable
 import kotlinx.coroutines.Dispatchers
@@ -23,7 +23,7 @@ import org.koin.core.component.inject
 
 class BoltzWork(val context: Context, workerParams: WorkerParameters) : CoroutineWorker(context, workerParams), KoinComponent {
 
-    private val boltzUseCase: BoltzUseCase by inject()
+    private val boltzUseCase: SwapUseCase by inject()
     private val notificationManager: NotificationManagerAndroid by inject()
 
     override suspend fun getForegroundInfo(): ForegroundInfo {

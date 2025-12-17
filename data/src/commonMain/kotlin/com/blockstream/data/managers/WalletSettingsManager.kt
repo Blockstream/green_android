@@ -30,14 +30,6 @@ class WalletSettingsManager(
         return getString(walletId = walletId, key = KEY_LIGHTNING_NODE_ID)
     }
 
-    suspend fun setSwapsEnabled(walletId: String, enabled: Boolean) {
-        setBoolean(walletId = walletId, key = KEY_SWAPS_ENABLED, enabled)
-    }
-
-    suspend fun isSwapsEnabled(walletId: String): Boolean {
-        return getBoolean(walletId = walletId, key = KEY_SWAPS_ENABLED)
-    }
-
     suspend fun setTotalBalanceInFiat(walletId: String, enabled: Boolean) {
         setBoolean(walletId = walletId, key = KEY_TOTAL_BALANCE_IN_FIAT, enabled)
     }
@@ -85,7 +77,6 @@ class WalletSettingsManager(
         const val TRUE_VALUE = "true"
         const val FALSE_VALUE = "false"
         const val KEY_LIGHTNING_ENABLED = "lightning_enabled"
-        const val KEY_SWAPS_ENABLED = "swaps_enabled"
         const val KEY_LIGHTNING_NODE_ID = "lightning_node_id"
         const val KEY_TOTAL_BALANCE_IN_FIAT = "total_balance_in_fiat"
     }

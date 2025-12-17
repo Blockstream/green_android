@@ -19,6 +19,7 @@ import blockstream_green.common.generated.resources.id_exchange
 import com.adamglin.PhosphorIcons
 import com.adamglin.phosphoricons.Regular
 import com.adamglin.phosphoricons.regular.ArrowSquareOut
+import com.blockstream.compose.GreenPreview
 import com.blockstream.compose.components.GreenAccountSelector
 import com.blockstream.compose.components.GreenAlert
 import com.blockstream.compose.components.GreenAmountField
@@ -33,6 +34,7 @@ import com.blockstream.compose.components.OnProgressStyle
 import com.blockstream.compose.events.Events
 import com.blockstream.compose.extensions.onValueChange
 import com.blockstream.compose.models.exchange.BuyViewModelAbstract
+import com.blockstream.compose.models.exchange.BuyViewModelPreview
 import com.blockstream.compose.navigation.LocalNavigator
 import com.blockstream.compose.navigation.NavigateDestinations
 import com.blockstream.compose.navigation.bottomsheet.BottomSheetNavigator
@@ -45,6 +47,7 @@ import com.blockstream.data.data.AlertType
 import com.blockstream.data.data.DenominatedValue
 import com.blockstream.data.gdk.data.AccountAssetBalance
 import org.jetbrains.compose.resources.stringResource
+import org.jetbrains.compose.ui.tooling.preview.Preview
 
 @Composable
 fun BuyScreen(
@@ -188,5 +191,13 @@ fun BuyScreen(
                 }
             }
         }
+    }
+}
+
+@Composable
+@Preview
+fun BuyScreenPreview() {
+    GreenPreview {
+        BuyScreen(viewModel = BuyViewModelPreview.preview())
     }
 }

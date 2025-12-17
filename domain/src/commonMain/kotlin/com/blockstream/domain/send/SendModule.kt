@@ -9,5 +9,7 @@ val sendModule = module {
     singleOf(::GetSendAmountUseCase)
     singleOf(::PrepareTransactionUseCase)
     singleOf(::GetSendFlowUseCase)
+    singleOf(::ShowFeeSelectorUseCase)
+    singleOf(::GetTransactionConfirmationUseCase)
     singleOf(::SendUseCase)
 }

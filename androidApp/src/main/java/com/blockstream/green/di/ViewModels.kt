@@ -12,6 +12,12 @@ import com.blockstream.compose.models.addresses.SignMessageViewModel
 import com.blockstream.compose.models.archived.ArchivedAccountsViewModel
 import com.blockstream.compose.models.camera.CameraViewModel
 import com.blockstream.compose.models.demo.DemoViewModel
+import com.blockstream.compose.models.devices.DeviceInfoViewModel
+import com.blockstream.compose.models.devices.DeviceListViewModel
+import com.blockstream.compose.models.devices.DeviceScanViewModel
+import com.blockstream.compose.models.devices.ImportPubKeyViewModel
+import com.blockstream.compose.models.devices.JadeGenuineCheckViewModel
+import com.blockstream.compose.models.devices.JadeGuideViewModel
 import com.blockstream.compose.models.exchange.AccountExchangeViewModel
 import com.blockstream.compose.models.exchange.OnOffRampsViewModel
 import com.blockstream.compose.models.home.HomeViewModel
@@ -26,6 +32,11 @@ import com.blockstream.compose.models.onboarding.phone.EnterRecoveryPhraseViewMo
 import com.blockstream.compose.models.onboarding.phone.PinViewModel
 import com.blockstream.compose.models.onboarding.watchonly.WatchOnlyMultisigViewModel
 import com.blockstream.compose.models.onboarding.watchonly.WatchOnlySinglesigViewModel
+import com.blockstream.compose.models.overview.AccountOverviewViewModel
+import com.blockstream.compose.models.overview.SecurityViewModel
+import com.blockstream.compose.models.overview.TransactViewModel
+import com.blockstream.compose.models.overview.WalletAssetsViewModel
+import com.blockstream.compose.models.overview.WalletOverviewViewModel
 import com.blockstream.compose.models.promo.PromoViewModel
 import com.blockstream.compose.models.receive.ReceiveViewModel
 import com.blockstream.compose.models.receive.RequestAmountViewModel
@@ -33,22 +44,6 @@ import com.blockstream.compose.models.recovery.RecoveryCheckViewModel
 import com.blockstream.compose.models.recovery.RecoveryIntroViewModel
 import com.blockstream.compose.models.recovery.RecoveryPhraseViewModel
 import com.blockstream.compose.models.recovery.RecoveryWordsViewModel
-import com.blockstream.compose.models.support.SupportViewModel
-import com.blockstream.compose.models.transaction.TransactionViewModel
-import com.blockstream.compose.models.twofactor.ReEnable2FAViewModel
-import com.blockstream.compose.models.wallet.WalletDeleteViewModel
-import com.blockstream.compose.models.devices.DeviceInfoViewModel
-import com.blockstream.compose.models.wallet.WalletNameViewModel
-import com.blockstream.compose.models.devices.DeviceListViewModel
-import com.blockstream.compose.models.devices.DeviceScanViewModel
-import com.blockstream.compose.models.devices.ImportPubKeyViewModel
-import com.blockstream.compose.models.devices.JadeGenuineCheckViewModel
-import com.blockstream.compose.models.devices.JadeGuideViewModel
-import com.blockstream.compose.models.overview.AccountOverviewViewModel
-import com.blockstream.compose.models.overview.SecurityViewModel
-import com.blockstream.compose.models.overview.TransactViewModel
-import com.blockstream.compose.models.overview.WalletAssetsViewModel
-import com.blockstream.compose.models.overview.WalletOverviewViewModel
 import com.blockstream.compose.models.send.BumpViewModel
 import com.blockstream.compose.models.send.DenominationViewModel
 import com.blockstream.compose.models.send.FeeViewModel
@@ -71,6 +66,11 @@ import com.blockstream.compose.models.sheets.MeldCountriesViewModel
 import com.blockstream.compose.models.sheets.NoteViewModel
 import com.blockstream.compose.models.sheets.RecoveryHelpViewModel
 import com.blockstream.compose.models.sheets.TransactionDetailsViewModel
+import com.blockstream.compose.models.support.SupportViewModel
+import com.blockstream.compose.models.transaction.TransactionViewModel
+import com.blockstream.compose.models.twofactor.ReEnable2FAViewModel
+import com.blockstream.compose.models.wallet.WalletDeleteViewModel
+import com.blockstream.compose.models.wallet.WalletNameViewModel
 import org.koin.core.module.dsl.viewModel
 import org.koin.core.module.dsl.viewModelOf
 import org.koin.dsl.module
@@ -130,6 +130,7 @@ val viewModels = module {
     viewModelOf(::ImportPubKeyViewModel)
     viewModelOf(::TransactViewModel)
     viewModelOf(::SecurityViewModel)
+    viewModelOf(::FeeViewModel)
     viewModel {
         SupportViewModel(get(), get(), getOrNull())
     }
@@ -141,9 +142,6 @@ val viewModels = module {
     }
     viewModel {
         AssetDetailsViewModel(get(), get(), getOrNull())
-    }
-    viewModel {
-        FeeViewModel(get(), getOrNull(), get())
     }
     viewModel {
         SendConfirmViewModel(get(), get(), getOrNull())

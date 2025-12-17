@@ -4,17 +4,17 @@ import androidx.lifecycle.viewModelScope
 import blockstream_green.common.generated.resources.Res
 import blockstream_green.common.generated.resources.id_receive
 import blockstream_green.common.generated.resources.id_select_asset
-import com.blockstream.data.data.EnrichedAsset
-import com.blockstream.data.data.GreenWallet
 import com.blockstream.compose.extensions.previewWallet
-import com.blockstream.data.gdk.data.AccountAsset
-import com.blockstream.data.gdk.data.AccountAssetList
 import com.blockstream.compose.models.GreenViewModel
 import com.blockstream.compose.navigation.NavData
 import com.blockstream.compose.navigation.NavigateDestinations
 import com.blockstream.compose.sideeffects.SideEffects
-import com.blockstream.domain.boltz.BoltzUseCase
+import com.blockstream.data.data.EnrichedAsset
+import com.blockstream.data.data.GreenWallet
+import com.blockstream.data.gdk.data.AccountAsset
+import com.blockstream.data.gdk.data.AccountAssetList
 import com.blockstream.domain.receive.ReceiveUseCase
+import com.blockstream.domain.swap.SwapUseCase
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.launch
@@ -38,7 +38,7 @@ class ReceiveChooseAssetViewModel(
 ) : ReceiveChooseAssetViewModelAbstract(greenWallet = greenWallet, accountAssetOrNull = accountAssetOrNull) {
 
     internal val receiveUseCase: ReceiveUseCase by inject()
-    internal val boltzUseCase: BoltzUseCase by inject()
+    internal val boltzUseCase: SwapUseCase by inject()
 
     private val _assets: MutableStateFlow<List<EnrichedAsset>> = MutableStateFlow(listOf())
     override val assets: StateFlow<List<EnrichedAsset>> = _assets
