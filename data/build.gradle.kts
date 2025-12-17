@@ -3,17 +3,9 @@ import org.jetbrains.kotlin.gradle.plugin.mpp.apple.XCFramework
 plugins {
     alias(libs.plugins.kotlinMultiplatform)
     alias(libs.plugins.android.kotlin.multiplatform.library)
-    alias(libs.plugins.jetbrainsCompose)
-    alias(libs.plugins.compose.compiler)
     alias(libs.plugins.kotlinxSerialization)
     alias(libs.plugins.app.cash.sqldelight)
     alias(libs.plugins.nativeCocoapods)
-}
-
-compose.resources {
-    packageOfResClass = "blockstream_green.common.generated.resources" // Keep the same package name
-    publicResClass = true
-    generateResClass = auto
 }
 
 sqldelight {
@@ -44,8 +36,6 @@ kotlin {
         namespace = "com.blockstream.green.data"
         compileSdk = libs.versions.androidCompileSdk.get().toInt()
         minSdk = libs.versions.androidMinSdk.get().toInt()
-
-        experimentalProperties["android.experimental.kmp.enableAndroidResources"] = true
 
         withHostTestBuilder {
         }
@@ -130,7 +120,6 @@ kotlin {
                 api(project(":jade"))
 
                 /**  --- Compose -------------------------------------------------------------------- */
-                api(compose.components.resources)
                 api(libs.lifecycle.viewmodel.compose)
                 /** --------------------------------------------------------------------------------- */
 

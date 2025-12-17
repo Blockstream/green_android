@@ -9,6 +9,12 @@ plugins {
     alias(libs.plugins.kotlinxSerialization)
 }
 
+compose.resources {
+    packageOfResClass = "blockstream_green.common.generated.resources" // Keep the same package name
+    publicResClass = true
+    generateResClass = auto
+}
+
 kotlin {
     compilerOptions {
         freeCompilerArgs.add("-Xexpect-actual-classes")
@@ -57,6 +63,7 @@ kotlin {
             implementation(libs.material3.adaptive)
             implementation(libs.navigation.compose)
             implementation(libs.compose.backhandler)
+            api(compose.components.resources)
             /** ----------------------------------------------------------------------------------------- */
 
             /**  --- Koin   ----------------------------------------------------------------------------- */
@@ -125,6 +132,8 @@ android {
     sourceSets["main"].manifest.srcFile("src/androidMain/AndroidManifest.xml")
     sourceSets["main"].res.srcDirs("src/androidMain/res")
     // sourceSets["main"].resources.srcDirs("src/commonMain/resources")
+
+    experimentalProperties["android.experimental.kmp.enableAndroidResources"] = true
 
     defaultConfig {
         minSdk = libs.versions.androidMinSdk.get().toInt()
