@@ -337,8 +337,7 @@ sign_google_play:
   tags:
     - k8s # Simple, non-resource intensive jobs
 
-gcp_auth:
-  extends: .gcp_prep
+.gcp_auth_inline:
   id_tokens:
     GITLAB_OIDC_TOKEN:
       aud: https://gl.blockstream.io
@@ -346,75 +345,60 @@ gcp_auth:
     POOL_ID: gitlab-2f4bb583
     PROVIDER_ID: gitlab
     SERVICE_ACCOUNT_EMAIL: green-android-builds-uploader@green-backend.iam.gserviceaccount.com
-  script:
+  before_script:
     - echo ${GITLAB_OIDC_TOKEN} > .ci_job_jwt_file
     - gcloud iam workload-identity-pools create-cred-config "projects/697214616889/locations/global/workloadIdentityPools/${POOL_ID}/providers/${PROVIDER_ID}"
       --service-account="${SERVICE_ACCOUNT_EMAIL}"
       --output-file=.gcp_temp_cred.json
       --credential-source-file=.ci_job_jwt_file
-  artifacts:
-    paths:
-      - .gcp_temp_cred.json
-      - .ci_job_jwt_file
-    expire_in: 1h
-  rules:
-    - if: $CI_PIPELINE_SOURCE == "schedule"
-    - when: manual
+    - gcloud auth login --cred-file=.gcp_temp_cred.json --update-adc
 
 gcp_push_production:
-  extends: .gcp_prep
-  needs: ["gcp_auth", "production"]
+  extends:
+    - .gcp_prep
+    - .gcp_auth_inline
+  when: manual
+  allow_failure: true
+  needs:
+    - job: production
+      optional: true
   variables:
     GCS_BUCKET: green-android-builds
     APK_NAME: $CI_PROJECT_NAME-$CI_COMMIT_SHA
-  before_script:
-    - gcloud auth login --cred-file=.gcp_temp_cred.json --update-adc
   script:
     - echo "Uploading gs://$GCS_BUCKET/$APK_NAME"
     - gsutil -m cp -r $CI_PROJECT_DIR/androidApp/build/outputs/apk/productionGoogle/release/*.apk gs://$GCS_BUCKET/$APK_NAME.apk
     - echo "https://storage.googleapis.com/$GCS_BUCKET/$APK_NAME.apk"
 
 gcp_push_development:
-  extends: .gcp_prep
-  needs: ["gcp_auth", "development"]
+  extends:
+    - .gcp_prep
+    - .gcp_auth_inline
+  needs:
+    - job: development
+      optional: true
   variables:
     GCS_BUCKET: green-android-builds
     APK_NAME: $CI_PROJECT_NAME-$CI_COMMIT_SHA-development
-  before_script:
-    - gcloud auth login --cred-file=.gcp_temp_cred.json --update-adc
   script:
     - echo "Uploading gs://$GCS_BUCKET/$APK_NAME"
     - gsutil -m cp -r $CI_PROJECT_DIR/androidApp/build/outputs/apk/development/release/*.apk gs://$GCS_BUCKET/$APK_NAME.apk
     - echo "https://storage.googleapis.com/$GCS_BUCKET/$APK_NAME.apk"
 
 gcp_push_gdk_commit:
-  extends: .gcp_prep
-  needs: ["gcp_auth", "gdk_commit"]
+  extends:
+    - .gcp_prep
+    - .gcp_auth_inline
+  needs:
+    - job: gdk_commit
+      optional: true
   variables:
     GCS_BUCKET: green-android-builds
     APK_NAME: $CI_PROJECT_NAME-$CI_COMMIT_SHA-gdk
-  before_script:
-    - gcloud auth login --cred-file=.gcp_temp_cred.json --update-adc
   script:
     - echo "Uploading gs://$GCS_BUCKET/$APK_NAME"
     - gsutil -m cp -r $CI_PROJECT_DIR/androidApp/build/outputs/apk/productionGoogle/release/*.apk gs://$GCS_BUCKET/$APK_NAME.apk
     - echo "https://storage.googleapis.com/$GCS_BUCKET/$APK_NAME.apk"
-
-gcp_push_xcframework_common:
-  extends: .gcp_prep
-  needs: ["gcp_auth", "xcframework_common"]
-  variables:
-    GCS_BUCKET: green-android-builds
-    XCFRAMEWORK_NAME: green_xcframework-$CI_COMMIT_SHA
-  before_script:
-    - gcloud auth login --cred-file=.gcp_temp_cred.json --update-adc
-  script:
-    - echo "Uploading gs://$GCS_BUCKET/${XCFRAMEWORK_NAME}_debug.zip"
-    - gsutil -m cp -r $CI_PROJECT_DIR/common/build/XCFrameworks/release.zip gs://$GCS_BUCKET/${XCFRAMEWORK_NAME}_debug.zip
-    - echo "https://storage.googleapis.com/$GCS_BUCKET/${XCFRAMEWORK_NAME}_debug.zip"
-    - echo "Uploading gs://$GCS_BUCKET/${XCFRAMEWORK_NAME}_release.zip"
-    - gsutil -m cp -r $CI_PROJECT_DIR/common/build/XCFrameworks/release.zip gs://$GCS_BUCKET/${XCFRAMEWORK_NAME}_release.zip
-    - echo "https://storage.googleapis.com/$GCS_BUCKET/${XCFRAMEWORK_NAME}_release.zip"
 
 #####################################
 # E2E Tests
@@ -444,32 +428,21 @@ e2e:build:
     - ./gradlew assembleDevelopmentRelease
   rules:
     - if: $CI_PIPELINE_SOURCE == "schedule"
-    - when: manual
-      allow_failure: true
 
 e2e:upload:
+  extends: .gcp_auth_inline
   stage: e2e
   image: blockstream/gcloud-docker:27.3-504.0.1
   tags:
     - k8s
-  id_tokens:
-    GITLAB_OIDC_TOKEN:
-      aud: https://gl.blockstream.io
   variables:
-    POOL_ID: gitlab-2f4bb583
-    PROVIDER_ID: gitlab
-    SERVICE_ACCOUNT_EMAIL: green-android-builds-uploader@green-backend.iam.gserviceaccount.com
     GCS_BUCKET: green-android-builds
     APK_NAME: $CI_PROJECT_NAME-$CI_COMMIT_SHA-e2e
   needs:
     - e2e:build
+  rules:
+    - if: $CI_PIPELINE_SOURCE == "schedule"
   script:
-    - echo ${GITLAB_OIDC_TOKEN} > .ci_job_jwt_file
-    - gcloud iam workload-identity-pools create-cred-config "projects/697214616889/locations/global/workloadIdentityPools/${POOL_ID}/providers/${PROVIDER_ID}"
-      --service-account="${SERVICE_ACCOUNT_EMAIL}"
-      --output-file=.gcp_temp_cred.json
-      --credential-source-file=.ci_job_jwt_file
-    - gcloud auth login --cred-file=.gcp_temp_cred.json --update-adc
     - echo "Uploading gs://$GCS_BUCKET/$APK_NAME"
     - gsutil -m cp -r $CI_PROJECT_DIR/androidApp/build/outputs/apk/development/release/*.apk gs://$GCS_BUCKET/$APK_NAME.apk
     - echo "https://storage.googleapis.com/$GCS_BUCKET/$APK_NAME.apk"
@@ -484,3 +457,5 @@ e2e:trigger:
     UPSTREAM_COMMIT_SHA: $CI_COMMIT_SHA
   needs:
     - e2e:upload
+  rules:
+    - if: $CI_PIPELINE_SOURCE == "schedule"
