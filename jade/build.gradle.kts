@@ -1,17 +1,24 @@
-import org.jetbrains.kotlin.gradle.dsl.JvmTarget
-
 plugins {
-    alias(libs.plugins.androidLibrary)
     alias(libs.plugins.kotlinMultiplatform)
+    alias(libs.plugins.android.kotlin.multiplatform.library)
     alias(libs.plugins.kotlinxSerialization)
 }
 
 kotlin {
     jvmToolchain(libs.versions.jvm.get().toInt())
 
-    androidTarget {
-        compilerOptions {
-            jvmTarget.set(JvmTarget.JVM_17)
+    androidLibrary {
+        namespace = "com.blockstream.jade"
+        compileSdk = libs.versions.androidCompileSdk.get().toInt()
+        minSdk = libs.versions.androidMinSdk.get().toInt()
+
+        withHostTestBuilder {
+        }
+
+        withDeviceTestBuilder {
+            sourceSetTreeName = "test"
+        }.configure {
+            instrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
         }
     }
 
@@ -54,28 +61,18 @@ kotlin {
             /** ----------------------------------------------------------------------------------------- */
         }
 
-        val androidUnitTest by getting {
+        androidUnitTest {
             dependencies {
                 implementation(libs.junit)
             }
         }
 
-        val androidInstrumentedTest by getting {
+        androidInstrumentedTest {
             dependencies {
                 implementation(libs.junit)
                 implementation(libs.androidx.junit)
                 implementation(libs.androidx.espresso.core)
             }
         }
-    }
-}
-
-android {
-    namespace = "com.blockstream.jade"
-    compileSdk = libs.versions.androidCompileSdk.get().toInt()
-
-    defaultConfig {
-        minSdk = libs.versions.androidMinSdk.get().toInt()
-        consumerProguardFiles("consumer-rules.pro")
     }
 }

@@ -4,29 +4,28 @@ filekit-dialogs = "0.12.0"
 jvm = "17"
 accompanistPermissions = "0.37.3"
 constraintlayoutComposeMultiplatform = "0.6.1"
-kotlin = "2.2.21"
+kotlin = "2.3.10-RC"
 kotlinMultiplatformAppdirs = "2.0.0"
 kotlinRetry = "2.0.2"
 kotlinx-coroutines = "1.10.2"
 kotlinx-datetime = "0.7.1"
 kotlinx-serialization = "1.9.0"
-kotlin-ksp = "2.3.0"
+kotlin-ksp = "2.3.4"
 kotlinx-atomicfu = "0.29.0"
-kable = "0.40.0"
+kable = "0.41.0"
 coil = "3.3.0"
-ktor = "3.3.0"
+ktor = "3.3.3"
 lwk = "0.12.8"
 phosphorIcon = "1.0.0"
-compose-rebugger = "1.0.1"
-tuulbox-coroutines = "8.0.3"
-android-gradle-plugin = "8.13.1"
+tuulbox-coroutines = "8.1.0"
+android-gradle-plugin = "9.0.0"
 androidCompileSdk = "36"
 androidTargetSdk = "36"
 androidMinSdk = "24"
 statelyConcurrentCollections = "2.1.0"
 breez = "0.8.1-rc3"
 androidx-junit = "1.3.0"
-biometric = "1.4.0-alpha04"
+biometric = "1.4.0-alpha05"
 browser = "1.9.0"
 appcompat = "1.7.1"
 core-ktx = "1.17.0"
@@ -37,56 +36,52 @@ installreferrer = "2.2"
 jackson = "2.9.6"
 junit = "4.13.2"
 kermit = "2.0.8"
-splash-screen = "1.1.0-rc01"
+splash-screen = "1.2.0"
 koin-bom = "4.1.1"
 ksoup-entites = "0.2.1"
-androidx-lifecycle = "2.9.3"
-compose-lifecycle = "2.9.4"
+androidx-lifecycle = "2.10.0"
+compose-lifecycle = "2.10.0-alpha07"
 middleEllipsisText3 = "1.2.0"
 mpfilepicker = "3.1.0"
 multiplatformSettings = "1.3.0"
-okio = "3.16.0"
+okio = "3.16.4"
 peekabooImagePicker = "0.5.2"
 qrose = "1.0.1"
-kotlincrypto-hash = "0.7.1"
-sqldelight = "2.1.0"
-mockito-kotlin = "6.0.0"
-mockk = "1.14.5"
+kotlincrypto-hash = "0.8.0"
+sqldelight = "2.2.1"
+mockito-kotlin = "6.2.1"
+mockk = "1.14.7"
 preference-ktx = "1.2.1"
-guava = "31.1-android"
+guava = "33.5.0-android"
 review-ktx = "2.0.2"
-rive-android = "10.4.3"
+rive-android = "11.1.0"
 startup-runtime = "1.2.0"
-uriKmp = "0.0.20"
-workRuntimeKtx = "2.10.4"
+uriKmp = "0.0.21"
+workRuntimeKtx = "2.11.0"
 zendesk = "5.2.0"
 state-keeper = "2.5.0"
 turbine = "1.2.1"
 usb-serial = "0f16336a4e"
 desugar = "2.1.5"
 zxing-android-embedded = "4.3.0"
-compose-tooling-preview = "1.9.1"
 navigation = "2.9.1"
-jetbrains-compose = "1.9.0"
-google-services = "4.4.3"
-compose-hot-reload = "1.0.0-beta06"
-firebase-bom = "34.2.0"
-jna = "5.17.0"
+jetbrains-compose = "1.10.0"
+google-services = "4.4.4"
+firebase-bom = "34.8.0"
+jna = "5.18.1"
 room = "2.7.1"
 protobuf-java = "3.4.0"
-media3 = "1.8.0"
-kotlinTest = "2.2.20"
+media3 = "1.9.0"
 runner = "1.7.0"
 core = "1.7.0"
-material3-adaptive = "1.2.0-alpha06"
-koalaplot = "0.9.1"
+material3-adaptive = "1.3.0-alpha03"
+koalaplot = "0.10.4"
 
 [libraries]
 filekit-dialogs = { module = "io.github.vinceglb:filekit-dialogs", version.ref = "filekit-dialogs" }
 filekit-core = { module = "io.github.vinceglb:filekit-core", version.ref = "filekit-core" }
 kotlin-retry = { module = "com.michael-bull.kotlin-retry:kotlin-retry", version.ref = "kotlinRetry" }
 lifecycle-viewmodel-compose = { module = "org.jetbrains.androidx.lifecycle:lifecycle-viewmodel-compose", version.ref = "compose-lifecycle" }
-androidx-lifecycle-runtime-compose = { module = "org.jetbrains.androidx.lifecycle:lifecycle-runtime-compose", version.ref = "compose-lifecycle" }
 accompanist-permissions = { module = "com.google.accompanist:accompanist-permissions", version.ref = "accompanistPermissions" }
 androidx-core-splashscreen = { module = "androidx.core:core-splashscreen", version.ref = "splash-screen" }
 androidx-lifecycle-process = { module = "androidx.lifecycle:lifecycle-process", version.ref = "androidx-lifecycle" }
@@ -102,14 +97,12 @@ ktor-client-content-negotiation = { module = "io.ktor:ktor-client-content-negoti
 ktor-serialization-kotlinx-json = { module = "io.ktor:ktor-serialization-kotlinx-json", version.ref = "ktor" }
 ktor-client-resources = { module = "io.ktor:ktor-client-resources", version.ref = "ktor" }
 ktor-client-logging = { module = "io.ktor:ktor-client-logging", version.ref = "ktor" }
-ktor-client-android = { module = "io.ktor:ktor-client-android", version.ref = "ktor" }
 ktor-client-okhttp = { module = "io.ktor:ktor-client-okhttp", version.ref = "ktor" }
 ktor-client-cio = { module = "io.ktor:ktor-client-cio", version.ref = "ktor" }
 ktor-client-darwin = { module = "io.ktor:ktor-client-darwin", version.ref = "ktor" }
 ktor-client-java = { module = "io.ktor:ktor-client-java", version.ref = "ktor" }
 lwk = { module = "com.blockstream:lwk", version.ref = "lwk" }
 phosphor-icon = { module = "com.adamglin:phosphor-icon", version.ref = "phosphorIcon" }
-compose-rebugger = { module = "io.github.theapache64:rebugger", version.ref = "compose-rebugger" }
 tuulbox-coroutines = { module = "com.juul.tuulbox:coroutines", version.ref = "tuulbox-coroutines" }
 desugar = { module = "com.android.tools:desugar_jdk_libs", version.ref = "desugar" }
 android-gradle-plugin = { module = "com.android.tools.build:gradle", version.ref = "android-gradle-plugin" }
@@ -125,9 +118,9 @@ androidx-preference-ktx = { module = "androidx.preference:preference-ktx", versi
 androidx-startup-runtime = { module = "androidx.startup:startup-runtime", version.ref = "startup-runtime" }
 breez-sdk-kmp = { module = "technology.breez:breez-sdk-kmp", version.ref = "breez" }
 breez-sdk-android = { module = "com.github.breez:breez-sdk", version.ref = "breez" } # Used for FDroid
+jna = { module = "net.java.dev.jna:jna", version.ref = "jna" }
 firebase-bom = { module = "com.google.firebase:firebase-bom", version.ref = "firebase-bom" }
 firebase-messaging = { module = "com.google.firebase:firebase-messaging" }
-jna = { module = "net.java.dev.jna:jna", version.ref = "jna" }
 kable-core = { module = "com.juul.kable:kable-core", version.ref = "kable" }
 middle-ellipsis-text3 = { module = "io.github.mataku:middle-ellipsis-text3", version.ref = "middleEllipsisText3" }
 mpfilepicker = { module = "com.darkrockstudios:mpfilepicker", version.ref = "mpfilepicker" }
@@ -149,7 +142,6 @@ koin-bom = { module = "io.insert-koin:koin-bom", version.ref = "koin-bom" }
 koin-android = { module = "io.insert-koin:koin-android" }
 koin-core = { module = "io.insert-koin:koin-core" }
 koin-compose = { module = "io.insert-koin:koin-compose" }
-koin-test-junit4 = { module = "io.insert-koin:koin-test-junit4" }
 koin-test = { module = "io.insert-koin:koin-test" }
 kotlin-gradle-plugin = { module = "org.jetbrains.kotlin:kotlin-gradle-plugin", version.ref = "kotlin" }
 kotlin-serialization = { module = "org.jetbrains.kotlin:kotlin-serialization", version.ref = "kotlin" }
@@ -182,13 +174,12 @@ zendesk-support-providers = { module = "com.zendesk:support-providers", version.
 turbine = { module = "app.cash.turbine:turbine", version.ref = "turbine" }
 usb-serial = { module = "com.github.angelix:UsbSerial", version.ref = "usb-serial" }
 zxing-android-embedded = { module = "com.journeyapps:zxing-android-embedded", version.ref = "zxing-android-embedded" }
-compose-ui-tooling-preview = { module = "androidx.compose.ui:ui-tooling-preview", version.ref = "compose-tooling-preview"}
 androidx-activity-compose = { module = "androidx.activity:activity-compose" }
 androidx-media3-exoplayer = { module = "androidx.media3:media3-exoplayer", version.ref = "media3" }
 androidx-media3-ui = { module = "androidx.media3:media3-ui", version.ref = "media3" }
 navigation-compose = { module = "org.jetbrains.androidx.navigation:navigation-compose", version.ref = "navigation" }
 compose-backhandler = { module = "org.jetbrains.compose.ui:ui-backhandler", version.ref = "jetbrains-compose" }
-kotlin-test = { group = "org.jetbrains.kotlin", name = "kotlin-test", version.ref = "kotlinTest" }
+kotlin-test = { group = "org.jetbrains.kotlin", name = "kotlin-test", version.ref = "kotlin" }
 androidx-runner = { group = "androidx.test", name = "runner", version.ref = "runner" }
 androidx-core = { group = "androidx.test", name = "core", version.ref = "core" }
 material3-adaptive = { module = "org.jetbrains.compose.material3.adaptive:adaptive", version.ref = "material3-adaptive" }
@@ -206,5 +197,4 @@ androidApplication = { id = "com.android.application", version.ref = "android-gr
 google-devtools-ksp = { id = "com.google.devtools.ksp", version.ref = "kotlin-ksp" }
 app-cash-sqldelight = { id = "app.cash.sqldelight", version.ref = "sqldelight" }
 googleServices = { id = "com.google.gms.google-services", version.ref = "google-services" }
-compose-hotReload = { id = "org.jetbrains.compose.hot-reload", version.ref = "compose-hot-reload" }
 android-kotlin-multiplatform-library = { id = "com.android.kotlin.multiplatform.library", version.ref = "android-gradle-plugin" }

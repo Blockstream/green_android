@@ -41,8 +41,7 @@ import com.adamglin.phosphoricons.regular.Bug
 import com.adamglin.phosphoricons.regular.Copy
 import com.adamglin.phosphoricons.regular.Fire
 import com.adamglin.phosphoricons.regular.Swap
-import com.blockstream.data.SupportType
-import com.blockstream.data.data.SupportData
+import com.blockstream.compose.GreenPreview
 import com.blockstream.compose.components.GreenButton
 import com.blockstream.compose.components.GreenButtonSize
 import com.blockstream.compose.components.GreenButtonType
@@ -54,6 +53,7 @@ import com.blockstream.compose.components.PopupMenu
 import com.blockstream.compose.components.PopupState
 import com.blockstream.compose.models.about.AboutViewModel
 import com.blockstream.compose.models.about.AboutViewModelAbstract
+import com.blockstream.compose.models.about.AboutViewModelPreview
 import com.blockstream.compose.navigation.NavigateDestinations
 import com.blockstream.compose.sideeffects.SideEffects
 import com.blockstream.compose.theme.bodyMedium
@@ -62,8 +62,11 @@ import com.blockstream.compose.theme.labelLarge
 import com.blockstream.compose.theme.whiteLow
 import com.blockstream.compose.utils.SetupScreen
 import com.blockstream.compose.utils.noRippleClickable
+import com.blockstream.data.SupportType
+import com.blockstream.data.data.SupportData
 import org.jetbrains.compose.resources.painterResource
 import org.jetbrains.compose.resources.stringResource
+import org.jetbrains.compose.ui.tooling.preview.Preview
 
 @Composable
 fun AboutScreen(
@@ -337,6 +340,14 @@ fun AboutScreen(
                 style = bodySmall,
             )
         }
+    }
+}
+
+@Composable
+@Preview
+fun AboutScreenPreview() {
+    GreenPreview {
+        AboutScreen(viewModel = AboutViewModelPreview.preview())
     }
 }
 

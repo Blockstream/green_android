@@ -29,7 +29,7 @@ cache:
 # Defaults applied to all jobs unless overridden
 default:
   image: # 5592d41c-20250213165311
-    name: blockstream/green_android@sha256:cd1d467824e81614a9d9d742bb0f67466f21e042e445adb8e6cdcc8a3cf41cca
+    name: blockstream/green_android@sha256:260afcc4b8d8defeb7f03981ccea1b0b046c2d4464d3e2fa14731e3399453664
     entrypoint: [""]
   tags:
     - ga
@@ -302,6 +302,7 @@ unit_tests:
     policy: pull
   variables:
     GIT_SUBMODULE_STRATEGY: recursive
+  needs: []
   script:
     - cd $CI_PROJECT_DIR
     - ./gradlew useBlockstreamKeys

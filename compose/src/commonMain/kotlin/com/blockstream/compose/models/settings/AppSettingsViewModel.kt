@@ -3,12 +3,6 @@ package com.blockstream.compose.models.settings
 import androidx.lifecycle.viewModelScope
 import blockstream_green.common.generated.resources.Res
 import blockstream_green.common.generated.resources.id_app_settings
-import com.blockstream.data.data.ApplicationSettings
-import com.blockstream.data.data.ScreenLockSetting
-import com.blockstream.data.extensions.isNotBlank
-import com.blockstream.data.gdk.events.GenericEvent
-import com.blockstream.data.managers.LocaleManager
-import com.blockstream.data.managers.Locales
 import com.blockstream.compose.events.Event
 import com.blockstream.compose.events.Events
 import com.blockstream.compose.models.GreenViewModel
@@ -16,6 +10,12 @@ import com.blockstream.compose.navigation.NavData
 import com.blockstream.compose.navigation.NavigateDestinations
 import com.blockstream.compose.sideeffects.SideEffect
 import com.blockstream.compose.sideeffects.SideEffects
+import com.blockstream.data.data.ApplicationSettings
+import com.blockstream.data.data.ScreenLockSetting
+import com.blockstream.data.extensions.isNotBlank
+import com.blockstream.data.gdk.events.GenericEvent
+import com.blockstream.data.managers.LocaleManager
+import com.blockstream.data.managers.Locales
 import com.blockstream.utils.Loggable
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.combine
@@ -120,7 +120,7 @@ class AppSettingsViewModel : AppSettingsViewModelAbstract() {
             database.insertEvent(GenericEvent(deviceId = settingsManager.getCountlyDeviceId()).sha256(), randomInsert = true)
         }
 
-        combine(
+        combine<Any?, Any?>(
             enhancedPrivacyEnabled,
             screenLockInSeconds,
             testnetEnabled,

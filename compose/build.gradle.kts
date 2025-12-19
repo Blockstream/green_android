@@ -58,6 +58,7 @@ kotlin {
             implementation(compose.ui)
             implementation(compose.components.uiToolingPreview)
             implementation(compose.material)
+            implementation(compose.materialIconsExtended)
             implementation(compose.material3)
             implementation(libs.constraintlayout.compose.multiplatform)
             implementation(libs.material3.adaptive)

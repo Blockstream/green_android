@@ -41,7 +41,6 @@ fun TextInputPaste(state: MutableStateFlow<String>) {
 
 @Composable
 fun TextInputClear(state: MutableStateFlow<String>) {
-    val platformManager = LocalPlatformManager.current
     val value by state.collectAsStateWithLifecycle()
 
     if (!value.isEmpty()) {

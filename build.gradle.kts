@@ -24,7 +24,6 @@ plugins {
     alias(libs.plugins.kotlinxSerialization) apply false
     alias(libs.plugins.googleServices) apply false
     alias(libs.plugins.nativeCocoapods) apply false
-    alias(libs.plugins.compose.hotReload) apply false
     alias(libs.plugins.android.kotlin.multiplatform.library) apply false
 }
 

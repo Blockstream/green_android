@@ -19,6 +19,7 @@ import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.SheetValue
 import androidx.compose.material3.Text
 import androidx.compose.material3.rememberModalBottomSheetState
 import androidx.compose.runtime.Composable
@@ -71,7 +72,11 @@ internal fun AnalyticsBottomSheet(
         sheetState = rememberModalBottomSheetState(
             skipPartiallyExpanded = true,
             confirmValueChange = {
-                !viewModel.isActionRequired
+                if (it == SheetValue.Hidden) {
+                    !viewModel.isActionRequired
+                } else {
+                    true
+                }
             }
         ),
         onDismissRequest = onDismissRequest

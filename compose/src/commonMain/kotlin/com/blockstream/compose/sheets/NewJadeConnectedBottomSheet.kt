@@ -9,6 +9,7 @@ import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.ModalBottomSheetProperties
+import androidx.compose.material3.SheetValue
 import androidx.compose.material3.Text
 import androidx.compose.material3.rememberModalBottomSheetState
 import androidx.compose.runtime.Composable
@@ -54,7 +55,13 @@ fun NewJadeConnectedBottomSheet(
         viewModel = viewModel,
         sheetState = rememberModalBottomSheetState(
             skipPartiallyExpanded = true,
-            confirmValueChange = { dismiss }
+            confirmValueChange = {
+                if (it == SheetValue.Hidden) {
+                    dismiss
+                } else {
+                    true
+                }
+            }
         ),
         properties = ModalBottomSheetProperties(shouldDismissOnBackPress = false),
         onDismissRequest = onDismissRequest

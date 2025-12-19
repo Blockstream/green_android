@@ -7,10 +7,10 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import com.arkivanov.essenty.statekeeper.StateKeeper
 import com.arkivanov.essenty.statekeeper.StateKeeperDispatcher
-import com.blockstream.data.extensions.logException
-import com.blockstream.data.platformFileSystem
 import com.blockstream.compose.models.GreenViewModel
 import com.blockstream.compose.sideeffects.OpenBrowserType
+import com.blockstream.data.extensions.logException
+import com.blockstream.data.platformFileSystem
 import com.darkrockstudios.libraries.mpfilepicker.FilePicker
 import io.github.vinceglb.filekit.PlatformFile
 import kotlinx.coroutines.CoroutineScope
@@ -63,7 +63,7 @@ actual class PlatformManager {
     actual suspend fun shareText(content: String) {
     }
 
-    actual suspend fun shareFile(path: String, file: PlatformFile?) {
+    actual suspend fun shareFile(path: String?, file: PlatformFile?) {
     }
 
     actual fun hasFlash(): Boolean = false
