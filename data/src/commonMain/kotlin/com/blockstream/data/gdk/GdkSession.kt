@@ -6,7 +6,6 @@ import breez_sdk.LnUrlPayResult
 import breez_sdk.ReceivePaymentResponse
 import breez_sdk.SwapInfo
 import co.touchlab.stately.collections.ConcurrentMutableMap
-import com.blockstream.data.database.wallet.LoginCredentials
 import com.blockstream.data.BTC_POLICY_ASSET
 import com.blockstream.data.BTC_UNIT
 import com.blockstream.data.CountlyBase
@@ -22,6 +21,7 @@ import com.blockstream.data.data.LogoutReason
 import com.blockstream.data.data.MultipleWatchOnlyCredentials
 import com.blockstream.data.data.RichWatchOnly
 import com.blockstream.data.data.SupportData
+import com.blockstream.data.database.wallet.LoginCredentials
 import com.blockstream.data.devices.DeviceBrand
 import com.blockstream.data.devices.DeviceModel
 import com.blockstream.data.devices.DeviceState
@@ -132,8 +132,8 @@ import com.blockstream.data.utils.randomChars
 import com.blockstream.data.utils.server
 import com.blockstream.data.utils.toAmountLook
 import com.blockstream.data.utils.toHex
-import com.blockstream.utils.Loggable
 import com.blockstream.jade.HttpRequestHandler
+import com.blockstream.utils.Loggable
 import kotlinx.coroutines.CoroutineDispatcher
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.CoroutineStart
@@ -2256,6 +2256,11 @@ class GdkSession constructor(
 
                     // Wallet Assets
                     val walletAssets = linkedMapOf<String, Long>()
+
+                    // Set default amounts for BTC / LBTC
+                    listOfNotNull(bitcoin, liquid).map { it.policyAsset }.forEach {
+                        walletAssets[it] = 0
+                    }
 
                     accounts.value.filter { it.hasHistory(this@GdkSession) }.forEach { account ->
                         this@GdkSession.accountAssets(account).value.assets.forEach { (key, value) ->
