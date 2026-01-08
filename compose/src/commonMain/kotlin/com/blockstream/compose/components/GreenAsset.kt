@@ -24,8 +24,6 @@ import blockstream_green.common.generated.resources.Res
 import blockstream_green.common.generated.resources.id_select_asset
 import blockstream_green.common.generated.resources.pencil_simple_line
 import blockstream_green.common.generated.resources.unknown
-import com.blockstream.data.gdk.GdkSession
-import com.blockstream.data.gdk.data.AssetBalance
 import com.blockstream.compose.extensions.assetIcon
 import com.blockstream.compose.extensions.nameStringHolder
 import com.blockstream.compose.theme.bodyMedium
@@ -34,6 +32,8 @@ import com.blockstream.compose.theme.labelLarge
 import com.blockstream.compose.theme.titleSmall
 import com.blockstream.compose.theme.whiteHigh
 import com.blockstream.compose.theme.whiteMedium
+import com.blockstream.data.gdk.GdkSession
+import com.blockstream.data.gdk.data.AssetBalance
 import org.jetbrains.compose.resources.painterResource
 import org.jetbrains.compose.resources.stringResource
 
@@ -57,7 +57,7 @@ fun GreenAsset(
                 "any_liquid_asset"
             }
         } else {
-            assetBalance?.assetId
+            assetBalance?.asset?.ticker ?: assetBalance?.assetId
         }
     }
 

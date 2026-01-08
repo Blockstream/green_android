@@ -20,9 +20,10 @@ import blockstream_green.common.generated.resources.id_enable_tls
 import blockstream_green.common.generated.resources.id_liquid_electrum_server
 import blockstream_green.common.generated.resources.id_liquid_testnet_electrum_server
 import blockstream_green.common.generated.resources.id_testnet_electrum_server
+import com.blockstream.compose.components.GreenColumn
 import com.blockstream.compose.models.settings.AppSettingsViewModelAbstract
 import com.blockstream.compose.utils.TextInputPaste
-import com.blockstream.compose.components.GreenColumn
+import com.blockstream.compose.utils.appTestTag
 import kotlinx.coroutines.flow.MutableStateFlow
 import org.jetbrains.compose.resources.stringResource
 
@@ -55,7 +56,8 @@ fun PersonalElectrumServerSection(
             SettingSwitch(
                 title = stringResource(Res.string.id_enable_tls),
                 checked = personalElectrumServerTlsEnabled,
-                onCheckedChange = autoSaveOnBooleanChange(viewModel.personalElectrumServerTlsEnabled)
+                onCheckedChange = autoSaveOnBooleanChange(viewModel.personalElectrumServerTlsEnabled),
+                testTag = "tls_switch"
             )
 
             SettingsItem(
@@ -64,7 +66,7 @@ fun PersonalElectrumServerSection(
                     OutlinedTextField(
                         value = personalBitcoinElectrumServer,
                         onValueChange = autoSaveOnStringChange(viewModel.personalBitcoinElectrumServer),
-                        modifier = Modifier.fillMaxWidth(),
+                        modifier = Modifier.fillMaxWidth().appTestTag("bitcoin_electrum_server_textfield"),
                         placeholder = { Text(AppSettingsViewModelAbstract.DEFAULT_BITCOIN_ELECTRUM_URL) },
                         singleLine = true,
                         keyboardOptions = KeyboardOptions.Default.copy(
@@ -88,7 +90,7 @@ fun PersonalElectrumServerSection(
                     OutlinedTextField(
                         value = personalLiquidElectrumServer,
                         onValueChange = autoSaveOnStringChange(viewModel.personalLiquidElectrumServer),
-                        modifier = Modifier.fillMaxWidth(),
+                        modifier = Modifier.fillMaxWidth().appTestTag("liquid_electrum_server_textfield"),
                         placeholder = { Text(AppSettingsViewModelAbstract.DEFAULT_LIQUID_ELECTRUM_URL) },
                         singleLine = true,
                         keyboardOptions = KeyboardOptions.Default.copy(
@@ -113,7 +115,7 @@ fun PersonalElectrumServerSection(
                         OutlinedTextField(
                             value = personalTestnetElectrumServer,
                             onValueChange = autoSaveOnStringChange(viewModel.personalTestnetElectrumServer),
-                            modifier = Modifier.fillMaxWidth(),
+                            modifier = Modifier.fillMaxWidth().appTestTag("bitcoin_testnet_electrum_server_textfield"),
                             placeholder = { Text(AppSettingsViewModelAbstract.DEFAULT_TESTNET_ELECTRUM_URL) },
                             singleLine = true,
                             keyboardOptions = KeyboardOptions.Default.copy(
@@ -137,7 +139,7 @@ fun PersonalElectrumServerSection(
                         OutlinedTextField(
                             value = personalTestnetLiquidElectrumServer,
                             onValueChange = autoSaveOnStringChange(viewModel.personalTestnetLiquidElectrumServer),
-                            modifier = Modifier.fillMaxWidth(),
+                            modifier = Modifier.fillMaxWidth().appTestTag("liquid_testnet_electrum_server_textfield"),
                             placeholder = { Text(AppSettingsViewModelAbstract.DEFAULT_TESTNET_LIQUID_ELECTRUM_URL) },
                             singleLine = true,
                             keyboardOptions = KeyboardOptions.Default.copy(

@@ -39,7 +39,6 @@ import blockstream_green.common.generated.resources.qr_code
 import com.adamglin.PhosphorIcons
 import com.adamglin.phosphoricons.Regular
 import com.adamglin.phosphoricons.regular.Copy
-import com.blockstream.data.extensions.isNotBlank
 import com.blockstream.compose.GreenPreview
 import com.blockstream.compose.components.GreenButton
 import com.blockstream.compose.components.GreenButtonColor
@@ -59,8 +58,10 @@ import com.blockstream.compose.theme.titleMedium
 import com.blockstream.compose.theme.titleSmall
 import com.blockstream.compose.theme.whiteMedium
 import com.blockstream.compose.utils.SetupScreen
+import com.blockstream.compose.utils.appTestTag
 import com.blockstream.compose.utils.bottom
 import com.blockstream.compose.utils.plus
+import com.blockstream.data.extensions.isNotBlank
 import kotlinx.coroutines.launch
 import org.jetbrains.compose.resources.getString
 import org.jetbrains.compose.resources.painterResource
@@ -325,14 +326,14 @@ fun Descriptor(
                         Icon(
                             imageVector = PhosphorIcons.Regular.Copy,
                             contentDescription = "Copy",
-                            modifier = Modifier.minimumInteractiveComponentSize()
+                            modifier = Modifier.minimumInteractiveComponentSize().appTestTag("copy_button")
                         )
                     }
                     IconButton(onQr) {
                         Icon(
                             painter = painterResource(Res.drawable.qr_code),
                             contentDescription = "QR",
-                            modifier = Modifier.minimumInteractiveComponentSize()
+                            modifier = Modifier.minimumInteractiveComponentSize().appTestTag("scan_button")
                         )
                     }
                 }

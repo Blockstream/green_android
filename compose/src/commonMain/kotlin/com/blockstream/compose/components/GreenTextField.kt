@@ -28,6 +28,7 @@ import com.blockstream.compose.theme.MonospaceFont
 import com.blockstream.compose.theme.bodyLarge
 import com.blockstream.compose.theme.whiteHigh
 import com.blockstream.compose.theme.whiteMedium
+import com.blockstream.compose.utils.appTestTag
 import com.blockstream.compose.utils.ifTrue
 
 @Composable
@@ -45,6 +46,7 @@ fun GreenTextField(
     footerContent: @Composable (() -> Unit)? = null,
     keyboardOptions: KeyboardOptions = KeyboardOptions.Default,
     keyboardActions: KeyboardActions = KeyboardActions.Default,
+    testTag: String? = null,
     onQrClick: (() -> Unit)? = null
 ) {
     val platformManager = LocalPlatformManager.current
@@ -84,6 +86,7 @@ fun GreenTextField(
                         it()
                     },
                     modifier = Modifier
+                        .appTestTag(testTag)
                         .ifTrue(minLines > 1) {
                             it.padding(vertical = 8.dp)
                         }
@@ -92,7 +95,7 @@ fun GreenTextField(
 
                 if (value.isEmpty()) {
                     if (onQrClick != null) {
-                        IconButton(onClick = { onQrClick.invoke() }, enabled = enabled) {
+                        IconButton(modifier = Modifier.appTestTag("scan_button"), onClick = { onQrClick.invoke() }, enabled = enabled) {
                             Icon(
                                 imageVector = PhosphorIcons.Regular.QrCode,
                                 contentDescription = "Scan QR"
@@ -101,6 +104,7 @@ fun GreenTextField(
                     }
 
                     IconButton(
+                        modifier = Modifier.appTestTag("paste_button"),
                         onClick = { onValueChange(platformManager.getClipboard() ?: "") },
                         enabled = enabled
                     ) {
@@ -110,7 +114,7 @@ fun GreenTextField(
                         )
                     }
                 } else {
-                    IconButton(onClick = { onValueChange("") }, enabled = enabled) {
+                    IconButton(modifier = Modifier.appTestTag("clear_button"), onClick = { onValueChange("") }, enabled = enabled) {
                         Icon(
                             imageVector = PhosphorIcons.Regular.XCircle,
                             contentDescription = "Clear"

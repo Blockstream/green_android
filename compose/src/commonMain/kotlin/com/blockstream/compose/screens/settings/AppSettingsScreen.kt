@@ -72,7 +72,7 @@ import blockstream_green.common.generated.resources.id_your_settings_are_unsaved
 import com.adamglin.PhosphorIcons
 import com.adamglin.phosphoricons.Regular
 import com.adamglin.phosphoricons.regular.CaretRight
-import com.blockstream.data.data.ScreenLockSetting
+import com.blockstream.compose.GreenPreview
 import com.blockstream.compose.LocalDialog
 import com.blockstream.compose.components.GreenColumn
 import com.blockstream.compose.components.GreenRow
@@ -81,6 +81,7 @@ import com.blockstream.compose.components.RichText
 import com.blockstream.compose.extensions.getStringList
 import com.blockstream.compose.models.settings.AppSettingsViewModel
 import com.blockstream.compose.models.settings.AppSettingsViewModelAbstract
+import com.blockstream.compose.models.settings.AppSettingsViewModelPreview
 import com.blockstream.compose.screens.settings.components.PersonalElectrumServerSection
 import com.blockstream.compose.screens.settings.components.SettingSwitch
 import com.blockstream.compose.screens.settings.components.SettingsItem
@@ -91,8 +92,10 @@ import com.blockstream.compose.utils.SetupScreen
 import com.blockstream.compose.utils.StringHolder
 import com.blockstream.compose.utils.TextInputPaste
 import com.blockstream.compose.utils.appTestTag
+import com.blockstream.data.data.ScreenLockSetting
 import kotlinx.coroutines.launch
 import org.jetbrains.compose.resources.stringResource
+import org.jetbrains.compose.ui.tooling.preview.Preview
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -179,7 +182,8 @@ fun AppSettingsScreen(
                             onValueChange = autoSaveOnStringChange(viewModel.proxyUrl),
                             modifier = Modifier
                                 .fillMaxWidth()
-                                .padding(top = 8.dp),
+                                .padding(top = 8.dp)
+                                .appTestTag("proxy_url_textfield"),
                             singleLine = true,
                             supportingText = { Text(stringResource(Res.string.id_host_ip)) },
                             isError = proxyUrl.isBlank(),
@@ -346,7 +350,8 @@ fun AppSettingsScreen(
                             value = electrumServerGapLimit,
                             onValueChange = autoSaveOnStringChange(viewModel.electrumServerGapLimit),
                             modifier = Modifier
-                                .fillMaxWidth(),
+                                .fillMaxWidth()
+                                .appTestTag("gap_limit_textfield"),
                             singleLine = true,
                             keyboardOptions = KeyboardOptions.Default.copy(
                                 keyboardType = KeyboardType.Number,
@@ -368,7 +373,7 @@ fun AppSettingsScreen(
                                         }
                                     )
                                 }
-                            }
+                            },
                         )
                     }
                 )
@@ -409,6 +414,7 @@ fun AppSettingsScreen(
                             // The `menuAnchor` modifier must be passed to the text field for correctness.
                             modifier = Modifier
                                 .fillMaxWidth()
+                                .appTestTag("screen_lock_selector")
                                 .menuAnchor(),
                             readOnly = true,
                             value = selectedOptionText,
@@ -423,6 +429,7 @@ fun AppSettingsScreen(
                         ) {
                             screenLockSettings.forEachIndexed { index, selectionOption ->
                                 DropdownMenuItem(
+                                    modifier = Modifier.appTestTag("screen_lock_option_$index"),
                                     text = { Text(selectionOption) },
                                     onClick = {
                                         ScreenLockSetting.byPosition(index).let {
@@ -439,5 +446,15 @@ fun AppSettingsScreen(
                 }
             }
         }
+    }
+}
+
+@Composable
+@Preview
+fun AppSettingsScreenPreview() {
+    GreenPreview {
+        AppSettingsScreen(
+            viewModel = AppSettingsViewModelPreview.preview(true)
+        )
     }
 }

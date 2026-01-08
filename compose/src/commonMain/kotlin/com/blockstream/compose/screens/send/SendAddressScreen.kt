@@ -12,8 +12,6 @@ import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import blockstream_green.common.generated.resources.Res
 import blockstream_green.common.generated.resources.id_next
 import blockstream_green.common.generated.resources.id_recipient_address
-import com.blockstream.data.AddressInputType
-import com.blockstream.data.data.ScanResult
 import com.blockstream.compose.GreenPreview
 import com.blockstream.compose.components.Banner
 import com.blockstream.compose.components.GreenButton
@@ -27,6 +25,8 @@ import com.blockstream.compose.models.send.SendAddressViewModelPreview
 import com.blockstream.compose.navigation.NavigateDestinations
 import com.blockstream.compose.navigation.getResult
 import com.blockstream.compose.utils.SetupScreen
+import com.blockstream.data.AddressInputType
+import com.blockstream.data.data.ScanResult
 import org.jetbrains.compose.resources.stringResource
 import org.jetbrains.compose.ui.tooling.preview.Preview
 
@@ -72,6 +72,7 @@ fun SendAddressScreen(
                     singleLine = false,
                     maxLines = 8,
                     error = error,
+                    testTag = "address_textfield",
                     onQrClick = {
                         viewModel.postEvent(
                             NavigateDestinations.Camera(
