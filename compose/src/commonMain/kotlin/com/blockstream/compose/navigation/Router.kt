@@ -145,6 +145,7 @@ import com.blockstream.compose.screens.receive.ReceiveScreen
 import com.blockstream.compose.screens.recovery.RecoveryCheckScreen
 import com.blockstream.compose.screens.recovery.RecoveryIntroScreen
 import com.blockstream.compose.screens.recovery.RecoveryPhraseScreen
+import com.blockstream.compose.screens.recovery.RecoverySuccessScreen
 import com.blockstream.compose.screens.recovery.RecoveryWordsScreen
 import com.blockstream.compose.screens.send.BumpScreen
 import com.blockstream.compose.screens.send.RedepositScreen
@@ -294,6 +295,21 @@ fun Router(
                     )
                 })
             }
+            appComposable<NavigateDestinations.RecoverySuccess> {
+                val args = it.toRoute<NavigateDestinations.RecoverySuccess>()
+                RecoverySuccessScreen(
+                    greenWallet = args.greenWallet,
+                    onDone = {
+                        if (args.isRecoveryConfirmation) {
+                            navController.navigate(NavigateDestinations.WalletOverview(greenWallet = args.greenWallet)) {
+                                popUpTo(0) { inclusive = true }
+                            }
+                        } else {
+                            navController.navigate(NavigateDestinations.Home)
+                        }
+                    }
+                )
+            }
             appComposable<NavigateDestinations.SetPin> {
                 val args = it.toRoute<NavigateDestinations.SetPin>()
                 PinScreen(viewModel { PinViewModel(setupArgs = args.setupArgs) })
@@ -425,7 +441,8 @@ fun Router(
                     WalletSettingsViewModel(
                         greenWallet = args.greenWallet,
                         section = WalletSettingsSection.ChangePin,
-                        network = null
+                        network = null,
+                        isRecoveryConfirmation = args.isRecoveryConfirmation
                     )
                 })
             }
