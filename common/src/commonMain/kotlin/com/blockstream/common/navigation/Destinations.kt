@@ -111,6 +111,9 @@ sealed class NavigateDestinations : NavigateDestination() {
     data class RecoveryCheck(val setupArgs: SetupArgs) : NavigateDestination()
 
     @Serializable
+    data class RecoverySuccess(val greenWallet: GreenWallet, val isRecoveryConfirmation: Boolean = false) : NavigateDestination()
+
+    @Serializable
     data class SetPin(val setupArgs: SetupArgs) : NavigateDestination()
 
     @Serializable
@@ -258,7 +261,7 @@ sealed class NavigateDestinations : NavigateDestination() {
     data class WatchOnly(val greenWallet: GreenWallet) : NavigateDestination()
 
     @Serializable
-    data class ChangePin(val greenWallet: GreenWallet) : NavigateDestination()
+    data class ChangePin(val greenWallet: GreenWallet, val isRecoveryConfirmation: Boolean = false) : NavigateDestination()
 
     @Serializable
     data class SystemMessage(val greenWallet: GreenWallet, val network: Network, val message: String) : NavigateDestination()

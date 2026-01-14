@@ -102,6 +102,7 @@ enum class WalletSettingsSection {
 abstract class WalletSettingsViewModelAbstract(
     greenWallet: GreenWallet,
     val section: WalletSettingsSection,
+    val isRecoveryConfirmation: Boolean = false
 ) : GreenViewModel(greenWalletOrNull = greenWallet) {
 
     override fun screenName(): String = when (section) {
@@ -118,8 +119,9 @@ abstract class WalletSettingsViewModelAbstract(
 class WalletSettingsViewModel(
     greenWallet: GreenWallet,
     section: WalletSettingsSection,
-    private val network: Network? = null
-) : WalletSettingsViewModelAbstract(greenWallet = greenWallet, section = section) {
+    private val network: Network? = null,
+    isRecoveryConfirmation: Boolean = false
+) : WalletSettingsViewModelAbstract(greenWallet = greenWallet, section = section, isRecoveryConfirmation = isRecoveryConfirmation) {
     private val createAccountUseCase: CreateAccountUseCase by inject()
     private val setBiometricsUseCase: SetBiometricsUseCase by inject()
     private val setPinUseCase: SetPinUseCase by inject()
@@ -879,7 +881,11 @@ class WalletSettingsViewModel(
                 wallet = greenWallet
             )
         }, onSuccess = {
-            postSideEffect(SideEffects.NavigateBack())
+            if (isRecoveryConfirmation) {
+                postSideEffect(SideEffects.NavigateTo(NavigateDestinations.RecoverySuccess(greenWallet = greenWallet, isRecoveryConfirmation = true)))
+            } else {
+                postSideEffect(SideEffects.NavigateBack())
+            }
         })
     }
 

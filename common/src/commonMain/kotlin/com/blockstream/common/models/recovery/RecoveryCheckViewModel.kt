@@ -93,7 +93,19 @@ class RecoveryCheckViewModel(setupArgs: SetupArgs) : RecoveryCheckViewModelAbstr
                     if (setupArgs.greenWallet == null) {
                         postSideEffect(SideEffects.NavigateTo(NavigateDestinations.SetPin(setupArgs = setupArgs.pageOne())))
                     } else if (setupArgs.greenWallet.isRecoveryConfirmed == false) {
-                        recoveryConfirmed()
+                        recoveryConfirmed {
+                            // Clear navigation stack so ChangePin doesn't go back to RecoveryCheck
+                            postSideEffect(SideEffects.NavigateToRoot())
+
+                            postSideEffect(
+                                SideEffects.NavigateTo(
+                                    NavigateDestinations.ChangePin(
+                                        greenWallet = greenWallet,
+                                        isRecoveryConfirmation = true
+                                    )
+                                )
+                            )
+                        }
                     } else {
                         postSideEffect(
                             SideEffects.NavigateTo(
@@ -120,14 +132,15 @@ class RecoveryCheckViewModel(setupArgs: SetupArgs) : RecoveryCheckViewModelAbstr
         }
     }
 
-    private fun recoveryConfirmed() {
+    private fun recoveryConfirmed(onSuccess: () -> Unit) {
         doAsync({
             greenWallet.isRecoveryConfirmed = true
             database.updateWallet(greenWallet)
         }, onSuccess = {
-            postSideEffect(SideEffects.NavigateToRoot())
+            onSuccess()
         })
     }
+
 
     companion object : Loggable() {
         const val RecoveryPhraseChecks = 4
