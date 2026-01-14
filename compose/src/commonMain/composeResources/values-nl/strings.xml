@@ -1788,7 +1788,6 @@
     <string name="id_you_will_receive_an_email_from">You will receive an email from Blockstream support</string>
     <string name="id_you_will_see_your_coins_here">Je munten verschijnen hier</string>
     <string name="id_you_will_stop_receiving_push">You will stop receiving push notifications for this lightning account, but they are necessary for your lightning account to receive and send reliably.</string>
-    <string name="id_you_you_dont_have_any_assets_yet">You you don&apos;t have any assets yet.</string>
     <string name="id_youll_need_to_back_up_your">You&apos;ll need to back up your recovery phrase before you can send or receive funds, but you can still check out the wallet for now.</string>
     <string name="id_youll_need_your_pin_to_log_in">Je PIN is nodig om in te loggen op je wallet. Deze PIN beveiligt de wallet alleen op dit apparaat.</string>
     <string name="id_youll_need_your_recovery_phrase">Je hebt je herstelzin nodig om deze wallet te herstellen</string>

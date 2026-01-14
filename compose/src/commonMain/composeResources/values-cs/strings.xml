@@ -1789,7 +1789,6 @@
     <string name="id_you_will_receive_an_email_from">You will receive an email from Blockstream support</string>
     <string name="id_you_will_see_your_coins_here">Své mince uvidíte zde</string>
     <string name="id_you_will_stop_receiving_push">You will stop receiving push notifications for this lightning account, but they are necessary for your lightning account to receive and send reliably.</string>
-    <string name="id_you_you_dont_have_any_assets_yet">You you don&apos;t have any assets yet.</string>
     <string name="id_youll_need_to_back_up_your">Než budete moci odesílat nebo přijímat peníze, budete si muset zálohovat frázi pro obnovení, ale peněženku si zatím můžete vyzkoušet.</string>
     <string name="id_youll_need_your_pin_to_log_in">K přihlášení do peněženky budete potřebovat PIN. Tento PIN zajišťuje peněženku pouze na tomto zařízení.</string>
     <string name="id_youll_need_your_recovery_phrase">K obnovení této peněženky budete potřebovat frázi pro obnovení.</string>
