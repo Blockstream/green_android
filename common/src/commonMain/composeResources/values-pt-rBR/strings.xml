@@ -1789,7 +1789,6 @@
     <string name="id_you_will_receive_an_email_from">Você receberá um e-mail do suporte da Blockstream</string>
     <string name="id_you_will_see_your_coins_here">Suas moedas aparecerão aqui</string>
     <string name="id_you_will_stop_receiving_push">Você deixará de receber notificações push para esta conta Lightning, porém, elas são necessárias para que sua conta Lightning receba e envie de forma confiável.</string>
-    <string name="id_you_you_dont_have_any_assets_yet">Você ainda não tem nenhum ativo.</string>
     <string name="id_youll_need_to_back_up_your">Para enviar ou receber fundos é necessário antes realizar o backup da sua carteira.</string>
     <string name="id_youll_need_your_pin_to_log_in">O PIN é necessário para você acessar sua carteira. Este PIN protege a carteira somente neste dispositivo.</string>
     <string name="id_youll_need_your_recovery_phrase">Você vai precisar da sua frase de recuperação para restaurar esta carteira</string>

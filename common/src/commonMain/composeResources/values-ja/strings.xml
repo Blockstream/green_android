@@ -1789,7 +1789,6 @@
     <string name="id_you_will_receive_an_email_from">You will receive an email from Blockstream support</string>
     <string name="id_you_will_see_your_coins_here">コインがここに表示されます</string>
     <string name="id_you_will_stop_receiving_push">You will stop receiving push notifications for this lightning account, but they are necessary for your lightning account to receive and send reliably.</string>
-    <string name="id_you_you_dont_have_any_assets_yet">You you don&apos;t have any assets yet.</string>
     <string name="id_youll_need_to_back_up_your">送受信を行う前にリカバリーフレーズのバックアップが必要ですが、ウォレットの中身をいま確認することはできます。</string>
     <string name="id_youll_need_your_pin_to_log_in">PINがないとウォレットにログインできません。設定したPINはこのデバイス上でのみウォレットを保護します。</string>
     <string name="id_youll_need_your_recovery_phrase">このウォレットの復元にはリカバリーフレーズが必要です</string>
