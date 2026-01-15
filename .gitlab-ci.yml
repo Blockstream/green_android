@@ -401,9 +401,9 @@ gcp_push_gdk_commit:
     - echo "https://storage.googleapis.com/$GCS_BUCKET/$APK_NAME.apk"
 
 #####################################
-# E2E Tests
+# E2E Tests - Base Templates
 
-e2e:build:
+.e2e:build:
   stage: build
   tags:
     - cloud
@@ -415,7 +415,7 @@ e2e:build:
       - stuck_or_timeout_failure
   artifacts:
     name: "$CI_PROJECT_NAME-e2e-$CI_COMMIT_SHORT_SHA"
-    expire_in: 7 days
+    expire_in: 1 day
     when: on_success
     paths:
       - androidApp/build/outputs/apk/development/release/*.apk
@@ -426,10 +426,8 @@ e2e:build:
     - echo $ANDROID_KEYSTORE_BASE64 | base64 -d > keystore.jks
     - ./gradlew useBlockstreamKeys
     - ./gradlew assembleDevelopmentRelease
-  rules:
-    - if: $CI_PIPELINE_SOURCE == "schedule"
 
-e2e:upload:
+.e2e:upload:
   extends: .gcp_auth_inline
   stage: e2e
   image: blockstream/gcloud-docker:27.3-504.0.1
@@ -437,25 +435,72 @@ e2e:upload:
     - k8s
   variables:
     GCS_BUCKET: green-android-builds
-    APK_NAME: $CI_PROJECT_NAME-$CI_COMMIT_SHA-e2e
-  needs:
-    - e2e:build
-  rules:
-    - if: $CI_PIPELINE_SOURCE == "schedule"
   script:
-    - echo "Uploading gs://$GCS_BUCKET/$APK_NAME"
+    - echo "Uploading gs://$GCS_BUCKET/$APK_NAME.apk"
     - gsutil -m cp -r $CI_PROJECT_DIR/androidApp/build/outputs/apk/development/release/*.apk gs://$GCS_BUCKET/$APK_NAME.apk
     - echo "https://storage.googleapis.com/$GCS_BUCKET/$APK_NAME.apk"
 
-e2e:trigger:
+#####################################
+# E2E Tests - Nightly (Scheduled)
+
+e2e:nightly:build:
+  extends: .e2e:build
+  rules:
+    - if: $CI_PIPELINE_SOURCE == "schedule"
+
+e2e:nightly:upload:
+  extends: .e2e:upload
+  variables:
+    APK_NAME: $CI_PROJECT_NAME-$CI_COMMIT_SHA-nightly
+  needs:
+    - e2e:nightly:build
+  rules:
+    - if: $CI_PIPELINE_SOURCE == "schedule"
+
+e2e:nightly:trigger:
   stage: e2e
+  needs:
+    - e2e:nightly:upload
+  rules:
+    - if: $CI_PIPELINE_SOURCE == "schedule"
   trigger:
     project: blockstream/green/maestro-blockstream
   variables:
-    UPSTREAM_APK_URL: "https://storage.googleapis.com/green-android-builds/${CI_PROJECT_NAME}-${CI_COMMIT_SHA}-e2e.apk"
+    UPSTREAM_APK_URL: "https://storage.googleapis.com/green-android-builds/${CI_PROJECT_NAME}-${CI_COMMIT_SHA}-nightly.apk"
     UPSTREAM_APP_ID: "com.greenaddress.greenbits_android_wallet.dev"
     UPSTREAM_COMMIT_SHA: $CI_COMMIT_SHA
-  needs:
-    - e2e:upload
+    UPSTREAM_MODE: "full"
+    UPSTREAM_TYPE: "nightly"
+
+#####################################
+# E2E Tests - Release (Tag)
+
+e2e:release:build:
+  extends: .e2e:build
   rules:
-    - if: $CI_PIPELINE_SOURCE == "schedule"
+    - if: $CI_COMMIT_TAG =~ /^v\d+\.\d+\.\d+/
+
+e2e:release:upload:
+  extends: .e2e:upload
+  variables:
+    APK_NAME: $CI_PROJECT_NAME-$CI_COMMIT_TAG
+  needs:
+    - e2e:release:build
+  rules:
+    - if: $CI_COMMIT_TAG =~ /^v\d+\.\d+\.\d+/
+
+e2e:release:trigger:
+  stage: e2e
+  needs:
+    - e2e:release:upload
+  rules:
+    - if: $CI_COMMIT_TAG =~ /^v\d+\.\d+\.\d+/
+  trigger:
+    project: blockstream/green/maestro-blockstream
+  variables:
+    UPSTREAM_APK_URL: "https://storage.googleapis.com/green-android-builds/${CI_PROJECT_NAME}-${CI_COMMIT_TAG}.apk"
+    UPSTREAM_APP_ID: "com.greenaddress.greenbits_android_wallet.dev"
+    UPSTREAM_COMMIT_SHA: $CI_COMMIT_SHA
+    UPSTREAM_COMMIT_TAG: $CI_COMMIT_TAG
+    UPSTREAM_MODE: "full"
+    UPSTREAM_TYPE: "release"
