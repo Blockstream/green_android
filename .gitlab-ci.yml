@@ -478,7 +478,7 @@ e2e:nightly:trigger:
 e2e:release:build:
   extends: .e2e:build
   rules:
-    - if: $CI_COMMIT_TAG =~ /^v\d+\.\d+\.\d+/
+    - if: $CI_COMMIT_TAG =~ /^release_\d+\.\d+\.\d+/
 
 e2e:release:upload:
   extends: .e2e:upload
@@ -487,14 +487,14 @@ e2e:release:upload:
   needs:
     - e2e:release:build
   rules:
-    - if: $CI_COMMIT_TAG =~ /^v\d+\.\d+\.\d+/
+    - if: $CI_COMMIT_TAG =~ /^release_\d+\.\d+\.\d+/
 
 e2e:release:trigger:
   stage: e2e
   needs:
     - e2e:release:upload
   rules:
-    - if: $CI_COMMIT_TAG =~ /^v\d+\.\d+\.\d+/
+    - if: $CI_COMMIT_TAG =~ /^release_\d+\.\d+\.\d+/
   trigger:
     project: blockstream/green/maestro-blockstream
   variables:
