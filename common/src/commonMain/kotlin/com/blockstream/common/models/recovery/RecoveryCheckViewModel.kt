@@ -87,47 +87,71 @@ class RecoveryCheckViewModel(setupArgs: SetupArgs) : RecoveryCheckViewModelAbstr
 
     override suspend fun handleEvent(event: Event) {
         super.handleEvent(event)
-        if (event is LocalEvents.SelectWord) {
-            if (correctWord == event.word) {
-                if (isLastPage) {
-                    if (setupArgs.greenWallet == null) {
-                        postSideEffect(SideEffects.NavigateTo(NavigateDestinations.SetPin(setupArgs = setupArgs.pageOne())))
-                    } else if (setupArgs.greenWallet.isRecoveryConfirmed == false) {
-                        recoveryConfirmed {
-                            // Clear navigation stack so ChangePin doesn't go back to RecoveryCheck
-                            postSideEffect(SideEffects.NavigateToRoot())
 
-                            postSideEffect(
-                                SideEffects.NavigateTo(
-                                    NavigateDestinations.ChangePin(
-                                        greenWallet = greenWallet,
-                                        isRecoveryConfirmation = true
-                                    )
-                                )
-                            )
-                        }
-                    } else {
-                        postSideEffect(
-                            SideEffects.NavigateTo(
-                                NavigateDestinations.ReviewAddAccount(
-                                    setupArgs = setupArgs.pageOne()
-                                )
-                            )
-                        )
-                    }
-                } else {
+        if (event !is LocalEvents.SelectWord) return
+
+        if (correctWord != event.word) {
+            handleIncorrectWord()
+            return
+        }
+
+        if (!isLastPage) {
+            navigateToNextPage()
+            return
+        }
+
+        handleLastPageNavigation()
+    }
+
+    private fun handleIncorrectWord() {
+        countly.recoveryPhraseCheckFailed(page = setupArgs.page)
+        postSideEffect(SideEffects.Snackbar(StringHolder.create(Res.string.id_wrong_choice_check_your)))
+        postSideEffect(SideEffects.NavigateBack())
+    }
+
+    private fun navigateToNextPage() {
+        postSideEffect(
+            SideEffects.NavigateTo(
+                NavigateDestinations.RecoveryCheck(
+                    setupArgs = setupArgs.nextPage()
+                )
+            )
+        )
+    }
+
+    private fun handleLastPageNavigation() {
+        when {
+            setupArgs.greenWallet == null -> {
+                postSideEffect(
+                    SideEffects.NavigateTo(
+                        NavigateDestinations.SetPin(setupArgs = setupArgs.pageOne())
+                    )
+                )
+            }
+
+            !setupArgs.greenWallet.isRecoveryConfirmed -> {
+                recoveryConfirmed {
+                    // Clear navigation stack so ChangePin doesn't go back to RecoveryCheck
+                    postSideEffect(SideEffects.NavigateToRoot())
                     postSideEffect(
                         SideEffects.NavigateTo(
-                            NavigateDestinations.RecoveryCheck(
-                                setupArgs = setupArgs.nextPage()
+                            NavigateDestinations.ChangePin(
+                                greenWallet = greenWallet,
+                                isRecoveryConfirmation = true
                             )
                         )
                     )
                 }
-            } else {
-                countly.recoveryPhraseCheckFailed(page = setupArgs.page)
-                postSideEffect(SideEffects.Snackbar(StringHolder.create(Res.string.id_wrong_choice_check_your)))
-                postSideEffect(SideEffects.NavigateBack())
+            }
+
+            else -> {
+                postSideEffect(
+                    SideEffects.NavigateTo(
+                        NavigateDestinations.ReviewAddAccount(
+                            setupArgs = setupArgs.pageOne()
+                        )
+                    )
+                )
             }
         }
     }
@@ -140,7 +164,6 @@ class RecoveryCheckViewModel(setupArgs: SetupArgs) : RecoveryCheckViewModelAbstr
             onSuccess()
         })
     }
-
 
     companion object : Loggable() {
         const val RecoveryPhraseChecks = 4
