@@ -3,11 +3,9 @@ package com.blockstream.compose.screens.recovery
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Spacer
-import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.layout.systemBarsPadding
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
@@ -19,26 +17,23 @@ import blockstream_green.common.generated.resources.Res
 import blockstream_green.common.generated.resources.id_done
 import blockstream_green.common.generated.resources.id_great_you_successfully_backed
 import blockstream_green.common.generated.resources.id_keep_your_recovery_phrase_fully
-import com.blockstream.common.data.GreenWallet
+import com.blockstream.compose.GreenPreview
 import com.blockstream.compose.components.GreenButton
 import com.blockstream.compose.components.GreenButtonSize
+import com.blockstream.compose.components.GreenSpacer
 import com.blockstream.compose.components.Rive
 import com.blockstream.compose.components.RiveAnimation
+import com.blockstream.compose.models.recovery.RecoverySuccessViewModelAbstract
+import com.blockstream.compose.models.recovery.RecoverySuccessViewModelPreview
+import com.blockstream.compose.utils.SetupScreen
 import org.jetbrains.compose.resources.stringResource
+import org.jetbrains.compose.ui.tooling.preview.Preview
 
 @Composable
 fun RecoverySuccessScreen(
-    greenWallet: GreenWallet,
-    onDone: () -> Unit
+    viewModel: RecoverySuccessViewModelAbstract,
 ) {
-    Column(
-        modifier = Modifier
-            .fillMaxSize()
-            .systemBarsPadding()
-            .padding(horizontal = 24.dp),
-        verticalArrangement = Arrangement.SpaceBetween,
-        horizontalAlignment = Alignment.CenterHorizontally
-    ) {
+    SetupScreen(viewModel = viewModel) {
         Spacer(Modifier.height(32.dp))
 
         Column(
@@ -50,7 +45,7 @@ fun RecoverySuccessScreen(
                 riveAnimation = RiveAnimation.ROCKET,
             )
 
-            Spacer(Modifier.height(24.dp))
+            GreenSpacer(24)
 
             Text(
                 text = stringResource(Res.string.id_great_you_successfully_backed),
@@ -58,7 +53,7 @@ fun RecoverySuccessScreen(
                 textAlign = TextAlign.Center
             )
 
-            Spacer(Modifier.height(12.dp))
+            GreenSpacer(12)
 
             Text(
                 text = stringResource(Res.string.id_keep_your_recovery_phrase_fully),
@@ -73,8 +68,18 @@ fun RecoverySuccessScreen(
             modifier = Modifier
                 .fillMaxWidth()
                 .padding(bottom = 16.dp),
-            onClick = onDone
+            onClick = {
+                viewModel.done()
+            }
         )
+    }
+}
+
+@Composable
+@Preview
+fun RecoverySuccessScreenPreview() {
+    GreenPreview {
+        RecoverySuccessScreen(viewModel = RecoverySuccessViewModelPreview.preview())
     }
 }
 

@@ -130,7 +130,7 @@ class RecoveryCheckViewModel(setupArgs: SetupArgs) : RecoveryCheckViewModelAbstr
                 )
             }
 
-            !setupArgs.greenWallet.isRecoveryConfirmed -> {
+            !setupArgs.greenWallet!!.isRecoveryConfirmed -> {
                 recoveryConfirmed {
                     // Clear navigation stack so ChangePin doesn't go back to RecoveryCheck
                     postSideEffect(SideEffects.NavigateToRoot())

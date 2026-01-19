@@ -15,8 +15,6 @@ import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavHostController
 import androidx.navigation.compose.NavHost
 import androidx.navigation.toRoute
-import com.blockstream.data.devices.DeviceModel
-import com.blockstream.data.managers.DeviceManager
 import com.blockstream.compose.dialogs.TorWarningDialog
 import com.blockstream.compose.dialogs.UrlWarningDialog
 import com.blockstream.compose.managers.rememberStateKeeperFactory
@@ -68,6 +66,7 @@ import com.blockstream.compose.models.receive.ReceiveViewModel
 import com.blockstream.compose.models.recovery.RecoveryCheckViewModel
 import com.blockstream.compose.models.recovery.RecoveryIntroViewModel
 import com.blockstream.compose.models.recovery.RecoveryPhraseViewModel
+import com.blockstream.compose.models.recovery.RecoverySuccessViewModel
 import com.blockstream.compose.models.recovery.RecoveryWordsViewModel
 import com.blockstream.compose.models.send.BumpViewModel
 import com.blockstream.compose.models.send.DenominationViewModel
@@ -202,6 +201,8 @@ import com.blockstream.compose.sheets.WalletDeleteBottomSheet
 import com.blockstream.compose.sheets.WalletRenameBottomSheet
 import com.blockstream.compose.sheets.WatchOnlyCredentialsSettingsBottomSheet
 import com.blockstream.compose.utils.StringHolder
+import com.blockstream.data.devices.DeviceModel
+import com.blockstream.data.managers.DeviceManager
 import org.koin.compose.koinInject
 
 @Composable
@@ -298,15 +299,8 @@ fun Router(
             appComposable<NavigateDestinations.RecoverySuccess> {
                 val args = it.toRoute<NavigateDestinations.RecoverySuccess>()
                 RecoverySuccessScreen(
-                    greenWallet = args.greenWallet,
-                    onDone = {
-                        if (args.isRecoveryConfirmation) {
-                            navController.navigate(NavigateDestinations.WalletOverview(greenWallet = args.greenWallet)) {
-                                popUpTo(0) { inclusive = true }
-                            }
-                        } else {
-                            navController.navigate(NavigateDestinations.Home)
-                        }
+                    viewModel {
+                        RecoverySuccessViewModel(greenWallet = args.greenWallet)
                     }
                 )
             }
