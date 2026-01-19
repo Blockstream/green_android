@@ -303,14 +303,9 @@ fun Router(
             appComposable<NavigateDestinations.RecoverySuccess> {
                 val args = it.toRoute<NavigateDestinations.RecoverySuccess>()
                 RecoverySuccessScreen(
-                    greenWallet = args.greenWallet,
                     onDone = {
-                        if (args.isRecoveryConfirmation) {
-                            navController.navigate(NavigateDestinations.WalletOverview(greenWallet = args.greenWallet)) {
-                                popUpTo(0) { inclusive = true }
-                            }
-                        } else {
-                            navController.navigate(NavigateDestinations.Home)
+                        navController.navigate(NavigateDestinations.WalletOverview(greenWallet = args.greenWallet)) {
+                            popUpTo(0) { inclusive = true }
                         }
                     }
                 )

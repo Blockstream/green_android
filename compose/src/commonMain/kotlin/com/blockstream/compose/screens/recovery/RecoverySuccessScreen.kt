@@ -19,7 +19,6 @@ import blockstream_green.common.generated.resources.Res
 import blockstream_green.common.generated.resources.id_done
 import blockstream_green.common.generated.resources.id_great_you_successfully_backed
 import blockstream_green.common.generated.resources.id_keep_your_recovery_phrase_fully
-import com.blockstream.common.data.GreenWallet
 import com.blockstream.compose.components.GreenButton
 import com.blockstream.compose.components.GreenButtonSize
 import com.blockstream.compose.components.Rive
@@ -28,7 +27,6 @@ import org.jetbrains.compose.resources.stringResource
 
 @Composable
 fun RecoverySuccessScreen(
-    greenWallet: GreenWallet,
     onDone: () -> Unit
 ) {
     Column(

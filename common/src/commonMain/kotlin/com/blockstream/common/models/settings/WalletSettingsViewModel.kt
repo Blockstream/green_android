@@ -882,7 +882,7 @@ class WalletSettingsViewModel(
             )
         }, onSuccess = {
             if (isRecoveryConfirmation) {
-                postSideEffect(SideEffects.NavigateTo(NavigateDestinations.RecoverySuccess(greenWallet = greenWallet, isRecoveryConfirmation = true)))
+                postSideEffect(SideEffects.NavigateTo(NavigateDestinations.RecoverySuccess(greenWallet = greenWallet)))
             } else {
                 postSideEffect(SideEffects.NavigateBack())
             }
