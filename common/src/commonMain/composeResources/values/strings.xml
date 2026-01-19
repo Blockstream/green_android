@@ -1800,7 +1800,6 @@
     <string name="id_you_will_receive_an_email_from">You will receive an email from Blockstream support</string>
     <string name="id_you_will_see_your_coins_here">You will see your coins here</string>
     <string name="id_you_will_stop_receiving_push">You will stop receiving push notifications for this lightning account, but they are necessary for your lightning account to receive and send reliably.</string>
-    <string name="id_you_you_dont_have_any_assets_yet">You you don&apos;t have any assets yet.</string>
     <string name="id_youll_need_to_back_up_your">You&apos;ll need to back up your recovery phrase before you can send or receive funds, but you can still check out the wallet for now.</string>
     <string name="id_youll_need_your_pin_to_log_in">You&apos;ll need your PIN to log in to your wallet. This PIN secures the wallet on this device only.</string>
     <string name="id_youll_need_your_recovery_phrase">You&apos;ll need your recovery phrase to restore this wallet</string>
@@ -1877,7 +1876,6 @@
     <string name="id_enable_push_notifications_for_seamless">Enable push notifications for seamless lightning payments. No need to keep your app open to receive.</string>
     <string name="id_by_using_blockstream_app_you_agree">By using Blockstream App, you agree to the Terms of Service and Privacy Policy</string>
     <string name="id_setup_mobile_wallet">Setup Mobile Wallet</string>
-    <string name="id_setup_hardware_wallet">Setup Hardware Wallet</string>
     <string name="id_security_level_">Security Level %1$s</string>
     <string name="id_transfer_your_funds">Transfer your funds </string>
     <string name="id_transfer_your_funds_from_your_old_wallet">Transfer your funds from your old wallet to your new Jade wallet for maximum security. </string>
