@@ -1,6 +1,14 @@
 import java.net.URI
 
-rootProject.name = "Blockstream_App"
+val localProperties = java.util.Properties().apply {
+    val file = file("local.properties")
+    if (file.exists()) {
+        file.inputStream().use { load(it) }
+    }
+}
+
+// Allows overriding the project name via local.properties, useful when using git worktrees
+rootProject.name = localProperties.getProperty("project.name") ?: "Blockstream_App"
 
 enableFeaturePreview("TYPESAFE_PROJECT_ACCESSORS")
 

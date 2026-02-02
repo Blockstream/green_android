@@ -54,7 +54,7 @@ class GetReceiveAssetsUseCase() {
                 ),
                 EnrichedAsset.createOrNull(
                     session = session,
-                    assetId = session.lightning?.policyAsset
+                    assetId = session.lightning.policyAsset
                 ).takeIf { session.hasLightning },
                 EnrichedAsset.createOrNull(
                     session = session,

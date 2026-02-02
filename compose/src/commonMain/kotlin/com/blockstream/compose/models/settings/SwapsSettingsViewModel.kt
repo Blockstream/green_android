@@ -38,7 +38,7 @@ abstract class SwapsSettingsViewModelAbstract(greenWallet: GreenWallet) :
 
     fun disable() {
         doAsync({
-            database.deleteLoginCredentials(walletId = greenWallet.id, type = CredentialType.BOLTZ_MNEMONIC)
+            database.deleteLoginCredentials(walletId = greenWallet.id, type = CredentialType.KEYSTORE_BOLTZ_MNEMONIC)
         }, onSuccess = {
             postSideEffect(SideEffects.Snackbar(StringHolder.create(Res.string.id_swaps_disabled)))
         })

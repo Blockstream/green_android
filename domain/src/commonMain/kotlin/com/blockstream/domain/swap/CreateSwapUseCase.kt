@@ -77,7 +77,7 @@ class CreateSwapUseCase(
                     session = session,
                     isAutoSwap = false,
                     account = from.account,
-                    invoice = invoice.lnInvoice.bolt11
+                    invoice = invoice.invoice.bolt11
                 )
             }
 

@@ -12,7 +12,7 @@ import blockstream_green.common.generated.resources.id_swap_is_in_progress
 import blockstream_green.common.generated.resources.id_unstable_internet_connection
 import blockstream_green.common.generated.resources.id_you_dont_have_a_lightning
 import blockstream_green.common.generated.resources.id_your_device_was_disconnected
-import breez_sdk.InputType
+import com.blockstream.data.lightning.LightningInputType
 import com.blockstream.compose.events.Event
 import com.blockstream.compose.events.EventWithSideEffect
 import com.blockstream.compose.events.Events
@@ -43,7 +43,6 @@ import com.blockstream.data.data.Redact
 import com.blockstream.data.data.SupportData
 import com.blockstream.data.data.TwoFactorResolverData
 import com.blockstream.data.data.WatchOnlyCredentials
-import com.blockstream.data.data.toSerializable
 import com.blockstream.data.database.Database
 import com.blockstream.data.database.wallet.LoginCredentials
 import com.blockstream.data.devices.ConnectionType
@@ -790,13 +789,13 @@ open class GreenViewModel constructor(
             if (checkedInput != null) {
 
                 when (val inputType = checkedInput.second) {
-                    is InputType.LnUrlAuth -> {
+                    is LightningInputType.LnUrlAuth -> {
                         if (session.hasLightning) {
                             postSideEffect(
                                 SideEffects.NavigateTo(
                                     NavigateDestinations.LnUrlAuth(
                                         greenWallet = greenWallet,
-                                        lnUrlAuthRequest = inputType.data.toSerializable()
+                                        lnUrlAuthRequest = inputType.data
                                     )
                                 )
                             )
@@ -805,13 +804,13 @@ open class GreenViewModel constructor(
                         }
                     }
 
-                    is InputType.LnUrlWithdraw -> {
+                    is LightningInputType.LnUrlWithdraw -> {
                         if (session.hasLightning) {
                             postSideEffect(
                                 SideEffects.NavigateTo(
                                     NavigateDestinations.LnUrlWithdraw(
                                         greenWallet = greenWallet,
-                                        lnUrlWithdrawRequest = inputType.data.toSerializable()
+                                        lnUrlWithdrawRequest = inputType.data
                                     )
                                 )
                             )

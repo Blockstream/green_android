@@ -8,12 +8,12 @@ enum class CredentialType(val value: Long) {
     KEYSTORE_WATCHONLY_CREDENTIALS(4),
     BIOMETRICS_WATCHONLY_CREDENTIALS(5), // Crypto based
     KEYSTORE_GREENLIGHT_CREDENTIALS(6),
-    LIGHTNING_MNEMONIC(7),
+    KEYSTORE_LIGHTNING_MNEMONIC(7),
     RICH_WATCH_ONLY(8),
     KEYSTORE_MNEMONIC(9), // not used
     BIOMETRICS_MNEMONIC(10), // Keystore based with user presence
     KEYSTORE_HW_WATCHONLY_CREDENTIALS(11),
-    BOLTZ_MNEMONIC(12);
+    KEYSTORE_BOLTZ_MNEMONIC(12);
 
     companion object {
         fun byPosition(position: Long): CredentialType {

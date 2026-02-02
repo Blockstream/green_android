@@ -21,7 +21,7 @@ import kotlinx.coroutines.withContext
  *   `session.deriveBoltzMnemonic()`.
  * - Encrypts the mnemonic bytes via [GreenKeystore.encryptData] on the IO dispatcher.
  * - Stores/replaces the credential in the [Database] tied to the [wallet] with
- *   type [CredentialType.BOLTZ_MNEMONIC] under the current Lightning network id
+ *   type [CredentialType.KEYSTORE_BOLTZ_MNEMONIC] under the current Lightning network id
  *   (`session.lightning!!.id`).
  *
  * Behavior and guarantees:
@@ -45,7 +45,7 @@ class SaveDerivedBoltzMnemonicUseCase(
      * Steps:
      * 1. Derive the mnemonic from [session].
      * 2. Encrypt it with [greenKeystore].
-     * 3. Store it in [database] as a [CredentialType.BOLTZ_MNEMONIC] credential for the
+     * 3. Store it in [database] as a [CredentialType.KEYSTORE_BOLTZ_MNEMONIC] credential for the
      *    Lightning network associated with the current [session].
      *
      * Error handling: exceptions are caught and logged via `printStackTrace()`; no exception is
@@ -71,7 +71,7 @@ class SaveDerivedBoltzMnemonicUseCase(
                 createLoginCredentials(
                     walletId = wallet.id,
                     network = Lwk.LWK_NETWORK,
-                    credentialType = CredentialType.BOLTZ_MNEMONIC,
+                    credentialType = CredentialType.KEYSTORE_BOLTZ_MNEMONIC,
                     encryptedData = encryptedData
                 )
             )

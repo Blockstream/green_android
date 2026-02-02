@@ -4,7 +4,7 @@ import androidx.lifecycle.viewModelScope
 import blockstream_green.common.generated.resources.Res
 import blockstream_green.common.generated.resources.id_buy
 import blockstream_green.common.generated.resources.id_type_an_amount_between_s_and_s
-import breez_sdk.SwapInfo
+import com.blockstream.data.lightning.LightningSwapInfo
 import com.blockstream.data.data.DenominatedValue
 import com.blockstream.data.data.Denomination
 import com.blockstream.data.data.EnrichedAsset
@@ -119,7 +119,7 @@ class OnOffRampsViewModel(greenWallet: GreenWallet) :
     private val _amountHint = MutableStateFlow<String?>(null)
     override val amountHint = _amountHint
 
-    private var swapInfo: SwapInfo? = null
+    private var swapInfo: LightningSwapInfo? = null
 
     init {
         viewModelScope.launch {

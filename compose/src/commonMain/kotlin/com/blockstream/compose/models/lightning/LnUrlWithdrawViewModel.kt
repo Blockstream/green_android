@@ -11,8 +11,8 @@ import blockstream_green.common.generated.resources.id_success
 import blockstream_green.common.generated.resources.id_withdraw
 import blockstream_green.common.generated.resources.id_withdraw_limits_s__s
 import blockstream_green.common.generated.resources.id_you_are_redeeming_funds_from_s
-import breez_sdk.LnUrlWithdrawRequestData
-import breez_sdk.LnUrlWithdrawResult
+import com.blockstream.data.lightning.LnUrlWithdrawData
+import com.blockstream.data.lightning.LnUrlWithdrawOutcome
 import com.blockstream.data.BTC_POLICY_ASSET
 import com.blockstream.data.data.DenominatedValue
 import com.blockstream.data.data.Denomination
@@ -60,7 +60,7 @@ abstract class LnUrlWithdrawViewModelAbstract(greenWallet: GreenWallet) :
     abstract val redeemMessage: String
 }
 
-class LnUrlWithdrawViewModel(greenWallet: GreenWallet, val requestData: LnUrlWithdrawRequestData) :
+class LnUrlWithdrawViewModel(greenWallet: GreenWallet, val requestData: LnUrlWithdrawData) :
     LnUrlWithdrawViewModelAbstract(greenWallet = greenWallet) {
     override val withdrawalLimits = MutableStateFlow("")
 
@@ -98,7 +98,7 @@ class LnUrlWithdrawViewModel(greenWallet: GreenWallet, val requestData: LnUrlWit
         }
 
         if (appInfo.isDevelopmentOrDebug) {
-            logger.d { "LnUrlWithdrawRequestData: $requestData" }
+            logger.d { "LnUrlWithdrawData: $requestData" }
         }
 
         // Set amount if min/max is the same
@@ -227,8 +227,8 @@ class LnUrlWithdrawViewModel(greenWallet: GreenWallet, val requestData: LnUrlWit
                 amount = amountInSatoshi() ?: throw Exception("No amount specified"),
                 description = description.value
             ).also {
-                if (it is LnUrlWithdrawResult.ErrorStatus) {
-                    throw Exception(it.data.reason)
+                if (it is LnUrlWithdrawOutcome.Error) {
+                    throw Exception(it.reason)
                 }
             }
         }, postAction = {

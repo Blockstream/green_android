@@ -301,11 +301,6 @@ class AndroidMigrator(
                         walletSettingsManager.setLightningNodeId(walletId = wallet.id, nodeId = nodeId)
                     }
                 }
-
-                (database.getLoginCredential(id = wallet.id, credentialType = CredentialType.KEYSTORE_GREENLIGHT_CREDENTIALS)
-                    ?: database.getLoginCredential(id = wallet.id, credentialType = CredentialType.LIGHTNING_MNEMONIC))?.also {
-                    walletSettingsManager.setLightningEnabled(it.wallet_id, enabled = true)
-                }
             }
 
             sharedPreferences.edit { putLong(Preferences.APP_DATA_VERSION, 4) }

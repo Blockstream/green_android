@@ -1,16 +1,20 @@
 package com.blockstream.data.fcm
 
-import breez_sdk.BreezEvent
+import com.blockstream.data.lightning.LightningEvent
 import com.blockstream.data.config.AppInfo
 import com.blockstream.data.crypto.GreenKeystore
+import com.blockstream.data.data.CredentialType
 import com.blockstream.data.data.GreenWallet
 import com.blockstream.data.data.SwapType
 import com.blockstream.data.database.Database
 import com.blockstream.data.di.ApplicationScope
+import com.blockstream.data.extensions.greenlightCredentials
 import com.blockstream.data.extensions.launchSafe
 import com.blockstream.data.extensions.lightningMnemonic
 import com.blockstream.data.extensions.logException
 import com.blockstream.data.lightning.BreezNotification
+import com.blockstream.data.lightning.GreenlightMnemonicAndCredentials
+import com.blockstream.data.lightning.LightningManager
 import com.blockstream.data.lightning.satoshi
 import com.blockstream.data.managers.SessionManager
 import com.blockstream.data.notifications.models.BoltzNotificationSimple
@@ -27,6 +31,8 @@ abstract class FcmCommon constructor(val applicationScope: ApplicationScope) : K
     private val database: Database by inject()
     private val greenKeystore: GreenKeystore by inject()
     private val sessionManager: SessionManager by inject()
+
+    val lightningManager: LightningManager by inject()
 
     private val appInfo: AppInfo by inject()
 
@@ -94,11 +100,15 @@ abstract class FcmCommon constructor(val applicationScope: ApplicationScope) : K
         }
 
         wallet(walletId)?.also { wallet ->
-            database.getLoginCredentials(wallet.id).lightningMnemonic?.encrypted_data?.let {
-                greenKeystore.decryptData(it).decodeToString()
-            }?.also { mnemonic ->
+            database.getLoginCredential(id = wallet.id, credentialType = CredentialType.KEYSTORE_LIGHTNING_MNEMONIC)?.lightningMnemonic(
+                greenKeystore = greenKeystore
+            )?.also { mnemonic ->
                 sessionManager.getLightningBridge(mnemonic, wallet.isTestnet).also {
-                    it.connectToGreenlight(mnemonic = mnemonic)
+                    val greenlightCredentials = database.getLoginCredentials(wallet.id).greenlightCredentials?.encrypted_data?.let {
+                        greenKeystore.decryptData(it)
+                    } ?: byteArrayOf()
+
+                    it.connect(mnemonicAndCredentials = GreenlightMnemonicAndCredentials(mnemonic = mnemonic, credentials = greenlightCredentials))
 
                     // Wait maximum 2 minutes to complete all operations
                     val success = withTimeoutOrNull(120_000) {
@@ -118,20 +128,20 @@ abstract class FcmCommon constructor(val applicationScope: ApplicationScope) : K
                             )
                         } else {
                             it.eventSharedFlow.filter { event ->
-                                event is BreezEvent.InvoicePaid
+                                event is LightningEvent.InvoicePaid
                             }.firstOrNull()?.also {
-                                (it as? BreezEvent.InvoicePaid)?.also {
+                                (it as? LightningEvent.InvoicePaid)?.also {
                                     showLightningPaymentNotification(
                                         wallet = wallet,
-                                        paymentHash = it.details.paymentHash,
-                                        satoshi = it.details.payment?.amountMsat?.satoshi() ?: 0
+                                        paymentHash = it.paymentHash,
+                                        satoshi = it.paymentAmountSatoshi ?: 0
                                     )
                                 }
                             }
                         }
 
                         it.eventSharedFlow.filter { event ->
-                            event is BreezEvent.Synced
+                            event is LightningEvent.Synced
                         }.firstOrNull()
                     }
 
@@ -144,7 +154,7 @@ abstract class FcmCommon constructor(val applicationScope: ApplicationScope) : K
 
                     logger.d { "doLightningBackgroundWork completed walletId:$walletId" }
 
-                    it.release()
+                    lightningManager.release(it)
                 }
             } ?: logger.d { "Couldn't decrypt mnemonic" }
         } ?: run {

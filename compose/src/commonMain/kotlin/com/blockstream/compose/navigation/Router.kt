@@ -603,7 +603,7 @@ fun Router(
                 LnUrlAuthScreen(viewModel {
                     LnUrlAuthViewModel(
                         greenWallet = args.greenWallet,
-                        requestData = args.lnUrlAuthRequest.deserialize()
+                        requestData = args.lnUrlAuthRequest
                     )
                 })
             }
@@ -612,7 +612,7 @@ fun Router(
                 LnUrlWithdrawScreen(viewModel {
                     LnUrlWithdrawViewModel(
                         greenWallet = args.greenWallet,
-                        requestData = args.lnUrlWithdrawRequest.deserialize()
+                        requestData = args.lnUrlWithdrawRequest
                     )
                 })
             }

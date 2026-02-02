@@ -1,10 +1,8 @@
 package com.blockstream.data.gdk.data
 
-import breez_sdk.AesSuccessActionDataResult
-import breez_sdk.LnUrlPaySuccessData
-import breez_sdk.SuccessActionProcessed
 import com.blockstream.data.extensions.isNotBlank
 import com.blockstream.data.gdk.GreenJson
+import com.blockstream.data.lightning.LnUrlPayOutcome
 import kotlinx.serialization.SerialName
 import kotlinx.serialization.Serializable
 
@@ -34,29 +32,8 @@ data class ProcessedTransactionDetails constructor(
     override fun kSerializer() = serializer()
 
     companion object {
-        fun create(successData: LnUrlPaySuccessData): ProcessedTransactionDetails {
-
-            val message = successData.successAction?.let {
-                when (it) {
-                    is SuccessActionProcessed.Aes -> {
-                        (it.result as? AesSuccessActionDataResult.Decrypted)?.let { decrypted ->
-                            "${decrypted.data.description}\n\n${decrypted.data.plaintext}"
-                        } ?: ""
-                    }
-
-                    is SuccessActionProcessed.Message -> {
-                        it.data.message
-                    }
-
-                    is SuccessActionProcessed.Url -> {
-                        it.data.description
-                    }
-                }
-            }
-
-            val url = (successData.successAction as? SuccessActionProcessed.Url)?.data?.url
-
-            return ProcessedTransactionDetails(message = message, url = url)
+        fun create(success: LnUrlPayOutcome.Success): ProcessedTransactionDetails {
+            return ProcessedTransactionDetails(message = success.message, url = success.url)
         }
     }
 }

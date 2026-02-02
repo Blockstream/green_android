@@ -16,7 +16,7 @@ import com.blockstream.data.gdk.data.Network
 import com.blockstream.data.gdk.data.TorEvent
 import com.blockstream.data.gdk.params.LoginCredentialsParams
 import com.blockstream.data.interfaces.JadeHttpRequestUrlValidator
-import com.blockstream.data.lightning.LightningBridge
+import com.blockstream.data.lightning.LightningSdk
 import com.blockstream.data.lightning.LightningManager
 import com.blockstream.data.lwk.LwkManager
 import com.blockstream.data.utils.Timer
@@ -316,7 +316,7 @@ class SessionManager constructor(
         return session
     }
     
-    suspend fun getLightningBridge(mnemonic: String, isTestnet: Boolean): LightningBridge {
+    suspend fun getLightningBridge(mnemonic: String, isTestnet: Boolean): LightningSdk {
         val lightningLoginData = httpRequestHandler.getWalletIdentifier(
             network = httpRequestHandler.networks.bitcoinElectrum(isTestnet),
             loginCredentialsParams = LoginCredentialsParams(mnemonic = mnemonic),

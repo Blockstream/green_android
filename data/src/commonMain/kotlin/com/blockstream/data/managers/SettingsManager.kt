@@ -121,7 +121,7 @@ class SettingsManager constructor(
         settings.putLong(KEY_COUNTLY_OFFSET, 0L)
     }
 
-    fun isLightningEnabled(): Boolean {
+    fun isLightningAvailable(): Boolean {
         return lightningFeatureEnabled && appSettings.experimentalFeatures
     }
 

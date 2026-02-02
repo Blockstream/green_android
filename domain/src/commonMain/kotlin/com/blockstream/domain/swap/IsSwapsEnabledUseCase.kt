@@ -11,9 +11,9 @@ import com.blockstream.data.database.Database
  * - Swaps are enabled if the wallet is a non‑ephemeral software wallet (i.e., not hardware and
  *   not ephemeral).
  * - Swaps are also enabled if the wallet has a stored Lightning mnemonic credential in the
- *   database: [CredentialType.BOLTZ_MNEMONIC].
+ *   database: [CredentialType.KEYSTORE_BOLTZ_MNEMONIC].
  *
- * This means the presence of a [CredentialType.BOLTZ_MNEMONIC] enables swaps regardless of the
+ * This means the presence of a [CredentialType.KEYSTORE_BOLTZ_MNEMONIC] enables swaps regardless of the
  * wallet type, while software wallets that are not ephemeral are enabled even without it.
  *
  * Notes:
@@ -27,7 +27,7 @@ class IsSwapsEnabledUseCase(private val database: Database) {
      *
      * Enabled when either:
      * - the wallet is software and not ephemeral; or
-     * - a [CredentialType.BOLTZ_MNEMONIC] exists in the database for this wallet.
+     * - a [CredentialType.KEYSTORE_BOLTZ_MNEMONIC] exists in the database for this wallet.
      *
      * @param wallet the target wallet to evaluate
      * @return `true` when swaps are enabled per the rules above; otherwise `false`
@@ -41,7 +41,7 @@ class IsSwapsEnabledUseCase(private val database: Database) {
 
         return (!wallet.isEphemeral && !wallet.isHardware && !wallet.isWatchOnly) || database.getLoginCredential(
             id = wallet.id,
-            credentialType = CredentialType.BOLTZ_MNEMONIC
+            credentialType = CredentialType.KEYSTORE_BOLTZ_MNEMONIC
         ) != null
     }
 }

@@ -98,15 +98,17 @@ class GetReceiveAmountUseCase(
             }
 
             if (accountAsset.account.isLightning) {
-                if (nodeInfo != null) {
+                if (nodeInfo != null && nodeInfo.id.isNotBlank()) {
+                    val totalInboundLiquiditySatoshi = nodeInfo.totalInboundLiquiditySatoshi().takeIf { it > 0 } ?: Long.MAX_VALUE
+
                     val openChannelFee = balance?.satoshi?.let {
-                        if (it > nodeInfo.totalInboundLiquiditySatoshi()) session.lightningSdk.openChannelFee(
+                        if (it > totalInboundLiquiditySatoshi) session.lightningSdk.openChannelFee(
                             it
                         ) else null
                     }
 
                     val isValid =
-                        balance != null && (balance.satoshi >= 0 && balance.satoshi <= nodeInfo.maxReceivableSatoshi() && (balance.satoshi <= nodeInfo.totalInboundLiquiditySatoshi() || (balance.satoshi > (openChannelFee?.feeSatoshi()
+                        balance != null && (balance.satoshi >= 0 && balance.satoshi <= nodeInfo.maxReceivableSatoshi() && (balance.satoshi <= totalInboundLiquiditySatoshi || (balance.satoshi > (openChannelFee?.feeSatoshi()
                             ?: 0))))
 
                     val hint = nodeInfo.maxReceivableSatoshi().toAmountLook(
@@ -120,15 +122,14 @@ class GetReceiveAmountUseCase(
 
                     val error = if (amount.isBlank()) null else {
                         if (balance != null) {
-                            val inboundLiquidity = nodeInfo.totalInboundLiquiditySatoshi()
                             val channelMinimum = openChannelFee?.feeSatoshi() ?: 0
-                            if (balance.satoshi > inboundLiquidity) {
+                            if (balance.satoshi > totalInboundLiquiditySatoshi) {
                                 "id_the_amount_is_above_your_inbound|${
-                                    inboundLiquidity.toAmountLook(
+                                    totalInboundLiquiditySatoshi.toAmountLook(
                                         session = session, withUnit = true, denomination = denomination.notFiat()
                                     ) ?: ""
                                 }|${
-                                    inboundLiquidity.toAmountLook(
+                                    totalInboundLiquiditySatoshi.toAmountLook(
                                         session = session, withUnit = true, denomination = Denomination.fiat(session)
                                     ) ?: ""
                                 }"
@@ -150,7 +151,7 @@ class GetReceiveAmountUseCase(
                         }
                     }
 
-                    val isSetupChannel = nodeInfo.totalInboundLiquiditySatoshi() == 0L
+                    val isSetupChannel = totalInboundLiquiditySatoshi == 0L
 
                     val channelFee = openChannelFee?.feeSatoshi()?.toAmountLook(
                         session = session,
@@ -175,16 +176,16 @@ class GetReceiveAmountUseCase(
                             "id_a_set_up_funding_fee_of_s_s|$channelFee|$channelFeeFiat"
                         }
 
-                        (balance?.satoshi ?: 0) > nodeInfo.totalInboundLiquiditySatoshi() -> {
+                        (balance?.satoshi ?: 0) > totalInboundLiquiditySatoshi -> {
 
-                            val inboundLiquidity = nodeInfo.totalInboundLiquiditySatoshi().toAmountLookOrNa(
+                            val inboundLiquidity = totalInboundLiquiditySatoshi.toAmountLookOrNa(
                                 session = session,
                                 assetId = session.lightningAccount.network.policyAsset,
                                 denomination = denomination.notFiat(),
                                 withUnit = true
                             )
 
-                            val inboundLiquidityFiat = nodeInfo.totalInboundLiquiditySatoshi().toAmountLook(
+                            val inboundLiquidityFiat = totalInboundLiquiditySatoshi.toAmountLook(
                                 session = session,
                                 assetId = session.lightningAccount.network.policyAsset,
                                 denomination = Denomination.fiat(session),
@@ -199,7 +200,7 @@ class GetReceiveAmountUseCase(
 
                     response.copy(isValid = isValid, hint = hint, liquidityFee = liquidityFee, error = error)
                 } else {
-                    response
+                    response.copy(isValid = true)
                 }
             } else if (accountAsset.account.isLiquid && isReverseSubmarineSwap) {
 

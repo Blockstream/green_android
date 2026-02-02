@@ -106,7 +106,7 @@ class ChooseAccountTypeViewModel(greenWallet: GreenWallet, initAsset: AssetBalan
                 if (asset.asset.isAmp) {
                     list += AccountTypeLook(AccountType.AMP_ACCOUNT)
                 } else if (asset.asset.isLightning) {
-                    if (session.supportsLightning() && settingsManager.isLightningEnabled() && !session.isTestnet) {
+                    if (session.supportsLightning() && settingsManager.isLightningAvailable() && !session.isTestnet) {
                         list += AccountTypeLook(
                             AccountType.LIGHTNING,
                             canBeAdded = !session.hasLightning

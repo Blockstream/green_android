@@ -8,8 +8,17 @@ import blockstream_green.common.generated.resources.id_refund_initiated
 import blockstream_green.common.generated.resources.id_sweep
 import blockstream_green.common.generated.resources.id_transfer_funds
 import blockstream_green.common.generated.resources.id_your_transaction_was
-import breez_sdk.RecommendedFees
-import breez_sdk.ReverseSwapFeesRequest
+import com.blockstream.compose.events.Event
+import com.blockstream.compose.events.Events
+import com.blockstream.compose.extensions.previewAccountAsset
+import com.blockstream.compose.extensions.previewAccountAssetBalance
+import com.blockstream.compose.extensions.previewWallet
+import com.blockstream.compose.models.GreenViewModel
+import com.blockstream.compose.navigation.NavData
+import com.blockstream.compose.sideeffects.SideEffect
+import com.blockstream.compose.sideeffects.SideEffects
+import com.blockstream.compose.utils.StringHolder
+import com.blockstream.compose.utils.getStringFromIdOrNull
 import com.blockstream.data.data.Denomination
 import com.blockstream.data.data.FeePriority
 import com.blockstream.data.data.GreenWallet
@@ -17,20 +26,10 @@ import com.blockstream.data.data.SupportData
 import com.blockstream.data.extensions.ifConnected
 import com.blockstream.data.extensions.ifConnectedSuspend
 import com.blockstream.data.extensions.isBlank
-import com.blockstream.compose.extensions.previewAccountAsset
-import com.blockstream.compose.extensions.previewAccountAssetBalance
-import com.blockstream.compose.extensions.previewWallet
 import com.blockstream.data.gdk.data.AccountAssetBalance
+import com.blockstream.data.lightning.LightningFees
 import com.blockstream.data.utils.feeRateWithUnit
 import com.blockstream.data.utils.toAmountLook
-import com.blockstream.compose.events.Event
-import com.blockstream.compose.events.Events
-import com.blockstream.compose.models.GreenViewModel
-import com.blockstream.compose.navigation.NavData
-import com.blockstream.compose.sideeffects.SideEffect
-import com.blockstream.compose.sideeffects.SideEffects
-import com.blockstream.compose.utils.StringHolder
-import com.blockstream.compose.utils.getStringFromIdOrNull
 import com.blockstream.utils.Loggable
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.delay
@@ -68,7 +67,7 @@ abstract class RecoverFundsViewModelAbstract(
     abstract val amountToBeRefundedFiat: StateFlow<String?>
     abstract val hasBitcoinAccount: StateFlow<Boolean>
     abstract val showManualAddress: MutableStateFlow<Boolean>
-    abstract val recommendedFees: StateFlow<RecommendedFees?>
+    abstract val recommendedFees: StateFlow<LightningFees?>
     abstract val onProgressSending: StateFlow<Boolean>
     abstract val feePriority: StateFlow<FeePriority>
 
@@ -117,7 +116,7 @@ class RecoverFundsViewModel(
         }
     }.stateIn(viewModelScope, SharingStarted.WhileSubscribed(), "")
 
-    override val recommendedFees: StateFlow<RecommendedFees?> = flow {
+    override val recommendedFees: StateFlow<LightningFees?> = flow {
         session.ifConnectedSuspend {
             emit(
                 session.lightningSdk.recommendedFees().also {
@@ -320,7 +319,7 @@ class RecoverFundsViewModel(
             if (isSendAll) {
                 val maxReverseSwapAmount = session.lightningSdk.onchainPaymentLimits().maxPayableSat
                 val minAmount =
-                    session.lightningSdk.fetchReverseSwapFees(ReverseSwapFeesRequest()).min
+                    session.lightningSdk.fetchReverseSwapFees().min
 
                 if (maxReverseSwapAmount < minAmount) {
                     throw Exception(
@@ -335,9 +334,7 @@ class RecoverFundsViewModel(
                     )
                 }
 
-                val reverseSwapInfo = session.lightningSdk.fetchReverseSwapFees(
-                    ReverseSwapFeesRequest(maxReverseSwapAmount)
-                )
+                val reverseSwapInfo = session.lightningSdk.fetchReverseSwapFees(maxReverseSwapAmount)
                 val totalFees = reverseSwapInfo.totalFees
 
                 amountToBeRefunded.value = (maxReverseSwapAmount - (totalFees ?: 0u)).toLong()
@@ -485,13 +482,13 @@ class RecoverFundsViewModel(
                     swapAddress = onChainAddress ?: "",
                     toAddress = address,
                     satPerVbyte = getFee()?.toUInt()
-                ).refundTxId
+                )
             } else {
                 // Redeem Onchain funds from Lightning node
                 session.lightningSdk.redeemOnchainFunds(
                     toAddress = address,
                     satPerVbyte = getFee()?.toUInt()
-                ).txid
+                )
             }
         }, preAction = {
             onProgress.value = true
@@ -545,7 +542,7 @@ class RecoverFundsViewModelPreview(greenWallet: GreenWallet) : RecoverFundsViewM
     override val amount: StateFlow<String> = MutableStateFlow("1 BTC")
     override val hasBitcoinAccount: StateFlow<Boolean> = MutableStateFlow(false)
     override val showManualAddress: MutableStateFlow<Boolean> = MutableStateFlow(false)
-    override val recommendedFees: StateFlow<RecommendedFees?> = MutableStateFlow(null)
+    override val recommendedFees: StateFlow<LightningFees?> = MutableStateFlow(null)
     override val onProgressSending: MutableStateFlow<Boolean> = MutableStateFlow(false)
     override val feePriority: StateFlow<FeePriority> = MutableStateFlow(FeePriority.Low())
     override val error: StateFlow<String?> = MutableStateFlow(null)

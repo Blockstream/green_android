@@ -49,6 +49,7 @@ import com.blockstream.data.data.isEmpty
 import com.blockstream.data.database.wallet.LoginCredentials
 import com.blockstream.data.extensions.biometrics
 import com.blockstream.data.extensions.boltzMnemonic
+import com.blockstream.data.extensions.greenlightCredentials
 import com.blockstream.data.extensions.hwWatchOnlyCredentials
 import com.blockstream.data.extensions.isConnectionError
 import com.blockstream.data.extensions.isNotAuthorized
@@ -65,10 +66,12 @@ import com.blockstream.data.gdk.data.Credentials
 import com.blockstream.data.gdk.data.TorEvent
 import com.blockstream.data.gdk.device.DeviceResolver
 import com.blockstream.data.gdk.params.LoginCredentialsParams
+import com.blockstream.data.lightning.GreenlightMnemonicAndCredentials
 import com.blockstream.data.managers.DeviceManager
 import com.blockstream.data.usecases.EnableHardwareWatchOnlyUseCase
 import com.blockstream.domain.lightning.LightningNodeIdUseCase
 import com.blockstream.domain.wallet.SaveDerivedBoltzMnemonicUseCase
+import com.blockstream.domain.wallet.SaveGreenlightMnemonicAndCredentialsUseCase
 import com.blockstream.utils.Loggable
 import kotlinx.coroutines.CompletableDeferred
 import kotlinx.coroutines.Dispatchers
@@ -122,6 +125,7 @@ class LoginViewModel constructor(
 
     override val isLoginRequired: Boolean = false
 
+    private val saveGreenlightMnemonicAndCredentialsUseCase: SaveGreenlightMnemonicAndCredentialsUseCase by inject()
     private val saveDerivedBoltzMnemonicUseCase: SaveDerivedBoltzMnemonicUseCase by inject()
     private val lightningNodeIdUseCase: LightningNodeIdUseCase by inject()
     private val enableHardwareWatchOnlyUseCase: EnableHardwareWatchOnlyUseCase by inject()
@@ -525,21 +529,34 @@ class LoginViewModel constructor(
         })
     }
 
+    private suspend fun loadGreenlightMnemonicAndCredentials(): GreenlightMnemonicAndCredentials? {
+        val mnemonic = database.getLoginCredential(
+            id = greenWallet.id,
+            credentialType = CredentialType.KEYSTORE_LIGHTNING_MNEMONIC
+        )?.lightningMnemonic(greenKeystore) {
+            postSideEffect(SideEffects.ErrorSnackbar(it))
+        } ?: return null
+
+        val credentials = database.getLoginCredential(
+            id = greenWallet.id,
+            credentialType = CredentialType.KEYSTORE_GREENLIGHT_CREDENTIALS
+        )?.greenlightCredentials(greenKeystore) {
+            postSideEffect(SideEffects.ErrorSnackbar(it))
+        }
+
+        return GreenlightMnemonicAndCredentials(mnemonic = mnemonic, credentials = credentials)
+    }
+
     private fun loginWithDevice() {
         deviceOrNull?.gdkHardwareWallet?.also { gdkHardwareWallet ->
             login {
 
                 // Do a database query as the StateFlow is not yet initialized
-                val derivedLightningMnemonic = database.getLoginCredential(
-                    id = greenWallet.id,
-                    credentialType = CredentialType.LIGHTNING_MNEMONIC
-                )?.lightningMnemonic(greenKeystore) {
-                    postSideEffect(SideEffects.ErrorSnackbar(it))
-                }
+                val greenlightMnemonicAndCredentials = loadGreenlightMnemonicAndCredentials()
 
                 val derivedBoltzMnemonic = database.getLoginCredential(
                     id = greenWallet.id,
-                    credentialType = CredentialType.BOLTZ_MNEMONIC
+                    credentialType = CredentialType.KEYSTORE_BOLTZ_MNEMONIC
                 )?.boltzMnemonic(greenKeystore) {
                     postSideEffect(SideEffects.ErrorSnackbar(it))
                 }
@@ -548,7 +565,7 @@ class LoginViewModel constructor(
                     wallet = greenWallet,
                     device = device,
                     hardwareWalletResolver = DeviceResolver(gdkHardwareWallet, this),
-                    derivedLightningMnemonic = derivedLightningMnemonic,
+                    greenlightMnemonicAndCredentials = greenlightMnemonicAndCredentials,
                     derivedBoltzMnemonic = derivedBoltzMnemonic,
                     isSmartDiscovery = !isWatchOnlyUpgrade,
                     hwInteraction = this
@@ -605,6 +622,11 @@ class LoginViewModel constructor(
         val isRestore = greenWallet.xPubHashId.isEmpty()
 
         login(loginCredentials) {
+
+            val greenlightMnemonicAndCredentials = if (!isBip39Login) {
+                loadGreenlightMnemonicAndCredentials()
+            } else null
+
             // if bip39 passphrase, don't initialize the session as we need to re-connect || initializeSession = bip39Passphrase.isNullOrBlank())
             session.loginWithWallet(
                 wallet = greenWallet,
@@ -615,7 +637,7 @@ class LoginViewModel constructor(
                     ) else null,
                 loginCredentials = loginCredentials,
                 isRestore = isRestore,
-                isLightningEnabled = !isBip39Login && walletSettingsManager.isLightningEnabled(walletId = greenWallet.id),
+                greenlightMnemonicAndCredentials = greenlightMnemonicAndCredentials,
                 initializeSession = !isBip39Login
             )
         }
@@ -658,16 +680,11 @@ class LoginViewModel constructor(
                     })
 
                     // Do a database query as the StateFlow is not yet initialized
-                    val derivedLightningMnemonic = database.getLoginCredential(
-                        id = greenWallet.id,
-                        credentialType = CredentialType.LIGHTNING_MNEMONIC
-                    )?.lightningMnemonic(greenKeystore) {
-                        postSideEffect(SideEffects.ErrorSnackbar(it))
-                    }
+                    val greenlightMnemonicAndCredentials = loadGreenlightMnemonicAndCredentials()
 
                     val derivedBoltzMnemonic = database.getLoginCredential(
                         id = greenWallet.id,
-                        credentialType = CredentialType.BOLTZ_MNEMONIC
+                        credentialType = CredentialType.KEYSTORE_BOLTZ_MNEMONIC
                     )?.boltzMnemonic(greenKeystore) {
                         postSideEffect(SideEffects.ErrorSnackbar(it))
                     }
@@ -676,7 +693,7 @@ class LoginViewModel constructor(
                         wallet = greenWallet,
                         loginCredentials = loginCredentials,
                         watchOnlyCredentials = watchOnlyCredentials,
-                        derivedLightningMnemonic = derivedLightningMnemonic,
+                        greenlightMnemonicAndCredentials = greenlightMnemonicAndCredentials,
                         derivedBoltzMnemonic = derivedBoltzMnemonic
                     )
                 }
@@ -780,10 +797,18 @@ class LoginViewModel constructor(
 
             logInMethod.invoke(session)
 
+            // Migrate to Greenlight Credentials
+            if(session.hasLightning && database.getLoginCredential(
+                    id = greenWallet.id,
+                    credentialType = CredentialType.KEYSTORE_GREENLIGHT_CREDENTIALS
+                ) == null) {
+                saveGreenlightMnemonicAndCredentialsUseCase.invoke(session = session, wallet = greenWallet)
+            }
+
             // Enable Swaps for old wallets
             if (!greenWallet.isHardware && !greenWallet.isWatchOnly && !isBip39Login && database.getLoginCredential(
                     id = greenWallet.id,
-                    credentialType = CredentialType.BOLTZ_MNEMONIC
+                    credentialType = CredentialType.KEYSTORE_BOLTZ_MNEMONIC
                 ) == null
             ) {
                 saveDerivedBoltzMnemonicUseCase(session = session, wallet = greenWallet)

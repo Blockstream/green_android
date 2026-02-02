@@ -3,8 +3,8 @@ package com.blockstream.compose.looks.account
 import blockstream_green.common.generated.resources.Res
 import blockstream_green.common.generated.resources.id_your_current_receive_capacity
 import blockstream_green.common.generated.resources.id_your_lightning_account_has_onchain
-import breez_sdk.NodeState
 import com.blockstream.data.gdk.GdkSession
+import com.blockstream.data.lightning.LightningNodeState
 import com.blockstream.data.lightning.isLoading
 import com.blockstream.data.lightning.onchainBalanceSatoshi
 import com.blockstream.data.lightning.totalInboundLiquiditySatoshi
@@ -14,7 +14,7 @@ import org.jetbrains.compose.resources.getString
 data class LightningInfoLook constructor(val sweep: String? = null, val capacity: String? = null) {
 
     companion object {
-        suspend fun create(session: GdkSession, nodeState: NodeState): LightningInfoLook? {
+        suspend fun create(session: GdkSession, nodeState: LightningNodeState): LightningInfoLook? {
             if (nodeState.isLoading() || (nodeState.onchainBalanceSatoshi() == 0L && nodeState.totalInboundLiquiditySatoshi() == 0L)) {
                 return null
             }

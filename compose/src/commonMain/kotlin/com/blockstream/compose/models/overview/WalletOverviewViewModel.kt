@@ -3,7 +3,7 @@ package com.blockstream.compose.models.overview
 import androidx.lifecycle.viewModelScope
 import blockstream_green.common.generated.resources.Res
 import blockstream_green.common.generated.resources.id_home
-import breez_sdk.HealthCheckStatus
+import com.blockstream.data.lightning.LightningHealthStatus
 import com.blockstream.compose.events.Event
 import com.blockstream.compose.events.Events
 import com.blockstream.compose.extensions.launchIn
@@ -221,8 +221,8 @@ class WalletOverviewViewModel(
             banner?.let { AlertType.Banner(it) },
             if (session.isTestnet) AlertType.TestnetWarning else null,
             AlertType.FailedNetworkLogin.takeIf { failedNetworkLogins.isNotEmpty() },
-            lspHeath?.takeIf { it != HealthCheckStatus.OPERATIONAL }
-                ?.let { AlertType.LspStatus(maintenance = it == HealthCheckStatus.MAINTENANCE) },
+            lspHeath?.takeIf { it != LightningHealthStatus.OPERATIONAL }
+                ?.let { AlertType.LspStatus(maintenance = it == LightningHealthStatus.MAINTENANCE) },
         )
     }.filter { session.isConnected }
         .stateIn(viewModelScope, SharingStarted.WhileSubscribed(5000L), listOf())

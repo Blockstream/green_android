@@ -707,7 +707,7 @@ class WalletSettingsViewModel(
             )
         } else {
             if (accountType.isLightning()) {
-                sideEffect = if (session.isHardwareWallet) {
+                sideEffect = if (greenWallet.isHardware) {
                     LocalSideEffects.ExperimentalFeaturesDialog(
                         SideEffects.NavigateTo(
                             NavigateDestinations.JadeQR(
@@ -768,7 +768,7 @@ class WalletSettingsViewModel(
 
             AccountType.AMP_ACCOUNT -> session.liquidMultisig!!
             AccountType.TWO_OF_THREE -> session.bitcoinMultisig!!
-            AccountType.LIGHTNING -> session.lightning!!
+            AccountType.LIGHTNING -> session.lightning
             AccountType.UNKNOWN -> throw Exception("Network not found")
         }
     }

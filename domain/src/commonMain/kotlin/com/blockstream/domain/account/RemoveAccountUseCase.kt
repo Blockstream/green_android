@@ -8,16 +8,13 @@ import com.blockstream.data.gdk.data.Account
 import com.blockstream.data.managers.WalletSettingsManager
 
 class RemoveAccountUseCase(
-    private val database: Database,
-    private val walletSettingsManager: WalletSettingsManager
+    private val database: Database
 ) {
 
     suspend operator fun invoke(session: GdkSession, wallet: GreenWallet, account: Account) {
         if (account.isLightning) {
-
-            walletSettingsManager.setLightningEnabled(walletId = wallet.id, enabled = false)
-
-            database.deleteLoginCredentials(wallet.id, CredentialType.LIGHTNING_MNEMONIC)
+            database.deleteLoginCredentials(wallet.id, CredentialType.KEYSTORE_LIGHTNING_MNEMONIC)
+            database.deleteLoginCredentials(wallet.id, CredentialType.KEYSTORE_GREENLIGHT_CREDENTIALS)
 
             session.removeAccount(account)
         }

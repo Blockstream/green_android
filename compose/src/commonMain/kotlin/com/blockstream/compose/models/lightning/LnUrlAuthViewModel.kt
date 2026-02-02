@@ -3,8 +3,6 @@ package com.blockstream.compose.models.lightning
 import androidx.lifecycle.viewModelScope
 import blockstream_green.common.generated.resources.Res
 import blockstream_green.common.generated.resources.id_authentication_successful
-import breez_sdk.LnUrlAuthRequestData
-import breez_sdk.LnUrlCallbackStatus
 import com.blockstream.data.data.GreenWallet
 import com.blockstream.data.data.SupportData
 import com.blockstream.compose.extensions.previewWallet
@@ -14,18 +12,20 @@ import com.blockstream.compose.models.GreenViewModel
 import com.blockstream.compose.navigation.NavData
 import com.blockstream.compose.sideeffects.SideEffects
 import com.blockstream.compose.utils.StringHolder
+import com.blockstream.data.lightning.LnUrlAuthData
+import com.blockstream.data.lightning.LnUrlAuthOutcome
 import kotlinx.coroutines.launch
 
 abstract class LnUrlAuthViewModelAbstract(
     greenWallet: GreenWallet,
-    val requestData: LnUrlAuthRequestData
+    val requestData: LnUrlAuthData
 ) :
     GreenViewModel(greenWalletOrNull = greenWallet) {
 
     override fun screenName(): String = "LNURLAuth"
 }
 
-class LnUrlAuthViewModel(greenWallet: GreenWallet, requestData: LnUrlAuthRequestData) :
+class LnUrlAuthViewModel(greenWallet: GreenWallet, requestData: LnUrlAuthData) :
     LnUrlAuthViewModelAbstract(greenWallet = greenWallet, requestData = requestData) {
 
     init {
@@ -46,8 +46,8 @@ class LnUrlAuthViewModel(greenWallet: GreenWallet, requestData: LnUrlAuthRequest
     private fun auth() {
         doAsync({
             session.lightningSdk.authLnUrl(requestData = requestData).also {
-                if (it is LnUrlCallbackStatus.ErrorStatus) {
-                    throw Exception(it.data.reason)
+                if (it is LnUrlAuthOutcome.Error) {
+                    throw Exception(it.reason)
                 }
             }
         }, postAction = {}, onSuccess = {
@@ -79,7 +79,7 @@ class LnUrlAuthViewModel(greenWallet: GreenWallet, requestData: LnUrlAuthRequest
 class LnUrlAuthViewModelPreview(greenWallet: GreenWallet) :
     LnUrlAuthViewModelAbstract(
         greenWallet = greenWallet,
-        requestData = LnUrlAuthRequestData("k1", "domain", "url", "action")
+        requestData = LnUrlAuthData(k1 = "k1", domain = "domain", url = "url", action = "action")
     ) {
     companion object {
         fun preview(): LnUrlAuthViewModelPreview {

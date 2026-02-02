@@ -80,12 +80,10 @@ fun commonModules(appConfig: AppConfig): List<Module> {
                     Base64.decode(base64).commonToUtf8String()
                 } ?: "",
                 deviceKey = appConfig.greenlightKey?.takeIf { it.isNotBlank() }?.let {
-                    Base64.decode(it).toUByteArray().toTypedArray()
-                        .toList()
+                    Base64.decode(it)
                 },
                 deviceCert = appConfig.greenlightCert?.takeIf { it.isNotBlank() }?.let {
-                    Base64.decode(it).toUByteArray().toTypedArray()
-                        .toList()
+                    Base64.decode(it)
                 }
             )
 

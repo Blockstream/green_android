@@ -1,11 +1,10 @@
 package com.blockstream.domain.send
 
-import breez_sdk.InputType
 import com.blockstream.data.data.Denomination
 import com.blockstream.data.extensions.getSafeQueryParameter
 import com.blockstream.data.extensions.tryCatch
 import com.blockstream.data.gdk.GdkSession
-import com.blockstream.data.lightning.amountSatoshi
+import com.blockstream.data.lightning.LightningInputType
 import com.blockstream.data.utils.UserInput
 import com.eygraber.uri.toKmpUriOrNull
 
@@ -65,8 +64,8 @@ class GetSendAmountUseCase() {
             if (network != null) {
 
                 if (network.isLightning) {
-                    if (inputType is InputType.Bolt11) {
-                        inputType.invoice.amountSatoshi()
+                    if (inputType is LightningInputType.Bolt11) {
+                        inputType.invoice.amountSatoshi
                     } else null
                 } else {
                     val assetId = tryCatch { input.toKmpUriOrNull()?.getSafeQueryParameter("assetid") }

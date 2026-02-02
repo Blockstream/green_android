@@ -2,6 +2,7 @@ package com.blockstream.data.lwk
 
 import com.blockstream.data.data.GreenWallet
 import com.blockstream.data.di.ApplicationScope
+import com.blockstream.data.extensions.launchSafe
 import com.blockstream.utils.Loggable
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.sync.Mutex
@@ -29,7 +30,7 @@ class LwkManager constructor(
     fun release(lwk: Lwk?) {
         if (lwk == null) return
 
-        scope.launch {
+        scope.launchSafe {
             mutex.withLock {
                 logger.i { "Release Lwk" }
 

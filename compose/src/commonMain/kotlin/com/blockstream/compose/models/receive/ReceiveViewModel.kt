@@ -678,13 +678,13 @@ class ReceiveViewModel(greenWallet: GreenWallet, accountAsset: AccountAsset) :
                     withUnit = true
                 )
 
-                _lightningInvoicePaymentHash.value = response.lnInvoice.paymentHash
+                _lightningInvoicePaymentHash.value = response.invoice.paymentHash
 
-                updateAddress(response.lnInvoice.bolt11)
+                updateAddress(response.invoice.bolt11)
 
-                _invoiceExpirationTimestamp.value = response.lnInvoice.expireIn().toEpochMilliseconds()
-                _invoiceExpiration.value = response.lnInvoice.expireIn().formatAuto()
-                _invoiceDescription.value = response.lnInvoice.description
+                _invoiceExpirationTimestamp.value = response.invoice.expireIn().toEpochMilliseconds()
+                _invoiceExpiration.value = response.invoice.expireIn().formatAuto()
+                _invoiceDescription.value = response.invoice.description
             }
         }, onSuccess = {
 

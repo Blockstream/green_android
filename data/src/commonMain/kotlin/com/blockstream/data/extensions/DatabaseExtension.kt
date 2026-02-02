@@ -45,8 +45,11 @@ val List<LoginCredentials>.biometricsMnemonic
 val List<LoginCredentials>.passwordPinData
     get() = find { it.credential_type == CredentialType.PASSWORD_PINDATA }
 
+val List<LoginCredentials>.greenlightCredentials
+    get() = find { it.credential_type == CredentialType.KEYSTORE_GREENLIGHT_CREDENTIALS }
 val List<LoginCredentials>.lightningMnemonic
-    get() = find { it.credential_type == CredentialType.LIGHTNING_MNEMONIC }
+    get() = find { it.credential_type == CredentialType.KEYSTORE_LIGHTNING_MNEMONIC }
+
 
 val List<LoginCredentials>.watchOnlyCredentials
     get() = find {
@@ -71,8 +74,26 @@ fun LoginCredentials.lightningMnemonic(
     onError: ((exception: Exception) -> Unit) = {}
 ): String? {
     return try {
-        if (credential_type != CredentialType.LIGHTNING_MNEMONIC) throw Exception("credential_type is not LIGHTNING_MNEMONIC")
+        check(credential_type == CredentialType.KEYSTORE_LIGHTNING_MNEMONIC) {
+            "credential_type is not KEYSTORE_LIGHTNING_MNEMONIC"
+        }
         greenKeystore.decryptData(encrypted_data!!).decodeToString()
+    } catch (e: Exception) {
+        e.printStackTrace()
+        onError.invoke(e)
+        null
+    }
+}
+
+fun LoginCredentials.greenlightCredentials(
+    greenKeystore: GreenKeystore,
+    onError: ((exception: Exception) -> Unit) = {}
+): ByteArray? {
+    return try {
+        check(credential_type == CredentialType.KEYSTORE_GREENLIGHT_CREDENTIALS) {
+            "credential_type is not KEYSTORE_GREENLIGHT_CREDENTIALS"
+        }
+        greenKeystore.decryptData(encrypted_data!!)
     } catch (e: Exception) {
         e.printStackTrace()
         onError.invoke(e)
@@ -85,7 +106,9 @@ fun LoginCredentials.boltzMnemonic(
     onError: ((exception: Exception) -> Unit) = {}
 ): String? {
     return try {
-        if (credential_type != CredentialType.BOLTZ_MNEMONIC) throw Exception("credential_type is not BOLTZ_MNEMONIC")
+        check(credential_type == CredentialType.KEYSTORE_BOLTZ_MNEMONIC) {
+            "credential_type is not KEYSTORE_BOLTZ_MNEMONIC"
+        }
         greenKeystore.decryptData(encrypted_data!!).decodeToString()
     } catch (e: Exception) {
         e.printStackTrace()
@@ -99,7 +122,9 @@ fun LoginCredentials.mnemonic(
     onError: ((exception: Exception) -> Unit) = {}
 ): String? {
     return try {
-        if (credential_type != CredentialType.KEYSTORE_MNEMONIC) throw Exception("credential_type is not KEYSTORE_MNEMONIC")
+        check(credential_type == CredentialType.KEYSTORE_MNEMONIC) {
+            "credential_type is not KEYSTORE_MNEMONIC"
+        }
         greenKeystore.decryptData(encrypted_data!!).decodeToString()
     } catch (e: Exception) {
         e.printStackTrace()

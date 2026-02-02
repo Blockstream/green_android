@@ -47,7 +47,7 @@ configurations.all {
 
 task("printLwkVersion") {
     doLast {
-        val lwkVersion = libs.versions.lwk.get()
+        val lwkVersion = libs.versions.blockstream.lwk.get()
         println("LWK declared version: $lwkVersion")
 
         if (lwkVersion.endsWith("-SNAPSHOT")) {

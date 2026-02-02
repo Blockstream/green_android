@@ -19,16 +19,15 @@ import com.blockstream.data.gdk.device.HardwareWalletInteraction
 import com.blockstream.data.gdk.params.SubAccountParams
 import com.blockstream.data.managers.WalletSettingsManager
 import com.blockstream.domain.lightning.LightningNodeIdUseCase
-import com.blockstream.domain.wallet.SaveDerivedLightningMnemonicUseCase
+import com.blockstream.domain.wallet.SaveGreenlightMnemonicAndCredentialsUseCase
 import com.blockstream.utils.Loggable
 
 class CreateAccountUseCase(
     private val database: Database,
     private val greenKeystore: GreenKeystore,
-    private val walletSettingsManager: WalletSettingsManager,
     private val countly: CountlyBase,
     private val lightningNodeIdUseCase: LightningNodeIdUseCase,
-    private val saveDerivedLightningMnemonicUseCase: SaveDerivedLightningMnemonicUseCase
+    private val saveGreenlightMnemonicAndCredentialsUseCase: SaveGreenlightMnemonicAndCredentialsUseCase
 ) : Loggable() {
 
     suspend operator fun invoke(
@@ -49,10 +48,9 @@ class CreateAccountUseCase(
 
             // Save Lightning mnemonic
             if (!wallet.isEphemeral) {
-                walletSettingsManager.setLightningEnabled(walletId = wallet.id, true)
+                saveGreenlightMnemonicAndCredentialsUseCase.invoke(session = session, wallet = wallet)
 
-                saveDerivedLightningMnemonicUseCase.invoke(session = session, wallet = wallet, mnemonic = mnemonic)
-
+                // Check if this is needed, as we already init lwk for swaps in general
                 session.initLwkIfNeeded(wallet = wallet, mnemonic = mnemonic)
             }
 

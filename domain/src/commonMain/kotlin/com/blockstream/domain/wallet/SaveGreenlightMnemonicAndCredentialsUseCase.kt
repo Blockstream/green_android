@@ -19,7 +19,7 @@ import kotlinx.coroutines.withContext
  *   `session.deriveLightningMnemonic()`.
  * - Encrypts the mnemonic bytes via [GreenKeystore.encryptData] on the IO dispatcher.
  * - Stores/replaces the credential in the [Database] tied to the [wallet] with
- *   type [CredentialType.LIGHTNING_MNEMONIC] under the current Lightning network id
+ *   type [CredentialType.KEYSTORE_LIGHTNING_MNEMONIC] under the current Lightning network id
  *   (`session.lightning!!.id`).
  *
  * Behavior and guarantees:
@@ -27,12 +27,8 @@ import kotlinx.coroutines.withContext
  * - Read/write effects: writes an encrypted credential record to the database; does not mutate
  *   session state.
  * - Thread‑safety: coroutine‑safe; encryption is executed on `Dispatchers.IO`.
- *
- * Notes:
- * - The optional [mnemonic] parameter is currently ignored; the mnemonic is always derived from
- *   the [session]. This parameter exists for potential future use.
  */
-class SaveDerivedLightningMnemonicUseCase(
+class SaveGreenlightMnemonicAndCredentialsUseCase(
     private val database: Database,
     val greenKeystore: GreenKeystore,
 ) {
@@ -43,7 +39,7 @@ class SaveDerivedLightningMnemonicUseCase(
      * Steps:
      * 1. Derive the mnemonic from [session].
      * 2. Encrypt it with [greenKeystore].
-     * 3. Store it in [database] as a [CredentialType.LIGHTNING_MNEMONIC] credential for the
+     * 3. Store it in [database] as a [CredentialType.KEYSTORE_LIGHTNING_MNEMONIC] credential for the
      *    Lightning network associated with the current [session].
      *
      * Error handling: exceptions are caught and logged via `printStackTrace()`; no exception is
@@ -52,23 +48,39 @@ class SaveDerivedLightningMnemonicUseCase(
      * @param session the active session used to derive the Lightning mnemonic and to resolve the
      *        Lightning network id
      * @param wallet the target wallet owning the resulting credential
-     * @param mnemonic currently unused; reserved for future use where a caller‑provided mnemonic
-     *        may be saved instead of deriving from [session]
      */
     suspend operator fun invoke(
-        session: GdkSession, wallet: GreenWallet, mnemonic: String? = null,
+        session: GdkSession, wallet: GreenWallet
     ) {
         tryCatch {
-            val encryptedData = withContext(context = Dispatchers.IO) {
-                greenKeystore.encryptData(session.deriveLightningMnemonic().encodeToByteArray())
+            val derivedMnemonic = session.deriveLightningMnemonic()
+
+            val encryptedMnemonic = withContext(context = Dispatchers.IO) {
+                greenKeystore.encryptData(derivedMnemonic.encodeToByteArray())
             }
 
             database.replaceLoginCredential(
                 createLoginCredentials(
                     walletId = wallet.id,
                     network = session.lightning.id,
-                    credentialType = CredentialType.LIGHTNING_MNEMONIC,
-                    encryptedData = encryptedData
+                    credentialType = CredentialType.KEYSTORE_LIGHTNING_MNEMONIC,
+                    encryptedData = encryptedMnemonic
+                )
+            )
+
+
+            val credentials = session.lightningSdk.getNodeCredentials(derivedMnemonic)
+
+            val encryptedCredentials = withContext(context = Dispatchers.IO) {
+                greenKeystore.encryptData(credentials)
+            }
+
+            database.replaceLoginCredential(
+                createLoginCredentials(
+                    walletId = wallet.id,
+                    network = session.lightning.id,
+                    credentialType = CredentialType.KEYSTORE_GREENLIGHT_CREDENTIALS,
+                    encryptedData = encryptedCredentials
                 )
             )
         }

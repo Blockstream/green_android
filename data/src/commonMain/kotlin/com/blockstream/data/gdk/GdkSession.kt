@@ -1,10 +1,5 @@
 package com.blockstream.data.gdk
 
-import breez_sdk.BreezEvent
-import breez_sdk.InputType
-import breez_sdk.LnUrlPayResult
-import breez_sdk.ReceivePaymentResponse
-import breez_sdk.SwapInfo
 import co.touchlab.stately.collections.ConcurrentMutableMap
 import com.blockstream.data.BITS_UNIT
 import com.blockstream.data.BTC_POLICY_ASSET
@@ -111,9 +106,14 @@ import com.blockstream.data.gdk.params.UnspentOutputsPrivateKeyParams
 import com.blockstream.data.gdk.params.UpdateSubAccountParams
 import com.blockstream.data.gdk.params.ValidateAddresseesParams
 import com.blockstream.data.lightning.ConnectStatus
-import com.blockstream.data.lightning.LightningBridge
+import com.blockstream.data.lightning.GreenlightMnemonicAndCredentials
+import com.blockstream.data.lightning.LightningSdk
+import com.blockstream.data.lightning.LightningEvent
+import com.blockstream.data.lightning.LightningInputType
 import com.blockstream.data.lightning.LightningManager
-import com.blockstream.data.lightning.amountSatoshi
+import com.blockstream.data.lightning.LightningReceivePayment
+import com.blockstream.data.lightning.LightningSwapInfo
+import com.blockstream.data.lightning.LnUrlPayOutcome
 import com.blockstream.data.lightning.expireIn
 import com.blockstream.data.lightning.fromInvoice
 import com.blockstream.data.lightning.fromLnUrlPay
@@ -480,7 +480,7 @@ class GdkSession constructor(
     private var _accountEmptiedEvent: Account? = null
     private var _walletActiveEventInvalidated = true
 
-    var lightningSdkOrNull: LightningBridge? = null
+    var lightningSdkOrNull: LightningSdk? = null
         private set
 
     val lightningSdk
@@ -534,12 +534,6 @@ class GdkSession constructor(
             }.also {
                 _enrichedAssetsFlow.value = it ?: listOf()
             }
-        }
-    }
-
-    fun reportLightningError(paymentHash: String) {
-        lightningSdkOrNull?.also {
-            it.reportIssue(paymentHash)
         }
     }
 
@@ -832,7 +826,7 @@ class GdkSession constructor(
         hasLightning = false
         _lightningAccount = null
 
-        lightningSdkOrNull?.release()
+        lightningManager.release(lightningSdkOrNull)
         lightningSdkOrNull = null
 
         lwkManager.release(lwkOrNull)
@@ -1022,7 +1016,12 @@ class GdkSession constructor(
         }
 
         if (!hasLightning) {
-            val connectStatus = connectToGreenlight(mnemonic = mnemonic ?: deriveLightningMnemonic(), restoreOnly = false)
+
+            val connectStatus = connectToGreenlight(
+                mnemonicAndCredentials = GreenlightMnemonicAndCredentials(
+                    mnemonic = mnemonic ?: deriveLightningMnemonic(), credentials = null
+                ), restoreOnly = false
+            )
 
             if (connectStatus == ConnectStatus.Failed) {
                 throw Exception("Something went wrong while initiating your Lightning account")
@@ -1169,7 +1168,12 @@ class GdkSession constructor(
 
                     if (network.isLightning) {
                         // Connect SDK
-                        connectToGreenlight(mnemonic = deriveLightningMnemonic(), restoreOnly = false)
+                        connectToGreenlight(
+                            mnemonicAndCredentials = GreenlightMnemonicAndCredentials(
+                                mnemonic = deriveLightningMnemonic(),
+                                credentials = byteArrayOf()
+                            ), restoreOnly = false
+                        )
                     } else {
                         try {
                             gdk.connect(gdkSession(network), createConnectionParams(network))
@@ -1226,7 +1230,7 @@ class GdkSession constructor(
         pin: String? = null,
         mnemonic: String? = null,
         loginCredentials: LoginCredentials,
-        isLightningEnabled: Boolean,
+        greenlightMnemonicAndCredentials: GreenlightMnemonicAndCredentials?,
         isRestore: Boolean = false,
         initializeSession: Boolean = true,
     ): LoginData {
@@ -1244,8 +1248,8 @@ class GdkSession constructor(
                     pinData = loginCredentials.pin_data
                 )
             }!!,
+            greenlightMnemonicAndCredentials = greenlightMnemonicAndCredentials,
             isRestore = isRestore,
-            isLightningEnabled = isLightningEnabled,
             initializeSession = initializeSession
         )
     }
@@ -1259,7 +1263,6 @@ class GdkSession constructor(
         isSmartDiscovery: Boolean,
         isCreate: Boolean,
         isRestore: Boolean,
-        isLightningEnabled: Boolean = false,
     ): LoginData {
         return loginWithLoginCredentials(
             prominentNetwork = prominentNetwork(isTestnet),
@@ -1269,7 +1272,6 @@ class GdkSession constructor(
             isSmartDiscovery = isSmartDiscovery,
             isCreate = isCreate,
             isRestore = isRestore,
-            isLightningEnabled = isLightningEnabled,
             initializeSession = initializeSession
         )
     }
@@ -1278,14 +1280,14 @@ class GdkSession constructor(
         wallet: GreenWallet,
         loginCredentials: LoginCredentials? = null,
         watchOnlyCredentials: MultipleWatchOnlyCredentials,
-        derivedLightningMnemonic: String? = null,
+        greenlightMnemonicAndCredentials: GreenlightMnemonicAndCredentials? = null,
         derivedBoltzMnemonic: String? = null,
     ) {
         loginWatchOnly(
             network = prominentNetwork(wallet, loginCredentials),
             wallet = wallet,
             watchOnlyCredentials = watchOnlyCredentials,
-            derivedLightningMnemonic = derivedLightningMnemonic,
+            greenlightMnemonicAndCredentials = greenlightMnemonicAndCredentials,
             derivedBoltzMnemonic = derivedBoltzMnemonic
         )
     }
@@ -1294,14 +1296,14 @@ class GdkSession constructor(
         network: Network,
         wallet: GreenWallet?,
         watchOnlyCredentials: MultipleWatchOnlyCredentials,
-        derivedLightningMnemonic: String? = null,
+        greenlightMnemonicAndCredentials: GreenlightMnemonicAndCredentials? = null,
         derivedBoltzMnemonic: String? = null,
     ): LoginData {
         return loginWatchOnly(
             network = network,
             wallet = wallet,
             loginCredentialsParams = watchOnlyCredentials.toLoginCredentials(),
-            derivedLightningMnemonic = derivedLightningMnemonic,
+            greenlightMnemonicAndCredentials = greenlightMnemonicAndCredentials,
             derivedBoltzMnemonic = derivedBoltzMnemonic
         )
     }
@@ -1325,7 +1327,7 @@ class GdkSession constructor(
     private suspend fun loginWatchOnly(
         network: Network, wallet: GreenWallet?,
         loginCredentialsParams: LoginCredentialsParams,
-        derivedLightningMnemonic: String? = null,
+        greenlightMnemonicAndCredentials: GreenlightMnemonicAndCredentials? = null,
         derivedBoltzMnemonic: String? = null
     ): LoginData {
         val initNetworks = loginCredentialsParams.multipleWatchOnlyCredentials?.credentials?.keys?.map {
@@ -1337,7 +1339,7 @@ class GdkSession constructor(
             initNetworks = initNetworks,
             wallet = wallet,
             walletLoginCredentialsParams = loginCredentialsParams,
-            derivedLightningMnemonic = derivedLightningMnemonic,
+            greenlightMnemonicAndCredentials = greenlightMnemonicAndCredentials,
             derivedBoltzMnemonic = derivedBoltzMnemonic
         )
     }
@@ -1345,7 +1347,7 @@ class GdkSession constructor(
     suspend fun loginWithDevice(
         wallet: GreenWallet,
         device: GreenDevice,
-        derivedLightningMnemonic: String?,
+        greenlightMnemonicAndCredentials: GreenlightMnemonicAndCredentials?,
         derivedBoltzMnemonic: String?,
         hardwareWalletResolver: HardwareWalletResolver,
         isSmartDiscovery: Boolean,
@@ -1374,7 +1376,7 @@ class GdkSession constructor(
             initNetworks = initNetworks,
             wallet = wallet,
             walletLoginCredentialsParams = LoginCredentialsParams.empty,
-            derivedLightningMnemonic = derivedLightningMnemonic,
+            greenlightMnemonicAndCredentials = greenlightMnemonicAndCredentials,
             derivedBoltzMnemonic = derivedBoltzMnemonic,
             device = device,
             isSmartDiscovery = isSmartDiscovery,
@@ -1389,12 +1391,11 @@ class GdkSession constructor(
         wallet: GreenWallet? = null,
         walletLoginCredentialsParams: LoginCredentialsParams,
         richWatchOnly: List<RichWatchOnly>? = null,
-        derivedLightningMnemonic: String? = null,
+        greenlightMnemonicAndCredentials: GreenlightMnemonicAndCredentials? = null,
         derivedBoltzMnemonic: String? = null,
         device: GreenDevice? = null,
         isCreate: Boolean = false,
         isRestore: Boolean = false,
-        isLightningEnabled: Boolean = false,
         isSmartDiscovery: Boolean = false,
         initializeSession: Boolean = true,
         hardwareWalletResolver: HardwareWalletResolver? = null,
@@ -1474,7 +1475,7 @@ class GdkSession constructor(
 
         val exceptions = mutableListOf<Exception>()
 
-        hasLightning = isLightningEnabled || derivedLightningMnemonic != null
+        hasLightning = greenlightMnemonicAndCredentials != null
 
         return (enabledGdkSessions.mapNotNull { gdkSession ->
             scope.async(start = CoroutineStart.LAZY) {
@@ -1609,18 +1610,20 @@ class GdkSession constructor(
                 start = CoroutineStart.LAZY
             ) {
 
-                if (isHardwareWallet && derivedLightningMnemonic == null) {
+                if (isHardwareWallet && greenlightMnemonicAndCredentials == null) {
                     return@async null
                 }
 
-                val lightningMnemonic =
-                    derivedLightningMnemonic ?: deriveLightningMnemonic(Credentials.fromLoginCredentialsParam(loginCredentialsParams))
+                val mnemonicAndCredentials = greenlightMnemonicAndCredentials ?: GreenlightMnemonicAndCredentials(
+                    mnemonic = deriveLightningMnemonic(Credentials.fromLoginCredentialsParam(loginCredentialsParams)),
+                    credentials = null
+                )
 
                 // Init SDK
-                initLightningSdk(lightningMnemonic)
+                initLightningSdk(mnemonicAndCredentials.mnemonic)
 
                 // SmartDiscovery only for SW wallets, on HW ln mnemonic is not available
-                if (hasLightning || ((isRestore || (isSmartDiscovery && !isHardwareWallet)) && settingsManager.isLightningEnabled())) {
+                if (hasLightning || ((isRestore || (isSmartDiscovery && !isHardwareWallet)) && settingsManager.isLightningAvailable())) {
                     // Make it async to speed up login process
                     val job = scope.async {
                         try {
@@ -1632,7 +1635,7 @@ class GdkSession constructor(
 
                             // Connect SDK
                             connectToGreenlight(
-                                mnemonic = lightningMnemonic,
+                                mnemonicAndCredentials = mnemonicAndCredentials,
                                 parentXpubHashId = xPubHashId,
                                 restoreOnly = isRestore || isSmartDiscovery,
                                 quickResponse = isRestore
@@ -1723,7 +1726,7 @@ class GdkSession constructor(
     }
 
     private suspend fun connectToGreenlight(
-        mnemonic: String,
+        mnemonicAndCredentials: GreenlightMnemonicAndCredentials,
         parentXpubHashId: String? = null,
         restoreOnly: Boolean = true,
         quickResponse: Boolean = false
@@ -1732,11 +1735,11 @@ class GdkSession constructor(
 
         countly.loginLightningStart()
 
-        val connectStatus = lightningSdk.connectToGreenlight(
-            mnemonic = mnemonic,
+        val connectStatus = lightningSdk.connect(
+            mnemonicAndCredentials = mnemonicAndCredentials,
             parentXpubHashId = parentXpubHashId ?: xPubHashId,
-            restoreOnly = restoreOnly,
-            quickResponse = quickResponse
+            isRestore = restoreOnly,
+            quickResponse = quickResponse,
         ).also {
             hasLightning = it == ConnectStatus.Connect
             if (it == ConnectStatus.Failed) {
@@ -1997,11 +2000,11 @@ class GdkSession constructor(
     suspend fun getReceiveAddressAsString(account: Account): String = getReceiveAddress(account).address
 
     // Combine with receive address
-    fun receiveOnchain(): SwapInfo {
+    suspend fun receiveOnchain(): LightningSwapInfo {
         return lightningSdk.receiveOnchain()
     }
 
-    fun createLightningInvoice(satoshi: Long, description: String): ReceivePaymentResponse {
+    suspend fun createLightningInvoice(satoshi: Long, description: String): LightningReceivePayment {
         return lightningSdk.createInvoice(satoshi, description)
     }
 
@@ -2914,7 +2917,7 @@ class GdkSession constructor(
         val userInputSatoshi = params.addresseesAsParams?.firstOrNull()?.satoshi
 
         return when (val lightningInputType = lightningSdk.parseBoltOrLNUrlAndCache(address)) {
-            is InputType.Bolt11 -> {
+            is LightningInputType.Bolt11 -> {
                 val invoice = lightningInputType.invoice
 
                 logger.d { "Expire in ${invoice.expireIn()}" }
@@ -2945,7 +2948,7 @@ class GdkSession constructor(
                 )
             }
 
-            is InputType.LnUrlPay -> {
+            is LightningInputType.LnUrlPay -> {
 
                 val requestData = lightningInputType.data
 
@@ -3048,14 +3051,14 @@ class GdkSession constructor(
             _walletActiveEventInvalidated = true
         }
 
-    fun sendLightningTransaction(params: CreateTransaction, comment: String?): ProcessedTransactionDetails {
+    suspend fun sendLightningTransaction(params: CreateTransaction, comment: String?): ProcessedTransactionDetails {
         val invoiceOrLnUrl = params.addressees.first().address
         val satoshi = params.addressees.first().satoshi?.absoluteValue ?: 0L
 
         _walletActiveEventInvalidated = true
 
         return when (val inputType = lightningSdk.parseBoltOrLNUrlAndCache(invoiceOrLnUrl)) {
-            is InputType.Bolt11 -> {
+            is LightningInputType.Bolt11 -> {
                 // Check for expiration
                 if (inputType.invoice.isExpired()) {
                     throw Exception("id_invoice_expired")
@@ -3066,10 +3069,10 @@ class GdkSession constructor(
                 try {
                     val response = lightningSdk.sendPayment(
                         invoice = inputType.invoice,
-                        satoshi = satoshi.takeIf { inputType.invoice.amountMsat == null }
+                        satoshi = satoshi.takeIf { inputType.invoice.amountSatoshi == null }
                     )
 
-                    ProcessedTransactionDetails(paymentId = response.payment.id)
+                    ProcessedTransactionDetails(paymentId = response.paymentId)
                 } catch (e: Exception) {
                     throw ExceptionWithSupportData(
                         throwable = e,
@@ -3083,33 +3086,31 @@ class GdkSession constructor(
                 }
             }
 
-            is InputType.LnUrlPay -> {
-                lightningSdk.payLnUrl(
+            is LightningInputType.LnUrlPay -> {
+                when (val result = lightningSdk.payLnUrl(
                     requestData = inputType.data,
                     amount = satoshi,
                     comment = comment ?: ""
-                ).let {
-                    when (it) {
-                        is LnUrlPayResult.EndpointSuccess -> {
-                            ProcessedTransactionDetails.create(it.data)
-                        }
+                )) {
+                    is LnUrlPayOutcome.Success -> {
+                        ProcessedTransactionDetails.create(result)
+                    }
 
-                        is LnUrlPayResult.EndpointError -> {
-                            throw Exception(it.data.reason)
-                        }
+                    is LnUrlPayOutcome.Error -> {
+                        throw Exception(result.reason)
+                    }
 
-                        is LnUrlPayResult.PayError -> {
-                            val exception = Exception(it.data.reason)
-                            throw ExceptionWithSupportData(
+                    is LnUrlPayOutcome.PayError -> {
+                        val exception = Exception(result.reason)
+                        throw ExceptionWithSupportData(
+                            throwable = exception,
+                            supportData = SupportData.create(
                                 throwable = exception,
-                                supportData = SupportData.create(
-                                    throwable = exception,
-                                    paymentHash = it.data.paymentHash,
-                                    network = lightningAccount.network,
-                                    session = this
-                                )
+                                paymentHash = result.paymentHash,
+                                network = lightningAccount.network,
+                                session = this
                             )
-                        }
+                        )
                     }
                 }
             }
@@ -3174,23 +3175,21 @@ class GdkSession constructor(
         }
     }
 
-    private fun onLightningEvent(event: BreezEvent) {
+    private fun onLightningEvent(event: LightningEvent) {
         when (event) {
-            is BreezEvent.Synced -> {
+            is LightningEvent.Synced -> {
                 getTransactions(account = lightningAccount, isReset = false, isLoadMore = false)
                 updateAccountsAndBalances(updateBalancesForAccounts = listOf(lightningAccount))
                 updateWalletTransactions(updateForAccounts = listOf(lightningAccount))
             }
 
-            is BreezEvent.NewBlock -> {
+            is LightningEvent.NewBlock -> {
                 blockStateFlow(lightning).value = Block(height = event.block.toLong())
             }
 
-            is BreezEvent.InvoicePaid -> {
-                _lastInvoicePaid.value = event.details.paymentHash to event.details.payment?.amountSatoshi()
+            is LightningEvent.InvoicePaid -> {
+                _lastInvoicePaid.value = event.paymentHash to event.paymentAmountSatoshi
             }
-
-            else -> {}
         }
     }
 
@@ -3415,7 +3414,7 @@ class GdkSession constructor(
         return authHandler(network, gdk.bcurDecode(gdkSession(network), params)).result<BcurDecodedData>(bcurResolver = bcurResolver)
     }
 
-    suspend fun parseInput(input: String): Pair<Network, InputType?>? =
+    suspend fun parseInput(input: String): Pair<Network, LightningInputType?>? =
         withContext(context = Dispatchers.Default) {
             lightningSdkOrNull?.parseBoltOrLNUrlAndCache(input)?.let { lightning to it }
                 ?: run {

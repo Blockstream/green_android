@@ -14,7 +14,7 @@ import blockstream_green.common.generated.resources.info
 import blockstream_green.common.generated.resources.question
 import blockstream_green.common.generated.resources.text_aa
 import blockstream_green.common.generated.resources.trash
-import breez_sdk.HealthCheckStatus
+import com.blockstream.data.lightning.LightningHealthStatus
 import com.blockstream.compose.events.Event
 import com.blockstream.compose.events.Events
 import com.blockstream.compose.extensions.launchIn
@@ -150,8 +150,8 @@ class AccountOverviewViewModel(greenWallet: GreenWallet, accountAsset: AccountAs
     ) { twoFactorState, lspHeath, banner ->
         listOfNotNull(
             twoFactorState,
-            lspHeath?.takeIf { it != HealthCheckStatus.OPERATIONAL }
-                ?.let { AlertType.LspStatus(maintenance = it == HealthCheckStatus.MAINTENANCE) },
+            lspHeath?.takeIf { it != LightningHealthStatus.OPERATIONAL }
+                ?.let { AlertType.LspStatus(maintenance = it == LightningHealthStatus.MAINTENANCE) },
         )
     }.filter { session.isConnected }
         .stateIn(viewModelScope, SharingStarted.WhileSubscribed(), listOf())

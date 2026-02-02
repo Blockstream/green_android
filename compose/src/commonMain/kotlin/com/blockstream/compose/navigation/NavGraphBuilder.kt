@@ -20,8 +20,8 @@ import com.blockstream.data.data.Denomination
 import com.blockstream.data.data.EnrichedAsset
 import com.blockstream.data.data.EnrichedAssetList
 import com.blockstream.data.data.GreenWallet
-import com.blockstream.data.data.LnUrlAuthRequestDataSerializable
-import com.blockstream.data.data.LnUrlWithdrawRequestSerializable
+import com.blockstream.data.lightning.LnUrlAuthData
+import com.blockstream.data.lightning.LnUrlWithdrawData
 import com.blockstream.data.data.MenuEntryList
 import com.blockstream.data.data.PopTo
 import com.blockstream.data.data.Promo
@@ -65,8 +65,8 @@ val AppTypeMap = mapOf(
     typeOf<TransactionConfirmation?>() to CustomNavType.create<TransactionConfirmation>(),
     typeOf<JadeQrOperation>() to CustomNavType.create<JadeQrOperation>(),
     typeOf<TwoFactorReset?>() to CustomNavType.create<TwoFactorReset>(),
-    typeOf<LnUrlAuthRequestDataSerializable>() to CustomNavType.create<LnUrlAuthRequestDataSerializable>(),
-    typeOf<LnUrlWithdrawRequestSerializable>() to CustomNavType.create<LnUrlWithdrawRequestSerializable>(),
+    typeOf<LnUrlAuthData>() to CustomNavType.create<LnUrlAuthData>(),
+    typeOf<LnUrlWithdrawData>() to CustomNavType.create<LnUrlWithdrawData>(),
     typeOf<PopTo?>() to CustomNavType.create<PopTo>(),
     typeOf<WalletSettingsSection>() to CustomNavType.create<WalletSettingsSection>(),
     typeOf<AddressInputType?>() to CustomNavType.create<AddressInputType>(),

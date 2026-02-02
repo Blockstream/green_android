@@ -18,6 +18,9 @@ android {
 }
 
 kotlin {
+    compilerOptions {
+        freeCompilerArgs.add("-Xskip-prerelease-check")
+    }
     jvmToolchain(libs.versions.jvm.get().toInt())
 }
 

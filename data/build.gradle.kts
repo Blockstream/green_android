@@ -25,6 +25,8 @@ sqldelight {
 kotlin {
     compilerOptions {
         freeCompilerArgs.add("-Xexpect-actual-classes")
+        freeCompilerArgs.add("-Xexplicit-backing-fields")
+        freeCompilerArgs.add("-Xskip-prerelease-check")
     }
 
     jvmToolchain(libs.versions.jvm.get().toInt())
@@ -134,8 +136,9 @@ kotlin {
                 api(project.dependencies.platform(libs.koin.bom))
                 api(libs.koin.core)
 
-                /**  --- LWK  --- */
-                api(libs.lwk)
+                /**  --- Blockstream  --- */
+                api(libs.blockstream.lwk)
+                api(libs.blockstream.glsdk)
 
                 /**  --- Breez ------------------------------------------------------------------------------ */
                 api(libs.breez.sdk.kmp)

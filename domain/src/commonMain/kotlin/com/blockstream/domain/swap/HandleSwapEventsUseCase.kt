@@ -62,7 +62,7 @@ class HandleSwapEventsUseCase(
                 if (!isConnected) {
                     val derivedBoltzMnemonic = database.getLoginCredential(
                         id = ownerWallet.id,
-                        credentialType = CredentialType.BOLTZ_MNEMONIC
+                        credentialType = CredentialType.KEYSTORE_BOLTZ_MNEMONIC
                     )?.boltzMnemonic(greenKeystore) ?: throw Exception("No boltz mnemonic found")
 
                     logger.d { "Connect from LWK" }

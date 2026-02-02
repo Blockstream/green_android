@@ -24,7 +24,7 @@ class RestoreWalletUseCase(
     private val setPinUseCase: SetPinUseCase,
     private val setBiometricsUseCase: SetBiometricsUseCase,
     private val lightningNodeIdUseCase: LightningNodeIdUseCase,
-    private val saveDerivedLightningMnemonicUseCase: SaveDerivedLightningMnemonicUseCase,
+    private val saveGreenlightMnemonicAndCredentialsUseCase: SaveGreenlightMnemonicAndCredentialsUseCase,
     private val saveDerivedBoltzMnemonicUseCase: SaveDerivedBoltzMnemonicUseCase
 ) {
 
@@ -65,8 +65,9 @@ class RestoreWalletUseCase(
             database.insertWallet(wallet)
 
             if (session.hasLightning) {
-                // Used in Lightning
-                saveDerivedLightningMnemonicUseCase.invoke(session = session, wallet = wallet)
+                saveGreenlightMnemonicAndCredentialsUseCase.invoke(session = session, wallet = wallet)
+
+                lightningNodeIdUseCase.invoke(wallet = wallet, session = session)
             }
 
             // Used in Swaps
@@ -81,12 +82,6 @@ class RestoreWalletUseCase(
             }
 
             session.initLwkIfNeeded(wallet = wallet, bitcoinAddress = bitcoinAddress, liquidAddress = liquidAddress)
-
-            if (session.hasLightning) {
-                walletSettingsManager.setLightningEnabled(walletId = wallet.id, true)
-
-                lightningNodeIdUseCase.invoke(wallet = wallet, session = session)
-            }
 
             sessionManager.upgradeOnBoardingSessionToWallet(wallet)
 

@@ -14,14 +14,6 @@ class WalletSettingsManager(
         return database.getWalletSettingsFlow(walletId = walletId)
     }
 
-    suspend fun setLightningEnabled(walletId: String, enabled: Boolean) {
-        setBoolean(walletId = walletId, key = KEY_LIGHTNING_ENABLED, enabled)
-    }
-
-    suspend fun isLightningEnabled(walletId: String): Boolean {
-        return getBoolean(walletId = walletId, key = KEY_LIGHTNING_ENABLED)
-    }
-
     suspend fun setLightningNodeId(walletId: String, nodeId: String) {
         setString(walletId = walletId, key = KEY_LIGHTNING_NODE_ID, nodeId)
     }
@@ -76,7 +68,6 @@ class WalletSettingsManager(
     companion object : Loggable() {
         const val TRUE_VALUE = "true"
         const val FALSE_VALUE = "false"
-        const val KEY_LIGHTNING_ENABLED = "lightning_enabled"
         const val KEY_LIGHTNING_NODE_ID = "lightning_node_id"
         const val KEY_TOTAL_BALANCE_IN_FIAT = "total_balance_in_fiat"
     }

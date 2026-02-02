@@ -6,6 +6,6 @@ import org.koin.dsl.module
 val walletModule = module {
     singleOf(::NewWalletUseCase)
     singleOf(::RestoreWalletUseCase)
-    singleOf(::SaveDerivedLightningMnemonicUseCase)
+    singleOf(::SaveGreenlightMnemonicAndCredentialsUseCase)
     singleOf(::SaveDerivedBoltzMnemonicUseCase)
 }

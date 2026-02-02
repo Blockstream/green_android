@@ -18,6 +18,7 @@ kotlin {
     compilerOptions {
         freeCompilerArgs.add("-Xexpect-actual-classes")
         freeCompilerArgs.add("-Xexplicit-backing-fields")
+        freeCompilerArgs.add("-Xskip-prerelease-check")
     }
 
     jvmToolchain(libs.versions.jvm.get().toInt())

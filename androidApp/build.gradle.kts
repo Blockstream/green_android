@@ -171,11 +171,11 @@ ksp {
 }
 
 kotlin {
-    jvmToolchain(libs.versions.jvm.get().toInt())
-
     compilerOptions {
         freeCompilerArgs.add("-Xskip-prerelease-check")
     }
+
+    jvmToolchain(libs.versions.jvm.get().toInt())
     
     sourceSets {
         all {

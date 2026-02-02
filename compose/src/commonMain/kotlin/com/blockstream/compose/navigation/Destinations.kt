@@ -11,8 +11,8 @@ import com.blockstream.data.data.DenominatedValue
 import com.blockstream.data.data.EnrichedAsset
 import com.blockstream.data.data.EnrichedAssetList
 import com.blockstream.data.data.GreenWallet
-import com.blockstream.data.data.LnUrlAuthRequestDataSerializable
-import com.blockstream.data.data.LnUrlWithdrawRequestSerializable
+import com.blockstream.data.lightning.LnUrlAuthData
+import com.blockstream.data.lightning.LnUrlWithdrawData
 import com.blockstream.data.data.MenuEntryList
 import com.blockstream.data.data.PopTo
 import com.blockstream.data.data.SetupArgs
@@ -446,13 +446,13 @@ sealed class NavigateDestinations : NavigateDestination() {
     @Serializable
     data class LnUrlAuth(
         val greenWallet: GreenWallet,
-        val lnUrlAuthRequest: LnUrlAuthRequestDataSerializable
+        val lnUrlAuthRequest: LnUrlAuthData
     ) : NavigateDestination()
 
     @Serializable
     data class LnUrlWithdraw(
         val greenWallet: GreenWallet,
-        val lnUrlWithdrawRequest: LnUrlWithdrawRequestSerializable
+        val lnUrlWithdrawRequest: LnUrlWithdrawData
     ) : NavigateDestination()
 
     @Serializable
