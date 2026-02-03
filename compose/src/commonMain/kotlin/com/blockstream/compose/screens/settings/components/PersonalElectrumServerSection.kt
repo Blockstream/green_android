@@ -78,7 +78,10 @@ fun PersonalElectrumServerSection(
                             }
                         ),
                         trailingIcon = {
-                            TextInputPaste(state = viewModel.personalBitcoinElectrumServer)
+                            TextInputPaste(
+                                state = viewModel.personalBitcoinElectrumServer,
+                                onValueChange = autoSaveOnStringChange(viewModel.personalBitcoinElectrumServer)
+                            )
                         }
                     )
                 }
@@ -102,7 +105,10 @@ fun PersonalElectrumServerSection(
                             }
                         ),
                         trailingIcon = {
-                            TextInputPaste(state = viewModel.personalLiquidElectrumServer)
+                            TextInputPaste(
+                                state = viewModel.personalLiquidElectrumServer,
+                                onValueChange = autoSaveOnStringChange(viewModel.personalLiquidElectrumServer)
+                            )
                         }
                     )
                 }
@@ -127,7 +133,10 @@ fun PersonalElectrumServerSection(
                                 }
                             ),
                             trailingIcon = {
-                                TextInputPaste(state = viewModel.personalTestnetElectrumServer)
+                                TextInputPaste(
+                                    state = viewModel.personalTestnetElectrumServer,
+                                    onValueChange = autoSaveOnStringChange(viewModel.personalTestnetElectrumServer)
+                                )
                             }
                         )
                     }
@@ -151,7 +160,10 @@ fun PersonalElectrumServerSection(
                                 }
                             ),
                             trailingIcon = {
-                                TextInputPaste(state = viewModel.personalTestnetLiquidElectrumServer)
+                                TextInputPaste(
+                                    state = viewModel.personalTestnetLiquidElectrumServer,
+                                    onValueChange = autoSaveOnStringChange(viewModel.personalTestnetLiquidElectrumServer)
+                                )
                             }
                         )
                     }

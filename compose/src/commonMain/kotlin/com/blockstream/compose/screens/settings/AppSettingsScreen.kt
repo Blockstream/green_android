@@ -188,7 +188,10 @@ fun AppSettingsScreen(
                             supportingText = { Text(stringResource(Res.string.id_host_ip)) },
                             isError = proxyUrl.isBlank(),
                             trailingIcon = {
-                                TextInputPaste(state = viewModel.proxyUrl)
+                                TextInputPaste(
+                                    state = viewModel.proxyUrl,
+                                    onValueChange = autoSaveOnStringChange(viewModel.proxyUrl)
+                                )
                             }
                         )
                     }

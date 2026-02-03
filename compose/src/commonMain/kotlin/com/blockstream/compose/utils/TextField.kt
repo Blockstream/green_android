@@ -21,7 +21,7 @@ import kotlinx.coroutines.flow.MutableStateFlow
 import org.jetbrains.compose.resources.painterResource
 
 @Composable
-fun TextInputPaste(state: MutableStateFlow<String>) {
+fun TextInputPaste(state: MutableStateFlow<String>, onValueChange: ((String) -> Unit)? = null) {
     val platformManager = LocalPlatformManager.current
     val value by state.collectAsStateWithLifecycle()
 
@@ -30,11 +30,14 @@ fun TextInputPaste(state: MutableStateFlow<String>) {
             painterResource(Res.drawable.clipboard),
             contentDescription = "Paste text",
             modifier = Modifier.clickable {
-                state.value = platformManager.getClipboard() ?: ""
+                val newValue = platformManager.getClipboard() ?: ""
+                state.value = newValue
+                onValueChange?.invoke(newValue)
             })
     } else {
         Icon(Icons.Default.Clear, contentDescription = "Clear text", modifier = Modifier.clickable {
             state.value = ""
+            onValueChange?.invoke("")
         })
     }
 }
