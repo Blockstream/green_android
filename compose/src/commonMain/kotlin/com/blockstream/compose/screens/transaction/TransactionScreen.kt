@@ -65,9 +65,7 @@ import blockstream_green.common.generated.resources.id_your_transaction_failed_s
 import blockstream_green.common.generated.resources.id_your_transaction_was
 import blockstream_green.common.generated.resources.magnifying_glass
 import blockstream_green.common.generated.resources.pencil_simple_line
-import com.blockstream.data.data.MenuEntry
-import com.blockstream.data.data.MenuEntryList
-import com.blockstream.data.gdk.data.Transaction
+import com.blockstream.compose.GreenPreview
 import com.blockstream.compose.components.GreenAddress
 import com.blockstream.compose.components.GreenAmounts
 import com.blockstream.compose.components.GreenColumn
@@ -83,9 +81,11 @@ import com.blockstream.compose.looks.transaction.Unconfirmed
 import com.blockstream.compose.models.sheets.NoteType
 import com.blockstream.compose.models.transaction.TransactionViewModel
 import com.blockstream.compose.models.transaction.TransactionViewModelAbstract
+import com.blockstream.compose.models.transaction.TransactionViewModelPreview
 import com.blockstream.compose.navigation.LocalInnerPadding
 import com.blockstream.compose.navigation.NavigateDestinations
 import com.blockstream.compose.navigation.getResult
+import com.blockstream.compose.theme.GreenChromePreview
 import com.blockstream.compose.theme.MonospaceFont
 import com.blockstream.compose.theme.bodyLarge
 import com.blockstream.compose.theme.bodyMedium
@@ -99,10 +99,16 @@ import com.blockstream.compose.theme.whiteMedium
 import com.blockstream.compose.utils.AnimatedNullableVisibility
 import com.blockstream.compose.utils.CopyContainer
 import com.blockstream.compose.utils.SetupScreen
+import com.blockstream.compose.utils.appTestTag
+import com.blockstream.data.data.MenuEntry
+import com.blockstream.data.data.MenuEntryList
+import com.blockstream.data.gdk.data.Transaction
 import org.jetbrains.compose.resources.StringResource
 import org.jetbrains.compose.resources.getString
 import org.jetbrains.compose.resources.painterResource
 import org.jetbrains.compose.resources.stringResource
+import org.jetbrains.compose.ui.tooling.preview.Preview
+import org.jetbrains.compose.ui.tooling.preview.PreviewParameterProvider
 
 @Composable
 fun TransactionScreen(
@@ -319,9 +325,7 @@ fun TransactionScreen(
                         transactionId?.also {
                             Detail(label = Res.string.id_transaction_id) {
                                 CopyContainer(value = it) {
-                                    Text(
-                                        text = it, fontFamily = MonospaceFont()
-                                    )
+                                    Text(modifier = Modifier.appTestTag("transactionId"), text = it, fontFamily = MonospaceFont())
                                 }
                             }
                         }
@@ -486,5 +490,58 @@ internal fun MenuListItem(text: String, painter: Painter, onClick: () -> Unit = 
             colorFilter = ColorFilter.tint(green)
         )
         Text(text, color = green, style = bodyLarge)
+    }
+}
+
+object TransactionViewModelPreviewProvider : PreviewParameterProvider<TransactionViewModelPreview> {
+    override val values = sequenceOf(
+        TransactionViewModelPreview.previewUnconfirmed(),
+        TransactionViewModelPreview.previewConfirmed(),
+        TransactionViewModelPreview.previewCompleted(),
+        TransactionViewModelPreview.previewFailed()
+    )
+}
+
+@Composable
+@Preview
+fun TransactionScreenPreview(
+    //@PreviewParameter(TransactionViewModelPreviewProvider::class)
+//    viewModel: TransactionViewModelPreview
+) {
+    GreenPreview {
+        TransactionScreen(viewModel = TransactionViewModelPreview.previewCompleted())
+    }
+}
+
+@Composable
+@Preview
+fun TransactionScreenPreviewConfirmed() {
+    GreenPreview {
+        TransactionScreen(viewModel = TransactionViewModelPreview.previewConfirmed())
+    }
+}
+
+@Composable
+@Preview
+fun TransactionScreenPreviewFailed() {
+    GreenPreview {
+        TransactionScreen(viewModel = TransactionViewModelPreview.previewFailed())
+    }
+}
+
+@Composable
+@Preview
+fun MenuPreview() {
+    GreenChromePreview {
+        Column {
+            HorizontalDivider()
+            MenuListItem("Add Note", painterResource(Res.drawable.pencil_simple_line))
+            HorizontalDivider()
+            MenuListItem("Share Transaction", painterResource(Res.drawable.export))
+            HorizontalDivider()
+            MenuListItem("Initiate Refund", painterResource(Res.drawable.arrow_u_left_down))
+            HorizontalDivider()
+            MenuListItem("More Details", painterResource(Res.drawable.magnifying_glass))
+        }
     }
 }

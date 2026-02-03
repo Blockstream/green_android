@@ -42,8 +42,6 @@ import com.adamglin.phosphoricons.regular.Lightning
 import com.adamglin.phosphoricons.regular.Password
 import com.adamglin.phosphoricons.regular.Warning
 import com.adamglin.phosphoricons.regular.X
-import com.blockstream.data.data.AlertType
-import com.blockstream.data.data.SetupArgs
 import com.blockstream.compose.GreenPreview
 import com.blockstream.compose.events.Events
 import com.blockstream.compose.models.GreenViewModel
@@ -55,6 +53,9 @@ import com.blockstream.compose.theme.orangeOutline
 import com.blockstream.compose.theme.orangeSurface
 import com.blockstream.compose.theme.titleSmall
 import com.blockstream.compose.theme.whiteMedium
+import com.blockstream.compose.utils.appTestTag
+import com.blockstream.data.data.AlertType
+import com.blockstream.data.data.SetupArgs
 import org.jetbrains.compose.resources.stringResource
 import org.jetbrains.compose.ui.tooling.preview.Preview
 
@@ -307,6 +308,7 @@ fun GreenAlert(
                 IconButton(
                     onClick = { onCloseClick.invoke() }, modifier = Modifier
                         .align(Alignment.TopEnd)
+                        .appTestTag("close_button")
                 ) {
                     Icon(
                         imageVector = PhosphorIcons.Regular.X,

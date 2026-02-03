@@ -41,7 +41,7 @@ import blockstream_green.common.generated.resources.signature
 import com.adamglin.PhosphorIcons
 import com.adamglin.phosphoricons.Regular
 import com.adamglin.phosphoricons.regular.Copy
-import com.blockstream.data.data.GreenWallet
+import com.blockstream.compose.GreenPreview
 import com.blockstream.compose.components.GreenColumn
 import com.blockstream.compose.components.GreenRow
 import com.blockstream.compose.components.GreenSearchField
@@ -53,8 +53,10 @@ import com.blockstream.compose.looks.account.AddressLook
 import com.blockstream.compose.managers.LocalPlatformManager
 import com.blockstream.compose.models.addresses.AddressesViewModel
 import com.blockstream.compose.models.addresses.AddressesViewModelAbstract
+import com.blockstream.compose.models.addresses.AddressesViewModelPreview
 import com.blockstream.compose.navigation.NavigateDestinations
 import com.blockstream.compose.navigation.getResult
+import com.blockstream.compose.theme.GreenChromePreview
 import com.blockstream.compose.theme.MonospaceFont
 import com.blockstream.compose.theme.bodyMedium
 import com.blockstream.compose.theme.labelLarge
@@ -62,9 +64,12 @@ import com.blockstream.compose.theme.labelMedium
 import com.blockstream.compose.theme.whiteHigh
 import com.blockstream.compose.theme.whiteMedium
 import com.blockstream.compose.utils.SetupScreen
+import com.blockstream.compose.utils.appTestTag
 import com.blockstream.compose.utils.reachedBottom
+import com.blockstream.data.data.GreenWallet
 import org.jetbrains.compose.resources.painterResource
 import org.jetbrains.compose.resources.stringResource
+import org.jetbrains.compose.ui.tooling.preview.Preview
 
 @Composable
 fun AddressesScreen(
@@ -205,9 +210,11 @@ fun AddressListItem(
         PopupState()
     }
 
-    Box(modifier = Modifier.clickable {
-        popupState.isContextMenuVisible.value = true
-    }) {
+    Box(
+        modifier = Modifier
+            .appTestTag("address_index_${look.index}")
+            .clickable { popupState.isContextMenuVisible.value = true }
+    ) {
         GreenRow(
             padding = 0,
             space = 6,
@@ -269,5 +276,30 @@ fun AddressListItem(
                 )
             )
         )
+    }
+}
+
+@Composable
+@Preview
+fun AddressListItemPreview() {
+    GreenChromePreview {
+        GreenColumn {
+            AddressListItem(
+                AddressLook(
+                    address = "bc1qaqtq80759n35gk6ftc57vh7du83nwvt5lgkznu",
+                    index = 1,
+                    txCount = "99",
+                    canSign = true
+                )
+            )
+        }
+    }
+}
+
+@Composable
+@Preview
+fun AddressesScreenPreview() {
+    GreenPreview {
+        AddressesScreen(viewModel = AddressesViewModelPreview.preview())
     }
 }

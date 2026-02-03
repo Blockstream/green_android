@@ -46,6 +46,7 @@ import com.blockstream.compose.theme.bodyMedium
 import com.blockstream.compose.theme.titleSmall
 import com.blockstream.compose.theme.whiteMedium
 import com.blockstream.compose.utils.SetupScreen
+import com.blockstream.compose.utils.appTestTag
 import kotlinx.coroutines.launch
 import org.jetbrains.compose.resources.getString
 import org.jetbrains.compose.resources.painterResource
@@ -155,14 +156,14 @@ fun Descriptor(
                         Icon(
                             imageVector = PhosphorIcons.Regular.Copy,
                             contentDescription = null,
-                            modifier = Modifier.minimumInteractiveComponentSize()
+                            modifier = Modifier.minimumInteractiveComponentSize().appTestTag("copy_button")
                         )
                     }
                     IconButton(onQr) {
                         Icon(
                             painter = painterResource(Res.drawable.qr_code),
                             contentDescription = null,
-                            modifier = Modifier.minimumInteractiveComponentSize()
+                            modifier = Modifier.minimumInteractiveComponentSize().appTestTag("scan_button")
                         )
                     }
                 }

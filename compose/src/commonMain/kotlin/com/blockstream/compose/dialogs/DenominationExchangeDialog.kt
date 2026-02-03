@@ -15,6 +15,8 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.semantics.contentDescription
+import androidx.compose.ui.semantics.semantics
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.window.Dialog
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
@@ -24,15 +26,19 @@ import blockstream_green.common.generated.resources.id_denomination
 import blockstream_green.common.generated.resources.id_denomination__exchange_rate
 import blockstream_green.common.generated.resources.id_exchange_rate
 import blockstream_green.common.generated.resources.id_ok
-import com.blockstream.compose.models.settings.DenominationExchangeRateViewModel
-import com.blockstream.compose.models.settings.DenominationExchangeRateViewModelAbstract
+import com.blockstream.compose.GreenPreview
 import com.blockstream.compose.components.GreenButton
 import com.blockstream.compose.components.GreenButtonType
 import com.blockstream.compose.components.GreenCard
+import com.blockstream.compose.components.GreenColumn
+import com.blockstream.compose.models.settings.DenominationExchangeRateViewModel
+import com.blockstream.compose.models.settings.DenominationExchangeRateViewModelAbstract
+import com.blockstream.compose.models.settings.DenominationExchangeRateViewModelPreview
 import com.blockstream.compose.theme.titleSmall
 import com.blockstream.compose.utils.HandleSideEffectDialog
-import com.blockstream.compose.components.GreenColumn
+import com.blockstream.compose.utils.appTestTag
 import org.jetbrains.compose.resources.stringResource
+import org.jetbrains.compose.ui.tooling.preview.Preview
 
 @Composable
 fun DenominationExchangeDialog(
@@ -62,6 +68,7 @@ fun DenominationExchangeDialog(
                 var denominationExpanded by remember { mutableStateOf(false) }
                 val selectedUnit by viewModel.selectedUnit.collectAsStateWithLifecycle()
 
+
                 ExposedDropdownMenuBox(
                     expanded = denominationExpanded,
                     onExpandedChange = { denominationExpanded = it },
@@ -72,7 +79,11 @@ fun DenominationExchangeDialog(
                         // The `menuAnchor` modifier must be passed to the text field for correctness.
                         modifier = Modifier
                             .fillMaxWidth()
-                            .menuAnchor(),
+                            .menuAnchor()
+                            .semantics {
+                                contentDescription = "denomination_dropdown"
+                            }
+                            .appTestTag("denomination_dropdown"),
                         readOnly = true,
                         value = selectedUnit,
                         onValueChange = {},
@@ -82,7 +93,7 @@ fun DenominationExchangeDialog(
                     )
                     ExposedDropdownMenu(
                         expanded = denominationExpanded,
-                        onDismissRequest = { denominationExpanded = false },
+                        onDismissRequest = { denominationExpanded = false }
                     ) {
                         viewModel.units.forEachIndexed { index, selectionOption ->
                             DropdownMenuItem(
@@ -117,7 +128,11 @@ fun DenominationExchangeDialog(
                             // The `menuAnchor` modifier must be passed to the text field for correctness.
                             modifier = Modifier
                                 .fillMaxWidth()
-                                .menuAnchor(),
+                                .menuAnchor()
+                                .semantics {
+                                    contentDescription = "exchange_dropdown"
+                                }
+                                .appTestTag("exchange_dropdown"),
                             readOnly = true,
                             value = selectedExchange,
                             onValueChange = {},
@@ -163,6 +178,18 @@ fun DenominationExchangeDialog(
                     }
                 }
             }
+        }
+    }
+}
+
+@Composable
+@Preview
+fun DenominationExchangeDialogPreview() {
+    GreenPreview {
+        DenominationExchangeDialog(
+            viewModel = DenominationExchangeRateViewModelPreview.preview()
+        ) {
+
         }
     }
 }

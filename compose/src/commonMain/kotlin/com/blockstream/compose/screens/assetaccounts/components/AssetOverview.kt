@@ -13,14 +13,15 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-import com.blockstream.data.data.EnrichedAsset
-import com.blockstream.data.gdk.GdkSession
+import com.blockstream.compose.components.GreenColumn
 import com.blockstream.compose.extensions.assetIcon
 import com.blockstream.compose.theme.bodyMedium
 import com.blockstream.compose.theme.headlineMedium
 import com.blockstream.compose.theme.whiteHigh
 import com.blockstream.compose.theme.whiteMedium
-import com.blockstream.compose.components.GreenColumn
+import com.blockstream.compose.utils.appTestTag
+import com.blockstream.data.data.EnrichedAsset
+import com.blockstream.data.gdk.GdkSession
 
 @Composable
 internal fun AssetOverview(
@@ -44,6 +45,7 @@ internal fun AssetOverview(
             modifier = Modifier
                 .size(48.dp)
                 .padding(bottom = 8.dp)
+                .appTestTag("asset_icon")
         )
 
         Text(

@@ -33,6 +33,8 @@ data/src/libs
 
 .kotlin/
 
+.claude/
+
 # iosGreenApp
 **/build/
 xcuserdata
