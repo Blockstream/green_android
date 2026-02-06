@@ -232,7 +232,7 @@ data class GreenWallet constructor(
                 wallet = WalletSerializable(
                     id = objectId().toString(),
                     name = name ?: networkId.replaceFirstChar { n -> n.titlecase() },
-                    xpub_hash_id = networkId,
+                    xpub_hash_id = "",
                     active_network = networkId,
                     active_account = 0,
                     is_recovery_confirmed = true,

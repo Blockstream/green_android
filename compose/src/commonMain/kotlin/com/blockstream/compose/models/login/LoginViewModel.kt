@@ -52,6 +52,7 @@ import com.blockstream.data.extensions.boltzMnemonic
 import com.blockstream.data.extensions.hwWatchOnlyCredentials
 import com.blockstream.data.extensions.isConnectionError
 import com.blockstream.data.extensions.isNotAuthorized
+import com.blockstream.data.extensions.isNotBlank
 import com.blockstream.data.extensions.lightningMnemonic
 import com.blockstream.data.extensions.logException
 import com.blockstream.data.extensions.mnemonic
@@ -768,7 +769,7 @@ class LoginViewModel constructor(
             }
 
             // Migrate - add walletHashId
-            if (greenWallet.xPubHashId != session.xPubHashId && !session.isHwWatchOnly) {
+            if (greenWallet.xPubHashId != session.xPubHashId && session.xPubHashId.isNotBlank()) {
                 greenWallet.also {
                     it.xPubHashId = session.xPubHashId ?: ""
                     if (!it.isEphemeral) {

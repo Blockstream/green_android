@@ -6,12 +6,6 @@ import blockstream_green.common.generated.resources.id_connection_failed
 import blockstream_green.common.generated.resources.id_connection_failed_device_offline
 import blockstream_green.common.generated.resources.id_setup_guide
 import blockstream_green.common.generated.resources.id_your_device_was_disconnected
-import com.blockstream.data.data.DeviceIdentifier
-import com.blockstream.data.data.GreenWallet
-import com.blockstream.data.devices.DeviceState
-import com.blockstream.data.devices.jadeDevice
-import com.blockstream.data.extensions.getWallet
-import com.blockstream.data.gdk.events.JadeGenuineCheck
 import com.blockstream.compose.events.Event
 import com.blockstream.compose.extensions.launchIn
 import com.blockstream.compose.extensions.previewGreenDevice
@@ -21,9 +15,15 @@ import com.blockstream.compose.navigation.NavigateDestinations
 import com.blockstream.compose.sideeffects.SideEffect
 import com.blockstream.compose.sideeffects.SideEffects
 import com.blockstream.compose.utils.StringHolder
+import com.blockstream.data.data.DeviceIdentifier
+import com.blockstream.data.data.GreenWallet
+import com.blockstream.data.devices.DeviceState
+import com.blockstream.data.devices.jadeDevice
+import com.blockstream.data.extensions.getWallet
+import com.blockstream.data.gdk.events.JadeGenuineCheck
 import com.blockstream.jade.connection.BleNotificationSetupException
-import com.blockstream.utils.Loggable
 import com.blockstream.jade.firmware.JadeFirmwareManager
+import com.blockstream.utils.Loggable
 import com.juul.kable.NotConnectedException
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -207,11 +207,8 @@ class DeviceInfoViewModel(deviceId: String) : DeviceInfoViewModelAbstract(device
                 )
             })
 
-            if (previousSession != null) {
-                // Session already setup
-                previousSession.getWallet(database, sessionManager)?.also {
-                    return@doAsync it
-                }
+            previousSession?.getWallet(database, sessionManager)?.also {
+                return@doAsync it
             }
 
             var session = sessionManager.getOnBoardingSession().also {
