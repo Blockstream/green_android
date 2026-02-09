@@ -14,4 +14,5 @@ interface GreenKeystore {
     fun decryptData(encryptedData: EncryptedData): ByteArray
     fun decryptData(cipher: PlatformCipher, encryptedData: EncryptedData): ByteArray
     fun canUseBiometrics(): Boolean
+    fun isBiometricEnrolled(): Boolean
 }

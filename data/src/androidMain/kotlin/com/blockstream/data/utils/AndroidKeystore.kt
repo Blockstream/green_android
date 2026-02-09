@@ -8,6 +8,7 @@ import android.security.keystore.KeyPermanentlyInvalidatedException
 import android.security.keystore.KeyProperties
 import android.security.keystore.UserNotAuthenticatedException
 import androidx.annotation.VisibleForTesting
+import androidx.biometric.BiometricManager
 import com.blockstream.data.crypto.GreenKeystore
 import com.blockstream.data.crypto.KeystoreInvalidatedException
 import com.blockstream.data.crypto.PlatformCipher
@@ -218,6 +219,19 @@ class AndroidKeystore(val context: Context) : GreenKeystore {
             e.printStackTrace()
         }
         return false
+    }
+
+    override fun isBiometricEnrolled(): Boolean {
+        return try {
+            val biometricManager = BiometricManager.from(context)
+            val canAuthenticate = biometricManager.canAuthenticate(
+                BiometricManager.Authenticators.BIOMETRIC_STRONG or BiometricManager.Authenticators.BIOMETRIC_WEAK
+            )
+            canAuthenticate == BiometricManager.BIOMETRIC_SUCCESS
+        } catch (e: Exception) {
+            e.printStackTrace()
+            false
+        }
     }
 
     companion object : Loggable() {

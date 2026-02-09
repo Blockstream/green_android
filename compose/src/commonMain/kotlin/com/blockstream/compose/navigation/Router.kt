@@ -179,6 +179,7 @@ import com.blockstream.compose.sheets.CountriesBottomSheet
 import com.blockstream.compose.sheets.DenominationBottomSheet
 import com.blockstream.compose.sheets.DeviceInteractionBottomSheet
 import com.blockstream.compose.sheets.EnvironmentBottomSheet
+import com.blockstream.compose.dialogs.HwWatchOnlyDialog
 import com.blockstream.compose.sheets.FeeRateBottomSheet
 import com.blockstream.compose.sheets.JadeFirmwareUpdateBottomSheet
 import com.blockstream.compose.sheets.LightningNodeBottomSheet
@@ -336,7 +337,8 @@ fun Router(
                         greenWallet = args.greenWallet,
                         deviceId = args.deviceId,
                         autoLoginWallet = args.autoLoginWallet,
-                        isWatchOnlyUpgrade = args.isWatchOnlyUpgrade
+                        isWatchOnlyUpgrade = args.isWatchOnlyUpgrade,
+                        isNewWallet = args.isNewWallet
                     )
                 })
             }
@@ -978,6 +980,18 @@ fun Router(
                         )
                     },
                     onDismissRequest = navController.onDismissRequest()
+                )
+            }
+            appDialog<NavigateDestinations.HwWatchOnlyChoice>(
+                dialogProperties = DialogProperties(
+                    dismissOnBackPress = false,
+                    dismissOnClickOutside = false
+                )
+            ) {
+                HwWatchOnlyDialog(
+                    onDismissRequest = {
+                        navController.popBackStack()
+                    }
                 )
             }
             appBottomSheet<NavigateDestinations.AskJadeUnlock> {

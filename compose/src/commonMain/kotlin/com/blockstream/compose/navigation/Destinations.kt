@@ -153,8 +153,12 @@ sealed class NavigateDestinations : NavigateDestination() {
         val greenWallet: GreenWallet,
         val autoLoginWallet: Boolean = true,
         val deviceId: String? = null,
-        val isWatchOnlyUpgrade: Boolean = false
+        val isWatchOnlyUpgrade: Boolean = false,
+        val isNewWallet: Boolean = false
     ) : NavigateDestination(unique = true)
+
+    @Serializable
+    data object HwWatchOnlyChoice : NavigateDestination()
 
     @Serializable
     data class Support(

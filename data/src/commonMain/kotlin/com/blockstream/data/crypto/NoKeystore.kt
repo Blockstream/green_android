@@ -21,4 +21,5 @@ class NoKeystore : GreenKeystore {
     }
 
     override fun canUseBiometrics(): Boolean = false
+    override fun isBiometricEnrolled(): Boolean = false
 }

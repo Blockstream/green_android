@@ -164,6 +164,8 @@ class DeviceInfoViewModel(deviceId: String) : DeviceInfoViewModelAbstract(device
     private fun authenticateAndContinue(updateFirmwareFromChannel: String? = null) {
         val gdkHardwareWallet = device.gdkHardwareWallet ?: return
 
+        var isNewWallet = false
+
         doAsync({
             // Authenticate device if needed
             deviceConnectionManager.authenticateDeviceIfNeeded(
@@ -222,8 +224,6 @@ class DeviceInfoViewModel(deviceId: String) : DeviceInfoViewModelAbstract(device
 
                 sessionManager.upgradeOnBoardingSessionToWallet(wallet)
             } else {
-
-                var isNewWallet = false
 
                 // Persist wallet and device identifier
                 wallet = database.getWalletWithXpubHashId(
@@ -284,7 +284,8 @@ class DeviceInfoViewModel(deviceId: String) : DeviceInfoViewModelAbstract(device
                     NavigateDestinations.Login(
                         greenWallet = it,
                         autoLoginWallet = true,
-                        deviceId = device.connectionIdentifier
+                        deviceId = device.connectionIdentifier,
+                        isNewWallet = isNewWallet
                     )
                 )
             )

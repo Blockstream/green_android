@@ -120,6 +120,10 @@ fun LoginScreen(
     val hwWatchOnlyCredentials by viewModel.hwWatchOnlyCredentials.collectAsStateWithLifecycle()
 
 
+    NavigateDestinations.HwWatchOnlyChoice.getResult<Boolean> {
+        (viewModel as? LoginViewModel)?.onHwWatchOnlyChoice(it)
+    }
+
     NavigateDestinations.Bip39Passphrase.getResult<String> {
         viewModel.postEvent(
             LoginViewModel.LocalEvents.Bip39Passphrase(it, null)

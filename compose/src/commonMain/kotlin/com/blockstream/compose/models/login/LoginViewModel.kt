@@ -42,6 +42,7 @@ import com.blockstream.data.data.MultipleWatchOnlyCredentials
 import com.blockstream.data.data.Redact
 import com.blockstream.data.data.SetupArgs
 import com.blockstream.data.data.SupportData
+import com.blockstream.data.data.WalletExtras
 import com.blockstream.data.data.WatchOnlyCredentials
 import com.blockstream.data.data.data
 import com.blockstream.data.data.isEmpty
@@ -67,6 +68,7 @@ import com.blockstream.data.usecases.EnableHardwareWatchOnlyUseCase
 import com.blockstream.domain.lightning.LightningNodeIdUseCase
 import com.blockstream.domain.wallet.SaveDerivedBoltzMnemonicUseCase
 import com.blockstream.utils.Loggable
+import kotlinx.coroutines.CompletableDeferred
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.StateFlow
@@ -109,7 +111,8 @@ class LoginViewModel constructor(
     greenWallet: GreenWallet,
     deviceId: String?,
     val autoLoginWallet: Boolean,
-    val isWatchOnlyUpgrade: Boolean
+    val isWatchOnlyUpgrade: Boolean,
+    val isNewWallet: Boolean = false
 ) : LoginViewModelAbstract(greenWallet = greenWallet) {
     private val deviceManager: DeviceManager by inject()
 
@@ -118,6 +121,7 @@ class LoginViewModel constructor(
     private val saveDerivedBoltzMnemonicUseCase: SaveDerivedBoltzMnemonicUseCase by inject()
     private val lightningNodeIdUseCase: LightningNodeIdUseCase by inject()
     private val enableHardwareWatchOnlyUseCase: EnableHardwareWatchOnlyUseCase by inject()
+    private var hwWatchOnlyChoiceDeferred: CompletableDeferred<Boolean>? = null
     private val setupDevelopmentEnv = SetupDevelopmentEnv() // Only for dev env
     override val bip39Passphrase = MutableStateFlow("")
     override val watchOnlyUsername: MutableStateFlow<String> = MutableStateFlow(greenWallet.watchOnlyUsername ?: "")
@@ -547,7 +551,37 @@ class LoginViewModel constructor(
                 )
 
                 if (!isWatchOnlyUpgrade) {
-                    enableHardwareWatchOnlyUseCase(greenWallet = greenWallet, session = session)
+                    val existingCredentials = database.getLoginCredential(
+                        id = greenWallet.id,
+                        credentialType = CredentialType.KEYSTORE_HW_WATCHONLY_CREDENTIALS
+                    )
+
+                    val allAccountsSinglesig = session.allAccounts.value.all { it.isSinglesig }
+
+                    val shouldShowPrompt = isNewWallet
+                            && device.isJade
+                            && existingCredentials == null
+                            && greenWallet.extras?.hwWatchOnlyEnabled == null
+                            && allAccountsSinglesig
+                            && greenKeystore.isBiometricEnrolled()
+
+                    val shouldEnableWatchOnly = if (shouldShowPrompt) {
+                        CompletableDeferred<Boolean>().also { deferred ->
+                            hwWatchOnlyChoiceDeferred = deferred
+                            postSideEffect(SideEffects.NavigateTo(NavigateDestinations.HwWatchOnlyChoice))
+                        }.await()
+                    } else {
+                        (greenWallet.extras?.hwWatchOnlyEnabled ?: greenKeystore.isBiometricEnrolled()) && allAccountsSinglesig
+                    }
+
+                    if (greenWallet.extras?.hwWatchOnlyEnabled == null) {
+                        greenWallet.extras = (greenWallet.extras ?: WalletExtras()).copy(hwWatchOnlyEnabled = shouldEnableWatchOnly)
+                        database.updateWallet(greenWallet)
+                    }
+
+                    if (shouldEnableWatchOnly) {
+                        enableHardwareWatchOnlyUseCase(greenWallet = greenWallet, session = session)
+                    }
                 }
             }
         } ?: run {
@@ -902,6 +936,11 @@ class LoginViewModel constructor(
         applicationScope.launch(context = logException(countly)) {
             database.deleteLoginCredentials(loginCredentials)
         }
+    }
+
+    fun onHwWatchOnlyChoice(enableBiometrics: Boolean) {
+        hwWatchOnlyChoiceDeferred?.complete(enableBiometrics)
+        hwWatchOnlyChoiceDeferred = null
     }
 
     fun navigate(greenWallet: GreenWallet) {

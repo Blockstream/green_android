@@ -1954,4 +1954,9 @@
     <string name="id_miner_fee_to_send_lbtc_on_liquid">Miner fee to send L-BTC on Liquid.</string>
     <string name="id_service_fee">Service Fee</string>
     <string name="id_amount_you_will_receive">Amount you will Receive</string>
+    <string name="id_use_biometrics_for_quick_access">Use Biometrics for Quick Access</string>
+    <string name="id_use_biometrics_to_quickly_check">Use biometrics to quickly check your balance and activity without connecting Jade.</string>
+    <string name="id_your_keys_stay_on_jade">Your keys stay on Jade, and you will still need it to send or approve transactions.</string>
+    <string name="id_enable_biometrics">Enable Biometrics</string>
+    <string name="id_require_jade_connection">Require Jade Connection</string>
 </resources>
