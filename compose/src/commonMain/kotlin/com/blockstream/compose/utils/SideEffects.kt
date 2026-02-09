@@ -15,6 +15,8 @@ import blockstream_green.common.generated.resources.id_are_you_not_receiving_you
 import blockstream_green.common.generated.resources.id_bluetooth
 import blockstream_green.common.generated.resources.id_cancel
 import blockstream_green.common.generated.resources.id_choose_method_to_authorize_the
+import blockstream_green.common.generated.resources.id_connection_failed
+import blockstream_green.common.generated.resources.id_connection_failed_ble
 import blockstream_green.common.generated.resources.id_contact_support
 import blockstream_green.common.generated.resources.id_continue
 import blockstream_green.common.generated.resources.id_enable
@@ -27,6 +29,7 @@ import blockstream_green.common.generated.resources.id_new_jade_firmware_availab
 import blockstream_green.common.generated.resources.id_new_jade_firmware_required
 import blockstream_green.common.generated.resources.id_ok
 import blockstream_green.common.generated.resources.id_open
+import blockstream_green.common.generated.resources.id_retry
 import blockstream_green.common.generated.resources.id_skip
 import blockstream_green.common.generated.resources.id_success
 import blockstream_green.common.generated.resources.id_the_new_firmware_requires_you
@@ -487,6 +490,23 @@ fun HandleSideEffect(
                             secondaryText = getString(Res.string.id_cancel),
                             onPrimary = {
                                 platformManager.enableLocationService()
+                            }
+                        )
+                    )
+                }
+
+                is SideEffects.BleConnectionFailed -> {
+                    dialog.openDialog(
+                        OpenDialogData(
+                            title = StringHolder(stringResource = Res.string.id_connection_failed),
+                            message = StringHolder(stringResource = Res.string.id_connection_failed_ble),
+                            primaryText = getString(Res.string.id_retry),
+                            secondaryText = getString(Res.string.id_cancel),
+                            onPrimary = {
+                                it.onRetry()
+                            },
+                            onDismiss = {
+                                navigator.navigateUp()
                             }
                         )
                     )

@@ -3,6 +3,10 @@
 package com.blockstream.jade.connection
 
 import com.blockstream.jade.Loggable
+import com.github.michaelbull.retry.policy.constantDelay
+import com.github.michaelbull.retry.policy.plus
+import com.github.michaelbull.retry.policy.stopAtAttempts
+import com.github.michaelbull.retry.retry
 import com.juul.kable.Peripheral
 import com.juul.kable.State
 import com.juul.kable.WriteType
@@ -18,6 +22,8 @@ import kotlinx.coroutines.flow.onEach
 import kotlinx.coroutines.flow.stateIn
 import kotlin.uuid.ExperimentalUuidApi
 import kotlin.uuid.Uuid
+
+class BleNotificationSetupException(message: String, cause: Throwable? = null) : Exception(message, cause)
 
 /**
  * Low-level BLE backend interface to Jade
@@ -70,12 +76,20 @@ class JadeBleConnection internal constructor(
             delay(2000L)
         }
 
-        peripheral
-            .observe(ObserveCharacteristics)
-            .onEach {
-                // Process data.
-                onDataReceived(it)
-            }.launchIn(scope)
+        try {
+            retry(stopAtAttempts<Throwable>(MAX_OBSERVE_RETRIES) + constantDelay(RETRY_DELAY_MS)) {
+                peripheral
+                    .observe(ObserveCharacteristics)
+                    .onEach {
+                        onDataReceived(it)
+                    }.launchIn(scope)
+            }
+        } catch (e: Exception) {
+            throw BleNotificationSetupException(
+                "Failed to setup Bluetooth notifications. Please try reconnecting the device or re-pairing it in Bluetooth settings.",
+                e
+            )
+        }
     }
 
     override suspend fun disconnect() {
@@ -108,5 +122,7 @@ class JadeBleConnection internal constructor(
             characteristicOf(JADE_SERVICE, Uuid.parse("6e400003-b5a3-f393-e0a9-e50e24dcca9e"))
 
         const val JADE_MTU = 512
+        private const val MAX_OBSERVE_RETRIES = 5
+        private const val RETRY_DELAY_MS = 500L
     }
 }

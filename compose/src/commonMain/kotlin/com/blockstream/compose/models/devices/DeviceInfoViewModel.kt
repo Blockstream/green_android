@@ -2,6 +2,8 @@ package com.blockstream.compose.models.devices
 
 import androidx.lifecycle.viewModelScope
 import blockstream_green.common.generated.resources.Res
+import blockstream_green.common.generated.resources.id_connection_failed
+import blockstream_green.common.generated.resources.id_connection_failed_device_offline
 import blockstream_green.common.generated.resources.id_setup_guide
 import blockstream_green.common.generated.resources.id_your_device_was_disconnected
 import com.blockstream.data.data.DeviceIdentifier
@@ -19,6 +21,7 @@ import com.blockstream.compose.navigation.NavigateDestinations
 import com.blockstream.compose.sideeffects.SideEffect
 import com.blockstream.compose.sideeffects.SideEffects
 import com.blockstream.compose.utils.StringHolder
+import com.blockstream.jade.connection.BleNotificationSetupException
 import com.blockstream.utils.Loggable
 import com.blockstream.jade.firmware.JadeFirmwareManager
 import com.juul.kable.NotConnectedException
@@ -152,11 +155,20 @@ class DeviceInfoViewModel(deviceId: String) : DeviceInfoViewModelAbstract(device
         }, onError = {
             it.printStackTrace()
 
-            if (it is NotConnectedException) {
-                connectDevice()
-            } else {
-                postSideEffect(SideEffects.ErrorSnackbar(it))
-                postSideEffect(SideEffects.NavigateBack())
+            when (it) {
+                is BleNotificationSetupException -> {
+                    postSideEffect(SideEffects.BleConnectionFailed(onRetry = { connectDevice() }))
+                }
+                is NotConnectedException -> {
+                    postSideEffect(SideEffects.NavigateBack(
+                        title = StringHolder(stringResource = Res.string.id_connection_failed),
+                        message = StringHolder(stringResource = Res.string.id_connection_failed_device_offline)
+                    ))
+                }
+                else -> {
+                    postSideEffect(SideEffects.ErrorSnackbar(it))
+                    postSideEffect(SideEffects.NavigateBack())
+                }
             }
         })
     }

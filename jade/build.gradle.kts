@@ -48,6 +48,7 @@ kotlin {
             implementation(libs.kotlincrypto.hash.sha2)
             implementation(libs.kable.core)
             implementation(libs.kermit)
+            implementation(libs.kotlin.retry)
         }
 
         commonTest.dependencies {

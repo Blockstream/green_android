@@ -355,6 +355,8 @@
     <string name="id_connection_attempt_to_s">Connection attempt to: %1$s</string>
     <string name="id_connection_blocked">Connection Blocked</string>
     <string name="id_connection_failed">Connection failed</string>
+    <string name="id_connection_failed_ble">Failed to setup Bluetooth connection. Please try again or re-pair the device in Bluetooth settings.</string>
+    <string name="id_connection_failed_device_offline">Unable to connect. Make sure your device is powered on and try again.</string>
     <string name="id_connection_to_device_failed">Connection to device failed! Move closer to the device and try again.</string>
     <string name="id_contact_support">Contact Support</string>
     <string name="id_contact_support_at_s_or_visit_s">Contact support at %1$s or visit %2$s</string>

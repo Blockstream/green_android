@@ -82,6 +82,7 @@ object SideEffects {
     data object AskForBluetoothPermissions : SideEffect
 
     data object BleRequireRebonding : SideEffect
+    data class BleConnectionFailed(val onRetry: () -> Unit) : SideEffect
     data object RequestBiometricsCipher : SideEffect
 
     // Devices
