@@ -21,10 +21,17 @@ task("fetchAndroidBinaries") {
     doFirst {
         val jniLibs = project.file("src/main/jniLibs")
         if (!jniLibs.exists()) {
-            println("GDK: Binaries in ${jniLibs.absolutePath} does not exist. Executing ./fetch_android_binaries.sh")
+            val gdkCommit = System.getenv("GDK_COMMIT")
+            val command = if (!gdkCommit.isNullOrBlank()) {
+                println("GDK: Binaries in ${jniLibs.absolutePath} does not exist. Executing ./fetch_android_binaries.sh -c $gdkCommit")
+                listOf("./fetch_android_binaries.sh", "-c", gdkCommit)
+            } else {
+                println("GDK: Binaries in ${jniLibs.absolutePath} does not exist. Executing ./fetch_android_binaries.sh")
+                listOf("./fetch_android_binaries.sh")
+            }
             providers.exec {
                 workingDir = project.projectDir
-                commandLine("./fetch_android_binaries.sh")
+                commandLine(command)
             }.result.get()
         } else {
             println("GDK: Binaries ✔")

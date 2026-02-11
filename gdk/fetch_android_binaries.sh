@@ -65,8 +65,8 @@ if [ -d "${GDK_MODULE_ROOT}/green" ]; then
     GDK_MODULE_ROOT="${GDK_MODULE_ROOT}/gdk"
 fi
 
-if [ -d $GDK_MODULE_ROOT/gdk ]; then
-    echo "Found a 'gdk' folder, exiting now"
+if [ -d $GDK_MODULE_ROOT/gdk ] && [[ $COMMIT == false ]]; then
+    echo "Found a 'gdk' folder and no custom commit specified, exiting now"
     exit 0
 fi
 
