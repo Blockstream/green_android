@@ -578,10 +578,12 @@ class LoginViewModel constructor(
 
                     if (greenWallet.extras?.hwWatchOnlyEnabled == null) {
                         greenWallet.extras = (greenWallet.extras ?: WalletExtras()).copy(hwWatchOnlyEnabled = shouldEnableWatchOnly)
-                        database.updateWallet(greenWallet)
+                        if (!greenWallet.isEphemeral) {
+                            database.updateWallet(greenWallet)
+                        }
                     }
 
-                    if (shouldEnableWatchOnly) {
+                    if (shouldEnableWatchOnly && !greenWallet.isEphemeral) {
                         enableHardwareWatchOnlyUseCase(greenWallet = greenWallet, session = session)
                     }
                 }
