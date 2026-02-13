@@ -2,10 +2,13 @@ stages:
   - build
   - ios
   - test
+  - security
   - deploy
   - upload
   - e2e
 
+include:
+  - template: Jobs/SAST.gitlab-ci.yml
 
 variables:
   GRADLE_USER_HOME: "${CI_PROJECT_DIR}/.gradle"
@@ -13,6 +16,19 @@ variables:
   FF_USE_FASTZIP: "true"
   ANDROID_IMAGE: blockstream/green_android
   HOMEBREW_NO_AUTO_UPDATE: 1
+  SAST_EXCLUDED_PATHS: "spec, test, tests, tmp, vendor, node_modules, .git"
+  GITLAB_ADVANCED_SAST_ENABLED: "true"
+  AST_ENABLE_MR_PIPELINES: "true"
+
+workflow:
+  rules:
+    # Run as a Merge Request Pipeline if an MR exists
+    - if: $CI_PIPELINE_SOURCE == 'merge_request_event'
+    # Run as a Branch Pipeline only if no MR exists
+    - if: $CI_COMMIT_BRANCH && $CI_OPEN_MERGE_REQUESTS
+      when: never
+    # Fallback for branches without MRs (e.g., main)
+    - if: $CI_COMMIT_BRANCH
 
 cache:
   - key:
@@ -308,6 +324,23 @@ unit_tests:
     - ./gradlew useBlockstreamKeys
     #    - ./gradlew lintProductionGoogleRelease
     - ./gradlew test
+
+#####################################
+# SAST
+
+gitlab-advanced-sast:
+  stage: security
+  needs: []
+  before_script:
+    - rm -f gl-sast-report.json gitlab-advanced-sast.sarif || true
+  rules:
+    - if: $CI_PIPELINE_SOURCE == "merge_request_event" && $CI_MERGE_REQUEST_TARGET_BRANCH_PROTECTED == "true"
+    - if: $CI_COMMIT_BRANCH == $CI_DEFAULT_BRANCH
+  allow_failure: true
+  after_script:
+    - test ! -f gl-sast-report.json || chmod 0644 gl-sast-report.json
+  artifacts:
+    expire_in: 30 days
 
 #####################################
 # Sign production build
