@@ -1,29 +1,32 @@
 package com.blockstream.compose.models.abstract
 
 import androidx.lifecycle.viewModelScope
+import com.blockstream.compose.events.Event
+import com.blockstream.compose.events.Events
+import com.blockstream.compose.models.GreenViewModel
+import com.blockstream.compose.sideeffects.SideEffects
 import com.blockstream.data.data.GreenWallet
 import com.blockstream.data.data.ScanResult
 import com.blockstream.data.extensions.logException
 import com.blockstream.data.gdk.BcurResolver
 import com.blockstream.data.gdk.params.BcurDecodeParams
-import com.blockstream.compose.events.Event
-import com.blockstream.compose.events.Events
-import com.blockstream.compose.models.GreenViewModel
-import com.blockstream.compose.sideeffects.SideEffects
 import com.blockstream.utils.Loggable
 import kotlinx.coroutines.CancellationException
 import kotlinx.coroutines.CompletableDeferred
+import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.sync.Mutex
 import kotlinx.coroutines.sync.withLock
+import kotlin.concurrent.Volatile
 
 abstract class AbstractScannerViewModel(val isDecodeContinuous: Boolean = false, greenWalletOrNull: GreenWallet? = null) :
     GreenViewModel(greenWalletOrNull = greenWalletOrNull) {
 
     private var isScanComplete = false
 
+    @Volatile
     private var bcurPartEmitter: CompletableDeferred<String>? = null
 
     abstract fun setScanResult(scanResult: ScanResult)
@@ -58,7 +61,7 @@ abstract class AbstractScannerViewModel(val isDecodeContinuous: Boolean = false,
             if (!isScanComplete) {
                 if ((isDecodeContinuous && scannedText.startsWith(prefix = "ur:", ignoreCase = true)) || bcurPartEmitter != null) {
                     if (bcurPartEmitter == null) {
-                        viewModelScope.launch(context = logException(countly)) {
+                        viewModelScope.launch(context = logException(countly) + Dispatchers.Default) {
 
                             try {
                                 val bcurDecodedData = session.bcurDecode(
@@ -93,7 +96,7 @@ abstract class AbstractScannerViewModel(val isDecodeContinuous: Boolean = false,
                     }
                 } else {
                     // launch a new coroutine to avoid blocking the main thread
-                    viewModelScope.launch(context = logException(countly)) {
+                    viewModelScope.launch(context = logException(countly) + Dispatchers.Default) {
                         barcodeScannerResult(ScanResult(scannedText))
                     }
                 }
