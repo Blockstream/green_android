@@ -226,7 +226,7 @@ class GetReceiveAmountUseCase(
                             denomination = denomination.notFiat(),
                             withUnit = true
                         )?.let {
-                            "id_amount_too_low_s|$it"
+                            "id_min_limit_s|$it"
                         }
                     }
                 }
@@ -240,7 +240,7 @@ class GetReceiveAmountUseCase(
                             denomination = denomination,
                             withUnit = true
                         )?.let {
-                            "id_amount_too_high_s|$it"
+                            "id_amount_too_low_s|$it"
                         }
                     }
 
@@ -251,7 +251,7 @@ class GetReceiveAmountUseCase(
                             denomination = denomination,
                             withUnit = true
                         )?.let {
-                            "id_max_limit_s|$it"
+                            "id_amount_too_high_s|$it"
                         }
                     }
 
