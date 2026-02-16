@@ -63,7 +63,7 @@ GH=$(curl https://api.github.com/repos/blockstream/gdk/releases/tags/$TAGNAME)
 NAME=$(echo $GH | jq -r .name)
 sed -i '' -e "s/TAGNAME=.*/TAGNAME=\"${TAGNAME}\"/" gdk/fetch_android_binaries.sh
 sed -i '' -e "s/TAGNAME=.*/TAGNAME=\"${TAGNAME}\"/" gdk/prepare_gdk_clang.sh
-sed -i '' -e "s/TAGNAME=.*/TAGNAME=\"${TAGNAME}\"/" common/fetch_ios_binaries.sh
+sed -i '' -e "s/TAGNAME=.*/TAGNAME=\"${TAGNAME}\"/" data/fetch_ios_binaries.sh
 
 TEMP=$(mktemp)
 
@@ -79,21 +79,21 @@ TARURL=$(echo $GH | jq -r .assets[].browser_download_url | grep "gdk-iphone.tar.
 curl -sL -o $TEMP $TARURL
 SHA256=$(shasum -a256 $TEMP | awk '{print $1;}')
 echo $TARURL $SHA256
-sed -i '' -e "s/ARM_SHA256=.*/ARM_SHA256=\"${SHA256}\"/" common/fetch_ios_binaries.sh
+sed -i '' -e "s/ARM_SHA256=.*/ARM_SHA256=\"${SHA256}\"/" data/fetch_ios_binaries.sh
 
 # iOS Arm Simulator
 TARURL=$(echo $GH | jq -r .assets[].browser_download_url | grep "gdk-iphone-sim.tar.gz")
 curl -sL -o $TEMP $TARURL
 SHA256=$(shasum -a256 $TEMP | awk '{print $1;}')
 echo $TARURL $SHA256
-sed -i '' -e "s/ARM_SIM_SHA256=.*/ARM_SIM_SHA256=\"${SHA256}\"/" common/fetch_ios_binaries.sh
+sed -i '' -e "s/ARM_SIM_SHA256=.*/ARM_SIM_SHA256=\"${SHA256}\"/" data/fetch_ios_binaries.sh
 
 # iOS x86 Simulator
 TARURL=$(echo $GH | jq -r .assets[].browser_download_url | grep "gdk-iphone-sim-x86_64.tar.gz")
 curl -sL -o $TEMP $TARURL
 SHA256=$(shasum -a256 $TEMP | awk '{print $1;}')
 echo $TARURL $SHA256
-sed -i '' -e "s/X86_SIM_SHA256=.*/X86_SIM_SHA256=\"${SHA256}\"/" common/fetch_ios_binaries.sh
+sed -i '' -e "s/X86_SIM_SHA256=.*/X86_SIM_SHA256=\"${SHA256}\"/" data/fetch_ios_binaries.sh
 
-git add gdk/fetch_android_binaries.sh common/fetch_ios_binaries.sh gdk/prepare_gdk_clang.sh
+git add gdk/fetch_android_binaries.sh data/fetch_ios_binaries.sh gdk/prepare_gdk_clang.sh
 git commit -m "Update GDK to ${NAME}" -S
