@@ -115,8 +115,8 @@ fun JadeQRScreen(
                 is SideEffects.Success -> {
                     if (viewModel.operation is JadeQrOperation.PinUnlock) {
                         NavigateDestinations.JadeQR.setResult(JadeQRResult(pinUnlock = true))
-                    } else {
-                        NavigateDestinations.JadeQR.setResult(JadeQRResult(result = it.data as String))
+                    } else if (it.data is String) {
+                        NavigateDestinations.JadeQR.setResult(JadeQRResult(result = it.data))
                     }
                 }
 
@@ -193,12 +193,14 @@ fun JadeQRScreen(
                             )
                         }
 
-                        Text(
-                            text = stringResource(step.message),
-                            style = bodyMedium,
-                            color = textMedium,
-                            textAlign = TextAlign.Center
-                        )
+                        step.message?.also { message ->
+                            Text(
+                                text = stringResource(message),
+                                style = bodyMedium,
+                                color = textMedium,
+                                textAlign = TextAlign.Center
+                            )
+                        }
                     }
 
                     val qrCode by viewModel.urPart.collectAsState()
@@ -256,7 +258,7 @@ fun JadeQRScreen(
                             }
                         } else {
                             if (viewModel.operation is JadeQrOperation.Psbt) {
-                                if ((viewModel.operation as? JadeQrOperation.Psbt)?.transactionConfirmation != null) {
+                                if (viewModel.operation.transactionConfirmation != null) {
                                     GreenButton(
                                         text = stringResource(Res.string.id_check_transaction_details),
                                         modifier = Modifier

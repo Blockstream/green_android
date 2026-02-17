@@ -6,5 +6,6 @@ data class SwapAmount constructor(
     val amountFromExchange: String? = null,
     val amountTo: String = "",
     val amountToExchange: String? = null,
-    val error: String? = null
+    val error: String? = null,
+    val isValid: Boolean = false
 )

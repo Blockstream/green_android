@@ -40,6 +40,49 @@ allprojects {
     }
 }
 
+configurations.all {
+    resolutionStrategy.cacheChangingModulesFor(10, TimeUnit.MINUTES)
+    resolutionStrategy.cacheDynamicVersionsFor(10, TimeUnit.MINUTES)
+}
+
+task("printLwkVersion") {
+    doLast {
+        val lwkVersion = libs.versions.lwk.get()
+        println("LWK declared version: $lwkVersion")
+
+        if (lwkVersion.endsWith("-SNAPSHOT")) {
+            // Find the most recently cached maven-metadata.xml for lwk-jvm to get the actual timestamp
+            val resourcesDir = file("${gradle.gradleUserHomeDir}/caches/modules-2/resources-2.1")
+            val latest = resourcesDir.walkTopDown()
+                .filter { it.name == "maven-metadata.xml" }
+                .filter {
+                    val text = it.readText()
+                    text.contains("<artifactId>lwk-jvm</artifactId>") && text.contains("com.blockstream")
+                }
+                .maxByOrNull { it.lastModified() }
+
+            if (latest != null) {
+                val content = latest.readText()
+                val timestamp = Regex("<timestamp>(.*?)</timestamp>").find(content)?.groupValues?.get(1)
+                val buildNumber = Regex("<buildNumber>(.*?)</buildNumber>").find(content)?.groupValues?.get(1)
+                if (timestamp != null && buildNumber != null) {
+                    val base = lwkVersion.replace("-SNAPSHOT", "")
+                    println("LWK cached snapshot: $base-$timestamp-$buildNumber")
+                    val sdf = java.text.SimpleDateFormat("yyyyMMdd.HHmmss")
+                    sdf.timeZone = java.util.TimeZone.getTimeZone("UTC")
+                    val date = sdf.parse(timestamp)
+                    val display = java.text.SimpleDateFormat("yyyy-MM-dd HH:mm:ss z").apply {
+                        timeZone = java.util.TimeZone.getTimeZone("UTC")
+                    }
+                    println("LWK snapshot build date: ${display.format(date)}")
+                }
+            } else {
+                println("LWK snapshot metadata not found in Gradle cache")
+            }
+        }
+    }
+}
+
 task("useBlockstreamKeys") {
     doLast {
         println("AppKeys: Use Blockstream Keys")

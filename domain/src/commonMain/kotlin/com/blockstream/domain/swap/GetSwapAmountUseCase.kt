@@ -5,7 +5,7 @@ package com.blockstream.domain.swap
 import com.blockstream.data.data.Denomination
 import com.blockstream.data.extensions.isNotBlank
 import com.blockstream.data.gdk.GdkSession
-import com.blockstream.data.gdk.data.AccountAssetBalance
+import com.blockstream.data.gdk.data.AccountAsset
 import com.blockstream.data.swap.QuoteMode
 import com.blockstream.data.swap.QuoteValidity
 import com.blockstream.data.swap.SwapAmount
@@ -47,8 +47,8 @@ class GetSwapAmountUseCase(
      */
     operator fun invoke(
         session: GdkSession,
-        from: Flow<AccountAssetBalance>,
-        to: Flow<AccountAssetBalance>,
+        from: Flow<AccountAsset>,
+        to: Flow<AccountAsset>,
         amountFrom: Flow<String>,
         amountTo: Flow<String>,
         quoteMode: Flow<QuoteMode>,
@@ -63,7 +63,11 @@ class GetSwapAmountUseCase(
             if (it.isSend) amountFrom else amountTo
         }
 
-        val balance = combine(account, amount, denomination) { account, amount, denomination ->
+        val balance = combine(
+            account.distinctUntilChanged(),
+            amount.distinctUntilChanged(),
+            denomination.distinctUntilChanged()
+        ) { account, amount, denomination ->
             amount.takeIf { it.isNotBlank() }?.let {
                 UserInput.parseUserInputSafe(
                     session = session, input = it, assetId = account.asset.assetId, denomination = denomination
@@ -73,12 +77,12 @@ class GetSwapAmountUseCase(
 
         val quote = getQuoteUseCase(
             session = session,
-            from = from.map { it.accountAsset.toSwapAsset() }.distinctUntilChanged(),
-            to = to.map { it.accountAsset.toSwapAsset() }.distinctUntilChanged(),
+            from = from.map { it.toSwapAsset() }.distinctUntilChanged(),
+            to = to.map { it.toSwapAsset() }.distinctUntilChanged(),
             satoshi = balance.map {
                 it?.satoshi ?: 0
-            },
-            quoteMode = quoteMode
+            }.distinctUntilChanged(),
+            quoteMode = quoteMode.distinctUntilChanged()
         )
 
         return combine(
@@ -118,7 +122,7 @@ class GetSwapAmountUseCase(
             val isValid = quote?.isValid(satoshi) ?: QuoteValidity.VALID
 
             val error = when {
-                satoshi > (from.satoshi ?: 0) -> "id_insufficient_funds"
+                satoshi > from.balance(session) -> "id_insufficient_funds"
                 isValid == QuoteValidity.MIN -> {
                     quote?.minimal.toAmountLook(
                         session = session,
@@ -144,7 +148,7 @@ class GetSwapAmountUseCase(
                 else -> null
             }
 
-            swapAmount.copy(error = error)
+            swapAmount.copy(error = error, isValid = quote != null && isValid == QuoteValidity.VALID)
         }
     }
 }

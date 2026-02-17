@@ -60,7 +60,7 @@ import com.adamglin.phosphoricons.Regular
 import com.adamglin.phosphoricons.regular.ArrowsDownUp
 import com.blockstream.compose.extensions.assetIcon
 import com.blockstream.compose.extensions.policyIcon
-import com.blockstream.compose.extensions.previewAccount
+import com.blockstream.compose.extensions.previewAccountAsset
 import com.blockstream.compose.extensions.previewAccountAssetBalance
 import com.blockstream.compose.theme.GreenChromePreview
 import com.blockstream.compose.theme.bodyLarge
@@ -78,6 +78,7 @@ import com.blockstream.compose.utils.invisible
 import com.blockstream.compose.utils.noRippleClickable
 import com.blockstream.data.data.Denomination
 import com.blockstream.data.gdk.GdkSession
+import com.blockstream.data.gdk.data.AccountAsset
 import com.blockstream.data.gdk.data.AccountAssetBalance
 import com.blockstream.data.utils.DecimalFormat
 import kotlinx.coroutines.delay
@@ -87,8 +88,10 @@ import org.jetbrains.compose.ui.tooling.preview.Preview
 
 @Composable
 fun SwapComponent(
-    from: AccountAssetBalance,
-    to: AccountAssetBalance,
+    from: AccountAsset,
+    fromBalance: String? = null,
+    to: AccountAsset,
+    toBalance: String? = null,
     fromAccounts: List<AccountAssetBalance>,
     toAccounts: List<AccountAssetBalance>,
     amountFrom: String,
@@ -140,7 +143,8 @@ fun SwapComponent(
 
                 SwapCard(
                     label = stringResource(Res.string.id_from) + ":",
-                    accountAssetBalance = from,
+                    accountAsset = from,
+                    balance = fromBalance,
                     value = amountFrom,
                     denomination = denomination,
                     amountFiat = amountFromFiat,
@@ -165,7 +169,8 @@ fun SwapComponent(
 
                 SwapCard(
                     label = stringResource(Res.string.id_to) + ":",
-                    accountAssetBalance = to,
+                    accountAsset = to,
+                    balance = toBalance,
                     value = amountTo,
                     denomination = denomination,
                     amountFiat = amountToFiat,
@@ -204,7 +209,8 @@ fun SwapComponent(
 @Composable
 private fun SwapCard(
     label: String,
-    accountAssetBalance: AccountAssetBalance,
+    accountAsset: AccountAsset,
+    balance: String? = null,
     session: GdkSession? = null,
     value: String,
     denomination: Denomination? = null,
@@ -277,7 +283,7 @@ private fun SwapCard(
                 )
 
                 TextButton(onClick = onAccountClick, content = {
-                    Text(accountAssetBalance.account.name, style = bodyMedium, color = green)
+                    Text(accountAsset.account.name, style = bodyMedium, color = green)
                 }, modifier = Modifier.invisible(!showAccountSelector), contentPadding = PaddingValues(horizontal = 4.dp, vertical = 4.dp))
             }
 
@@ -297,9 +303,9 @@ private fun SwapCard(
                 ) {
                     Box {
                         Image(
-                            painter = (accountAssetBalance.asset.assetId).assetIcon(
+                            painter = (accountAsset.asset.assetId).assetIcon(
                                 session = session,
-                                isLightning = accountAssetBalance.account.isLightning
+                                isLightning = accountAsset.account.isLightning
                             ),
                             contentDescription = null,
                             contentScale = ContentScale.Fit,
@@ -309,7 +315,7 @@ private fun SwapCard(
                         )
 
                         Image(
-                            painter = painterResource(accountAssetBalance.account.policyIcon()),
+                            painter = painterResource(accountAsset.account.policyIcon()),
                             contentDescription = "Policy",
                             modifier = Modifier
                                 .align(Alignment.BottomEnd)
@@ -320,7 +326,7 @@ private fun SwapCard(
                     }
 
                     Text(
-                        text = accountAssetBalance.asset.name(session),
+                        text = accountAsset.asset.name(session),
                         style = bodyLarge,
                         maxLines = 1,
                         overflow = TextOverflow.Ellipsis,
@@ -366,9 +372,9 @@ private fun SwapCard(
                             text = session?.let {
                                 denomination?.assetTicker(
                                     session = it,
-                                    assetId = accountAssetBalance.assetId
+                                    assetId = accountAsset.assetId
                                 )
-                            } ?: denomination?.denomination ?: accountAssetBalance.asset.ticker ?: accountAssetBalance.assetId,
+                            } ?: denomination?.denomination ?: accountAsset.asset.ticker ?: accountAsset.assetId,
                             style = textStyle,
                             modifier = Modifier.clickable {
                                 onDenominationClick()
@@ -388,11 +394,15 @@ private fun SwapCard(
                 horizontalArrangement = Arrangement.SpaceBetween
             ) {
 
-                Text(
-                    text = stringResource(Res.string.id_available) + ": ${accountAssetBalance.balance}",
-                    style = bodyMedium,
-                    color = whiteLow
-                )
+                if (balance != null) {
+                    Text(
+                        text = stringResource(Res.string.id_available) + ": $balance",
+                        style = bodyMedium,
+                        color = whiteLow
+                    )
+                } else {
+                    GreenSpacer(0)
+                }
 
                 Text(
                     text = amountFiat,
@@ -410,8 +420,8 @@ fun SwapScreenPreview() {
     GreenChromePreview {
         GreenColumn {
             SwapComponent(
-                from = previewAccountAssetBalance(),
-                to = previewAccountAssetBalance(previewAccount(true)),
+                from = previewAccountAsset(),
+                to = previewAccountAsset(true),
                 fromAccounts = listOf(previewAccountAssetBalance()),
                 toAccounts = emptyList(),
                 amountFrom = "12345678901234567890",
@@ -430,8 +440,8 @@ fun SwapScreenPreview() {
             )
 
             SwapComponent(
-                from = previewAccountAssetBalance(),
-                to = previewAccountAssetBalance(previewAccount(true)),
+                from = previewAccountAsset(),
+                to = previewAccountAsset(true),
                 fromAccounts = emptyList(),
                 toAccounts = emptyList(),
                 amountFrom = "12345678901234567890",

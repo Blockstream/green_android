@@ -11,7 +11,7 @@ import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.flow.distinctUntilChanged
 
-class GetQuoteUseCase() {
+class GetQuoteUseCase {
     operator fun invoke(
         session: GdkSession, from: Flow<SwapAsset>, to: Flow<SwapAsset>, satoshi: Flow<Long>, quoteMode: Flow<QuoteMode>
     ): Flow<Quote?> {

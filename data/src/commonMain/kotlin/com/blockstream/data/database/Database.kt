@@ -329,6 +329,10 @@ class Database(driverFactory: DriverFactory, val settingsManager: SettingsManage
         walletDB.boltzSwapsQueries.getSwapFromInvoice(invoice = invoice, xpub_hash_id = xPubHashId).executeAsOneOrNull()
     }
 
+    suspend fun hasPendingSwaps(xPubHashId: String): Boolean = io {
+        walletDB.boltzSwapsQueries.hasPendingSwaps(xpub_hash_id = xPubHashId).executeAsOne()
+    }
+
     fun getPendingSwapsFlow(xPubHashId: String) = walletDB.boltzSwapsQueries.getPendingSwaps(xpub_hash_id = xPubHashId).asFlow().map {
         io {
             it.executeAsList()

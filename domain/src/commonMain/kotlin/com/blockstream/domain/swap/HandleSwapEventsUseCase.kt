@@ -57,7 +57,7 @@ class HandleSwapEventsUseCase(
 
                     logger.d { "Connect from LWK" }
 
-                    connect(derivedBoltzMnemonic)
+                    connect(xPubHashId = wallet.xPubHashId, derivedBoltzMnemonic)
                 }
             }
 

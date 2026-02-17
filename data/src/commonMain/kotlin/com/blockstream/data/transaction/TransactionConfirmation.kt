@@ -6,7 +6,7 @@ import com.blockstream.data.gdk.data.UtxoView
 import kotlinx.serialization.Serializable
 
 @Serializable
-data class TransactionConfirmation(
+data class TransactionConfirmation constructor(
     val from: AccountAsset? = null,
     val to: AccountAsset? = null,
 

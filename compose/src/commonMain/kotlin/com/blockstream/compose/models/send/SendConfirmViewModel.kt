@@ -258,7 +258,7 @@ class SendConfirmViewModelPreview(
 
     companion object {
         fun preview() = SendConfirmViewModelPreview(
-            previewWallet(), transactionConfirmation = TransactionConfirmation(
+            previewWallet(isHardware = true, isWatchOnly = true), transactionConfirmation = TransactionConfirmation(
                 from = previewAccountAsset(),
                 utxos = listOf(
                     UtxoView(

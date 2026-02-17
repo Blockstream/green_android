@@ -1970,4 +1970,13 @@
     <string name="id_get_more_out_of_jade">Get More Out of Jade</string>
     <string name="id_unlock_swaps_from_this_wallet">Unlock swaps for this wallet.</string>
     <string name="id_swap_completed">Swap completed!</string>
+    <string name="id_swaps_enabled">Swaps Enabled!</string>
+    <string name="id_swaps_disabled">Swaps Disabled!</string>
+    <string name="id_swaps_are_enabled_on_this_phone">Swaps are enabled on this phone. If you switch phones or reinstall the app, you’ll need to set it up again with Jade.</string>
+    <string name="id_disable_on_this_device">Disable on This Device</string>
+    <string name="id_about_the_swap_address">About the Swap Address</string>
+    <string name="id_this_is_a_temporary_swap_address">This is a temporary swap address. Funds will be sent to the destination address once the swap completes.</string>
+    <string name="id_this_is_not_the_recipient_address">This is not the recipient address.</string>
+    <string name="id_you_cannot_disable_while_a_swap">You cannot disable while a swap is in progress.</string>
+    <string name="id_unlock_jade_and_scan_this_qr">Unlock Jade and scan this QR to enable swaps on this phone and generate a retrieval key in case of swap failure.</string>
 </resources>

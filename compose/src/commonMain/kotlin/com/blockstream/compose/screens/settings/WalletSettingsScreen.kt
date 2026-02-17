@@ -262,7 +262,6 @@ fun WalletSettingsScreen(
     NavigateDestinations.JadeQR.getResult<JadeQRResult> {
         when {
             it.lightningMnemonic != null -> viewModel.postEvent(LocalEvents.CreateLightningAccount(it.lightningMnemonic))
-            it.boltzMnemonic != null -> viewModel.postEvent(LocalEvents.EnableSwaps(mnemonic = it.boltzMnemonic))
         }
     }
 
@@ -731,9 +730,9 @@ fun WalletSettingsScreen(
                     is WalletSetting.Swaps -> {
                         Setting(
                             title = stringResource(Res.string.id_swaps),
-                            checked = item.enabled,
-                            onCheckedChange = {
-                                viewModel.postEvent(if (it) LocalEvents.EnableSwaps() else LocalEvents.DisableSwaps)
+                            imageVector = PhosphorIcons.Regular.CaretRight,
+                            modifier = Modifier.clickable {
+                                viewModel.postEvent(NavigateDestinations.SwapsSettings(greenWallet = viewModel.greenWallet))
                             },
                         )
                     }

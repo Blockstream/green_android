@@ -1,6 +1,7 @@
 package com.blockstream.domain.swap
 
 import com.blockstream.data.gdk.GdkSession
+import com.blockstream.data.gdk.data.AccountAsset
 import com.blockstream.data.gdk.data.AccountAssetBalance
 import com.blockstream.jade.Loggable
 
@@ -25,8 +26,8 @@ class GetSwappableAccountsUseCase() {
      */
     suspend operator fun invoke(
         session: GdkSession,
-        swapFrom: AccountAssetBalance?
-    ): List<AccountAssetBalance> {
+        swapFrom: AccountAsset?
+    ): List<AccountAsset> {
         return session.accountAsset.value.filter {
             it.asset.isPolicyAsset(session)
         }.filter {
@@ -38,8 +39,6 @@ class GetSwappableAccountsUseCase() {
                 (swapFrom.account.isLightning && it.account.isBitcoin) -> false
                 else -> true
             }
-        }.map {
-            AccountAssetBalance.create(accountAsset = it, session = session)
         }
     }
 

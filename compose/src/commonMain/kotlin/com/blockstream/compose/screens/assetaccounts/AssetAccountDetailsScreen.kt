@@ -28,16 +28,19 @@ import com.blockstream.compose.components.ListHeader
 import com.blockstream.compose.components.TransactionActionButtons
 import com.blockstream.compose.events.Events
 import com.blockstream.compose.extensions.itemsSpaced
-import com.blockstream.compose.models.assetaccounts.AssetAccountDetailsViewModel
 import com.blockstream.compose.models.assetaccounts.AssetAccountDetailsViewModelAbstract
 import com.blockstream.compose.navigation.LocalInnerPadding
+import com.blockstream.compose.navigation.NavigateDestinations
+import com.blockstream.compose.navigation.getResult
 import com.blockstream.compose.screens.assetaccounts.components.AssetOverview
 import com.blockstream.compose.theme.bodyMedium
 import com.blockstream.compose.utils.SetupScreen
+import com.blockstream.compose.utils.SwapUtils
 import com.blockstream.compose.utils.bottom
 import com.blockstream.compose.utils.plus
 import com.blockstream.compose.utils.reachedBottom
 import com.blockstream.compose.views.LightningInfo
+import com.blockstream.data.data.GreenWallet
 import com.blockstream.data.extensions.isNotBlank
 import org.jetbrains.compose.resources.stringResource
 
@@ -45,15 +48,19 @@ import org.jetbrains.compose.resources.stringResource
 fun AssetAccountDetailsScreen(
     viewModel: AssetAccountDetailsViewModelAbstract
 ) {
-    SetupScreen(viewModel = viewModel, withPadding = false, withBottomInsets = false) {
 
+    NavigateDestinations.Login.getResult<GreenWallet> {
+        SwapUtils.navigateToDeviceScanOrJadeQr(viewModel)
+    }
+
+    SetupScreen(viewModel = viewModel, withPadding = false, withBottomInsets = false) {
         val asset = viewModel.asset
         val transactions by viewModel.transactions.collectAsStateWithLifecycle()
         val totalBalance by viewModel.totalBalance.collectAsStateWithLifecycle()
         val totalBalanceFiat by viewModel.totalBalanceFiat.collectAsStateWithLifecycle()
         val showBuyButton = viewModel.showBuyButton
-        val showSwapButton = viewModel.showSwapButton
         val isSendEnabled by viewModel.isSendEnabled.collectAsStateWithLifecycle()
+        val isSwapEnabled = viewModel.isSwapEnabled
         val hasMoreTransactions by viewModel.hasMoreTransactions.collectAsStateWithLifecycle()
         val lightningInfo by viewModel.lightningInfo.collectAsStateWithLifecycle()
         
@@ -63,7 +70,7 @@ fun AssetAccountDetailsScreen(
         
         LaunchedEffect(reachedBottom) {
             if (reachedBottom && hasMoreTransactions && transactions.isSuccess()) {
-                viewModel.postEvent(AssetAccountDetailsViewModel.LocalEvents.LoadMoreTransactions)
+                viewModel.loadMoreTransactions()
             }
         }
 
@@ -88,12 +95,12 @@ fun AssetAccountDetailsScreen(
             item(key = "ButtonsRow") {
                 TransactionActionButtons(
                     showBuyButton = showBuyButton,
-                    showSwapButton = showSwapButton,
-                    sendEnabled = isSendEnabled,
-                    onBuy = { viewModel.postEvent(AssetAccountDetailsViewModel.LocalEvents.ClickBuy) },
-                    onSend = { viewModel.postEvent(AssetAccountDetailsViewModel.LocalEvents.ClickSend) },
-                    onReceive = { viewModel.postEvent(AssetAccountDetailsViewModel.LocalEvents.ClickReceive) },
-                    onSwap = { viewModel.postEvent(AssetAccountDetailsViewModel.LocalEvents.ClickSwap) }
+                    isSendEnabled = isSendEnabled,
+                    isSwapEnabled = isSwapEnabled,
+                    onBuy = viewModel::onBuy,
+                    onSend = viewModel::onSend,
+                    onReceive = viewModel::onReceive,
+                    onSwap = viewModel::onSwap
                 )
             }
 

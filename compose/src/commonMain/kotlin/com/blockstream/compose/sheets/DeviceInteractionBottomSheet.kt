@@ -10,7 +10,9 @@ import androidx.compose.foundation.verticalScroll
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Text
 import androidx.compose.material3.rememberModalBottomSheetState
+import androidx.compose.material3.rememberTooltipState
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.text.style.TextAlign
@@ -22,7 +24,10 @@ import blockstream_green.common.generated.resources.id_change
 import blockstream_green.common.generated.resources.id_confirm_on_your_device
 import blockstream_green.common.generated.resources.id_fee
 import blockstream_green.common.generated.resources.id_sent_to
+import blockstream_green.common.generated.resources.id_this_is_a_temporary_swap_address
+import blockstream_green.common.generated.resources.id_this_is_not_the_recipient_address
 import blockstream_green.common.generated.resources.id_to_show_balances_and
+import com.blockstream.compose.GreenPreview
 import com.blockstream.compose.components.GreenAddress
 import com.blockstream.compose.components.GreenAmount
 import com.blockstream.compose.components.GreenBottomSheet
@@ -32,14 +37,21 @@ import com.blockstream.compose.events.Events
 import com.blockstream.compose.extensions.actionIcon
 import com.blockstream.compose.extensions.icon
 import com.blockstream.compose.models.SimpleGreenViewModel
+import com.blockstream.compose.models.SimpleGreenViewModelPreview
 import com.blockstream.compose.theme.bodyLarge
+import com.blockstream.compose.theme.bodyMedium
+import com.blockstream.compose.theme.bodySmall
+import com.blockstream.compose.theme.textLow
+import com.blockstream.compose.theme.textMedium
 import com.blockstream.compose.theme.titleSmall
 import com.blockstream.compose.theme.whiteMedium
 import com.blockstream.compose.utils.StringHolder
 import com.blockstream.data.Urls
+import com.blockstream.data.gdk.data.UtxoView
 import com.blockstream.data.transaction.TransactionConfirmation
 import org.jetbrains.compose.resources.painterResource
 import org.jetbrains.compose.resources.stringResource
+import org.jetbrains.compose.ui.tooling.preview.Preview
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -67,6 +79,9 @@ fun DeviceInteractionBottomSheet(
             it.icon()
         }
     }
+
+    val scope = rememberCoroutineScope()
+    val tooltipState = rememberTooltipState(isPersistent = true)
 
     GreenBottomSheet(
         title = title,
@@ -118,6 +133,25 @@ fun DeviceInteractionBottomSheet(
                             showIcon = true
                         )
                     }
+
+                    if (transactionConfirmation.isSwap || transactionConfirmation.isLiquidToLightningSwap) {
+
+                        GreenColumn(padding = 0, space = 8, horizontalAlignment = Alignment.CenterHorizontally) {
+                            Text(
+                                stringResource(Res.string.id_this_is_not_the_recipient_address),
+                                color = textMedium,
+                                style = bodyMedium,
+                                textAlign = TextAlign.Center
+                            )
+
+                            Text(
+                                stringResource(Res.string.id_this_is_a_temporary_swap_address),
+                                color = textLow,
+                                style = bodySmall,
+                                textAlign = TextAlign.Center
+                            )
+                        }
+                    }
                 }
 
                 if (verifyAddress != null) {
@@ -151,5 +185,69 @@ fun DeviceInteractionBottomSheet(
                 }
             }
         }
+    }
+}
+
+@Composable
+@Preview
+fun VerifyOnDeviceTransactionBottomSheetPreview() {
+    GreenPreview {
+        DeviceInteractionBottomSheet(
+            viewModel = SimpleGreenViewModelPreview(),
+            verifyAddress = null,
+            transactionConfirmation = TransactionConfirmation(
+                isSwap = true,
+                utxos = listOf(
+                    UtxoView(
+                        address = "bc1qaqtq80759n35gk6ftc57vh7du83nwvt5lgkznu",
+                        isChange = true,
+                        amount = "1 BTC"
+                    ),
+                    UtxoView(
+                        address = "bc1qaqtq80759n35gk6ftc57vh7du83nwvt5lgkznu",
+                        isChange = false,
+                        amount = "2 BTC"
+                    )
+                ),
+                fee = "1 BTC"
+            ),
+            onDismissRequest = { }
+        )
+    }
+}
+
+@Composable
+@Preview
+fun VerifyOnDeviceAddressBottomSheetPreview() {
+    GreenPreview {
+        DeviceInteractionBottomSheet(
+            viewModel = SimpleGreenViewModelPreview(),
+            verifyAddress = "bc1tinyaddresstestonly",
+            onDismissRequest = { }
+        )
+    }
+}
+
+@Composable
+@Preview
+fun VerifyOnDeviceMessageBottomSheetPreview() {
+    GreenPreview {
+        DeviceInteractionBottomSheet(
+            viewModel = SimpleGreenViewModelPreview(),
+            message = StringHolder.create("id_check_your_device"),
+            onDismissRequest = { }
+        )
+    }
+}
+
+@Composable
+@Preview
+fun VerifyOnDeviceMasterBlindingKeyBottomSheetPreview() {
+    GreenPreview {
+        DeviceInteractionBottomSheet(
+            viewModel = SimpleGreenViewModelPreview(),
+            isMasterBlindingKeyRequest = true,
+            onDismissRequest = { }
+        )
     }
 }

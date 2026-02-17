@@ -19,27 +19,37 @@ import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import blockstream_green.common.generated.resources.Res
 import blockstream_green.common.generated.resources.id_latest_transactions
 import blockstream_green.common.generated.resources.id_your_transactions_will_be_shown
+import com.blockstream.compose.GreenPreview
 import com.blockstream.compose.components.GreenTransaction
 import com.blockstream.compose.components.ListHeader
 import com.blockstream.compose.components.TransactionActionButtons
 import com.blockstream.compose.components.WalletBalance
 import com.blockstream.compose.events.Events
 import com.blockstream.compose.models.overview.TransactViewModelAbstract
+import com.blockstream.compose.models.overview.TransactViewModelPreview
 import com.blockstream.compose.navigation.LocalInnerPadding
 import com.blockstream.compose.navigation.NavigateDestinations
+import com.blockstream.compose.navigation.getResult
 import com.blockstream.compose.theme.bodyMedium
 import com.blockstream.compose.utils.SetupScreen
+import com.blockstream.compose.utils.SwapUtils
 import com.blockstream.compose.utils.bottom
 import com.blockstream.compose.utils.plus
+import com.blockstream.data.data.GreenWallet
 import org.jetbrains.compose.resources.stringResource
+import org.jetbrains.compose.ui.tooling.preview.Preview
 
 @Composable
 fun TransactScreen(viewModel: TransactViewModelAbstract) {
 
+    NavigateDestinations.Login.getResult<GreenWallet> {
+        SwapUtils.navigateToDeviceScanOrJadeQr(viewModel)
+    }
+
     SetupScreen(viewModel = viewModel, withPadding = false, withBottomInsets = false) {
 
         val isMainnet = viewModel.greenWallet.isMainnet
-        val showSwapButton = viewModel.showSwapButton
+        val isSwapEnabled = viewModel.isSwapEnabled
         val transactions by viewModel.transactions.collectAsStateWithLifecycle()
         val isMultisigWatchOnly by viewModel.isMultisigWatchOnly.collectAsStateWithLifecycle()
         val innerPadding = LocalInnerPadding.current
@@ -60,24 +70,12 @@ fun TransactScreen(viewModel: TransactViewModelAbstract) {
                 TransactionActionButtons(
                     modifier = Modifier.padding(top = 16.dp),
                     showBuyButton = isMainnet,
-                    showSwapButton = showSwapButton,
-                    sendEnabled = !isMultisigWatchOnly,
-                    onBuy = { viewModel.buy() },
-                    onSend = { viewModel.postEvent(NavigateDestinations.SendAddress(greenWallet = viewModel.greenWallet)) },
-                    onReceive = {
-                        viewModel.postEvent(
-                            NavigateDestinations.ReceiveChooseAsset(
-                                greenWallet = viewModel.greenWallet
-                            )
-                        )
-                    },
-                    onSwap = {
-                        viewModel.postEvent(
-                            NavigateDestinations.Swap(
-                                greenWallet = viewModel.greenWallet
-                            )
-                        )
-                    }
+                    isSwapEnabled = isSwapEnabled,
+                    isSendEnabled = !isMultisigWatchOnly,
+                    onBuy = viewModel::onBuy,
+                    onSend = viewModel::onSend,
+                    onReceive = viewModel::onReceive,
+                    onSwap = viewModel::onSwap
                 )
             }
 
@@ -113,5 +111,13 @@ fun TransactScreen(viewModel: TransactViewModelAbstract) {
                 }
             }
         }
+    }
+}
+
+@Preview
+@Composable
+fun PreviewTransactScreen() {
+    GreenPreview {
+        TransactScreen(viewModel = TransactViewModelPreview.create())
     }
 }

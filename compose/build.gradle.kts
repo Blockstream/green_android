@@ -61,7 +61,6 @@ kotlin {
             implementation(compose.materialIconsExtended)
             implementation(compose.material3)
             implementation(libs.constraintlayout.compose.multiplatform)
-            implementation(libs.material3.adaptive)
             implementation(libs.navigation.compose)
             implementation(libs.compose.backhandler)
             api(compose.components.resources)

@@ -34,7 +34,6 @@ import com.blockstream.compose.models.onboarding.watchonly.WatchOnlyMultisigView
 import com.blockstream.compose.models.onboarding.watchonly.WatchOnlySinglesigViewModel
 import com.blockstream.compose.models.overview.AccountOverviewViewModel
 import com.blockstream.compose.models.overview.SecurityViewModel
-import com.blockstream.compose.models.overview.TransactViewModel
 import com.blockstream.compose.models.overview.WalletAssetsViewModel
 import com.blockstream.compose.models.overview.WalletOverviewViewModel
 import com.blockstream.compose.models.promo.PromoViewModel
@@ -128,7 +127,6 @@ val viewModels = module {
     viewModelOf(::DeviceScanViewModel)
     viewModelOf(::JadeFirmwareUpdateViewModel)
     viewModelOf(::ImportPubKeyViewModel)
-    viewModelOf(::TransactViewModel)
     viewModelOf(::SecurityViewModel)
     viewModelOf(::FeeViewModel)
     viewModel {

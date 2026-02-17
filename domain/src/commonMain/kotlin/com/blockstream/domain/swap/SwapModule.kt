@@ -14,6 +14,7 @@ val swapModule = module {
     singleOf(::GetSwappableAccountsUseCase)
     singleOf(::HandleSwapEventsUseCase)
     singleOf(::IsSwapsEnabledUseCase)
+    singleOf(::CanSwapsBeDisabledUseCase)
     singleOf(::GetWalletFromSwapUseCase)
     singleOf(::IsInvoiceSwappableUseCase)
     singleOf(::IsLiquidToLightningSwapUseCase)

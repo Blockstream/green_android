@@ -36,8 +36,8 @@ import com.blockstream.data.utils.UserInput
 import com.blockstream.domain.hardware.VerifyAddressUseCase
 import com.blockstream.domain.meld.GetLastSuccessfulPurchaseExchange
 import com.blockstream.domain.meld.MeldUseCase
-import com.blockstream.utils.Loggable
 import com.blockstream.network.dataOrThrow
+import com.blockstream.utils.Loggable
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.SharingStarted
@@ -253,6 +253,8 @@ class BuyViewModel(greenWallet: GreenWallet, initialAccountAsset: AccountAsset? 
         }.launchIn(this)
 
         bootstrap()
+        
+        countly.buyInitiate()
     }
 
     override suspend fun handleEvent(event: Event) {

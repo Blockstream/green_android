@@ -24,7 +24,7 @@ import com.blockstream.compose.LocalPreview
 import com.blockstream.compose.R
 
 @Composable
-actual fun Rive(riveAnimation: RiveAnimation) {
+actual fun Rive(riveAnimation: RiveAnimation, previewContent: @Composable (() -> Unit)?) {
     val path = when (riveAnimation) {
         RiveAnimation.LIGHTNING_TRANSACTION -> "lightning_transaction.riv"
         RiveAnimation.ROCKET -> "rocket.riv"
@@ -58,9 +58,15 @@ actual fun Rive(riveAnimation: RiveAnimation) {
             modifier = Modifier
                 .fillMaxWidth()
                 .height(100.dp)
-                .border(BorderStroke(1.dp, Color.Gray))
+                .border(BorderStroke(1.dp, Color.Gray)),
+            contentAlignment = Alignment.Center
+
         ) {
-            Text(text = "Rive Preview", modifier = Modifier.align(Alignment.Center))
+            if (previewContent != null) {
+                previewContent()
+            } else {
+                Text(text = "Rive Preview", modifier = Modifier.align(Alignment.Center))
+            }
         }
     } else {
         AndroidView(factory = {

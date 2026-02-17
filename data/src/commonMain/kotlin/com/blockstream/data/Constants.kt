@@ -56,6 +56,8 @@ object Urls {
     const val JADE_STORE = "https://store.blockstream.com/products/jade-plus"
     const val JADE_TROUBLESHOOT =
         "https://help.blockstream.com/hc/en-us/articles/4406185830041-Why-is-my-Blockstream-Jade-not-connecting-over-Bluetooth-"
+    const val HELP_JADE_SWAP = "https://help.blockstream.com/hc/en-us/articles/55337166957721-Enable-on-chain-swaps-with-Jade"
+    const val HELP_PERFORM_SWAP = "https://help.blockstream.com/hc/en-us/articles/55337210713241-Perform-an-on-chain-swap"
     const val LEDGER_SUPPORTED_ASSETS = "https://docs.blockstream.com/green/hww/hww-index.html#ledger-supported-assets"
     const val BLUETOOTH_PERMISSIONS = "https://developer.android.com/guide/topics/connectivity/bluetooth/permissions"
     const val SECURITY_WATCH_ONLY = "https://blkstrm.com/watchonly"

@@ -17,18 +17,21 @@ import blockstream_green.common.generated.resources.id_change_pin
 import blockstream_green.common.generated.resources.id_pins_do_not_match_please_try
 import blockstream_green.common.generated.resources.id_verify_your_pin
 import blockstream_green.common.generated.resources.id_youll_need_your_pin_to_log_in
+import com.blockstream.compose.GreenPreview
+import com.blockstream.compose.LocalSnackbar
+import com.blockstream.compose.components.GreenColumn
+import com.blockstream.compose.components.OnProgressStyle
 import com.blockstream.compose.models.settings.WalletSettingsViewModel
 import com.blockstream.compose.models.settings.WalletSettingsViewModelAbstract
-import com.blockstream.compose.LocalSnackbar
-import com.blockstream.compose.components.OnProgressStyle
+import com.blockstream.compose.models.settings.WalletSettingsViewModelPreview
 import com.blockstream.compose.theme.bodyLarge
 import com.blockstream.compose.theme.titleLarge
 import com.blockstream.compose.utils.SetupScreen
 import com.blockstream.compose.views.PinView
-import com.blockstream.compose.components.GreenColumn
 import kotlinx.coroutines.launch
 import org.jetbrains.compose.resources.getString
 import org.jetbrains.compose.resources.stringResource
+import org.jetbrains.compose.ui.tooling.preview.Preview
 
 @Composable
 fun ChangePinScreen(
@@ -73,5 +76,25 @@ fun ChangePinScreen(
                 }
             }
         }
+    }
+}
+
+@Composable
+@Preview
+fun PinScreenPreview(
+) {
+    GreenPreview {
+        ChangePinScreen(viewModel = WalletSettingsViewModelPreview.preview())
+    }
+}
+
+@Composable
+@Preview
+fun PinScreenProgressPreview(
+) {
+    GreenPreview {
+        ChangePinScreen(viewModel = WalletSettingsViewModelPreview.preview().also {
+            it.onProgress.value = true
+        })
     }
 }

@@ -115,7 +115,7 @@ class SendViewModel(
     addressType: AddressInputType,
     accountAsset: AccountAsset
 ) : SendViewModelAbstract(greenWallet = greenWallet, accountAsset = accountAsset) {
-    internal val boltzUseCase: SwapUseCase by inject()
+    internal val swapsUseCase: SwapUseCase by inject()
 
     override val supportsSendAll: Boolean = !accountAsset.account.isLightning
 
@@ -222,7 +222,7 @@ class SendViewModel(
             var isSwapsEnabled = false
 
             viewModelScope.launch {
-                isSwapsEnabled = boltzUseCase.isSwapsEnabledUseCase(wallet = greenWallet)
+                isSwapsEnabled = swapsUseCase.isSwapsEnabledUseCase(wallet = greenWallet)
                 addressNetwork.value = tryCatch { session.parseInput(address)?.first }
             }
 

@@ -166,6 +166,7 @@ production:
     - cd $CI_PROJECT_DIR
     - echo $ANDROID_KEYSTORE_BASE64 | base64 -d > keystore.jks
     - ./gradlew useBlockstreamKeys
+    - ./gradlew printLwkVersion
     - ./gradlew assembleProductionGoogleRelease
 
 production_fdroid:
@@ -208,6 +209,7 @@ development:
     - cd $CI_PROJECT_DIR
     - echo $ANDROID_KEYSTORE_BASE64 | base64 -d > keystore.jks
     - ./gradlew useBlockstreamKeys
+    - ./gradlew printLwkVersion
     - ./gradlew assembleDevelopmentRelease
 
 production_debug:

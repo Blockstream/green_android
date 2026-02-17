@@ -15,10 +15,10 @@ import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavHostController
 import androidx.navigation.compose.NavHost
 import androidx.navigation.toRoute
+import com.blockstream.compose.dialogs.HwWatchOnlyDialog
 import com.blockstream.compose.dialogs.TorWarningDialog
 import com.blockstream.compose.dialogs.UrlWarningDialog
 import com.blockstream.compose.managers.rememberStateKeeperFactory
-import com.blockstream.compose.models.GreenViewModel
 import com.blockstream.compose.models.MainViewModel
 import com.blockstream.compose.models.SimpleGreenViewModel
 import com.blockstream.compose.models.about.AboutViewModel
@@ -80,6 +80,7 @@ import com.blockstream.compose.models.send.SendConfirmViewModel
 import com.blockstream.compose.models.send.SendViewModel
 import com.blockstream.compose.models.send.SweepViewModel
 import com.blockstream.compose.models.settings.AppSettingsViewModel
+import com.blockstream.compose.models.settings.SwapsSettingsViewModel
 import com.blockstream.compose.models.settings.TwoFactorAuthenticationViewModel
 import com.blockstream.compose.models.settings.TwoFactorSetupViewModel
 import com.blockstream.compose.models.settings.WalletSettingsSection
@@ -158,6 +159,7 @@ import com.blockstream.compose.screens.send.SendScreen
 import com.blockstream.compose.screens.send.SweepScreen
 import com.blockstream.compose.screens.settings.AppSettingsScreen
 import com.blockstream.compose.screens.settings.ChangePinScreen
+import com.blockstream.compose.screens.settings.SwapsSettingsScreen
 import com.blockstream.compose.screens.settings.TwoFactorAuthenticationScreen
 import com.blockstream.compose.screens.settings.TwoFactorSetupScreen
 import com.blockstream.compose.screens.settings.WalletSettingsScreen
@@ -183,7 +185,6 @@ import com.blockstream.compose.sheets.DenominationBottomSheet
 import com.blockstream.compose.sheets.DeviceInteractionBottomSheet
 import com.blockstream.compose.sheets.EnableJadeFeatureBottomSheet
 import com.blockstream.compose.sheets.EnvironmentBottomSheet
-import com.blockstream.compose.dialogs.HwWatchOnlyDialog
 import com.blockstream.compose.sheets.FeeRateBottomSheet
 import com.blockstream.compose.sheets.JadeFirmwareUpdateBottomSheet
 import com.blockstream.compose.sheets.LightningNodeBottomSheet
@@ -432,6 +433,14 @@ fun Router(
                         greenWallet = args.greenWallet,
                         section = args.section,
                         network = args.network
+                    )
+                })
+            }
+            appComposable<NavigateDestinations.SwapsSettings> {
+                val args = it.toRoute<NavigateDestinations.SwapsSettings>()
+                SwapsSettingsScreen(viewModel {
+                    SwapsSettingsViewModel(
+                        greenWallet = args.greenWallet
                     )
                 })
             }

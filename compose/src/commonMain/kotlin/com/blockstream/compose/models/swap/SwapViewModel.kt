@@ -6,7 +6,7 @@ import androidx.lifecycle.viewModelScope
 import blockstream_green.common.generated.resources.Res
 import blockstream_green.common.generated.resources.id_swap
 import com.blockstream.compose.extensions.launchIn
-import com.blockstream.compose.extensions.previewAccountAssetBalance
+import com.blockstream.compose.extensions.previewAccountAsset
 import com.blockstream.compose.extensions.previewWallet
 import com.blockstream.compose.models.send.CreateTransactionViewModelAbstract
 import com.blockstream.compose.navigation.NavData
@@ -32,6 +32,7 @@ import com.blockstream.data.swap.QuoteMode
 import com.blockstream.data.utils.UserInput
 import com.blockstream.data.utils.feeRateWithUnit
 import com.blockstream.data.utils.ifNotNull
+import com.blockstream.data.utils.toAmountLook
 import com.blockstream.domain.swap.SwapUseCase
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.ExperimentalCoroutinesApi
@@ -50,8 +51,10 @@ import org.jetbrains.compose.resources.getString
 import org.koin.core.component.inject
 
 data class SwapUiState(
-    val from: AccountAssetBalance? = null,
-    val to: AccountAssetBalance? = null,
+    val from: AccountAsset? = null,
+    val fromBalance: String? = null,
+    val to: AccountAsset? = null,
+    val toBalance: String? = null,
     val fromAccounts: List<AccountAssetBalance> = emptyList(),
     val toAccounts: List<AccountAssetBalance> = emptyList(),
     val quoteMode: QuoteMode = QuoteMode.SEND,
@@ -60,6 +63,7 @@ data class SwapUiState(
     val amountTo: String = "",
     val amountToExchange: String = "",
     val error: String? = null,
+    val isValidQuote: Boolean = false
 )
 
 abstract class SwapViewModelAbstract(
@@ -112,21 +116,16 @@ class SwapViewModel(
                 val fromAccounts = session.accountAsset.value
                     .filter { it.asset.isPolicyAsset(session) } // Only policy assets for now
 
-                val accountsWithBalance = fromAccounts.mapNotNull {
-                    AccountAssetBalance.createIfBalance(
-                        accountAsset = it,
-                        session = sessionOrNull
-                    )
+                val accountsWithBalance = fromAccounts.filter {
+                    it.balance(session) > 0
                 }
 
                 val from = accountAssetOrNull
-                    ?.let { AccountAssetBalance.create(accountAsset = it, session = session) }
                     ?: accountsWithBalance.firstOrNull()
-                    ?: fromAccounts.firstOrNull()?.let { AccountAssetBalance.create(accountAsset = it, session = session) }
+                    ?: fromAccounts.firstOrNull()
 
                 uiState.copy(
-                    from = from,
-                    fromAccounts = accountsWithBalance
+                    from = from
                 )
             }
 
@@ -140,34 +139,75 @@ class SwapViewModel(
                 }
         }
 
-        uiState.map { it.from }.filterNotNull().distinctUntilChanged().onEach { from ->
-            accountAsset.value = from.accountAsset
-            _network.value = from.account.network
+        // Update Balance
+        combine(uiState.map { it.from }.filterNotNull().distinctUntilChanged(), denomination) { from, denomination ->
 
-            swapUseCase.getSwappableAccountsUseCase(session = session, swapFrom = from).also { accounts ->
-                if (accounts.find { it.accountAsset == from.accountAsset } == null) {
-                    uiState.update { uiState ->
-                        uiState.copy(
-                            to = accounts.firstOrNull()
-                        )
-                    }
-                }
+            val fromAccounts = session.accountAsset.value
+                .filter { it.asset.isPolicyAsset(session) } // Only policy assets for now
+
+            val accountsWithBalance = fromAccounts.mapNotNull {
+                AccountAssetBalance.createIfBalance(
+                    accountAsset = it,
+                    session = sessionOrNull,
+                    denomination = denomination
+                )
+            }
+
+
+            uiState.update { uiState ->
+                uiState.copy(
+                    fromBalance = from.balance(session).toAmountLook(
+                        session = session,
+                        assetId = from.assetId,
+                        withUnit = true,
+                        denomination = denomination
+                    ),
+                    fromAccounts = accountsWithBalance
+                )
             }
 
             // Update To Accounts
             swapUseCase.getSwappableAccountsUseCase(session = session, swapFrom = uiState.value.from).also { toAccounts ->
                 uiState.update { uiState ->
                     uiState.copy(
-                        to = toAccounts.find { it.accountAsset == uiState.to?.accountAsset } ?: toAccounts.firstOrNull(),
-                        toAccounts = toAccounts
+                        to = toAccounts.find { it == uiState.to } ?: toAccounts.firstOrNull(),
+                        toAccounts = toAccounts.map {
+                            AccountAssetBalance.create(
+                                accountAsset = it,
+                                session = sessionOrNull,
+                                denomination = denomination
+                            )
+                        }
                     )
                 }
             }
+        }.launchIn(this)
 
+        // Update Balance
+        combine(uiState.map { it.to }.filterNotNull().distinctUntilChanged(), denomination) { to, denomination ->
+            uiState.update { uiState ->
+                uiState.copy(
+                    toBalance = to.balance(session).toAmountLook(
+                        session = session,
+                        assetId = to.assetId,
+                        withUnit = true,
+                        denomination = denomination
+                    )
+                )
+            }
+        }.launchIn(this)
+
+        uiState.map { it.from }.filterNotNull().distinctUntilChanged().onEach { from ->
+            accountAsset.value = from
+            _network.value = from.account.network
+        }.launchIn(this)
+
+
+        uiState.map { it.isValidQuote }.distinctUntilChanged().onEach {
+            _isValid.value = it
         }.launchIn(this)
 
         uiState.map { it.error }.distinctUntilChanged().onEach { error ->
-            _isValid.value = error == null
             _error.value = error
         }.launchIn(this)
 
@@ -186,7 +226,8 @@ class SwapViewModel(
                 val uiState = uiState.copy(
                     amountFromExchange = it.amountFromExchange ?: "",
                     amountToExchange = it.amountToExchange ?: "",
-                    error = it.error
+                    error = it.error,
+                    isValidQuote = it.isValid
                 )
 
                 if (uiState.quoteMode.isSend) {
@@ -204,7 +245,7 @@ class SwapViewModel(
         // Sync if it changes from anywhere else
         // This should not trigger a change if the account is the same
         accountAsset.onEach {
-            accountAsset.value = uiState.value.from?.accountAsset
+            accountAsset.value = uiState.value.from
         }.launchIn(this)
 
         combine(
@@ -283,11 +324,11 @@ class SwapViewModel(
         uiState.update { uiState ->
             if (_pendingSetAccountFrom) {
                 uiState.copy(
-                    from = accountAssetBalance
+                    from = accountAssetBalance.accountAsset
                 )
             } else {
                 uiState.copy(
-                    to = accountAssetBalance
+                    to = accountAssetBalance.accountAsset
                 )
             }
         }
@@ -296,8 +337,8 @@ class SwapViewModel(
     override fun createSwap() {
         doAsync({
 
-            val from = checkNotNull(uiState.value.from?.accountAsset)
-            val to = checkNotNull(uiState.value.to?.accountAsset)
+            val from = checkNotNull(uiState.value.from)
+            val to = checkNotNull(uiState.value.to)
 
             val params = swapUseCase.prepareSwapTransactionUseCase(
                 greenWallet = greenWallet,
@@ -340,7 +381,7 @@ class SwapViewModel(
     }
 
     override suspend fun denominatedValue(): DenominatedValue? {
-        val (accountAsset, amount) = uiState.value.let { if (it.quoteMode.isSend) it.from?.accountAsset to it.amountFrom else it.to?.accountAsset to it.amountTo }
+        val (accountAsset, amount) = uiState.value.let { if (it.quoteMode.isSend) it.from to it.amountFrom else it.to to it.amountTo }
 
         return accountAsset?.let { accountAsset ->
             UserInput.parseUserInputSafe(
@@ -375,7 +416,7 @@ class SwapViewModel(
                 to = uiState.from
             ).also {
                 ifNotNull(it.from, it.to) { from, to ->
-                    countly.swapToggle(session = session, from = from.accountAsset, to = to.accountAsset)
+                    countly.swapToggle(session = session, from = from, to = to)
                 }
             }
         }
@@ -386,7 +427,7 @@ class SwapViewModelPreview(greenWallet: GreenWallet) :
     SwapViewModelAbstract(greenWallet = greenWallet) {
 
     override val uiState: MutableStateFlow<SwapUiState> =
-        MutableStateFlow(SwapUiState(from = previewAccountAssetBalance(), to = previewAccountAssetBalance()))
+        MutableStateFlow(SwapUiState(from = previewAccountAsset(), to = previewAccountAsset()))
 
     override fun createSwap() {}
     override fun onAmountChanged(amount: String, isFromInput: Boolean) {}

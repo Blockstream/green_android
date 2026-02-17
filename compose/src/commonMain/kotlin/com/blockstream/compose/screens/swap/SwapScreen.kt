@@ -128,7 +128,9 @@ fun SwapScreen(
 
                     SwapComponent(
                         from = uiState.from!!,
+                        fromBalance = uiState.fromBalance,
                         to = uiState.to!!,
+                        toBalance = uiState.toBalance,
                         fromAccounts = uiState.fromAccounts,
                         toAccounts = uiState.toAccounts,
                         amountFrom = uiState.amountFrom,

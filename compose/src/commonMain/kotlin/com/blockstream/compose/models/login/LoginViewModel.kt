@@ -71,6 +71,7 @@ import com.blockstream.domain.lightning.LightningNodeIdUseCase
 import com.blockstream.domain.wallet.SaveDerivedBoltzMnemonicUseCase
 import com.blockstream.utils.Loggable
 import kotlinx.coroutines.CompletableDeferred
+import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.StateFlow
@@ -80,6 +81,7 @@ import kotlinx.coroutines.flow.filterNotNull
 import kotlinx.coroutines.flow.onEach
 import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.launch
+import kotlinx.coroutines.withContext
 import org.jetbrains.compose.resources.getString
 import org.koin.core.component.inject
 import kotlin.io.encoding.Base64
@@ -655,10 +657,27 @@ class LoginViewModel constructor(
                         }
                     })
 
+                    // Do a database query as the StateFlow is not yet initialized
+                    val derivedLightningMnemonic = database.getLoginCredential(
+                        id = greenWallet.id,
+                        credentialType = CredentialType.LIGHTNING_MNEMONIC
+                    )?.lightningMnemonic(greenKeystore) {
+                        postSideEffect(SideEffects.ErrorSnackbar(it))
+                    }
+
+                    val derivedBoltzMnemonic = database.getLoginCredential(
+                        id = greenWallet.id,
+                        credentialType = CredentialType.BOLTZ_MNEMONIC
+                    )?.boltzMnemonic(greenKeystore) {
+                        postSideEffect(SideEffects.ErrorSnackbar(it))
+                    }
+
                     session.loginWatchOnly(
                         wallet = greenWallet,
                         loginCredentials = loginCredentials,
-                        watchOnlyCredentials = watchOnlyCredentials
+                        watchOnlyCredentials = watchOnlyCredentials,
+                        derivedLightningMnemonic = derivedLightningMnemonic,
+                        derivedBoltzMnemonic = derivedBoltzMnemonic
                     )
                 }
             }
@@ -762,7 +781,7 @@ class LoginViewModel constructor(
             logInMethod.invoke(session)
 
             // Enable Swaps for old wallets
-            if (!greenWallet.isHardware && !isBip39Login && database.getLoginCredential(
+            if (!greenWallet.isHardware && !greenWallet.isWatchOnly && !isBip39Login && database.getLoginCredential(
                     id = greenWallet.id,
                     credentialType = CredentialType.BOLTZ_MNEMONIC
                 ) == null
@@ -873,18 +892,20 @@ class LoginViewModel constructor(
         }, postAction = {
             onProgress.value = it == null
         }, onSuccess = { pair ->
-            countly.loginWalletEnd(
-                wallet = pair.first,
-                session = pair.second,
-                loginCredentials = loginCredentials
-            )
+            withContext(context = Dispatchers.Default) {
+                countly.loginWalletEnd(
+                    wallet = pair.first,
+                    session = pair.second,
+                    loginCredentials = loginCredentials
+                )
 
-            lightningNodeIdUseCase.invoke(wallet = pair.first, session = session)
+                lightningNodeIdUseCase.invoke(wallet = pair.first, session = session)
 
-            if (isWatchOnlyUpgrade) {
-                sessionManager.getWalletSessionOrNull(greenWallet)?.also { woSession ->
-                    logger.d { "Upgrade wo session to full" }
-                    sessionManager.upgradeOnBoardingSessionToFullSession(woSession = woSession, device = device)
+                if (isWatchOnlyUpgrade) {
+                    sessionManager.getWalletSessionOrNull(greenWallet)?.also { woSession ->
+                        logger.d { "Upgrade wo session to full" }
+                        sessionManager.upgradeOnBoardingSessionToFullSession(woSession = woSession, device = device)
+                    }
                 }
             }
 

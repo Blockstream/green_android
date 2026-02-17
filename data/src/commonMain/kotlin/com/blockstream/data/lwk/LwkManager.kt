@@ -19,7 +19,7 @@ class LwkManager constructor(
         return mutex.withLock {
             (bridges.getOrPut(wallet.id) {
                 logger.i { "Creating a new Lwk for ${wallet.id}" }
-                Lwk(wallet)
+                Lwk(wallet.id)
             }).also { bridge ->
                 references[bridge] = (references[bridge] ?: 0) + 1
             }
@@ -39,7 +39,7 @@ class LwkManager constructor(
 
                 if (reference < 1) {
                     // Remove from bridges
-                    bridges.remove(lwk.wallet.id)
+                    bridges.remove(lwk.walletId)
 
                     // Stop
                     lwk.disconnect()

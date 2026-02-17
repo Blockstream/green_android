@@ -49,6 +49,7 @@ fun GreenConfirmButton(
                 enabled = buttonEnabled,
                 type = GreenButtonType.OUTLINE,
                 size = GreenButtonSize.BIG,
+                color = GreenButtonColor.GREENER,
                 modifier = Modifier.fillMaxWidth(),
                 onClick = {
                     viewModel.pendingAction = PendingAction.SendTransaction

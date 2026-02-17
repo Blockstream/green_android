@@ -10,6 +10,9 @@ class IsSwapAvailableUseCase {
         session: GdkSession,
         asset: EnrichedAsset? = null
     ): Boolean {
+
+        if (wallet.isWatchOnly && !wallet.isHardware) return false
+
         return wallet.isMainnet && !wallet.isEphemeral && (asset == null || asset.isPolicyAsset(session))
     }
 }

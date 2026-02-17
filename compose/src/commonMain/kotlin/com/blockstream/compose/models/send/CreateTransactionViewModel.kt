@@ -40,6 +40,7 @@ import com.blockstream.data.utils.ifNotNull
 import com.blockstream.data.utils.toAmountLook
 import com.blockstream.domain.send.SendUseCase
 import com.blockstream.utils.Loggable
+import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.StateFlow
@@ -51,6 +52,7 @@ import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.flow.merge
 import kotlinx.coroutines.flow.onEach
 import kotlinx.coroutines.flow.stateIn
+import kotlinx.coroutines.launch
 import kotlinx.coroutines.sync.Mutex
 import kotlinx.serialization.Serializable
 import kotlinx.serialization.json.JsonObject
@@ -474,8 +476,7 @@ abstract class CreateTransactionViewModelAbstract(
                             greenWalletOrNull = greenWalletOrNull,
                             operation = JadeQrOperation.Psbt(
                                 psbt = it.psbt!!,
-                                transactionConfirmation = transactionConfirmLook(),
-                                askForJadeUnlock = true
+                                transactionConfirmation = transactionConfirmLook()
                             ),
                             deviceModel = session.deviceModel
                         )
@@ -562,7 +563,11 @@ abstract class CreateTransactionViewModelAbstract(
     fun executePendingAction() {
         if (!session.isHwWatchOnly) {
             (pendingAction as? PendingAction.SendTransaction)?.also {
-                postEvent(LocalEvents.SignTransaction())
+                // Hack to solve a screen/jade being stuck in screen transition
+                viewModelScope.launch {
+                    delay(500L)
+                    postEvent(LocalEvents.SignTransaction())
+                }
             }
         }
     }

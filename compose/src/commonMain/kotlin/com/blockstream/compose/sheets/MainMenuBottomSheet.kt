@@ -94,7 +94,6 @@ fun MainMenuBottomSheet(
                     subtitle = "BTC",
                     icon = PhosphorIcons.Regular.Coins,
                     onClick = {
-                        countly.buyInitiate()
                         NavigateDestinations.MainMenu.setResult(MainMenuEntry.BUY_SELL)
                         onDismissRequest()
                     }

@@ -169,6 +169,7 @@ import kotlinx.serialization.json.jsonPrimitive
 import kotlinx.serialization.json.put
 import kotlinx.serialization.json.putJsonArray
 import kotlinx.serialization.json.putJsonObject
+import lwk.LightningPayment
 import kotlin.math.absoluteValue
 
 typealias AccountId = String
@@ -1045,7 +1046,12 @@ class GdkSession constructor(
                 lwkOrNull = it
             }
 
-            lwk.connect(mnemonic = mnemonic ?: deriveBoltzMnemonic(), bitcoinAddress = bitcoinAddress, liquidAddress = liquidAddress)
+            lwk.connect(
+                xPubHashId = wallet.xPubHashId,
+                mnemonic = mnemonic ?: deriveBoltzMnemonic(),
+                bitcoinAddress = bitcoinAddress,
+                liquidAddress = liquidAddress
+            )
 
             lwk.invoicePaidSharedFlow.onEach {
                 _lastInvoicePaid.value = it
@@ -1267,16 +1273,32 @@ class GdkSession constructor(
     suspend fun loginWatchOnly(
         wallet: GreenWallet,
         loginCredentials: LoginCredentials? = null,
-        watchOnlyCredentials: MultipleWatchOnlyCredentials
+        watchOnlyCredentials: MultipleWatchOnlyCredentials,
+        derivedLightningMnemonic: String? = null,
+        derivedBoltzMnemonic: String? = null,
     ) {
-        loginWatchOnly(network = prominentNetwork(wallet, loginCredentials), wallet = wallet, watchOnlyCredentials = watchOnlyCredentials)
+        loginWatchOnly(
+            network = prominentNetwork(wallet, loginCredentials),
+            wallet = wallet,
+            watchOnlyCredentials = watchOnlyCredentials,
+            derivedLightningMnemonic = derivedLightningMnemonic,
+            derivedBoltzMnemonic = derivedBoltzMnemonic
+        )
     }
 
-    suspend fun loginWatchOnly(network: Network, wallet: GreenWallet?, watchOnlyCredentials: MultipleWatchOnlyCredentials): LoginData {
+    suspend fun loginWatchOnly(
+        network: Network,
+        wallet: GreenWallet?,
+        watchOnlyCredentials: MultipleWatchOnlyCredentials,
+        derivedLightningMnemonic: String? = null,
+        derivedBoltzMnemonic: String? = null,
+    ): LoginData {
         return loginWatchOnly(
             network = network,
             wallet = wallet,
-            loginCredentialsParams = watchOnlyCredentials.toLoginCredentials()
+            loginCredentialsParams = watchOnlyCredentials.toLoginCredentials(),
+            derivedLightningMnemonic = derivedLightningMnemonic,
+            derivedBoltzMnemonic = derivedBoltzMnemonic
         )
     }
 
@@ -1296,7 +1318,12 @@ class GdkSession constructor(
     }
 
     // WO Login
-    private suspend fun loginWatchOnly(network: Network, wallet: GreenWallet?, loginCredentialsParams: LoginCredentialsParams): LoginData {
+    private suspend fun loginWatchOnly(
+        network: Network, wallet: GreenWallet?,
+        loginCredentialsParams: LoginCredentialsParams,
+        derivedLightningMnemonic: String? = null,
+        derivedBoltzMnemonic: String? = null
+    ): LoginData {
         val initNetworks = loginCredentialsParams.multipleWatchOnlyCredentials?.credentials?.keys?.map {
             networkBy(it)
         } ?: listOf(network)
@@ -1305,7 +1332,9 @@ class GdkSession constructor(
             prominentNetwork = network,
             initNetworks = initNetworks,
             wallet = wallet,
-            walletLoginCredentialsParams = loginCredentialsParams
+            walletLoginCredentialsParams = loginCredentialsParams,
+            derivedLightningMnemonic = derivedLightningMnemonic,
+            derivedBoltzMnemonic = derivedBoltzMnemonic
         )
     }
 
@@ -1551,15 +1580,11 @@ class GdkSession constructor(
             }
         } + listOfNotNull(
             tryCatch {
-                if (isWatchOnlyValue || liquid == null) {
-                    return@tryCatch null
-                }
-
-                if (isHardwareWallet && derivedBoltzMnemonic == null) {
-                    return@tryCatch null
-                }
-
                 if (isTestnet) return@tryCatch null
+
+                if (liquid == null) return@tryCatch null
+
+                if (isHardwareWallet && derivedBoltzMnemonic == null) return@tryCatch null
 
                 scope.async(
                     start = CoroutineStart.LAZY
@@ -1752,7 +1777,14 @@ class GdkSession constructor(
         initializeSession: Boolean
     ) {
         _isConnectedState.value = true
-        xPubHashId = if (isNoBlobWatchOnly && !isHwWatchOnly) loginData.networkHashId else loginData.xpubHashId
+
+        // Watchonly wallet login can't produce the mnemonics xpub.
+        // So in case of a HW WO use the one stored in the Wallet to allow HW to be connected with the same xpub
+        xPubHashId = when {
+            isHwWatchOnly -> wallet?.xPubHashId
+            isNoBlobWatchOnly && !isHwWatchOnly -> loginData.networkHashId
+            else -> null
+        } ?: loginData.xpubHashId
 
         lightningNodeId = wallet?.id?.let { walletSettingsManager.getLightningNodeId(walletId = wallet.id) }
 
@@ -3349,6 +3381,12 @@ class GdkSession constructor(
                     activeGdkSessions.mapValues {
                         validateAddress(it.key, ValidateAddresseesParams.create(it.key, input))
                     }.filter { it.value.isValid }.keys.firstOrNull()?.let { it to null }
+                } ?: run {
+                    // Check for lightning in case breez sdk is not initiated
+                    tryCatch {
+                        LightningPayment(input.replace("lightning:", ""))
+                        lightning to null
+                    }
                 }
         }
 

@@ -75,8 +75,7 @@ import com.blockstream.data.usecases.SetPinUseCase
 import com.blockstream.data.utils.UserInput
 import com.blockstream.data.utils.toAmountLook
 import com.blockstream.domain.account.CreateAccountUseCase
-import com.blockstream.domain.swap.IsSwapsEnabledUseCase
-import com.blockstream.domain.wallet.SaveDerivedBoltzMnemonicUseCase
+import com.blockstream.domain.swap.IsSwapAvailableUseCase
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.IO
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -123,9 +122,9 @@ class WalletSettingsViewModel(
     private val appConfig: AppConfig by inject()
     private val createAccountUseCase: CreateAccountUseCase by inject()
     private val setBiometricsUseCase: SetBiometricsUseCase by inject()
-    private val saveDerivedBoltzMnemonicUseCase: SaveDerivedBoltzMnemonicUseCase by inject()
     private val setPinUseCase: SetPinUseCase by inject()
-    private val isSwapsEnabledUseCase: IsSwapsEnabledUseCase by inject()
+
+    private val isSwapAvailableUseCase: IsSwapAvailableUseCase by inject()
 
     private val _items = MutableStateFlow(listOf<WalletSetting>())
     override val items = _items.asStateFlow()
@@ -160,8 +159,6 @@ class WalletSettingsViewModel(
         data class CopyAmpId(val account: Account? = null) : Event
         data class ChooseAccountType(val accountType: AccountType) : Event
         data object DisableLightning : Event
-        data class EnableSwaps(val mnemonic: String? = null) : Event
-        data object DisableSwaps : Event
         data class CreateAccount(val accountType: AccountType, val asset: EnrichedAsset? = null) : Event
         data class CreateLightningAccount(val lightningMnemonic: String) : Event, Redact
         object CreateNewAccount : Event
@@ -379,14 +376,19 @@ class WalletSettingsViewModel(
                     WalletSetting.Logout
                 )
 
+                // Account Settings Section
+                val accountSettings = mutableListOf<WalletSetting>()
+
+                accountSettings += listOfNotNull(
+                    WalletSetting.Lightning(enabled = session.hasLightning)
+                        .takeIf { appConfig.lightningFeatureEnabled && (settingsManager.appSettings.experimentalFeatures || session.hasLightning) },
+                    WalletSetting.Swaps.takeIf {
+                        isSwapAvailableUseCase.invoke(wallet = greenWallet, session = session) && greenWallet.isHardware
+                    }
+                )
+
                 if (!session.isWatchOnlyValue) {
-                    // Account Settings Section
-                    list += WalletSetting.Text(getString(Res.string.id_account_settings))
-                    list += listOfNotNull(
-                        WalletSetting.Lightning(enabled = session.hasLightning)
-                            .takeIf { appConfig.lightningFeatureEnabled && (settingsManager.appSettings.experimentalFeatures || session.hasLightning) },
-                        WalletSetting.Swaps(enabled = isSwapsEnabledUseCase(wallet = greenWallet))
-                            .takeIf { session.isHardwareWallet },
+                    accountSettings += listOfNotNull(
                         WalletSetting.CreateAmpAccount.takeIf { session.accounts.value.find { it.type == AccountType.AMP_ACCOUNT } == null },
                         WalletSetting.CopyAmpId.takeIf { session.accounts.value.any { it.type == AccountType.AMP_ACCOUNT } },
                     )
@@ -394,16 +396,21 @@ class WalletSettingsViewModel(
                     val hasMultisig = session.activeBitcoinMultisig != null || session.activeLiquidMultisig != null
 
                     if (hasMultisig) {
-                        list += listOf(WalletSetting.TwoFactorAuthentication)
+                        accountSettings += listOf(WalletSetting.TwoFactorAuthentication)
                         session.activeMultisig.firstOrNull()?.also {
-                            list += listOf(WalletSetting.PgpKey(enabled = session.getSettings(it)?.pgp.isNotBlank()))
+                            accountSettings += listOf(WalletSetting.PgpKey(enabled = session.getSettings(it)?.pgp.isNotBlank()))
                         }
                     }
 
-                    list += listOf(
+                    accountSettings += listOf(
                         WalletSetting.ArchivedAccounts,
                         WalletSetting.CreateNewAccount
                     )
+                }
+
+                if (accountSettings.isNotEmpty()) {
+                    list += WalletSetting.Text(getString(Res.string.id_account_settings))
+                    list += accountSettings
                 }
             }
 
@@ -442,31 +449,6 @@ class WalletSettingsViewModel(
                             removeAccount(it)
                         }
                     }
-                })
-            }
-
-            is LocalEvents.EnableSwaps -> {
-                if (event.mnemonic == null) {
-                    postSideEffect(
-                        SideEffects.NavigateTo(
-                            NavigateDestinations.JadeQR(
-                                greenWalletOrNull = greenWalletOrNull,
-                                operation = JadeQrOperation.BoltzMnemonicExport,
-                                deviceModel = DeviceModel.BlockstreamGeneric
-                            )
-                        )
-                    )
-                } else {
-                    doAsync({
-                        saveDerivedBoltzMnemonicUseCase.invoke(session = session, wallet = greenWallet, mnemonic = event.mnemonic)
-                        session.initLwkIfNeeded(wallet = greenWallet, mnemonic = event.mnemonic)
-                    })
-                }
-            }
-
-            is LocalEvents.DisableSwaps -> {
-                doAsync({
-                    database.deleteLoginCredentials(walletId = greenWallet.id, type = CredentialType.BOLTZ_MNEMONIC)
                 })
             }
 

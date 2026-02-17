@@ -253,11 +253,11 @@ fun GreenButton(
 
         GreenButtonType.TEXT -> {
             val buttonColors = if (enabled && color == GreenButtonColor.RED) {
-                ButtonDefaults.outlinedButtonColors(contentColor = MaterialTheme.colorScheme.error)
+                ButtonDefaults.textButtonColors(contentColor = MaterialTheme.colorScheme.error)
             } else if (enabled && color == GreenButtonColor.WHITE) {
-                ButtonDefaults.outlinedButtonColors(contentColor = Color.White)
+                ButtonDefaults.textButtonColors(contentColor = Color.White)
             } else {
-                ButtonDefaults.outlinedButtonColors()
+                ButtonDefaults.textButtonColors()
             }
 
             TextButton(

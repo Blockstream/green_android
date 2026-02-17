@@ -33,12 +33,13 @@ class IsSwapsEnabledUseCase(private val database: Database) {
      * @return `true` when swaps are enabled per the rules above; otherwise `false`
      */
     suspend operator fun invoke(
-        wallet: GreenWallet,
+        wallet: GreenWallet
     ): Boolean {
         // Swaps are enabled if:
         // 1. It's a software wallet (non-ephemeral and non-hardware)
         // 2. OR it has a BOLTZ_MNEMONIC already stored (e.g. for hardware wallets that already set up swaps)
-        return (!wallet.isEphemeral && !wallet.isHardware) || database.getLoginCredential(
+
+        return (!wallet.isEphemeral && !wallet.isHardware && !wallet.isWatchOnly) || database.getLoginCredential(
             id = wallet.id,
             credentialType = CredentialType.BOLTZ_MNEMONIC
         ) != null

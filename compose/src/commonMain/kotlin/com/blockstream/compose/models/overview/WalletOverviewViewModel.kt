@@ -4,6 +4,17 @@ import androidx.lifecycle.viewModelScope
 import blockstream_green.common.generated.resources.Res
 import blockstream_green.common.generated.resources.id_home
 import breez_sdk.HealthCheckStatus
+import com.blockstream.compose.events.Event
+import com.blockstream.compose.events.Events
+import com.blockstream.compose.extensions.launchIn
+import com.blockstream.compose.extensions.previewAccountAsset
+import com.blockstream.compose.extensions.previewAssetBalance
+import com.blockstream.compose.extensions.previewWallet
+import com.blockstream.compose.looks.transaction.TransactionLook
+import com.blockstream.compose.navigation.NavData
+import com.blockstream.compose.navigation.NavigateDestinations
+import com.blockstream.compose.sideeffects.SideEffect
+import com.blockstream.compose.sideeffects.SideEffects
 import com.blockstream.data.btcpricehistory.model.BitcoinChartData
 import com.blockstream.data.data.AlertType
 import com.blockstream.data.data.DataState
@@ -21,17 +32,6 @@ import com.blockstream.data.gdk.data.AssetBalance
 import com.blockstream.data.gdk.data.Settings
 import com.blockstream.data.gdk.data.WalletEvents
 import com.blockstream.data.utils.AppReviewHelper
-import com.blockstream.compose.events.Event
-import com.blockstream.compose.events.Events
-import com.blockstream.compose.extensions.launchIn
-import com.blockstream.compose.extensions.previewAccountAsset
-import com.blockstream.compose.extensions.previewAssetBalance
-import com.blockstream.compose.extensions.previewWallet
-import com.blockstream.compose.looks.transaction.TransactionLook
-import com.blockstream.compose.navigation.NavData
-import com.blockstream.compose.navigation.NavigateDestinations
-import com.blockstream.compose.sideeffects.SideEffect
-import com.blockstream.compose.sideeffects.SideEffects
 import com.blockstream.domain.bitcoinpricehistory.ObserveBitcoinPriceHistory
 import com.blockstream.domain.notifications.RegisterFCMToken
 import com.blockstream.utils.Loggable
@@ -95,7 +95,6 @@ abstract class WalletOverviewViewModelAbstract(
                 greenWallet = greenWallet,
             )
         )
-        countly.buyInitiate()
     }
 
     fun dismissWalletOnboarding() {

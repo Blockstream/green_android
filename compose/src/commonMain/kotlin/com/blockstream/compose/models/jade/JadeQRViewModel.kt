@@ -5,7 +5,6 @@ import blockstream_green.common.generated.resources.Res
 import blockstream_green.common.generated.resources.id_enable_swaps
 import blockstream_green.common.generated.resources.id_get_watch_only_information_from
 import blockstream_green.common.generated.resources.id_initiate_oracle_communication
-import blockstream_green.common.generated.resources.id_jade_keeps_your_private_keys_secure
 import blockstream_green.common.generated.resources.id_jade_will_securely_create_and
 import blockstream_green.common.generated.resources.id_psbt_saved_to_files
 import blockstream_green.common.generated.resources.id_qr_pin_unlock
@@ -14,6 +13,8 @@ import blockstream_green.common.generated.resources.id_scan_qr_on_jade
 import blockstream_green.common.generated.resources.id_scan_qr_with_device
 import blockstream_green.common.generated.resources.id_scan_qr_with_jade
 import blockstream_green.common.generated.resources.id_scan_your_xpub_on_jade
+import blockstream_green.common.generated.resources.id_swaps_enabled
+import blockstream_green.common.generated.resources.id_unlock_jade_and_scan_this_qr
 import blockstream_green.common.generated.resources.id_validate_pin_and_unlock
 import blockstream_green.common.generated.resources.id_validate_the_transaction_details
 import com.blockstream.compose.events.Event
@@ -79,22 +80,22 @@ import kotlin.io.encoding.Base64
 import kotlin.time.Clock
 
 @Serializable
-sealed class JadeQrOperation {
+sealed class JadeQrOperation(val askForJadeUnlock: Boolean = false) {
+
     @Serializable
-    data class Psbt(
+    data class Psbt constructor(
         val psbt: String,
-        val transactionConfirmation: TransactionConfirmation? = null,
-        val askForJadeUnlock: Boolean
-    ) : JadeQrOperation()
+        val transactionConfirmation: TransactionConfirmation? = null
+    ) : JadeQrOperation(askForJadeUnlock = true)
 
     @Serializable
-    data object LightningMnemonicExport : JadeQrOperation()
+    data object LightningMnemonicExport : JadeQrOperation(askForJadeUnlock = true)
 
     @Serializable
-    data object BoltzMnemonicExport : JadeQrOperation()
+    data object BoltzMnemonicExport : JadeQrOperation(askForJadeUnlock = true)
 
     @Serializable
-    data object ExportXpub : JadeQrOperation()
+    data object ExportXpub : JadeQrOperation(askForJadeUnlock = true)
 
     @Serializable
     data object PinUnlock : JadeQrOperation()
@@ -103,7 +104,7 @@ sealed class JadeQrOperation {
 data class StepInfo(
     val title: StringResource = Res.string.id_scan_qr_on_jade,
     val subtitle: StringResource? = null,
-    val message: StringResource = Res.string.id_initiate_oracle_communication,
+    val message: StringResource? = null,
     val step: Int = 1,
     val isScan: Boolean = false
 )
@@ -257,7 +258,7 @@ class JadeQRViewModel(
 
         bootstrap()
 
-        if ((operation as? JadeQrOperation.Psbt)?.askForJadeUnlock == true) {
+        if (operation.askForJadeUnlock && session.isWatchOnlyValue) {
             viewModelScope.launch {
                 delay(400L)
                 postSideEffect(
@@ -515,18 +516,13 @@ class JadeQRViewModel(
 
         }, onSuccess = { mnemonic: String? ->
             if (mnemonic == null) {
+                postSideEffect(SideEffects.Snackbar(StringHolder.create(Res.string.id_swaps_enabled)))
                 postSideEffect(SideEffects.Success(true))
             } else {
                 postSideEffect(SideEffects.Mnemonic(mnemonic))
             }
             postSideEffect(SideEffects.NavigateBack())
         })
-    }
-
-    private fun enableSwaps(mnemonic: String) {
-
-        postSideEffect(SideEffects.Mnemonic(mnemonic))
-        postSideEffect(SideEffects.NavigateBack())
     }
 
     companion object : Loggable() {
@@ -551,15 +547,13 @@ class JadeQRViewModel(
             listOf(
                 StepInfo(
                     title = Res.string.id_enable_swaps,
-                    subtitle = Res.string.id_scan_qr_with_jade,
-                    message = Res.string.id_jade_keeps_your_private_keys_secure,
+                    message = Res.string.id_unlock_jade_and_scan_this_qr,
                     step = 1,
                     isScan = false
                 ),
                 StepInfo(
                     title = Res.string.id_enable_swaps,
-                    subtitle = Res.string.id_scan_qr_on_jade,
-                    message = Res.string.id_jade_will_securely_create_and,
+                    message = Res.string.id_unlock_jade_and_scan_this_qr,
                     step = 2,
                     isScan = true
                 ),
@@ -654,8 +648,7 @@ class JadeQRViewModel(
 class JadeQRViewModelPreview(
     operation: JadeQrOperation = JadeQrOperation.Psbt(
         psbt = "psbt",
-        transactionConfirmation = TransactionConfirmation(),
-        askForJadeUnlock = true
+        transactionConfirmation = TransactionConfirmation()
     )
 ) : JadeQRViewModelAbstract(
     operation = operation, deviceModel = DeviceModel.BlockstreamGeneric

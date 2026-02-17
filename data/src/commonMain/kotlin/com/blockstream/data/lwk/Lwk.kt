@@ -1,10 +1,10 @@
 package com.blockstream.data.lwk
 
 import com.blockstream.data.config.AppInfo
-import com.blockstream.data.data.GreenWallet
 import com.blockstream.data.data.SwapType
 import com.blockstream.data.database.Database
 import com.blockstream.data.extensions.cancelChildren
+import com.blockstream.data.extensions.isNotBlank
 import com.blockstream.data.extensions.launchSafe
 import com.blockstream.data.extensions.tryCatch
 import com.blockstream.data.lightning.satoshi
@@ -48,9 +48,11 @@ import lwk.WebHook
 import org.koin.core.component.KoinComponent
 import org.koin.core.component.inject
 
-class Lwk(
-    val wallet: GreenWallet
+class Lwk constructor(
+    val walletId: String
 ) : Logging, KoinComponent {
+
+    private lateinit var xPubHashId: String
 
     private val appInfo: AppInfo by inject()
     private val database: Database by inject()
@@ -71,31 +73,44 @@ class Lwk(
     val invoicePaidSharedFlow
         get() = _invoicePaidSharedFlow.asSharedFlow()
 
-    fun connect(mnemonic: String, bitcoinAddress: String? = null, liquidAddress: String? = null) {
+    fun connect(xPubHashId: String, mnemonic: String, bitcoinAddress: String? = null, liquidAddress: String? = null) {
+        check(xPubHashId.isNotBlank()) {
+            "Wallet should not have a blank xPubHashId"
+        }
+
+        this.xPubHashId = xPubHashId
+
         scope.launchSafe {
             if (!isConnected) {
                 logger.d { "Connect to Boltz using LWK" }
                 val network = Network.mainnet()
                 val mnemonic = Mnemonic(mnemonic)
-                val client = network.defaultElectrumClient()
+
+                val client = try {
+                    AnyClient.fromElectrum(network.defaultElectrumClient())
+                } catch (e: Exception) {
+                    logger.d { "Electrum error: ${e.message}, fallback to Esplora" }
+                    AnyClient.fromEsplora(network.defaultEsploraClient())
+                }
 
                 tryCatch {
                     val boltzSessionBuilder = BoltzSessionBuilder(
                         network = network,
-                        client = AnyClient.fromElectrum(client),
+                        client = client,
                         timeout = 30.toULong(),
                         mnemonic = mnemonic,
                         referralId = "blockstream",
                         logging = this@Lwk,
                         polling = true,
-                        timeoutAdvance = 10.toULong()
+                        timeoutAdvance = 10.toULong(),
+                        randomPreimages = true
                     )
 
                     retry(fullJitterBackoff(min = 1_000, max = 30_000)) {
                         logger.d { "Trying connection with Boltz" }
                         boltzSession = BoltzSession.fromBuilder(boltzSessionBuilder).also {
                             logger.d { "Connected with Boltz" }
-                            onSessionConnect(xPubHashId = wallet.xPubHashId)
+                            onSessionConnect(xPubHashId = xPubHashId)
                         }
 
                         // Restore
@@ -110,8 +125,8 @@ class Lwk(
 
                                     database.setSwap(
                                         id = invoice.swapId(),
-                                        walletId = wallet.id,
-                                        xPubHashId = wallet.xPubHashId,
+                                        walletId = walletId,
+                                        xPubHashId = xPubHashId,
                                         swapType = SwapType.ReverseSubmarine,
                                         isAutoSwap = false,
                                         data = invoice.serialize()
@@ -123,8 +138,8 @@ class Lwk(
 
                                     database.setSwap(
                                         id = pay.swapId(),
-                                        walletId = wallet.id,
-                                        xPubHashId = wallet.xPubHashId,
+                                        walletId = walletId,
+                                        xPubHashId = xPubHashId,
                                         swapType = SwapType.NormalSubmarine,
                                         isAutoSwap = false,
                                         data = pay.serialize()
@@ -144,8 +159,8 @@ class Lwk(
 
                                         database.setSwap(
                                             id = lockup.swapId(),
-                                            walletId = wallet.id,
-                                            xPubHashId = wallet.xPubHashId,
+                                            walletId = walletId,
+                                            xPubHashId = xPubHashId,
                                             swapType = SwapType.Chain,
                                             isAutoSwap = false,
                                             data = lockup.serialize()
@@ -223,7 +238,9 @@ class Lwk(
         } else {
             BASE_URL
         }).let {
-            WebHook("${it}webhook/boltz/${wallet.xPubHashId}", listOf())
+            WebHook("${it}webhook/boltz/${xPubHashId}".also {
+                logger.d { "Webhook: $it" }
+            }, listOf())
         }
     }
 
@@ -401,7 +418,7 @@ class Lwk(
     }
 
     fun disconnect() {
-        logger.d { "Disconnect Boltz for wallet ${wallet.id}" }
+        logger.d { "Disconnect Boltz for wallet $walletId" }
         scope.cancelChildren()
         _isConnected.value = false
         monitor.clear()

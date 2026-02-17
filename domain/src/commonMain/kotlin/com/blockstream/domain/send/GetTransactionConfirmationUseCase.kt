@@ -115,6 +115,15 @@ class GetTransactionConfirmationUseCase() {
                         denomination = Denomination.fiat(session)
                     )
                 }
+
+                if (isAddressVerificationOnDevice) {
+                    utxos = transaction.utxoViews(
+                        session = session,
+                        denomination = denomination,
+                        isAddressVerificationOnDevice = true,
+                        showChangeOutputs = session.device?.isLedger == true
+                    )
+                }
             }
 
             !isAddressVerificationOnDevice && params.isAccountTransfer && params.from != null && params.to != null -> {

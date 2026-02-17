@@ -97,6 +97,11 @@ sealed class NavigateDestinations : NavigateDestination() {
     ) : NavigateDestination(isBottomNavigation = section == WalletSettingsSection.General)
 
     @Serializable
+    data class SwapsSettings(
+        val greenWallet: GreenWallet
+    ) : NavigateDestination()
+
+    @Serializable
     data class EnterRecoveryPhrase(val setupArgs: SetupArgs) : NavigateDestination()
 
     @Serializable

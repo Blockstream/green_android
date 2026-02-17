@@ -9,4 +9,4 @@ enum class RiveAnimation {
 }
 
 @Composable
-expect fun Rive(riveAnimation: RiveAnimation)
+expect fun Rive(riveAnimation: RiveAnimation, previewContent: @Composable (() -> Unit)? = null)

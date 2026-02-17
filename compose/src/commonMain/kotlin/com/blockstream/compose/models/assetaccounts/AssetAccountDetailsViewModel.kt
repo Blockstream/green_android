@@ -10,7 +10,6 @@ import blockstream_green.common.generated.resources.id_rename_account
 import blockstream_green.common.generated.resources.id_watchonly
 import blockstream_green.common.generated.resources.info
 import blockstream_green.common.generated.resources.text_aa
-import com.blockstream.compose.events.Event
 import com.blockstream.compose.events.Events
 import com.blockstream.compose.looks.account.LightningInfoLook
 import com.blockstream.compose.looks.transaction.TransactionLook
@@ -25,12 +24,14 @@ import com.blockstream.data.data.EnrichedAsset
 import com.blockstream.data.data.GreenWallet
 import com.blockstream.data.extensions.hasUnconfirmedTransactions
 import com.blockstream.data.extensions.ifConnected
+import com.blockstream.data.extensions.launchSafe
 import com.blockstream.data.gdk.data.Account
 import com.blockstream.data.gdk.data.AccountAsset
 import com.blockstream.data.gdk.data.AccountBalance
 import com.blockstream.data.lightning.onchainBalanceSatoshi
 import com.blockstream.data.utils.toAmountLook
 import com.blockstream.domain.swap.IsSwapAvailableUseCase
+import com.blockstream.domain.swap.IsSwapsEnabledUseCase
 import com.blockstream.utils.Loggable
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.SharingStarted
@@ -53,6 +54,8 @@ abstract class AssetAccountDetailsViewModelAbstract(
 ) : GreenViewModel(greenWalletOrNull = greenWallet, accountAssetOrNull = accountAssetOrNull) {
     override fun screenName(): String = "AssetAccountDetails"
 
+    private val isSwapsEnabledUseCase: IsSwapsEnabledUseCase by inject()
+
     abstract val asset: EnrichedAsset
 
     abstract val accountBalance: StateFlow<AccountBalance>
@@ -64,7 +67,7 @@ abstract class AssetAccountDetailsViewModelAbstract(
     abstract val totalBalanceFiat: StateFlow<String?>
 
     abstract val showBuyButton: Boolean
-    abstract val showSwapButton: Boolean
+    abstract val isSwapEnabled: Boolean
 
     abstract val isSendEnabled: StateFlow<Boolean>
 
@@ -73,6 +76,30 @@ abstract class AssetAccountDetailsViewModelAbstract(
     abstract val accounts: StateFlow<List<Account>>
 
     abstract val lightningInfo: StateFlow<LightningInfoLook?>
+
+    abstract fun loadMoreTransactions()
+
+    fun onBuy() {
+        postEvent(NavigateDestinations.Buy(greenWallet = greenWallet, accountAsset = accountAsset.value))
+    }
+
+    fun onSend() {
+        postEvent(NavigateDestinations.SendAddress(greenWallet = greenWallet, accountAsset = accountAsset.value))
+    }
+
+    fun onReceive() {
+        postEvent(NavigateDestinations.ReceiveChooseAsset(greenWallet = greenWallet, accountAsset = accountAsset.value))
+    }
+
+    fun onSwap() {
+        viewModelScope.launchSafe {
+            if (isSwapsEnabledUseCase(greenWallet)) {
+                postEvent(NavigateDestinations.Swap(greenWallet = greenWallet, accountAsset = accountAsset.value))
+            } else {
+                postEvent(NavigateDestinations.EnableJadeFeature(greenWallet = greenWallet, accountAsset = accountAsset.value))
+            }
+        }
+    }
 
     fun clickLightningSweep() {
         postSideEffect(
@@ -90,14 +117,6 @@ class AssetAccountDetailsViewModel(
     greenWallet: GreenWallet, accountAsset: AccountAsset
 ) : AssetAccountDetailsViewModelAbstract(greenWallet = greenWallet, accountAssetOrNull = accountAsset) {
 
-    class LocalEvents {
-        object ClickBuy : Event
-        object ClickSend : Event
-        object ClickReceive : Event
-        object ClickSwap : Event
-        object LoadMoreTransactions : Event
-    }
-
     private val isSwapAvailableUseCase: IsSwapAvailableUseCase by inject()
 
     override val asset: EnrichedAsset = accountAsset.asset
@@ -108,7 +127,7 @@ class AssetAccountDetailsViewModel(
 
     override val showBuyButton: Boolean = accountAsset.asset.isBitcoin
 
-    override val showSwapButton: Boolean = session.ifConnected {
+    override val isSwapEnabled: Boolean = session.ifConnected {
         isSwapAvailableUseCase(wallet = greenWallet, session = session, asset = accountAsset.asset)
     } ?: false
 
@@ -217,63 +236,7 @@ class AssetAccountDetailsViewModel(
         }
     }
 
-    fun buy() {
-        countly.buyInitiate()
-        postSideEffect(
-            SideEffects.NavigateTo(
-                NavigateDestinations.Buy(
-                    greenWallet = greenWallet,
-                    accountAsset = accountAsset.value
-                )
-            )
-        )
-    }
-
-    override suspend fun handleEvent(event: Event) {
-        super.handleEvent(event)
-
-        when (event) {
-            is LocalEvents.ClickBuy -> {
-                buy()
-            }
-
-            is LocalEvents.ClickSend -> {
-                postSideEffect(
-                    SideEffects.NavigateTo(
-                        NavigateDestinations.SendAddress(
-                            greenWallet = greenWallet, accountAsset = accountAsset.value
-                        )
-                    )
-                )
-            }
-
-            is LocalEvents.ClickReceive -> {
-                postSideEffect(
-                    SideEffects.NavigateTo(
-                        NavigateDestinations.Receive(
-                            greenWallet = greenWallet, accountAsset = accountAsset.value!!
-                        )
-                    )
-                )
-            }
-
-            is LocalEvents.ClickSwap -> {
-                postSideEffect(
-                    SideEffects.NavigateTo(
-                        NavigateDestinations.Swap(
-                            greenWallet = greenWallet, accountAsset = accountAsset.value!!
-                        )
-                    )
-                )
-            }
-
-            is LocalEvents.LoadMoreTransactions -> {
-                loadMoreTransactions()
-            }
-        }
-    }
-
-    private fun loadMoreTransactions() {
+    override fun loadMoreTransactions() {
         session.getTransactions(account = account, isReset = false, isLoadMore = true)
     }
 

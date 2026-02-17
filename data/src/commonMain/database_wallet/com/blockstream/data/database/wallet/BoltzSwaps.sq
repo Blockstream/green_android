@@ -21,6 +21,9 @@ CREATE INDEX IF NOT EXISTS index_boltzSwaps_tx_hash ON boltzSwaps(`tx_hash`);
 getPendingSwaps:
 SELECT * FROM boltzSwaps WHERE xpub_hash_id = ? AND is_pending = 1;
 
+hasPendingSwaps:
+SELECT COUNT(*) > 0 FROM boltzSwaps WHERE xpub_hash_id = ? AND is_pending = 1;
+
 getSwap:
 SELECT * FROM boltzSwaps WHERE id = ?;
 
