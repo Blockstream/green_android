@@ -60,12 +60,14 @@ import com.blockstream.compose.utils.composeIf
 import io.github.koalaplot.core.ChartLayout
 import io.github.koalaplot.core.legend.LegendLocation
 import io.github.koalaplot.core.line.AreaBaseline
-import io.github.koalaplot.core.line.AreaPlot
+import io.github.koalaplot.core.line.AreaPlot2
 import io.github.koalaplot.core.style.AreaStyle
 import io.github.koalaplot.core.style.LineStyle
 import io.github.koalaplot.core.util.ExperimentalKoalaPlotApi
+import io.github.koalaplot.core.xygraph.AxisContent
 import io.github.koalaplot.core.xygraph.AxisStyle
 import io.github.koalaplot.core.xygraph.FloatLinearAxisModel
+import io.github.koalaplot.core.xygraph.GridStyle
 import io.github.koalaplot.core.xygraph.Point
 import io.github.koalaplot.core.xygraph.XYGraph
 import kotlinx.coroutines.flow.StateFlow
@@ -214,33 +216,29 @@ private fun XYChartLayout(chartPrices: List<Pair<Long, Float>>) {
     ChartLayout(
         modifier = Modifier.height(100.dp), legendLocation = LegendLocation.NONE
     ) {
+        val hiddenAxisStyle = AxisStyle(
+            color = Color.Transparent, minorTickSize = 0.dp, lineWidth = 0.dp
+        )
         XYGraph(
             xAxisModel = FloatLinearAxisModel(minX..maxX),
             yAxisModel = FloatLinearAxisModel(minPrice..maxPrice),
-
-            xAxisLabels = { "" },
-            yAxisLabels = { "" },
-            xAxisTitle = null,
-            yAxisTitle = null,
-
-            xAxisStyle = AxisStyle(
-                color = Color.Transparent, minorTickSize = 0.dp, lineWidth = 0.dp
+            xAxisContent = AxisContent(labels = {}, title = {}, style = hiddenAxisStyle),
+            yAxisContent = AxisContent(labels = {}, title = {}, style = hiddenAxisStyle),
+            gridStyle = GridStyle(
+                horizontalMajorStyle = null,
+                horizontalMinorStyle = null,
+                verticalMajorStyle = null,
+                verticalMinorStyle = null
             ),
-            yAxisStyle = AxisStyle(
-                color = Color.Transparent, minorTickSize = 0.dp, lineWidth = 0.dp
-            ),
-
-            horizontalMajorGridLineStyle = null,
-            verticalMajorGridLineStyle = null,
-            horizontalMinorGridLineStyle = null,
-            verticalMinorGridLineStyle = null
         ) {
-            AreaPlot(
-                modifier = Modifier, data = data, lineStyle = LineStyle(
+            AreaPlot2(
+                data = data,
+                lineStyle = LineStyle(
                     brush = SolidColor(MaterialTheme.colorScheme.primary),
                     strokeWidth = 1.dp,
                     pathEffect = PathEffect.cornerPathEffect(20f)
-                ), areaStyle = AreaStyle(
+                ),
+                areaStyle = AreaStyle(
                     brush = Brush.linearGradient(
                         colors = listOf(0f, 0.05f, 0.075f, 0.1f, 0.2f, 0.3f).map {
                             MaterialTheme.colorScheme.primary.copy(alpha = it)
@@ -249,10 +247,9 @@ private fun XYChartLayout(chartPrices: List<Pair<Long, Float>>) {
                         end = Offset(0f, 0f),
                         tileMode = TileMode.Clamp
                     )
-                ), areaBaseline = AreaBaseline.ConstantLine(0f)
-
+                ),
+                areaBaseline = AreaBaseline.HorizontalLine(0f),
             )
-
         }
     }
 }

@@ -4,12 +4,11 @@ import com.blockstream.data.data.MultipleWatchOnlyCredentials
 import com.blockstream.data.gdk.GreenJson
 import com.blockstream.data.gdk.data.Credentials
 import com.blockstream.data.gdk.data.PinData
-import kotlinx.serialization.ExperimentalSerializationApi
 import kotlinx.serialization.SerialName
 import kotlinx.serialization.Serializable
 
 @Serializable
-data class LoginCredentialsParams @OptIn(ExperimentalSerializationApi::class) constructor(
+data class LoginCredentialsParams(
     @SerialName("mnemonic")
     val mnemonic: String? = null,
     @SerialName("bip39_passphrase")

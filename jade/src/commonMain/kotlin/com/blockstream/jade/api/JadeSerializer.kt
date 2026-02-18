@@ -1,14 +1,12 @@
 package com.blockstream.jade.api
 
 import kotlinx.serialization.DeserializationStrategy
-import kotlinx.serialization.ExperimentalSerializationApi
 import kotlinx.serialization.KSerializer
 import kotlinx.serialization.cbor.Cbor
 import kotlinx.serialization.decodeFromByteArray
 import kotlinx.serialization.json.Json
 import kotlinx.serialization.json.JsonElement
 
-@OptIn(ExperimentalSerializationApi::class)
 abstract class JadeSerializer<T> {
     open fun encodeDefaultsValues() = true
 

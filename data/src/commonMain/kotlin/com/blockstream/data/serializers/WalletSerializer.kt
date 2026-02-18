@@ -4,7 +4,6 @@ import com.blockstream.data.data.toDeviceIdentifierList
 import com.blockstream.data.data.toJson
 import com.blockstream.data.data.toWalletExtras
 import com.blockstream.data.database.wallet.Wallet
-import kotlinx.serialization.ExperimentalSerializationApi
 import kotlinx.serialization.KSerializer
 import kotlinx.serialization.builtins.serializer
 import kotlinx.serialization.descriptors.PrimitiveKind
@@ -13,7 +12,6 @@ import kotlinx.serialization.descriptors.SerialDescriptor
 import kotlinx.serialization.encoding.Decoder
 import kotlinx.serialization.encoding.Encoder
 
-@OptIn(ExperimentalSerializationApi::class)
 object WalletSerializer : KSerializer<Wallet> {
     override val descriptor: SerialDescriptor = PrimitiveSerialDescriptor("Wallet", PrimitiveKind.STRING)
     override fun deserialize(decoder: Decoder): Wallet {
