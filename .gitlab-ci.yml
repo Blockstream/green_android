@@ -20,16 +20,6 @@ variables:
   GITLAB_ADVANCED_SAST_ENABLED: "true"
   AST_ENABLE_MR_PIPELINES: "true"
 
-workflow:
-  rules:
-    # Run as a Merge Request Pipeline if an MR exists
-    - if: $CI_PIPELINE_SOURCE == 'merge_request_event'
-    # Run as a Branch Pipeline only if no MR exists
-    - if: $CI_COMMIT_BRANCH && $CI_OPEN_MERGE_REQUESTS
-      when: never
-    # Fallback for branches without MRs (e.g., main)
-    - if: $CI_COMMIT_BRANCH
-
 cache:
   - key:
       files:
@@ -80,9 +70,9 @@ build_default_image:
     ANDROID_IMAGE_SHA: ${ANDROID_IMAGE}:${CI_COMMIT_SHORT_SHA}
     ANDROID_IMAGE_LATEST: ${ANDROID_IMAGE}:latest
   when: manual
-#  rules:
-#    - changes:
-#      - ${DOCKERFILE}
+  #  rules:
+  #    - changes:
+  #      - ${DOCKERFILE}
   script:
     - apk add jq curl
     - docker buildx build
@@ -192,7 +182,7 @@ production_fdroid:
   script:
     - cd $CI_PROJECT_DIR
     - echo $ANDROID_KEYSTORE_BASE64 | base64 -d > keystore.jks
-#    - ./prepare_fdroid.sh
+    #    - ./prepare_fdroid.sh
     - ./gradlew assembleProductionFDroidRelease
 
 development:
@@ -334,13 +324,24 @@ gitlab-advanced-sast:
   before_script:
     - rm -f gl-sast-report.json gitlab-advanced-sast.sarif || true
   rules:
-    - if: $CI_PIPELINE_SOURCE == "merge_request_event" && $CI_MERGE_REQUEST_TARGET_BRANCH_PROTECTED == "true"
-    - if: $CI_COMMIT_BRANCH == $CI_DEFAULT_BRANCH
+    # 1. Disable MR event triggers explicitly
+    - if: $CI_PIPELINE_SOURCE == "merge_request_event"
+      when: never
+    # 2. Force run on standard branch pushes
+    - if: $CI_COMMIT_BRANCH
+      when: on_success
   allow_failure: true
   after_script:
     - test ! -f gl-sast-report.json || chmod 0644 gl-sast-report.json
   artifacts:
     expire_in: 30 days
+
+semgrep-sast:
+  rules:
+    - if: $CI_PIPELINE_SOURCE == "merge_request_event"
+      when: never
+    - if: $CI_COMMIT_BRANCH
+      when: on_success
 
 #####################################
 # Sign production build
