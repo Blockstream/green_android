@@ -142,7 +142,8 @@ sealed class NavigateDestinations : NavigateDestination() {
     data class DeviceScan(
         val greenWallet: GreenWallet,
         val isWatchOnlyUpgrade: Boolean = false,
-        val isWatchOnlyDeviceConnect: Boolean = false
+        val isWatchOnlyDeviceConnect: Boolean = false,
+        val isGenuineCheck: Boolean = false
     ) : NavigateDestination()
 
     @Serializable

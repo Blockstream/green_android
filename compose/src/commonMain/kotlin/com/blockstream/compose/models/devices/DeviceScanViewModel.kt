@@ -30,7 +30,8 @@ abstract class DeviceScanViewModelAbstract(greenWallet: GreenWallet) :
 class DeviceScanViewModel(
     greenWallet: GreenWallet,
     private val isWatchOnlyUpgrade: Boolean,
-    private val isWatchOnlyDeviceConnect: Boolean
+    private val isWatchOnlyDeviceConnect: Boolean,
+    private val isGenuineCheck: Boolean = false
 ) :
     DeviceScanViewModelAbstract(greenWallet = greenWallet) {
 
@@ -89,7 +90,6 @@ class DeviceScanViewModel(
         _deviceFlow.value = device
 
         if (device.hasPermissions()) {
-
             doAsync({
 
                 if (device.gdkHardwareWallet == null) {
@@ -107,39 +107,41 @@ class DeviceScanViewModel(
                 val gdkHardwareWallet =
                     device.gdkHardwareWallet ?: throw Exception("Not HWWallet initiated")
 
-                deviceConnectionManager.authenticateDeviceIfNeeded(
-                    httpRequestHandler = sessionManager.httpRequestHandler,
-                    interaction = this,
-                    gdkHardwareWallet = gdkHardwareWallet
-                )
+                if (!isGenuineCheck) {
+                    deviceConnectionManager.authenticateDeviceIfNeeded(
+                        httpRequestHandler = sessionManager.httpRequestHandler,
+                        interaction = this,
+                        gdkHardwareWallet = gdkHardwareWallet
+                    )
 
-                val network =
-                    device.getOperatingNetworkForEnviroment(device, gdk, greenWallet.isTestnet)
-                        ?: throw Exception("No network is available")
+                    val network =
+                        device.getOperatingNetworkForEnviroment(device, gdk, greenWallet.isTestnet)
+                            ?: throw Exception("No network is available")
 
-                if (greenWallet.isTestnet != network.isTestnet) {
-                    throw Exception("The device is operating on the wrong Environment")
-                }
-
-                if (device.isLedger) {
-                    // Change network based on user applet
-                    greenWallet.activeNetwork = network.id
-                }
-
-                val walletHashId =
-                    getWalletHashId(session = session, network = network, device = device)
-
-                logger.d { "Wallet: ${greenWallet.xPubHashId} == $walletHashId" }
-
-                if (greenWallet.xPubHashId.isNotBlank() && greenWallet.xPubHashId != walletHashId) {
-                    // Disconnect only if there are no other connected sessions
-                    // If it's Trezor, disconect the device as BIP39 Passphrase can be requested
-                    if (sessionManager.getConnectedHardwareWalletSessions()
-                            .none { it.device?.connectionIdentifier == device.connectionIdentifier } || device.isTrezor
-                    ) {
-                        device.disconnect()
+                    if (greenWallet.isTestnet != network.isTestnet) {
+                        throw Exception("The device is operating on the wrong Environment")
                     }
-                    throw Exception("The wallet hash is different from the previous wallet.")
+
+                    if (device.isLedger) {
+                        // Change network based on user applet
+                        greenWallet.activeNetwork = network.id
+                    }
+
+                    val walletHashId =
+                        getWalletHashId(session = session, network = network, device = device)
+
+                    logger.d { "Wallet: ${greenWallet.xPubHashId} == $walletHashId" }
+
+                    if (greenWallet.xPubHashId.isNotBlank() && greenWallet.xPubHashId != walletHashId) {
+                        // Disconnect only if there are no other connected sessions
+                        // If it's Trezor, disconect the device as BIP39 Passphrase can be requested
+                        if (sessionManager.getConnectedHardwareWalletSessions()
+                                .none { it.device?.connectionIdentifier == device.connectionIdentifier } || device.isTrezor
+                        ) {
+                            device.disconnect()
+                        }
+                        throw Exception("The wallet hash is different from the previous wallet.")
+                    }
                 }
 
                 //// Disable Wallet Hash ID checking until we can have a more UX friendly experience
@@ -219,19 +221,30 @@ class DeviceScanViewModel(
     }
 
     fun navigate(greenWallet: GreenWallet, deviceId: String) {
-        if (isWatchOnlyDeviceConnect) {
-            postSideEffect(SideEffects.NavigateBack())
-        } else {
+        if (isGenuineCheck) {
             postSideEffect(
                 SideEffects.NavigateTo(
-                    NavigateDestinations.Login(
-                        greenWallet = greenWallet,
-                        autoLoginWallet = !isWatchOnlyUpgrade,
-                        deviceId = deviceId,
-                        isWatchOnlyUpgrade = isWatchOnlyUpgrade
+                    destination = NavigateDestinations.JadeGenuineCheck(
+                        greenWalletOrNull = greenWallet,
+                        deviceId = deviceId
                     )
                 )
             )
+        } else {
+            if (isWatchOnlyDeviceConnect) {
+                postSideEffect(SideEffects.NavigateBack())
+            } else {
+                postSideEffect(
+                    SideEffects.NavigateTo(
+                        NavigateDestinations.Login(
+                            greenWallet = greenWallet,
+                            autoLoginWallet = !isWatchOnlyUpgrade,
+                            deviceId = deviceId,
+                            isWatchOnlyUpgrade = isWatchOnlyUpgrade
+                        )
+                    )
+                )
+            }
         }
     }
 

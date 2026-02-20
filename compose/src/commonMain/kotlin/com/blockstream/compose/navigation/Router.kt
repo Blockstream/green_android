@@ -782,7 +782,8 @@ fun Router(
                     DeviceScanViewModel(
                         greenWallet = args.greenWallet,
                         isWatchOnlyUpgrade = args.isWatchOnlyUpgrade,
-                        isWatchOnlyDeviceConnect = args.isWatchOnlyDeviceConnect
+                        isWatchOnlyDeviceConnect = args.isWatchOnlyDeviceConnect,
+                        isGenuineCheck = args.isGenuineCheck
                     )
                 })
             }

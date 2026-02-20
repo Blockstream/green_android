@@ -70,6 +70,10 @@ fun DeviceScanScreen(
         viewModel.postEvent(Events.DeviceRequestResponse(it))
     }
 
+    NavigateDestinations.JadeGenuineCheck.getResult<Boolean> {
+        viewModel.postEvent(Events.NavigateBack)
+    }
+
     SetupScreen(viewModel = viewModel, withPadding = false, horizontalAlignment = Alignment.CenterHorizontally, sideEffectsHandler = {
         when (it) {
             is SideEffects.NavigateBack -> {

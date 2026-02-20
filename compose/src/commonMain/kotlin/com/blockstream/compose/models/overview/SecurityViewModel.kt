@@ -72,7 +72,8 @@ abstract class SecurityViewModelAbstract(
         postEvent(
             NavigateDestinations.DeviceScan(
                 greenWallet = greenWallet,
-                isWatchOnlyDeviceConnect = true
+                isWatchOnlyDeviceConnect = true,
+                isGenuineCheck = pendingAction == PendingAction.GENUINE_CHECK
             )
         )
     }
