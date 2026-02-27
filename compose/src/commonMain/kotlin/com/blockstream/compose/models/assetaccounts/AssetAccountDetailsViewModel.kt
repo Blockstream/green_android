@@ -176,15 +176,21 @@ class AssetAccountDetailsViewModel(
         session.ifConnected {
             combine(accounts, isWatchOnly) { accounts, watchOnly ->
                 viewModelScope.launch {
-                    val assetName = accountAsset.asset.name(session).toString()
+                    val assetName = accountAsset.asset.name(session)
                     val accountName = accountAsset.account.name
+                    // Count active accounts in the same network family (e.g., grouping "liquid" and "electrum-liquid").
+                    val activeInNetworkCount = accounts.count {
+                        it.isSameNetworkFamily(account) && !it.hidden
+                    }
+
                     _navData.value = NavData(
                         title = assetName,
                         subtitle = accountName,
                         actions = getMenuActions(
                             account = account,
                             accountAsset = accountAsset,
-                            watchOnly = watchOnly
+                            watchOnly = watchOnly,
+                            activeAccountsCount = activeInNetworkCount
                         )
                     )
                 }
@@ -250,7 +256,8 @@ class AssetAccountDetailsViewModel(
     private suspend fun getMenuActions(
         account: Account,
         accountAsset: AccountAsset?,
-        watchOnly: Boolean
+        watchOnly: Boolean,
+        activeAccountsCount: Int
     ): List<NavAction> {
 
         if (account.isLightning) {
@@ -299,7 +306,7 @@ class AssetAccountDetailsViewModel(
                 onClick = {
                     postEvent(Events.ArchiveAccount(account))
                 }
-            ).takeIf { !watchOnly }
+            ).takeIf { !watchOnly && activeAccountsCount > 1 }
         )
     }
 

@@ -62,6 +62,9 @@ data class Account constructor(
     val networkId
         get() = network.id
 
+    val networkFamily: String
+        get() = network.bip21Prefix
+
     val isBitcoin
         get() = network.isBitcoin
 
@@ -185,6 +188,10 @@ data class Account constructor(
         } else {
             weight.compareTo(other.weight)
         }
+    }
+
+    fun isSameNetworkFamily(other: Account): Boolean {
+        return this.networkFamily == other.networkFamily
     }
 
     fun isFunded(session: GdkSession): Boolean {
