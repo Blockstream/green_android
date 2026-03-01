@@ -170,10 +170,9 @@ class AccountOverviewViewModel(greenWallet: GreenWallet, accountAsset: AccountAs
     init {
         session.ifConnected {
             combine(this.accountAsset, accounts) { accountAsset, accounts ->
-                // Count active accounts in the same network family (e.g., grouping "liquid" and "electrum-liquid").
-                val activeInNetworkCount = accounts.count {
-                    it.isSameNetworkFamily(account) && !it.hidden
-                }
+                val isArchiveEnabled = accounts.count {
+                    it.network.isSameNetwork(account.network) && !it.hidden
+                } > 1
 
                 _navData.value = NavData(
                     title = greenWallet.name,
@@ -204,7 +203,7 @@ class AccountOverviewViewModel(greenWallet: GreenWallet, accountAsset: AccountAs
                             onClick = {
                                 postEvent(Events.ArchiveAccount(account))
                             }
-                        ).takeIf { !session.isWatchOnlyValue && !account.isLightning && activeInNetworkCount > 1 },
+                        ).takeIf { !session.isWatchOnlyValue && !account.isLightning && isArchiveEnabled },
                         NavAction(
                             title = getString(Res.string.id_node_info),
                             icon = Res.drawable.info,

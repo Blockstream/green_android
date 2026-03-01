@@ -174,14 +174,13 @@ class AssetAccountDetailsViewModel(
 
     init {
         session.ifConnected {
-            combine(accounts, isWatchOnly) { accounts, watchOnly ->
+            combine(accounts, isWatchOnly) { accounts, isWatchOnly ->
                 viewModelScope.launch {
                     val assetName = accountAsset.asset.name(session)
                     val accountName = accountAsset.account.name
-                    // Count active accounts in the same network family (e.g., grouping "liquid" and "electrum-liquid").
-                    val activeInNetworkCount = accounts.count {
-                        it.isSameNetworkFamily(account) && !it.hidden
-                    }
+                    val isArchiveEnabled = accounts.count {
+                        it.network.isSameNetwork(account.network) && !it.hidden
+                    } > 1
 
                     _navData.value = NavData(
                         title = assetName,
@@ -189,8 +188,8 @@ class AssetAccountDetailsViewModel(
                         actions = getMenuActions(
                             account = account,
                             accountAsset = accountAsset,
-                            watchOnly = watchOnly,
-                            activeAccountsCount = activeInNetworkCount
+                            isWatchOnly = isWatchOnly,
+                            isArchiveEnabled = isArchiveEnabled
                         )
                     )
                 }
@@ -256,8 +255,8 @@ class AssetAccountDetailsViewModel(
     private suspend fun getMenuActions(
         account: Account,
         accountAsset: AccountAsset?,
-        watchOnly: Boolean,
-        activeAccountsCount: Int
+        isWatchOnly: Boolean,
+        isArchiveEnabled: Boolean
     ): List<NavAction> {
 
         if (account.isLightning) {
@@ -281,7 +280,7 @@ class AssetAccountDetailsViewModel(
                 onClick = {
                     postEvent(NavigateDestinations.RenameAccount(greenWallet = greenWallet, account = account))
                 }
-            ).takeIf { !watchOnly },
+            ).takeIf { !isWatchOnly },
 
             NavAction(
                 title = getString(Res.string.id_watchonly),
@@ -306,7 +305,7 @@ class AssetAccountDetailsViewModel(
                 onClick = {
                     postEvent(Events.ArchiveAccount(account))
                 }
-            ).takeIf { !watchOnly && activeAccountsCount > 1 }
+            ).takeIf { !isWatchOnly && isArchiveEnabled }
         )
     }
 
