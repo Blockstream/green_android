@@ -3,6 +3,25 @@ All notable changes to this project will be documented in this file.
 
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/).
 
+## [5.2.0] - 2026-03-02
+
+#### Added
+- Swap between chain assets
+- Biometrics choice dialog during Jade setup
+
+#### Changed
+- Bump GDK to version 0.76.3
+- Improve watch-only login flow for hardware wallets
+
+#### Fixed
+- Fix ANR caused by a coroutine being blocked in UI main thread
+- Fix genuine pin check in device scan flow
+- Fix error messages in receive amount validation
+- Fix auto-save when using paste/clear buttons in settings
+- Add retry logic for BLE notification setup
+- Show BTC and LBTC by default on home view
+- Enforce PIN setup after manual backup
+
 ## [5.1.4] - 2025-12-10
 
 #### Added

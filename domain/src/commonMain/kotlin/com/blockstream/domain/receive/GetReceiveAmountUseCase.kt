@@ -65,8 +65,8 @@ class GetReceiveAmountUseCase(
 
         val quote = getQuoteUseCase(
             session = session,
-            from = flowOf(accountAsset.toSwapAsset()),
-            to = flowOf(SwapAsset.Lightning),
+            from = flowOf(SwapAsset.Lightning),
+            to = flowOf(accountAsset.toSwapAsset()),
             satoshi = balance.map {
                 it?.satoshi ?: 0
             },

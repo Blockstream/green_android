@@ -27,6 +27,7 @@ import com.blockstream.data.gdk.data.AccountAsset
 import com.blockstream.data.gdk.data.UtxoView
 import com.blockstream.data.transaction.TransactionConfirmation
 import com.blockstream.utils.Loggable
+import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
@@ -148,15 +149,19 @@ class SendConfirmViewModel constructor(
                 }
             }
 
-            is CreateTransactionViewModelAbstract.LocalEvents.BroadcastTransaction -> {
-                session.pendingTransaction?.also {
-                    signAndSendTransaction(
-                        params = it.params,
-                        originalTransaction = it.transaction,
-                        segmentation = it.segmentation,
-                        psbt = event.psbt,
-                        broadcast = event.broadcastTransaction,
-                    )
+            is CreateTransactionViewModelAbstract.LocalEvents.BroadcastPsbtTransaction -> {
+                // Hack to solve a screen/jade being stuck in screen transition
+                viewModelScope.launch {
+                    delay(500L)
+                    session.pendingTransaction?.also {
+                        signAndSendTransaction(
+                            params = it.params,
+                            originalTransaction = it.transaction,
+                            segmentation = it.segmentation,
+                            psbt = event.psbt,
+                            broadcast = event.broadcastTransaction,
+                        )
+                    }
                 }
             }
 
@@ -313,6 +318,14 @@ class SendConfirmViewModelPreview(
         fun previewLBTCSwap() = SendConfirmViewModelPreview(
             previewWallet(), transactionConfirmation = TransactionConfirmation(
                 from = previewAccountAsset(),
+                utxos = listOf(
+                    UtxoView(
+                        address = "bc1qaqtq80759n35gk6ftc57vh7du83nwvt5lgkznu",
+                        assetId = BTC_POLICY_ASSET,
+                        amount = "2.123 BTC",
+                        amountExchange = "45.123 USD"
+                    )
+                ),
                 amount = "2.123 BTC",
                 amountFiat = "43.312 USD",
                 fee = "0.0123 BTC",

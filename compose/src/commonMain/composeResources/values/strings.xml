@@ -1979,4 +1979,5 @@
     <string name="id_this_is_not_the_recipient_address">This is not the recipient address.</string>
     <string name="id_you_cannot_disable_while_a_swap">You cannot disable while a swap is in progress.</string>
     <string name="id_unlock_jade_and_scan_this_qr">Unlock Jade and scan this QR to enable swaps on this phone and generate a retrieval key in case of swap failure.</string>
+    <string name="id_invoice_already_paid">Invoice already paid</string>
 </resources>

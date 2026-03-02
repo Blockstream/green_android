@@ -34,7 +34,8 @@ object Urls {
     const val HELP_MNEMONIC_BACKUP = "https://help.blockstream.com/hc/en-us/articles/900001392563-What-is-a-mnemonic-backup-"
     const val HELP_NLOCKTIMES =
         "https://help.blockstream.com/hc/en-us/articles/900004249546-The-upgrade-from-nLockTime-to-CheckSequenceVerify"
-    const val HELP_FEES = "https://help.blockstream.com/hc/en-us/articles/4412578550809"
+    const val HELP_FEES =
+        "https://help.blockstream.com/hc/en-us/articles/4407567899801-Why-do-I-have-to-pay-transaction-fees-and-why-are-they-sometimes-high"
     const val HELP_FUNDING_FEES = "https://help.blockstream.com/hc/en-us/articles/18788578831897"
     const val HELP_RECEIVE_CAPACITY = "https://help.blockstream.com/hc/en-us/articles/18788499177753"
     const val HELP_GET_LIQUID = "https://help.blockstream.com/hc/en-us/articles/900000630846-How-do-I-get-Liquid-Bitcoin-L-BTC-"

@@ -3,6 +3,11 @@ package com.blockstream.compose.models.send
 import androidx.lifecycle.viewModelScope
 import blockstream_green.common.generated.resources.Res
 import blockstream_green.common.generated.resources.id_increase_fee
+import com.blockstream.compose.events.Event
+import com.blockstream.compose.extensions.launchIn
+import com.blockstream.compose.extensions.previewAccountAsset
+import com.blockstream.compose.extensions.previewWallet
+import com.blockstream.compose.navigation.NavData
 import com.blockstream.data.TransactionSegmentation
 import com.blockstream.data.TransactionType
 import com.blockstream.data.data.Denomination
@@ -17,13 +22,9 @@ import com.blockstream.data.gdk.data.Transaction
 import com.blockstream.data.gdk.params.CreateTransactionParams
 import com.blockstream.data.utils.feeRateWithUnit
 import com.blockstream.data.utils.toAmountLook
-import com.blockstream.compose.events.Event
-import com.blockstream.compose.extensions.launchIn
-import com.blockstream.compose.extensions.previewAccountAsset
-import com.blockstream.compose.extensions.previewWallet
-import com.blockstream.compose.navigation.NavData
 import com.blockstream.utils.Loggable
 import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
@@ -124,16 +125,20 @@ class BumpViewModel(
                 ),
                 broadcast = event.broadcastTransaction
             )
-        } else if (event is LocalEvents.BroadcastTransaction) {
-            signAndSendTransaction(
-                params = createTransactionParams.value,
-                originalTransaction = createTransaction.value,
-                segmentation = TransactionSegmentation(
-                    transactionType = TransactionType.BUMP
-                ),
-                psbt = event.psbt,
-                broadcast = event.broadcastTransaction
-            )
+        } else if (event is LocalEvents.BroadcastPsbtTransaction) {
+            // Hack to solve a screen/jade being stuck in screen transition
+            viewModelScope.launch {
+                delay(500L)
+                signAndSendTransaction(
+                    params = createTransactionParams.value,
+                    originalTransaction = createTransaction.value,
+                    segmentation = TransactionSegmentation(
+                        transactionType = TransactionType.BUMP
+                    ),
+                    psbt = event.psbt,
+                    broadcast = event.broadcastTransaction
+                )
+            }
         }
     }
 

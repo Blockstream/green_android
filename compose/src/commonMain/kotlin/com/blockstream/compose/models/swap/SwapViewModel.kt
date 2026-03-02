@@ -17,6 +17,7 @@ import com.blockstream.data.TransactionSegmentation
 import com.blockstream.data.TransactionType
 import com.blockstream.data.banner.Banner
 import com.blockstream.data.data.DenominatedValue
+import com.blockstream.data.data.FeePriority
 import com.blockstream.data.data.GreenWallet
 import com.blockstream.data.extensions.ifConnected
 import com.blockstream.data.extensions.isNotBlank
@@ -34,6 +35,7 @@ import com.blockstream.data.utils.feeRateWithUnit
 import com.blockstream.data.utils.ifNotNull
 import com.blockstream.data.utils.toAmountLook
 import com.blockstream.domain.swap.SwapUseCase
+import com.blockstream.jade.Loggable
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.FlowPreview
@@ -85,6 +87,8 @@ abstract class SwapViewModelAbstract(
     abstract fun createSwap()
 
     abstract fun onAmountChanged(amount: String, isSendQuoteMode: Boolean)
+
+    abstract fun onQuoteModeChanged(isSendQuoteMode: Boolean)
 
     abstract fun onAccountClick(isFrom: Boolean)
     abstract fun setAccount(accountAssetBalance: AccountAssetBalance)
@@ -259,9 +263,21 @@ class SwapViewModel(
 
         _network.onEach {
             _showFeeSelector.value = sendUseCase.showFeeSelectorUseCase(session = session, network = it)
+            // Reset fee priority, this is important as can be changed by the user and persisted in liquid
+            _feePriority.value = FeePriority.Low()
         }.launchIn(this)
 
         bootstrap()
+    }
+
+    override fun onQuoteModeChanged(isSendQuoteMode: Boolean) {
+        uiState.update {
+            if (isSendQuoteMode) {
+                it.copy(quoteMode = QuoteMode.SEND)
+            } else {
+                it.copy(quoteMode = QuoteMode.RECEIVE)
+            }
+        }
     }
 
     override fun onAmountChanged(amount: String, isSendQuoteMode: Boolean) {
@@ -403,9 +419,15 @@ class SwapViewModel(
     override fun setDenominatedValue(denominatedValue: DenominatedValue) {
         _denomination.value = denominatedValue.denomination
         uiState.update { uiState ->
-            uiState.copy(
-                amountFrom = denominatedValue.asInput ?: ""
-            )
+            if (uiState.quoteMode.isSend) {
+                uiState.copy(
+                    amountFrom = denominatedValue.asInput ?: ""
+                )
+            } else {
+                uiState.copy(
+                    amountTo = denominatedValue.asInput ?: ""
+                )
+            }
         }
     }
 
@@ -421,6 +443,8 @@ class SwapViewModel(
             }
         }
     }
+
+    companion object : Loggable()
 }
 
 class SwapViewModelPreview(greenWallet: GreenWallet) :
@@ -431,6 +455,7 @@ class SwapViewModelPreview(greenWallet: GreenWallet) :
 
     override fun createSwap() {}
     override fun onAmountChanged(amount: String, isFromInput: Boolean) {}
+    override fun onQuoteModeChanged(isSendQuoteMode: Boolean) {}
 
     override fun onAccountClick(isFrom: Boolean) {}
 

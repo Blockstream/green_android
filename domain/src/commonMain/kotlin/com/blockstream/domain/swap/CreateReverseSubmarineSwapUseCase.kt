@@ -51,6 +51,7 @@ class CreateReverseSubmarineSwapUseCase(
             xPubHashId = xPubHashId,
             swapType = SwapType.ReverseSubmarine,
             isAutoSwap = isAutoSwap,
+            isMagic = false,
             data = invoice.serialize()
         )
 

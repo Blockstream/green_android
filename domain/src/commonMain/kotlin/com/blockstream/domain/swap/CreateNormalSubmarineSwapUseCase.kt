@@ -1,3 +1,5 @@
+@file:OptIn(ExperimentalUuidApi::class)
+
 package com.blockstream.domain.swap
 
 import com.blockstream.data.data.GreenWallet
@@ -10,6 +12,8 @@ import com.blockstream.data.lightning.satoshi
 import com.blockstream.data.swap.SwapDetails
 import lwk.Bolt11Invoice
 import lwk.LwkException
+import kotlin.uuid.ExperimentalUuidApi
+import kotlin.uuid.Uuid
 
 /**
  * Creates or restores a Normal Submarine Swap for a given BOLT11 invoice.
@@ -55,21 +59,46 @@ class CreateNormalSubmarineSwapUseCase(val database: Database) {
             throw Exception("id_no_amount_less_invoices_supported")
         }
 
-        val swap = database.getSwapFromInvoice(
+        // Prevent double spending even when paid using Magic hint routing
+        if (database.isInvoicePaid(invoice = invoice)) {
+            throw Exception("id_invoice_already_paid")
+        }
+
+        val boltzSwap = database.getSwapFromUnpaidInvoice(
             invoice = invoice,
             xPubHashId = xPubHashId
-        )?.letTryCatch {
+        )
+
+        val swap = boltzSwap?.takeIf { !it.is_magic }?.letTryCatch {
             session.lwk.restorePreparePay(it.data_)
         } ?: try {
             session.lwk.createNormalSubmarineSwap(bolt11Invoice = invoice, refundAddress = session.getReceiveAddress(account).address)
         } catch (hint: LwkException.MagicRoutingHint) {
-            return SwapDetails(
-                swapId = null,
+            val swap = SwapDetails(
+                swapId = Uuid.generateV7().toString(),
                 address = hint.address,
                 fromAmount = hint.amount.toLong(),
-                submarineInvoiceTo = invoice,
-                fromAssetId = account.network.policyAsset
+                fromAssetId = account.network.policyAsset,
+                toAmount = hint.amount.toLong(),
+                toAssetId = session.lightning.policyAsset,
+                submarineInvoiceTo = invoice
             )
+
+            if (boltzSwap == null) {
+                // Save Magic Swap if not already exists
+                database.setSwap(
+                    id = swap.swapId,
+                    walletId = wallet.id,
+                    xPubHashId = xPubHashId,
+                    invoice = invoice,
+                    swapType = SwapType.NormalSubmarine,
+                    isAutoSwap = isAutoSwap,
+                    isMagic = true,
+                    data = ""
+                )
+            }
+
+            return swap
         }
 
         // Save swap
@@ -80,6 +109,7 @@ class CreateNormalSubmarineSwapUseCase(val database: Database) {
             invoice = invoice,
             swapType = SwapType.NormalSubmarine,
             isAutoSwap = isAutoSwap,
+            isMagic = false,
             data = swap.serialize()
         )
 
@@ -87,11 +117,12 @@ class CreateNormalSubmarineSwapUseCase(val database: Database) {
             swapId = swap.swapId(),
             address = swap.uriAddress().toString(),
             fromAmount = swap.uriAmount().toLong(),
+            fromAssetId = account.network.policyAsset,
             submarineInvoiceTo = invoice,
             toAmount = bolt11Invoice.amountMilliSatoshis()?.satoshi() ?: 0,
+            toAssetId = session.lightning.policyAsset,
             providerFee = swap.boltzFee()?.toLong() ?: 0,
-            claimNetworkFee = (swap.fee()?.toLong() ?: 0) - (swap.boltzFee()?.toLong() ?: 0),
-            fromAssetId = account.network.policyAsset
+            claimNetworkFee = (swap.fee()?.toLong() ?: 0) - (swap.boltzFee()?.toLong() ?: 0)
         )
     }
 }

@@ -1,6 +1,7 @@
 package com.blockstream.domain.send
 
 import com.blockstream.data.data.EnrichedAsset
+import com.blockstream.data.database.Database
 import com.blockstream.data.extensions.getSafeQueryParameter
 import com.blockstream.data.extensions.tryCatch
 import com.blockstream.data.gdk.GdkSession
@@ -30,7 +31,7 @@ import com.eygraber.uri.toKmpUriOrNull
  * Thread-safety: this use case performs read-only operations against session state and is safe to
  * call from coroutines.
  */
-class GetSendAssetsUseCase() {
+class GetSendAssetsUseCase(val database: Database) {
 
     /**
      * Resolves the set of assets relevant to the given send [address].
@@ -52,33 +53,39 @@ class GetSendAssetsUseCase() {
      * @throws Exception with message `id_invalid_address` when the input cannot be parsed
      */
     suspend operator fun invoke(session: GdkSession, address: String): List<EnrichedAsset> {
+        val network = session.parseInput(address)?.first
 
-        return tryCatch {
-            val network = session.parseInput(address)?.first
-
+        val assets = if (network != null) {
             val assetId = tryCatch { address.toKmpUriOrNull()?.getSafeQueryParameter("assetid") }
 
-            if (network != null) {
-                if (network.isBitcoin || network.isLightning) {
-                    listOf(EnrichedAsset.create(session = session, assetId = network.policyAsset))
-                } else if (network.isLiquid) {
-                    if (assetId != null) {
-                        listOf(EnrichedAsset.create(session = session, assetId = assetId))
-                    } else {
-                        // Find assets from your liquid accounts
-                        session.walletAssets.value.data()?.assets?.filter { it.value > 0 }?.map {
-                            EnrichedAsset.create(session = session, assetId = it.key)
-                        }?.filter {
-                            it.isLiquidNetwork(session)
-                        }?.takeIf { it.isNotEmpty() } ?: listOf(
-                            EnrichedAsset.create(
-                                session = session,
-                                network = network
-                            )
-                        ) // If no assets found, just return the network asset
-                    }
-                } else null
+            if (network.isLightning) {
+                // Prevent double spending even when paid using Magic hint routing
+                if (database.isInvoicePaid(invoice = address.replace("lightning:", ""))) {
+                    throw Exception("id_invoice_already_paid")
+                }
+            }
+
+            if (network.isBitcoin || network.isLightning) {
+                listOf(EnrichedAsset.create(session = session, assetId = network.policyAsset))
+            } else if (network.isLiquid) {
+                if (assetId != null) {
+                    listOf(EnrichedAsset.create(session = session, assetId = assetId))
+                } else {
+                    // Find assets from your liquid accounts
+                    session.walletAssets.value.data()?.assets?.filter { it.value > 0 }?.map {
+                        EnrichedAsset.create(session = session, assetId = it.key)
+                    }?.filter {
+                        it.isLiquidNetwork(session)
+                    }?.takeIf { it.isNotEmpty() } ?: listOf(
+                        EnrichedAsset.create(
+                            session = session,
+                            network = network
+                        )
+                    ) // If no assets found, just return the network asset
+                }
             } else null
-        } ?: throw Exception("id_invalid_address")
+        } else null
+
+        return assets ?: throw Exception("id_invalid_address")
     }
 }

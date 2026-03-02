@@ -24,6 +24,7 @@ import com.blockstream.data.data.EnrichedAsset
 import com.blockstream.data.data.GreenWallet
 import com.blockstream.data.extensions.hasUnconfirmedTransactions
 import com.blockstream.data.extensions.ifConnected
+import com.blockstream.data.extensions.isPolicyAsset
 import com.blockstream.data.extensions.launchSafe
 import com.blockstream.data.gdk.data.Account
 import com.blockstream.data.gdk.data.AccountAsset
@@ -88,7 +89,13 @@ abstract class AssetAccountDetailsViewModelAbstract(
     }
 
     fun onReceive() {
-        postEvent(NavigateDestinations.ReceiveChooseAsset(greenWallet = greenWallet, accountAsset = accountAsset.value))
+        accountAsset.value?.takeIf {
+            !it.network.isLiquid || !it.assetId.isPolicyAsset(session)
+        }?.also {
+            postEvent(NavigateDestinations.Receive(greenWallet = greenWallet, accountAsset = it))
+        } ?: run {
+            postEvent(NavigateDestinations.ReceiveChooseAsset(greenWallet = greenWallet, accountAsset = accountAsset.value))
+        }
     }
 
     fun onSwap() {

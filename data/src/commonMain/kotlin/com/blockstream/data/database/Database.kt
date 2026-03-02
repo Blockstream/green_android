@@ -325,8 +325,12 @@ class Database(driverFactory: DriverFactory, val settingsManager: SettingsManage
         walletDB.boltzSwapsQueries.getSwapFromTxHash(tx_hash = txHash).executeAsOneOrNull()
     }
 
-    suspend fun getSwapFromInvoice(invoice: String, xPubHashId: String) = io {
-        walletDB.boltzSwapsQueries.getSwapFromInvoice(invoice = invoice, xpub_hash_id = xPubHashId).executeAsOneOrNull()
+    suspend fun getSwapFromUnpaidInvoice(invoice: String, xPubHashId: String) = io {
+        walletDB.boltzSwapsQueries.getSwapFromUnpaidInvoice(invoice = invoice, xpub_hash_id = xPubHashId).executeAsOneOrNull()
+    }
+
+    suspend fun isInvoicePaid(invoice: String): Boolean = io {
+        walletDB.boltzSwapsQueries.isInvoicePaid(invoice = invoice).executeAsOne()
     }
 
     suspend fun hasPendingSwaps(xPubHashId: String): Boolean = io {
@@ -346,6 +350,7 @@ class Database(driverFactory: DriverFactory, val settingsManager: SettingsManage
         invoice: String? = null,
         swapType: SwapType,
         isAutoSwap: Boolean,
+        isMagic: Boolean = false,
         data: String
     ) = io {
         walletDB.boltzSwapsQueries.setSwap(
@@ -355,6 +360,7 @@ class Database(driverFactory: DriverFactory, val settingsManager: SettingsManage
             invoice = invoice,
             swap_type = swapType,
             is_auto_swap = isAutoSwap,
+            is_magic = isMagic,
             data_ = data
         )
     }

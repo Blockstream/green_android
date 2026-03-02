@@ -157,7 +157,8 @@ fun SwapScreen(
                         onTogglePairsClick = {
                             viewModel.swapPairs()
                         },
-                        onDenominationClick = {
+                        onDenominationClick = { isSendQuoteMode ->
+                            viewModel.onQuoteModeChanged(isSendQuoteMode = isSendQuoteMode)
                             viewModel.postEvent(Events.SelectDenomination)
                         }
                     )

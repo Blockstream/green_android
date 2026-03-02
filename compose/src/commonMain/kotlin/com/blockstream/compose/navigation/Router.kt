@@ -476,7 +476,8 @@ fun Router(
                 val args = it.toRoute<NavigateDestinations.ReceiveChooseAsset>()
                 ReceiveChooseAssetScreen(viewModel {
                     ReceiveChooseAssetViewModel(
-                        greenWallet = args.greenWallet
+                        greenWallet = args.greenWallet,
+                        accountAssetOrNull = args.accountAsset
                     )
                 })
             }

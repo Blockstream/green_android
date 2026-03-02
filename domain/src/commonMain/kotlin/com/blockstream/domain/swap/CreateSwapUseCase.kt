@@ -95,8 +95,8 @@ class CreateSwapUseCase(
                         address = swap.bolt11Invoice().toString(),
                         fromAmount = swap.bolt11Invoice().amountMilliSatoshis()!!.satoshi(),
                         toAmount = quote?.receiveAmount,
-                        fromAssetId = from.account.network.policyAsset,
-                        toAssetId = to.account.network.policyAsset,
+                        fromAssetId = from.assetId,
+                        toAssetId = to.assetId,
                         providerFee = quote?.boltzFee ?: 0,
                         claimNetworkFee = quote?.claimNetworkFee ?: 0,
                     )

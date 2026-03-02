@@ -119,7 +119,7 @@ class GetSwapAmountUseCase(
 
             val satoshi = balance?.satoshi ?: 0
 
-            val isValid = quote?.isValid(satoshi) ?: QuoteValidity.VALID
+            val isValid = quote?.isValid(satoshi) ?: if (satoshi > 0) QuoteValidity.MAX else QuoteValidity.MIN
 
             val error = when {
                 satoshi > from.balance(session) -> "id_insufficient_funds"
@@ -148,7 +148,7 @@ class GetSwapAmountUseCase(
                 else -> null
             }
 
-            swapAmount.copy(error = error, isValid = quote != null && isValid == QuoteValidity.VALID)
+            swapAmount.copy(error = error, isValid = quote != null && isValid == QuoteValidity.VALID && error == null)
         }
     }
 }

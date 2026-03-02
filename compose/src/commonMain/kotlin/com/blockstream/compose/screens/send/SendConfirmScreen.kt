@@ -57,9 +57,9 @@ import com.blockstream.compose.navigation.bottomsheet.BottomSheetNavigator
 import com.blockstream.compose.navigation.getResult
 import com.blockstream.compose.screens.jade.JadeQRResult
 import com.blockstream.compose.sideeffects.SideEffects
+import com.blockstream.compose.theme.bodyMedium
 import com.blockstream.compose.theme.bodySmall
 import com.blockstream.compose.theme.labelLarge
-import com.blockstream.compose.theme.labelMedium
 import com.blockstream.compose.theme.titleSmall
 import com.blockstream.compose.theme.whiteHigh
 import com.blockstream.compose.theme.whiteMedium
@@ -85,7 +85,7 @@ fun SendConfirmScreen(
 
     NavigateDestinations.JadeQR.getResult<JadeQRResult> {
         viewModel.postEvent(
-            CreateTransactionViewModelAbstract.LocalEvents.BroadcastTransaction(
+            CreateTransactionViewModelAbstract.LocalEvents.BroadcastPsbtTransaction(
                 psbt = it.result
             )
         )
@@ -145,7 +145,7 @@ fun SendConfirmScreen(
 
                     look.utxos?.forEach {
                         GreenAmount(
-                            title = stringResource(if (look?.isRedeposit == true) Res.string.id_your_redeposit_address else Res.string.id_sent_to),
+                            title = stringResource(if (look.isRedeposit == true) Res.string.id_your_redeposit_address else Res.string.id_sent_to),
                             amount = it.amount ?: "",
                             amountFiat = it.amountExchange,
                             assetId = it.assetId,
@@ -257,7 +257,7 @@ private fun DataRow(
             Text(text = value, color = whiteHigh, style = if (isLarge) titleSmall else labelLarge)
 
             if (valueSecondary != null) {
-                Text(text = valueSecondary, color = whiteMedium, style = if (isLarge) labelLarge else labelMedium)
+                Text(text = valueSecondary, color = whiteMedium, style = if (isLarge) labelLarge else bodyMedium)
             }
         }
     }
@@ -296,7 +296,7 @@ private fun FeesAndTotalSection(look: TransactionConfirmation, onTotalFeesClick:
     } else {
         look.total?.also { total ->
             DataRow(
-                title = stringResource(Res.string.id_total_spent), value = total, valueSecondary = look.totalFiat, isLarge = true
+                title = stringResource(Res.string.id_total_spent), value = total, valueSecondary = look.totalFiat, isLarge = false
             )
         }
     }

@@ -129,6 +129,7 @@ class Lwk constructor(
                                         xPubHashId = xPubHashId,
                                         swapType = SwapType.ReverseSubmarine,
                                         isAutoSwap = false,
+                                        isMagic = false,
                                         data = invoice.serialize()
                                     )
                                 }
@@ -142,6 +143,7 @@ class Lwk constructor(
                                         xPubHashId = xPubHashId,
                                         swapType = SwapType.NormalSubmarine,
                                         isAutoSwap = false,
+                                        isMagic = false,
                                         data = pay.serialize()
                                     )
                                 }
@@ -163,6 +165,7 @@ class Lwk constructor(
                                             xPubHashId = xPubHashId,
                                             swapType = SwapType.Chain,
                                             isAutoSwap = false,
+                                            isMagic = false,
                                             data = lockup.serialize()
                                         )
                                     }

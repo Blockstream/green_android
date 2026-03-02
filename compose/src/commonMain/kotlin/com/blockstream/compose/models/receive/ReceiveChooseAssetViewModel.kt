@@ -68,11 +68,19 @@ class ReceiveChooseAssetViewModel(
                 throw Exception("id_insufficient_funds")
             }
 
-            if (accounts.size == 1) {
+            val account = accountAsset.value?.account?.let { account ->
+                accounts.find {
+                    it.account == account
+                }
+            } ?: accounts.firstOrNull()?.takeIf {
+                accounts.size == 1
+            }
+
+            if (account != null) {
                 SideEffects.NavigateTo(
                     NavigateDestinations.Receive(
                         greenWallet = greenWallet,
-                        accountAsset = accounts.first()
+                        accountAsset = account
                     )
                 )
             } else {

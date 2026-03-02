@@ -148,7 +148,7 @@ abstract class CreateTransactionViewModelAbstract(
         data class SetCustomFeeRate(val amount: String) : Event
         data class SetAddressInputType(val inputType: AddressInputType) : Event
         data class SignTransaction(val broadcastTransaction: Boolean = true, val createPsbt: Boolean = false) : Event
-        data class BroadcastTransaction(val broadcastTransaction: Boolean = true, val psbt: String) : Event
+        data class BroadcastPsbtTransaction(val psbt: String, val broadcastTransaction: Boolean = true) : Event
     }
 
     class LocalSideEffects {

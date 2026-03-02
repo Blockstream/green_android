@@ -62,6 +62,7 @@ class CreateChainSwapUseCase(
             xPubHashId = xPubHashId,
             swapType = SwapType.Chain,
             isAutoSwap = false,
+            isMagic = false,
             data = lockup.serialize()
         )
         

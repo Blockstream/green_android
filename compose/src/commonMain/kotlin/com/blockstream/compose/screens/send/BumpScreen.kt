@@ -35,9 +35,6 @@ import blockstream_green.common.generated.resources.id_new_fee
 import blockstream_green.common.generated.resources.id_old_fee
 import blockstream_green.common.generated.resources.id_set_custom_fee_rate
 import blockstream_green.common.generated.resources.id_total
-import com.blockstream.data.data.FeePriority
-import com.blockstream.data.data.GreenWallet
-import com.blockstream.data.utils.DecimalFormat
 import com.blockstream.compose.components.GreenAccountAsset
 import com.blockstream.compose.components.GreenAddress
 import com.blockstream.compose.components.GreenColumn
@@ -64,6 +61,9 @@ import com.blockstream.compose.theme.whiteMedium
 import com.blockstream.compose.utils.AnimatedNullableVisibility
 import com.blockstream.compose.utils.SetupScreen
 import com.blockstream.compose.utils.stringResourceFromId
+import com.blockstream.data.data.FeePriority
+import com.blockstream.data.data.GreenWallet
+import com.blockstream.data.utils.DecimalFormat
 import org.jetbrains.compose.resources.stringResource
 
 @Composable
@@ -76,7 +76,7 @@ fun BumpScreen(
 
     NavigateDestinations.JadeQR.getResult<JadeQRResult> {
         viewModel.postEvent(
-            CreateTransactionViewModelAbstract.LocalEvents.BroadcastTransaction(
+            CreateTransactionViewModelAbstract.LocalEvents.BroadcastPsbtTransaction(
                 psbt = it.result
             )
         )

@@ -41,17 +41,18 @@ class GetTransactionConfirmationUseCase() {
             params.swap != null -> {
                 val swap = requireNotNull(params.swap)
 
-                val satoshi = swap.fromAmount
+                val satoshi = if (isAddressVerificationOnDevice) swap.fromAmount else swap.toAmount
+                val satoshiAssetId = if (isAddressVerificationOnDevice) swap.fromAssetId else swap.toAssetId
 
                 amount = satoshi.toAmountLook(
                     session = session,
-                    assetId = account.network.policyAssetOrNull,
+                    assetId = satoshiAssetId,
                     withMinimumDigits = isAddressVerificationOnDevice,
                     denomination = if (isAddressVerificationOnDevice) Denomination.BTC else denomination
                 )
                 amountFiat = satoshi.toAmountLook(
                     session = session,
-                    assetId = account.network.policyAssetOrNull,
+                    assetId = satoshiAssetId,
                     denomination = Denomination.fiat(session)
                 )
 
@@ -59,7 +60,7 @@ class GetTransactionConfirmationUseCase() {
                     utxos = listOf(
                         UtxoView(
                             address = swap.submarineInvoiceTo,
-                            assetId = account.network.policyAssetOrNull,
+                            assetId = satoshiAssetId,
                             satoshi = satoshi,
                             amount = amount,
                             amountExchange = amountFiat
