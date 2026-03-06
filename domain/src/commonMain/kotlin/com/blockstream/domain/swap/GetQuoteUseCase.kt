@@ -16,14 +16,16 @@ class GetQuoteUseCase {
         session: GdkSession, from: Flow<SwapAsset>, to: Flow<SwapAsset>, satoshi: Flow<Long>, quoteMode: Flow<QuoteMode>
     ): Flow<Quote?> {
         val swapInfo = combine(from.distinctUntilChanged(), to.distinctUntilChanged()) { _, _ ->
-            tryCatch { session.lwk.refreshSwapInfo() }
+            tryCatch {
+                session.lwkOrNull?.refreshSwapInfo()
+            }
         }
 
         return combine(satoshi, quoteMode, swapInfo, from, to) { satoshi, quoteMode, _, from, to ->
             if (satoshi == 0L) {
                 null
             } else {
-                tryCatch { session.lwk.quote(satoshi, quoteMode, from, to) }?.also {
+                tryCatch { session.lwkOrNull?.quote(satoshi, quoteMode, from, to) }?.also {
                     logger.d { "Quote: $it" }
                 }
             }

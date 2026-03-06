@@ -279,7 +279,8 @@ class Countly constructor(
     }
 
     override fun getRemoteConfigValueAsNumber(key: String): Long? {
-        return _remoteConfig.getValue(key).value as? Long
+        val value = _remoteConfig.getValue(key).value
+        return (value as? Number)?.toLong()
     }
 
     override fun getRemoteConfigValueAsBoolean(key: String): Boolean? {

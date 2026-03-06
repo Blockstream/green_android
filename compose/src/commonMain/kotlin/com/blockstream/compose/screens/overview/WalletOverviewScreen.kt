@@ -164,6 +164,7 @@ fun WalletOverviewScreen(
 
             is SideEffects.AppReview -> {
                 appRateViewModel = SimpleGreenViewModel(viewModel.greenWallet)
+                viewModel.settingsManager.setAskedAboutAppReview()
             }
 
             is WalletOverviewViewModel.LocalSideEffects.AccountArchivedDialog -> {

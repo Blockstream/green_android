@@ -160,7 +160,6 @@ actual fun AppRateDialog(
                                                                 )
                                                             }
                                                         }
-                                                        viewModel.settingsManager.setAskedAboutAppReview()
                                                         onDismissRequest()
                                                     }
                                                 }
