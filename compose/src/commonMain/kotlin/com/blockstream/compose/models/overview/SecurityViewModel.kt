@@ -148,7 +148,7 @@ class SecurityViewModel(greenWallet: GreenWallet) :
 
     override val showGenuineCheck: StateFlow<Boolean> = session.isWatchOnly.map {
         (session.device?.jadeDevice()?.supportsGenuineCheck()
-            ?: greenWalletOrNull?.deviceIdentifiers?.any { it.model == DeviceModel.BlockstreamJadePlus }) == true
+            ?: greenWalletOrNull?.deviceIdentifiers?.any { it.model == DeviceModel.BlockstreamJadePlus || it.model == DeviceModel.BlockstreamJadeCore }) == true
     }.stateIn(viewModelScope, SharingStarted.WhileSubscribed(5000L), false)
 
     class LocalEvents {

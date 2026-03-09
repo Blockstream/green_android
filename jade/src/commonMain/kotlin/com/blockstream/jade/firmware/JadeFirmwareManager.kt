@@ -1,6 +1,10 @@
 package com.blockstream.jade.firmware
 
 import com.blockstream.jade.HttpRequestHandler
+import com.blockstream.jade.JADE_BOARD_TYPE_JADE
+import com.blockstream.jade.JADE_BOARD_TYPE_JADE_CORE
+import com.blockstream.jade.JADE_BOARD_TYPE_JADE_PLUS
+import com.blockstream.jade.JADE_BOARD_TYPE_JADE_V1_1
 import com.blockstream.jade.JadeAPI
 import com.blockstream.jade.Loggable
 import com.blockstream.jade.api.VersionInfo
@@ -111,12 +115,11 @@ class JadeFirmwareManager constructor(
         const val JADE_FW_JADE1_1_PATH = "/bin/jade1.1/"
         const val JADE_FW_JADEDEV_PATH = "/bin/jadedev/"
         const val JADE_FW_JADE1_1DEV_PATH = "/bin/jade1.1dev/"
-        const val JADE_FW_JADE2_0_PATH = "/bin/jade2.0/"
-        const val JADE_FW_JADE2_0DEV_PATH = "/bin/jade2.0dev/"
+        const val JADE_FW_JADE_PLUS_PATH = "/bin/jade2.0/"
+        const val JADE_FW_JADE_PLUS_DEV_PATH = "/bin/jade2.0dev/"
+        const val JADE_FW_JADE_CORE_PATH = "/bin/jade2.0c/"
+        const val JADE_FW_JADE_CORE_DEV_PATH = "/bin/jade2.0cdev/"
 
-        const val JADE_BOARD_TYPE_JADE = "JADE"
-        const val JADE_BOARD_TYPE_JADE_V1_1 = "JADE_V1.1"
-        const val JADE_BOARD_TYPE_JADE_V2_0 = "JADE_V2"
         const val JADE_FEATURE_SECURE_BOOT = "SB"
 
         const val JADE_FW_VERSIONS_LATEST = "LATEST"
@@ -146,10 +149,16 @@ class JadeFirmwareManager constructor(
                 if (prod) JADE_FW_JADE1_1_PATH else JADE_FW_JADE1_1DEV_PATH
             }
 
-            JADE_BOARD_TYPE_JADE_V2_0 -> {
+            JADE_BOARD_TYPE_JADE_PLUS -> {
                 // Jade 2.0
                 logger.i { "Jade 2.0 detected" }
-                if (prod) JADE_FW_JADE2_0_PATH else JADE_FW_JADE2_0DEV_PATH
+                if (prod) JADE_FW_JADE_PLUS_PATH else JADE_FW_JADE_PLUS_DEV_PATH
+            }
+
+            JADE_BOARD_TYPE_JADE_CORE -> {
+                // Jade Core
+                logger.i { "Jade Core detected" }
+                if (prod) JADE_FW_JADE_CORE_PATH else JADE_FW_JADE_CORE_DEV_PATH
             }
 
             else -> {

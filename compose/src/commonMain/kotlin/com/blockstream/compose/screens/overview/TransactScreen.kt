@@ -49,7 +49,7 @@ fun TransactScreen(viewModel: TransactViewModelAbstract) {
     SetupScreen(viewModel = viewModel, withPadding = false, withBottomInsets = false) {
 
         val isMainnet = viewModel.greenWallet.isMainnet
-        val isSwapEnabled = viewModel.isSwapEnabled
+        val isSwapAvailable = viewModel.isSwapAvailable
         val transactions by viewModel.transactions.collectAsStateWithLifecycle()
         val isMultisigWatchOnly by viewModel.isMultisigWatchOnly.collectAsStateWithLifecycle()
         val innerPadding = LocalInnerPadding.current
@@ -70,7 +70,7 @@ fun TransactScreen(viewModel: TransactViewModelAbstract) {
                 TransactionActionButtons(
                     modifier = Modifier.padding(top = 16.dp),
                     showBuyButton = isMainnet,
-                    isSwapEnabled = isSwapEnabled,
+                    isSwapEnabled = isSwapAvailable,
                     isSendEnabled = !isMultisigWatchOnly,
                     onBuy = viewModel::onBuy,
                     onSend = viewModel::onSend,

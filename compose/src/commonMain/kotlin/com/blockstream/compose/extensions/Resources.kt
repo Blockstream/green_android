@@ -133,7 +133,7 @@ fun DeviceBrand.deviceBrandIcon(): DrawableResource = when (this) {
 fun DeviceModel.icon(): DrawableResource = when (this) {
     DeviceModel.BlockstreamGeneric -> Res.drawable.blockstream_devices
     DeviceModel.BlockstreamJade -> Res.drawable.blockstream_jade_device
-    DeviceModel.BlockstreamJadePlus -> Res.drawable.blockstream_jade_plus_device
+    DeviceModel.BlockstreamJadePlus, DeviceModel.BlockstreamJadeCore -> Res.drawable.blockstream_jade_plus_device
     DeviceModel.TrezorGeneric, DeviceModel.TrezorModelT, DeviceModel.TrezorModelOne -> Res.drawable.trezor_device
     DeviceModel.LedgerGeneric, DeviceModel.LedgerNanoS, DeviceModel.LedgerNanoX -> Res.drawable.ledger_device
     DeviceModel.Generic -> Res.drawable.generic_device

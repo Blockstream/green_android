@@ -43,7 +43,7 @@ abstract class TransactViewModelAbstract(
 
     private val isSwapsEnabledUseCase: IsSwapsEnabledUseCase by inject()
 
-    abstract val isSwapEnabled: Boolean
+    abstract val isSwapAvailable: Boolean
 
     abstract val transactions: StateFlow<DataState<List<TransactionLook>>>
 
@@ -78,7 +78,7 @@ class TransactViewModel(greenWallet: GreenWallet) : TransactViewModelAbstract(gr
 
     override fun segmentation(): HashMap<String, Any> = countly.sessionSegmentation(session = session)
 
-    override val isSwapEnabled: Boolean = session.ifConnected {
+    override val isSwapAvailable: Boolean = session.ifConnected {
         isSwapAvailableUseCase(wallet = greenWallet, session = session)
     } ?: false
 
@@ -181,7 +181,7 @@ class TransactViewModel(greenWallet: GreenWallet) : TransactViewModelAbstract(gr
 
 class TransactViewModelPreview(val isEmpty: Boolean = false) : TransactViewModelAbstract(greenWallet = previewWallet()) {
 
-    override val isSwapEnabled: Boolean = true
+    override val isSwapAvailable: Boolean = true
 
     override val transactions: StateFlow<DataState<List<TransactionLook>>> = MutableStateFlow(
         DataState.Success(

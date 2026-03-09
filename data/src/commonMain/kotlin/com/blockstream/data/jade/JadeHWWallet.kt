@@ -14,7 +14,6 @@ import com.blockstream.data.gdk.device.HardwareWalletInteraction
 import com.blockstream.data.gdk.device.HwWalletLogin
 import com.blockstream.data.gdk.device.SignMessageResult
 import com.blockstream.data.gdk.device.SignTransactionResult
-import com.blockstream.utils.Loggable
 import com.blockstream.jade.JadeAPI
 import com.blockstream.jade.api.TxInput
 import com.blockstream.jade.api.VersionInfo
@@ -23,6 +22,7 @@ import com.blockstream.jade.data.JadeError
 import com.blockstream.jade.data.JadeNetworks
 import com.blockstream.jade.data.JadeState
 import com.blockstream.jade.firmware.JadeFirmwareManager
+import com.blockstream.utils.Loggable
 import kotlinx.coroutines.CompletableDeferred
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.runBlocking
@@ -46,9 +46,12 @@ class JadeHWWallet constructor(
         get() = getVersionInfo(useCache = true).jadeVersion
 
     override val model: DeviceModel
-        get() = when (getVersionInfo(useCache = true).isBoardV2) {
-            false -> DeviceModel.BlockstreamJade
-            true -> DeviceModel.BlockstreamJadePlus
+        get() = getVersionInfo(useCache = true).let {
+            when {
+                it.isJadeCore -> DeviceModel.BlockstreamJadeCore
+                it.isJadePlus -> DeviceModel.BlockstreamJadePlus
+                else -> DeviceModel.BlockstreamJade
+            }
         }
 
     val isMainnet: Boolean

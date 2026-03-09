@@ -8,6 +8,7 @@ enum class DeviceModel(val deviceModel: String) {
     BlockstreamGeneric("Blockstream"),
     BlockstreamJade("Jade"),
     BlockstreamJadePlus("Jade Plus"),
+    BlockstreamJadeCore("Jade Core"),
     TrezorGeneric("Trezor"),
     TrezorModelT("Trezor Model T"),
     TrezorModelOne("Trezor Model One"),
@@ -18,7 +19,7 @@ enum class DeviceModel(val deviceModel: String) {
 
     val deviceBrand: DeviceBrand
         get() = when (this) {
-            BlockstreamGeneric, BlockstreamJade, BlockstreamJadePlus -> Blockstream
+            BlockstreamGeneric, BlockstreamJade, BlockstreamJadePlus, BlockstreamJadeCore -> Blockstream
             TrezorGeneric, TrezorModelT, TrezorModelOne -> DeviceBrand.Trezor
             LedgerGeneric, LedgerNanoS, LedgerNanoX -> DeviceBrand.Ledger
             Generic -> DeviceBrand.Generic
@@ -26,7 +27,7 @@ enum class DeviceModel(val deviceModel: String) {
 
     val isJade: Boolean
         get() = when (this) {
-            BlockstreamGeneric, BlockstreamJade, BlockstreamJadePlus -> true
+            BlockstreamGeneric, BlockstreamJade, BlockstreamJadePlus, BlockstreamJadeCore -> true
             else -> false
         }
 
@@ -34,6 +35,7 @@ enum class DeviceModel(val deviceModel: String) {
         get() = when (this) {
             BlockstreamGeneric, BlockstreamJade -> "jade"
             BlockstreamJadePlus -> "jade_plus"
+            BlockstreamJadeCore -> "jade_core"
             TrezorModelT -> "trezor_t"
             TrezorModelOne -> "trezor_one"
             LedgerNanoS -> "ledger_nano_s"

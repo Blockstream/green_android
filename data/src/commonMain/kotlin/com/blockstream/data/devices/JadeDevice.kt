@@ -19,7 +19,8 @@ class JadeDeviceApiImpl : JadeDeviceApi {
     override var jadeApi: JadeAPI? = null
 
     override suspend fun supportsGenuineCheck(): Boolean {
-        return jadeApi?.getVersionInfo(useCache = true)?.isBoardV2 == true
+        val info = jadeApi?.getVersionInfo(useCache = true) ?: return false
+        return info.isJadeV2
     }
 
     override suspend fun getOperatingNetworkForEnviroment(greenDevice: GreenDevice, gdk: Gdk, isTestnet: Boolean): Network {

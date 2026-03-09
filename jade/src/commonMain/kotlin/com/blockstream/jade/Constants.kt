@@ -6,3 +6,8 @@ const val TIMEOUT_AUTONOMOUS: Int = 6_000 // 6 secs
 const val TIMEOUT_AUTONOMOUS_LONG: Int = 10_000 // 10 secs
 const val TIMEOUT_USER_INTERACTION = 120_000 // 2 mins
 const val TIMEOUT_NONE = -1
+
+const val JADE_BOARD_TYPE_JADE = "JADE"
+const val JADE_BOARD_TYPE_JADE_V1_1 = "JADE_V1.1"
+const val JADE_BOARD_TYPE_JADE_PLUS = "JADE_V2"
+const val JADE_BOARD_TYPE_JADE_CORE = "JADE_V2C"

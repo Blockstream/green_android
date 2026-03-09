@@ -68,7 +68,7 @@ abstract class AssetAccountDetailsViewModelAbstract(
     abstract val totalBalanceFiat: StateFlow<String?>
 
     abstract val showBuyButton: Boolean
-    abstract val isSwapEnabled: Boolean
+    abstract val isSwapAvailable: Boolean
 
     abstract val isSendEnabled: StateFlow<Boolean>
 
@@ -134,7 +134,7 @@ class AssetAccountDetailsViewModel(
 
     override val showBuyButton: Boolean = accountAsset.asset.isBitcoin
 
-    override val isSwapEnabled: Boolean = session.ifConnected {
+    override val isSwapAvailable: Boolean = session.ifConnected {
         isSwapAvailableUseCase(wallet = greenWallet, session = session, asset = accountAsset.asset)
     } ?: false
 

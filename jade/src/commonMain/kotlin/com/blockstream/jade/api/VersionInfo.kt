@@ -1,5 +1,9 @@
 package com.blockstream.jade.api
 
+import com.blockstream.jade.JADE_BOARD_TYPE_JADE
+import com.blockstream.jade.JADE_BOARD_TYPE_JADE_CORE
+import com.blockstream.jade.JADE_BOARD_TYPE_JADE_PLUS
+import com.blockstream.jade.JADE_BOARD_TYPE_JADE_V1_1
 import com.blockstream.jade.data.JadeNetworks
 import com.blockstream.jade.data.JadeState
 import kotlinx.serialization.KSerializer
@@ -33,8 +37,18 @@ data class VersionInfo constructor(
 ) : JadeSerializer<VersionInfo>() {
     override fun kSerializer(): KSerializer<VersionInfo> = serializer()
 
-    val isBoardV2
-        get() = boardType == "JADE_V2"
+    val isJade
+        get() = boardType == JADE_BOARD_TYPE_JADE || boardType == JADE_BOARD_TYPE_JADE_V1_1
+
+    val isJadePlus
+        get() = boardType == JADE_BOARD_TYPE_JADE_PLUS
+
+    val isJadeCore
+        get() = boardType == JADE_BOARD_TYPE_JADE_CORE
+
+    val isJadeV2
+        get() = isJadePlus || isJadeCore
+
 }
 
 @Serializable
