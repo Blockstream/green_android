@@ -42,7 +42,9 @@ fun LockScreen(
 
     val launchBiometrics = suspend {
         biometricsState?.launchUserPresencePrompt(getString(Res.string.id_green_is_now_the_blockstream_app)) {
-            unlock()
+            if (it == true) {
+                unlock()
+            }
         }
     }
 
