@@ -77,6 +77,7 @@ abstract class TransactionViewModelAbstract(
     abstract val canEditNote: StateFlow<Boolean>
     abstract val hasMoreDetails: StateFlow<Boolean>
     abstract val isMeldTransaction: StateFlow<Boolean>
+    abstract val swapId: StateFlow<String?>
 }
 
 class TransactionViewModel(transaction: Transaction, greenWallet: GreenWallet) :
@@ -148,6 +149,9 @@ class TransactionViewModel(transaction: Transaction, greenWallet: GreenWallet) :
     
     private val _isMeldTransaction: MutableStateFlow<Boolean> = MutableStateFlow(transaction.isMeldPending())
     override val isMeldTransaction: StateFlow<Boolean> = _isMeldTransaction
+
+    private val _swapId: MutableStateFlow<String?> = MutableStateFlow(null)
+    override val swapId: StateFlow<String?> = _swapId
 
     init {
         logger.d { "Transaction $transaction" }
@@ -316,6 +320,9 @@ class TransactionViewModel(transaction: Transaction, greenWallet: GreenWallet) :
 
         _note.value = transaction.memo.takeIf { it.isNotBlank() }
 
+        val swap = database.getSwapFromTxHash(transaction.txHash)
+        _swapId.value = swap?.id
+
         _hasMoreDetails.value = transaction.details(session = session, database = database).isNotEmpty()
     }
 
@@ -388,6 +395,7 @@ class TransactionViewModelPreview(status: TransactionStatus) : TransactionViewMo
     override val hasMoreDetails: StateFlow<Boolean> = MutableStateFlow(true)
     override val isCloseChannel: StateFlow<Boolean> = MutableStateFlow(false)
     override val isMeldTransaction: StateFlow<Boolean> = MutableStateFlow(false)
+    override val swapId: StateFlow<String?> = MutableStateFlow("IrVIXstwCvPf")
 
     companion object {
         fun previewUnconfirmed() = TransactionViewModelPreview(Unconfirmed())

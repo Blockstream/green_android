@@ -5,6 +5,7 @@ import com.blockstream.data.data.CredentialType
 import com.blockstream.data.database.Database
 import com.blockstream.data.extensions.boltzMnemonic
 import com.blockstream.data.lwk.LwkManager
+import com.blockstream.data.managers.SessionManager
 import com.blockstream.jade.Loggable
 import kotlinx.coroutines.delay
 
@@ -20,6 +21,7 @@ class HandleSwapEventsUseCase(
     private val database: Database,
     private val greenKeystore: GreenKeystore,
     private val lwkManager: LwkManager,
+    private val sessionManager: SessionManager,
     private val getWalletFromSwapUseCase: GetWalletFromSwapUseCase
 ) : Loggable() {
 
@@ -44,20 +46,33 @@ class HandleSwapEventsUseCase(
     ) {
         logger.d { "HandleEvents invoked" }
 
-        val (swap, wallet) = getWalletFromSwapUseCase(swapId = swapId)
+        val (swap, ownerWallet) = getWalletFromSwapUseCase(swapId = swapId)
 
-        if (swap != null && wallet != null) {
+        if (swap != null && ownerWallet != null) {
+            val session = sessionManager.getWalletSessionOrCreate(wallet = ownerWallet)
 
-            val lwk = lwkManager.getLwk(wallet = wallet).apply {
+            val accounts = session.accounts.value
+            val btcAcc = accounts.firstOrNull { it.isBitcoin }
+            val lqAcc = accounts.firstOrNull { it.isLiquid }
+
+            val bitcoinAddress = btcAcc?.let { session.getReceiveAddressAsString(it) }
+            val liquidAddress = lqAcc?.let { session.getReceiveAddressAsString(it) }
+
+            val lwk = lwkManager.getLwk(wallet = ownerWallet).apply {
                 if (!isConnected) {
                     val derivedBoltzMnemonic = database.getLoginCredential(
-                        id = wallet.id,
+                        id = ownerWallet.id,
                         credentialType = CredentialType.BOLTZ_MNEMONIC
                     )?.boltzMnemonic(greenKeystore) ?: throw Exception("No boltz mnemonic found")
 
                     logger.d { "Connect from LWK" }
 
-                    connect(xPubHashId = wallet.xPubHashId, derivedBoltzMnemonic)
+                    connect(
+                        xPubHashId = ownerWallet.xPubHashId,
+                        mnemonic = derivedBoltzMnemonic,
+                        bitcoinAddress = bitcoinAddress,
+                        liquidAddress = liquidAddress
+                    )
                 }
             }
 

@@ -48,7 +48,7 @@ import lwk.WebHook
 import org.koin.core.component.KoinComponent
 import org.koin.core.component.inject
 
-class Lwk constructor(
+class Lwk(
     val walletId: String
 ) : Logging, KoinComponent {
 
@@ -73,7 +73,13 @@ class Lwk constructor(
     val invoicePaidSharedFlow
         get() = _invoicePaidSharedFlow.asSharedFlow()
 
-    fun connect(xPubHashId: String, mnemonic: String, bitcoinAddress: String? = null, liquidAddress: String? = null) {
+    fun connect(
+        xPubHashId: String,
+        mnemonic: String,
+        bitcoinAddress: String? = null,
+        liquidAddress: String? = null
+    ) {
+
         check(xPubHashId.isNotBlank()) {
             "Wallet should not have a blank xPubHashId"
         }
@@ -113,61 +119,52 @@ class Lwk constructor(
                             onSessionConnect(xPubHashId = xPubHashId)
                         }
 
-                        // Restore
+                        // Restore swaps after connection (only user's lockups)
                         tryCatch {
-
+                            val cloudSwaps = boltzSession.swapRestore()
                             liquidAddress?.let { Address(it) }?.also { liquidAddress ->
-                                val list = boltzSession.swapRestore()
-
-                                logger.d { "Restoring swaps, recover address $liquidAddress" }
-                                boltzSession.restorableReverseSwaps(list, liquidAddress).forEach { reverseSwap ->
-                                    val invoice = boltzSession.restoreInvoice(reverseSwap)
-
-                                    database.setSwap(
-                                        id = invoice.swapId(),
-                                        walletId = walletId,
-                                        xPubHashId = xPubHashId,
-                                        swapType = SwapType.ReverseSubmarine,
-                                        isAutoSwap = false,
-                                        isMagic = false,
-                                        data = invoice.serialize()
-                                    )
-                                }
-
-                                boltzSession.restorableSubmarineSwaps(list, liquidAddress).forEach { submarineSwap ->
+                                boltzSession.restorableSubmarineSwaps(cloudSwaps, liquidAddress).forEach { submarineSwap ->
                                     val pay = boltzSession.restorePreparePay(submarineSwap)
+                                    val txHash = pay.lockupTxid()
 
-                                    database.setSwap(
-                                        id = pay.swapId(),
-                                        walletId = walletId,
-                                        xPubHashId = xPubHashId,
-                                        swapType = SwapType.NormalSubmarine,
-                                        isAutoSwap = false,
-                                        isMagic = false,
-                                        data = pay.serialize()
-                                    )
+                                    if (txHash != null) {
+                                        val swapId = pay.swapId()
+                                        database.setSwap(
+                                            id = swapId,
+                                            walletId = walletId,
+                                            xPubHashId = xPubHashId,
+                                            swapType = SwapType.NormalSubmarine,
+                                            isAutoSwap = false,
+                                            isMagic = false,
+                                            data = pay.serialize()
+                                        )
+                                        database.setSwapTxHash(id = swapId, txHash = txHash)
+                                    }
                                 }
 
                                 bitcoinAddress?.let { BitcoinAddress(it) }?.also { bitcoinAddress ->
-                                    logger.d { "Restoring swaps, recover address $bitcoinAddress" }
+                                    val restorableLbtcToBtc =
+                                        boltzSession.restorableLbtcToBtcSwaps(cloudSwaps, bitcoinAddress, liquidAddress)
+                                    val restorableBtcToLbtc =
+                                        boltzSession.restorableBtcToLbtcSwaps(cloudSwaps, liquidAddress, bitcoinAddress)
 
-                                    (boltzSession.restorableLbtcToBtcSwaps(
-                                        list, bitcoinAddress, liquidAddress
-                                    ) + boltzSession.restorableBtcToLbtcSwaps(
-                                        list, liquidAddress, bitcoinAddress
-                                    )).forEach { data ->
-
+                                    (restorableLbtcToBtc + restorableBtcToLbtc).forEach { data ->
                                         val lockup = boltzSession.restoreLockup(data)
+                                        val txHash = lockup.lockupTxid()
 
-                                        database.setSwap(
-                                            id = lockup.swapId(),
-                                            walletId = walletId,
-                                            xPubHashId = xPubHashId,
-                                            swapType = SwapType.Chain,
-                                            isAutoSwap = false,
-                                            isMagic = false,
-                                            data = lockup.serialize()
-                                        )
+                                        if (txHash != null) {
+                                            val swapId = lockup.swapId()
+                                            database.setSwap(
+                                                id = swapId,
+                                                walletId = walletId,
+                                                xPubHashId = xPubHashId,
+                                                swapType = SwapType.Chain,
+                                                isAutoSwap = false,
+                                                isMagic = false,
+                                                data = lockup.serialize()
+                                            )
+                                            database.setSwapTxHash(id = swapId, txHash = txHash)
+                                        }
                                     }
                                 }
                             }
@@ -300,6 +297,9 @@ class Lwk constructor(
                         }
 
                         PaymentState.SUCCESS, PaymentState.FAILED -> {
+                            lockup.claimTxid()?.let { txHash ->
+                                database.setSwapTxHash(id = swapId, txHash = txHash)
+                            }
                             database.setSwapComplete(swapId)
                         }
                     }
@@ -342,6 +342,9 @@ class Lwk constructor(
 
                         PaymentState.SUCCESS, PaymentState.FAILED -> {
                             if (state == PaymentState.SUCCESS) {
+                                invoice.claimTxid()?.let { txHash ->
+                                    database.setSwapTxHash(id = swapId, txHash = txHash)
+                                }
                                 _invoicePaidSharedFlow.emit(
                                     invoice.bolt11Invoice().paymentHash() to invoice.bolt11Invoice().amountMilliSatoshis()?.satoshi()
                                 )
@@ -388,6 +391,9 @@ class Lwk constructor(
                         }
 
                         PaymentState.SUCCESS, PaymentState.FAILED -> {
+                            pay.lockupTxid()?.let { txHash ->
+                                database.setSwapTxHash(id = swapId, txHash = txHash)
+                            }
                             database.setSwapComplete(swapId)
                         }
                     }

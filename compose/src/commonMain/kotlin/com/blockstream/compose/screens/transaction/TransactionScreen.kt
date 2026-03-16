@@ -54,6 +54,7 @@ import blockstream_green.common.generated.resources.id_share
 import blockstream_green.common.generated.resources.id_share_transaction
 import blockstream_green.common.generated.resources.id_speed_up_transaction
 import blockstream_green.common.generated.resources.id_swap
+import blockstream_green.common.generated.resources.id_swap_id
 import blockstream_green.common.generated.resources.id_swap_was_successfully_executed
 import blockstream_green.common.generated.resources.id_the_transaction_was
 import blockstream_green.common.generated.resources.id_total_spent
@@ -167,6 +168,7 @@ fun TransactionScreen(
             val status by viewModel.status.collectAsStateWithLifecycle()
             val amounts by viewModel.amounts.collectAsStateWithLifecycle()
             val isMeldTransaction by viewModel.isMeldTransaction.collectAsStateWithLifecycle()
+            val swapId by viewModel.swapId.collectAsStateWithLifecycle()
 
             Box(modifier = Modifier.fillMaxWidth()) {
 
@@ -327,6 +329,14 @@ fun TransactionScreen(
                                 CopyContainer(value = it) {
                                     Text(modifier = Modifier.appTestTag("transactionId"), text = it, fontFamily = MonospaceFont())
                                 }
+                            }
+                        }
+                    }
+
+                    AnimatedNullableVisibility(value = swapId) { id ->
+                        Detail(label = Res.string.id_swap_id) {
+                            CopyContainer(value = id) {
+                                Text(text = id, fontFamily = MonospaceFont())
                             }
                         }
                     }
