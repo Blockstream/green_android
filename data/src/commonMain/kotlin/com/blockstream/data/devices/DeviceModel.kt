@@ -33,7 +33,8 @@ enum class DeviceModel(val deviceModel: String) {
 
     val zendeskValue: String
         get() = when (this) {
-            BlockstreamGeneric, BlockstreamJade -> "jade"
+            BlockstreamGeneric -> "jade"
+            BlockstreamJade -> "jade_classic"
             BlockstreamJadePlus -> "jade_plus"
             BlockstreamJadeCore -> "jade_core"
             TrezorModelT -> "trezor_t"

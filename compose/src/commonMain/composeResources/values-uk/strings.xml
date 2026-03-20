@@ -333,7 +333,7 @@
     <string name="id_connect_through_a_proxy">Connect Through a Proxy</string>
     <string name="id_connect_usb_cable_or_enable">Підключіть кабель USB або ввімкніть Bluetooth</string>
     <string name="id_connect_using_usb_or_bluetooth">Підключіться за допомогою USB або Bluetooth</string>
-    <string name="id_connect_via_qr">Connect via QR</string>
+    <string name="id_connect_via_qr">Connect via QR (Plus &amp; Classic only)</string>
     <string name="id_connect_with_bluetooth">Connect with Bluetooth</string>
     <string name="id_connect_with_tor">Встановити з’єднання з Tor</string>
     <string name="id_connect_your_jade_to_use_it">Connect your Jade to use it with Blockstream</string>
@@ -695,7 +695,7 @@
     <string name="id_high">Високий</string>
     <string name="id_hold_button_to_send">Утримуйте кнопку, щоб надіслати</string>
     <string name="id_hold_the_button_on_the_bottom">Hold the button on the bottom of Jade until it boots up</string>
-    <string name="id_hold_the_green_button_on_the">Утримуйте зелену кнопку в нижній частині Jade, доки він не увімкнеться.</string>
+    <string name="id_plug_in_the_provided_usb_c_cable_or">Утримуйте зелену кнопку в нижній частині Jade, доки він не увімкнеться.</string>
     <string name="id_hold_your_nfc_tag_close_to_the">Тримайте NFC-тег поряд із вашим приcтроєм</string>
     <string name="id_home">Домашня сторінка</string>
     <string name="id_hour">година</string>

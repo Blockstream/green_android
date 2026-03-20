@@ -332,7 +332,7 @@
     <string name="id_connect_through_a_proxy">Connect Through a Proxy</string>
     <string name="id_connect_usb_cable_or_enable">Sluit USB-kabel aan of schakel Bluetooth in</string>
     <string name="id_connect_using_usb_or_bluetooth">Maak verbinding via USB of Bluetooth</string>
-    <string name="id_connect_via_qr">Connect via QR</string>
+    <string name="id_connect_via_qr">Connect via QR (Plus &amp; Classic only)</string>
     <string name="id_connect_with_bluetooth">Connect with Bluetooth</string>
     <string name="id_connect_with_tor">Met Tor verbinden</string>
     <string name="id_connect_your_jade_to_use_it">Connect your Jade to use it with Blockstream</string>
@@ -694,7 +694,7 @@
     <string name="id_high">Hoog</string>
     <string name="id_hold_button_to_send">Hou ingedrukt om te verzenden</string>
     <string name="id_hold_the_button_on_the_bottom">Hold the button on the bottom of Jade until it boots up</string>
-    <string name="id_hold_the_green_button_on_the">Houd de groene knop aan de onderkant van Jade ingedrukt tot hij opstart</string>
+    <string name="id_plug_in_the_provided_usb_c_cable_or">Houd de groene knop aan de onderkant van Jade ingedrukt tot hij opstart</string>
     <string name="id_hold_your_nfc_tag_close_to_the">Houd je NFC-tag in de buurt van je apparaat</string>
     <string name="id_home">Thuis</string>
     <string name="id_hour">uur</string>

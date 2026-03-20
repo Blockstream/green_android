@@ -333,7 +333,7 @@
     <string name="id_connect_through_a_proxy">Connect Through a Proxy</string>
     <string name="id_connect_usb_cable_or_enable">Connect USB cable or enable Bluetooth</string>
     <string name="id_connect_using_usb_or_bluetooth">Connect using USB or Bluetooth</string>
-    <string name="id_connect_via_qr">Connect via QR</string>
+    <string name="id_connect_via_qr">Connect via QR (Plus &amp; Classic only)</string>
     <string name="id_connect_with_bluetooth">Connect with Bluetooth</string>
     <string name="id_connect_with_tor">Conectare la Tor</string>
     <string name="id_connect_your_jade_to_use_it">Connect your Jade to use it with Blockstream</string>
@@ -695,7 +695,7 @@
     <string name="id_high">Ridicat</string>
     <string name="id_hold_button_to_send">Hold button to Send</string>
     <string name="id_hold_the_button_on_the_bottom">Hold the button on the bottom of Jade until it boots up</string>
-    <string name="id_hold_the_green_button_on_the">Hold the green button on the bottom of Jade until it boots up</string>
+    <string name="id_plug_in_the_provided_usb_c_cable_or">Plug in the provided USB-C cable (Jade Core) or hold the power button (Jade Plus).</string>
     <string name="id_hold_your_nfc_tag_close_to_the">Țineți eticheta NFC aproape de dispozitiv</string>
     <string name="id_home">Home</string>
     <string name="id_hour">oră</string>

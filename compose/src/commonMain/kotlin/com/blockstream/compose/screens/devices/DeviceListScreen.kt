@@ -42,7 +42,7 @@ import blockstream_green.common.generated.resources.id_enable_location_services
 import blockstream_green.common.generated.resources.id_follow_the_instructions_of_your
 import blockstream_green.common.generated.resources.id_follow_the_instructions_on_jade
 import blockstream_green.common.generated.resources.id_give_bluetooth_permissions
-import blockstream_green.common.generated.resources.id_hold_the_green_button_on_the
+import blockstream_green.common.generated.resources.id_plug_in_the_provided_usb_c_cable_or
 import blockstream_green.common.generated.resources.id_looking_for_device
 import blockstream_green.common.generated.resources.id_more_info
 import blockstream_green.common.generated.resources.id_power_on_jade
@@ -194,7 +194,7 @@ fun DeviceListScreen(
                                         0 -> {
                                             title = stringResource(Res.string.id_power_on_jade)
                                             subtitle =
-                                                stringResource(Res.string.id_hold_the_green_button_on_the)
+                                                stringResource(Res.string.id_plug_in_the_provided_usb_c_cable_or)
                                         }
 
                                         1 -> {
@@ -361,8 +361,8 @@ fun DeviceListScreen(
 
                         GreenButton(
                             text = stringResource(Res.string.id_connect_via_qr),
-                            color = GreenButtonColor.WHITE,
-                            type = GreenButtonType.OUTLINE,
+                            color = GreenButtonColor.GREENER,
+                            type = GreenButtonType.TEXT,
                             size = GreenButtonSize.BIG,
                             modifier = Modifier.fillMaxWidth(),
                             onClick = {

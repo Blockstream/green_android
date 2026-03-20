@@ -11,6 +11,8 @@ class IsSwapAvailableUseCase {
         asset: EnrichedAsset? = null
     ): Boolean {
 
+        if (session.device?.isJadeCore?.value == true) return false
+
         if (wallet.isWatchOnly && !wallet.isHardware) return false
 
         return wallet.isMainnet && !wallet.isEphemeral && (asset == null || asset.isPolicyAsset(session))

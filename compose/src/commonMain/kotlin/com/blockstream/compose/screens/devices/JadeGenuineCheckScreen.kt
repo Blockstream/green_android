@@ -10,6 +10,7 @@ import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -31,7 +32,9 @@ import blockstream_green.common.generated.resources.id_this_device_was_not_manuf
 import blockstream_green.common.generated.resources.id_this_jade_is_not_genuine
 import blockstream_green.common.generated.resources.id_we_could_successfully_verify_your
 import blockstream_green.common.generated.resources.id_we_were_unable_to_complete_the_genuine
+import blockstream_green.common.generated.resources.id_your_jade_core_successfully_verified
 import blockstream_green.common.generated.resources.id_your_jade_is_genuine
+import blockstream_green.common.generated.resources.id_your_jade_plus_successfully_verified
 import com.blockstream.compose.components.GreenButton
 import com.blockstream.compose.components.GreenButtonSize
 import com.blockstream.compose.components.GreenButtonType
@@ -48,6 +51,7 @@ import com.blockstream.compose.theme.labelLarge
 import com.blockstream.compose.theme.titleLarge
 import com.blockstream.compose.theme.whiteMedium
 import com.blockstream.compose.utils.SetupScreen
+import kotlinx.coroutines.flow.MutableStateFlow
 import org.jetbrains.compose.resources.painterResource
 import org.jetbrains.compose.resources.stringResource
 
@@ -59,6 +63,12 @@ fun JadeGenuineCheckScreen(
     val device = viewModel.deviceOrNull
     val onProgress by viewModel.onProgress.collectAsStateWithLifecycle()
     val genuineState by viewModel.genuineState.collectAsStateWithLifecycle()
+
+    val jadeCoreFlow = device?.isJadeCore ?: MutableStateFlow(false)
+    val isJadeCore by jadeCoreFlow.collectAsState()
+
+    val jadePlusFlow = device?.isJadePlus ?: MutableStateFlow(false)
+    val isJadePlus by jadePlusFlow.collectAsState()
 
     SetupScreen(viewModel = viewModel, withPadding = false, sideEffectsHandler = {
         when (it) {
@@ -100,7 +110,11 @@ fun JadeGenuineCheckScreen(
                 }
 
                 when (genuineState) {
-                    JadeGenuineCheckViewModel.GenuineState.GENUINE -> Res.string.id_we_could_successfully_verify_your
+                    JadeGenuineCheckViewModel.GenuineState.GENUINE ->
+                        Res.string.id_your_jade_core_successfully_verified.takeIf { isJadeCore }
+                            ?: Res.string.id_your_jade_plus_successfully_verified.takeIf { isJadePlus }
+                            ?: Res.string.id_we_could_successfully_verify_your
+
                     JadeGenuineCheckViewModel.GenuineState.CHECKING -> Res.string.id_perform_a_genuine_check_to
                     JadeGenuineCheckViewModel.GenuineState.NOT_GENUINE -> Res.string.id_this_device_was_not_manufactured_by
                     else -> Res.string.id_we_were_unable_to_complete_the_genuine

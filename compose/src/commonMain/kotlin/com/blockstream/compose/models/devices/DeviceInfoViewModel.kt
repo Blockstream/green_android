@@ -148,7 +148,9 @@ class DeviceInfoViewModel(deviceId: String) : DeviceInfoViewModelAbstract(device
                 } == false
 
                 if (jadeDevice.supportsGenuineCheck() && noEvent) {
-                    postSideEffect(SideEffects.NavigateTo(NavigateDestinations.NewJadeConnected))
+                    postSideEffect(SideEffects.NavigateTo(NavigateDestinations.NewJadeConnected(
+                        deviceId = deviceId
+                    )))
                 }
             }
 

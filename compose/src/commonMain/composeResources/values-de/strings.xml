@@ -333,7 +333,7 @@
     <string name="id_connect_through_a_proxy">Connect Through a Proxy</string>
     <string name="id_connect_usb_cable_or_enable">USB-Kabel anschließen oder Bluetooth einschalten</string>
     <string name="id_connect_using_usb_or_bluetooth">Über USB oder Bluetooth verbinden</string>
-    <string name="id_connect_via_qr">Connect via QR</string>
+    <string name="id_connect_via_qr">Connect via QR (Plus &amp; Classic only)</string>
     <string name="id_connect_with_bluetooth">Connect with Bluetooth</string>
     <string name="id_connect_with_tor">Mit Tor verbinden</string>
     <string name="id_connect_your_jade_to_use_it">Connect your Jade to use it with Blockstream</string>
@@ -695,7 +695,7 @@
     <string name="id_high">Hoch</string>
     <string name="id_hold_button_to_send">Zum Senden Knopf gedrückt halten</string>
     <string name="id_hold_the_button_on_the_bottom">Hold the button on the bottom of Jade until it boots up</string>
-    <string name="id_hold_the_green_button_on_the">Halte die grüne Taste auf der Unterseite der Jade gedrückt, bis sie hochfährt </string>
+    <string name="id_plug_in_the_provided_usb_c_cable_or">Halte die grüne Taste auf der Unterseite der Jade gedrückt, bis sie hochfährt </string>
     <string name="id_hold_your_nfc_tag_close_to_the">Halten Sie Ihren NFC-Tag nahe am Gerät</string>
     <string name="id_home">Startseite</string>
     <string name="id_hour">Stunde</string>

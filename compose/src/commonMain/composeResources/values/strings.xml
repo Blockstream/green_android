@@ -336,7 +336,7 @@
     <string name="id_connect_through_a_proxy">Connect Through a Proxy</string>
     <string name="id_connect_usb_cable_or_enable">Connect USB cable or enable Bluetooth</string>
     <string name="id_connect_using_usb_or_bluetooth">Connect using USB or Bluetooth</string>
-    <string name="id_connect_via_qr">Connect via QR</string>
+    <string name="id_connect_via_qr">Connect via QR (Plus &amp; Classic only)</string>
     <string name="id_connect_with_bluetooth">Connect with Bluetooth</string>
     <string name="id_connect_with_tor">Connect with Tor</string>
     <string name="id_connect_your_jade_to_use_it">Connect your Jade to use it with Blockstream</string>
@@ -702,7 +702,7 @@
     <string name="id_high">High</string>
     <string name="id_hold_button_to_send">Hold button to Send</string>
     <string name="id_hold_the_button_on_the_bottom">Hold the button on the bottom of Jade until it boots up</string>
-    <string name="id_hold_the_green_button_on_the">Hold the green button on the bottom of Jade until it boots up</string>
+    <string name="id_plug_in_the_provided_usb_c_cable_or">Plug in the provided USB-C cable (Jade Core) or hold the power button (Jade Plus).</string>
     <string name="id_hold_your_nfc_tag_close_to_the">Hold your NFC tag close to the device</string>
     <string name="id_home">Home</string>
     <string name="id_hour">hour</string>
@@ -973,6 +973,7 @@
     <string name="id_new_jade_firmware_available">New Jade Firmware Available</string>
     <string name="id_new_jade_firmware_required">New Jade Firmware Required</string>
     <string name="id_new_jade_plus_connected">New Jade Plus Connected</string>
+    <string name="id_new_jade_core_connected">New Jade Core Connected</string>
     <string name="id_new_outgoing_transaction_from">New outgoing transaction from account %1$s (%2$s).</string>
     <string name="id_new_recovery_phrase">New recovery phrase</string>
     <string name="id_new_s_transaction_of_s_in">New %1$s transaction of %2$s in account %3$s.</string>
@@ -1871,6 +1872,8 @@
     <string name="id_confirm_your_jade">Confirm on your Jade</string>
     <string name="id_we_were_unable_to_complete_the_genuine">We were unable to complete the genuine check because it was canceled on Jade.</string>
     <string name="id_we_could_successfully_verify_your">We could successfully verify your Jade, enjoy the best Blockstream can offer you with your brand new jade.</string>
+    <string name="id_your_jade_core_successfully_verified">Your Jade Core has been verified and was manufactured by Blockstream</string>
+    <string name="id_your_jade_plus_successfully_verified">Your Jade Plus has been verified and was manufactured by Blockstream</string>
     <string name="id_this_device_was_not_manufactured_by">This device was not manufactured by Blockstream. It could be DIY hardware or possibly a malicious clone. Please contact support for more assistance.</string>
     <string name="id_2fa_protected_accounts_are_2of2_wallets">2FA Protected accounts are 2-of-2 wallets needing the user’s key and Blockstream’s 2FA signature. After a ~1-year timelock, they become 1-of-1, disabling 2FA, to ultimately keep you in control. Redeposit your coins to reactivate 2FA protection.</string>
     <string name="id_please_be_as_detailed_as_possible">Please be as detailed as possible when describing the issue.</string>

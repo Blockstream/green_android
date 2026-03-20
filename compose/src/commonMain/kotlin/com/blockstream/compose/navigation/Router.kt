@@ -997,10 +997,13 @@ fun Router(
                 )
             }
             appBottomSheet<NavigateDestinations.NewJadeConnected> {
+                val args = it.toRoute<NavigateDestinations.NewJadeConnected>()
+                val deviceManager = koinInject<DeviceManager>()
                 NewJadeConnectedBottomSheet(
                     viewModel = viewModel {
                         SimpleGreenViewModel(
-                            screenName = "NewJadeConnected"
+                            screenName = "NewJadeConnected",
+                            device = deviceManager.getDevice(args.deviceId)
                         )
                     },
                     onDismissRequest = navController.onDismissRequest()

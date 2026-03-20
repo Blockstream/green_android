@@ -138,8 +138,7 @@ sealed class NavigateDestinations : NavigateDestination() {
     data class DeviceInfo(val deviceId: String) : NavigateDestination()
 
     @Serializable
-    data object NewJadeConnected : NavigateDestination()
-
+    data class NewJadeConnected(val deviceId: String? = null) : NavigateDestination()
     @Serializable
     data class JadeGenuineCheck(val greenWalletOrNull: GreenWallet? = null, val deviceId: String? = null) : NavigateDestination()
 

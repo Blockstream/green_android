@@ -8,6 +8,7 @@ import com.blockstream.data.gdk.data.Account
 import com.blockstream.data.gdk.data.Network
 import com.blockstream.data.gdk.device.GdkHardwareWallet
 import com.blockstream.data.gdk.device.HardwareConnectInteraction
+import com.blockstream.data.jade.JadeHWWallet
 import com.blockstream.utils.Loggable
 import com.blockstream.jade.firmware.FirmwareUpdateState
 import com.juul.kable.ExperimentalApi
@@ -20,6 +21,7 @@ import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.launchIn
 import kotlinx.coroutines.flow.onEach
+import kotlinx.coroutines.launch
 import kotlin.properties.Delegates
 import kotlin.time.Clock
 
@@ -48,6 +50,8 @@ interface GreenDevice : DeviceOperatingNetwork {
     val name: String
     val manufacturer: String?
     val isJade: Boolean
+    val isJadeCore: StateFlow<Boolean>
+    val isJadePlus: StateFlow<Boolean>
     val isTrezor: Boolean
     val isLedger: Boolean
     val isOffline: Boolean
@@ -81,6 +85,12 @@ abstract class GreenDeviceImpl constructor(
 
     private val _firmwareState: MutableStateFlow<FirmwareUpdateState?> = MutableStateFlow(null)
     override val firmwareState: StateFlow<FirmwareUpdateState?> = _firmwareState
+
+    private val _isJadeCore: MutableStateFlow<Boolean> = MutableStateFlow(false)
+    override val isJadeCore: StateFlow<Boolean> = _isJadeCore
+
+    private val _isJadePlus = MutableStateFlow(false)
+    override val isJadePlus: StateFlow<Boolean> = _isJadePlus
 
     override val name
         get() = peripheral?.name ?: deviceBrand.name
@@ -125,6 +135,21 @@ abstract class GreenDeviceImpl constructor(
 
     override var gdkHardwareWallet: GdkHardwareWallet? by Delegates.observable(null) { _, _, gdkHardwareWallet ->
         logger.i { "Set GdkHardwareWallet" }
+
+        if (gdkHardwareWallet is JadeHWWallet) {
+            val wallet = gdkHardwareWallet
+            scope.launch {
+                try {
+                    val info = gdkHardwareWallet.getVersionInfo()
+                    if (gdkHardwareWallet === wallet) {
+                       _isJadeCore.value = info.isJadeCore
+                       _isJadePlus.value = info.isJadePlus
+                   }
+                } catch (e: Exception) {
+                    logger.e(e) { "Error while getting version info for Jade device" }
+                }
+            }
+        }
 
         gdkHardwareWallet?.disconnectEvent?.let {
             logger.i { "Subscribe to BLE disconnect event" }

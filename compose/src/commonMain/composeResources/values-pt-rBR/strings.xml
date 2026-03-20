@@ -695,7 +695,7 @@
     <string name="id_high">Alta</string>
     <string name="id_hold_button_to_send">Pressione o botão para enviar</string>
     <string name="id_hold_the_button_on_the_bottom">Segure o botão na parte inferior do Jade até que ele inicialize</string>
-    <string name="id_hold_the_green_button_on_the">Segure o botão verde na parte inferior da Jade até iniciar</string>
+    <string name="id_plug_in_the_provided_usb_c_cable_or">Segure o botão verde na parte inferior da Jade até iniciar</string>
     <string name="id_hold_your_nfc_tag_close_to_the">Mantenha sua tag NFC próxima do dispositivo</string>
     <string name="id_home">Green</string>
     <string name="id_hour">hora</string>

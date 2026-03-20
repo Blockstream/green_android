@@ -13,6 +13,7 @@ import androidx.compose.material3.SheetValue
 import androidx.compose.material3.Text
 import androidx.compose.material3.rememberModalBottomSheetState
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
@@ -27,6 +28,7 @@ import blockstream_green.common.generated.resources.blockstream_jade_plus_device
 import blockstream_green.common.generated.resources.id_a_new_device_has_been_detected
 import blockstream_green.common.generated.resources.id_genuine_check
 import blockstream_green.common.generated.resources.id_genuine_check_is_mandatory_for
+import blockstream_green.common.generated.resources.id_new_jade_core_connected
 import blockstream_green.common.generated.resources.id_new_jade_plus_connected
 import com.blockstream.compose.components.GreenBottomSheet
 import com.blockstream.compose.components.GreenButton
@@ -37,6 +39,7 @@ import com.blockstream.compose.navigation.NavigateDestinations
 import com.blockstream.compose.navigation.setResult
 import com.blockstream.compose.theme.bodyMedium
 import com.blockstream.compose.theme.textMedium
+import kotlinx.coroutines.flow.MutableStateFlow
 import org.jetbrains.compose.resources.painterResource
 import org.jetbrains.compose.resources.stringResource
 
@@ -47,10 +50,20 @@ fun NewJadeConnectedBottomSheet(
     onDismissRequest: () -> Unit,
 ) {
 
+    val jadeCoreFlow = viewModel.deviceOrNull?.isJadeCore ?: MutableStateFlow(false)
+    val isJadeCore by jadeCoreFlow.collectAsState()
+
+    val jadePlusFlow = viewModel.deviceOrNull?.isJadePlus ?: MutableStateFlow(false)
+    val isJadePlus by jadePlusFlow.collectAsState()
+
+    val titleRes = Res.string.id_new_jade_core_connected.takeIf { isJadeCore }
+        ?: Res.string.id_new_jade_plus_connected.takeIf { isJadePlus }
+        ?: Res.string.id_a_new_device_has_been_detected
+
     var dismiss by remember { mutableStateOf(false) }
 
     GreenBottomSheet(
-        title = stringResource(Res.string.id_new_jade_plus_connected),
+        title = stringResource(titleRes),
         subtitle = stringResource(Res.string.id_a_new_device_has_been_detected),
         viewModel = viewModel,
         sheetState = rememberModalBottomSheetState(

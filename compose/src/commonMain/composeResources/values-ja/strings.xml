@@ -695,7 +695,7 @@
     <string name="id_high">高い</string>
     <string name="id_hold_button_to_send">ボタン長押しで送信</string>
     <string name="id_hold_the_button_on_the_bottom">Hold the button on the bottom of Jade until it boots up</string>
-    <string name="id_hold_the_green_button_on_the">Jade底面の緑色のボタンを長押しして起動します</string>
+    <string name="id_plug_in_the_provided_usb_c_cable_or">Jade底面の緑色のボタンを長押しして起動します</string>
     <string name="id_hold_your_nfc_tag_close_to_the">デバイスにNFCタグを近づけて下さい</string>
     <string name="id_home">ホーム</string>
     <string name="id_hour">時間</string>
