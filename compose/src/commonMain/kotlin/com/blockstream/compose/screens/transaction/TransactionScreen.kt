@@ -57,6 +57,7 @@ import blockstream_green.common.generated.resources.id_swap
 import blockstream_green.common.generated.resources.id_swap_id
 import blockstream_green.common.generated.resources.id_swap_was_successfully_executed
 import blockstream_green.common.generated.resources.id_the_transaction_was
+import blockstream_green.common.generated.resources.id_total_fees
 import blockstream_green.common.generated.resources.id_total_spent
 import blockstream_green.common.generated.resources.id_transaction_id
 import blockstream_green.common.generated.resources.id_transaction_is_awaiting_conf
@@ -348,9 +349,17 @@ fun TransactionScreen(
                             }
                         }
                     }
+
+                    fee?.also {
+                        Detail(label = Res.string.id_total_fees) {
+                            Text(text = it, textAlign = TextAlign.End, modifier = Modifier.fillMaxWidth())
+                        }
+                    }
                 }
 
-                total?.also {
+                val totalValue = total
+                val totalFiatValue = totalFiat
+                if (totalValue != null || totalFiatValue != null) {
                     HorizontalDivider()
 
                     Detail(
@@ -360,16 +369,26 @@ fun TransactionScreen(
                         modifier = Modifier.padding(top = 8.dp)
                     ) {
                         Column(modifier = Modifier.fillMaxWidth()) {
-                            Text(
-                                text = it,
-                                style = labelLarge,
-                                color = whiteHigh,
-                                textAlign = TextAlign.End,
-                                modifier = Modifier.fillMaxWidth()
-                            )
-                            totalFiat?.also {
+                            if (totalValue != null) {
                                 Text(
-                                    text = it,
+                                    text = totalValue,
+                                    style = labelLarge,
+                                    color = whiteHigh,
+                                    textAlign = TextAlign.End,
+                                    modifier = Modifier.fillMaxWidth()
+                                )
+                                totalFiatValue?.also {
+                                    Text(
+                                        text = it,
+                                        textAlign = TextAlign.End,
+                                        modifier = Modifier.fillMaxWidth()
+                                    )
+                                }
+                            } else if (totalFiatValue != null) {
+                                Text(
+                                    text = totalFiatValue,
+                                    style = labelLarge,
+                                    color = whiteHigh,
                                     textAlign = TextAlign.End,
                                     modifier = Modifier.fillMaxWidth()
                                 )

@@ -7,6 +7,7 @@ import com.blockstream.data.data.DenominatedValue
 import com.blockstream.data.data.Denomination
 import com.blockstream.data.data.GreenWallet
 import com.blockstream.data.extensions.ifConnected
+import com.blockstream.data.extensions.isPolicyAsset
 import com.blockstream.compose.extensions.previewWallet
 import com.blockstream.compose.models.GreenViewModel
 import com.blockstream.compose.navigation.NavData
@@ -50,41 +51,59 @@ class DenominationViewModel(
 
         session.ifConnected {
             viewModelScope.launch {
-                _denominations.value = listOfNotNull(
-                    DenominatedValue.toDenomination(
-                        denominatedValue = denominatedValue,
-                        denomination = Denomination.BTC,
-                        session = session
-                    ),
-                    DenominatedValue.toDenomination(
-                        denominatedValue = denominatedValue,
-                        denomination = Denomination.MBTC,
-                        session = session
-                    ),
-                    DenominatedValue.toDenomination(
-                        denominatedValue = denominatedValue,
-                        denomination = Denomination.UBTC,
-                        session = session
-                    ),
-                    DenominatedValue.toDenomination(
-                        denominatedValue = denominatedValue,
-                        denomination = Denomination.BITS,
-                        session = session
-                    ),
-                    DenominatedValue.toDenomination(
-                        denominatedValue = denominatedValue,
-                        denomination = Denomination.SATOSHI,
-                        session = session
-                    ),
+                val isPolicyAsset = denominatedValue.assetId.isPolicyAsset(session)
 
-                    session.getSettings()?.pricing?.currency?.let {
+                _denominations.value = if (isPolicyAsset) {
+                    listOfNotNull(
                         DenominatedValue.toDenomination(
                             denominatedValue = denominatedValue,
-                            denomination = Denomination.FIAT(it),
+                            denomination = Denomination.BTC,
                             session = session
-                        )
-                    }
-                )
+                        ),
+                        DenominatedValue.toDenomination(
+                            denominatedValue = denominatedValue,
+                            denomination = Denomination.MBTC,
+                            session = session
+                        ),
+                        DenominatedValue.toDenomination(
+                            denominatedValue = denominatedValue,
+                            denomination = Denomination.UBTC,
+                            session = session
+                        ),
+                        DenominatedValue.toDenomination(
+                            denominatedValue = denominatedValue,
+                            denomination = Denomination.BITS,
+                            session = session
+                        ),
+                        DenominatedValue.toDenomination(
+                            denominatedValue = denominatedValue,
+                            denomination = Denomination.SATOSHI,
+                            session = session
+                        ),
+                        session.getSettings()?.pricing?.currency?.let {
+                            DenominatedValue.toDenomination(
+                                denominatedValue = denominatedValue,
+                                denomination = Denomination.FIAT(it),
+                                session = session
+                            )
+                        }
+                    )
+                } else {
+                    listOfNotNull(
+                        DenominatedValue.toDenomination(
+                            denominatedValue = denominatedValue,
+                            denomination = Denomination.default(session),
+                            session = session
+                        ),
+                        session.getSettings()?.pricing?.currency?.let {
+                            DenominatedValue.toDenomination(
+                                denominatedValue = denominatedValue,
+                                denomination = Denomination.FIAT(it),
+                                session = session
+                            )
+                        }
+                    )
+                }
             }
         }
 

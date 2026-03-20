@@ -284,7 +284,9 @@ private fun FeesAndTotalSection(look: TransactionConfirmation, onTotalFeesClick:
         )
     }
 
-    HorizontalDivider()
+    if (look.isSwap || look.total != null || look.totalFiat != null) {
+        HorizontalDivider()
+    }
 
     if (look.isSwap) {
         DataRow(
@@ -294,9 +296,15 @@ private fun FeesAndTotalSection(look: TransactionConfirmation, onTotalFeesClick:
             isLarge = true
         )
     } else {
-        look.total?.also { total ->
+        val total = look.total
+        val totalFiat = look.totalFiat
+        if (total != null) {
             DataRow(
-                title = stringResource(Res.string.id_total_spent), value = total, valueSecondary = look.totalFiat, isLarge = false
+                title = stringResource(Res.string.id_total_spent), value = total, valueSecondary = totalFiat, isLarge = false
+            )
+        } else if (totalFiat != null) {
+            DataRow(
+                title = stringResource(Res.string.id_total_spent), value = totalFiat, isLarge = false
             )
         }
     }

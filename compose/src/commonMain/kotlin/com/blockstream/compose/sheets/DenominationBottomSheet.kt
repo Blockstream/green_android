@@ -26,6 +26,7 @@ import com.blockstream.compose.navigation.setResult
 import com.blockstream.compose.theme.bodyLarge
 import com.blockstream.compose.theme.green
 import com.blockstream.compose.theme.titleSmall
+import com.blockstream.data.gdk.GdkSession
 import org.jetbrains.compose.resources.painterResource
 import org.jetbrains.compose.resources.stringResource
 
@@ -51,6 +52,7 @@ fun DenominationBottomSheet(
             denominations.forEach { denominatedValue ->
                 DenominatedValueItem(
                     denominatedValue = denominatedValue,
+                    session = viewModel.sessionOrNull,
                     isChecked = denominatedValue.denomination == viewModel.denomination.value,
                     onClick = {
                         NavigateDestinations.Denomination.setResult(denominatedValue)
@@ -67,6 +69,7 @@ fun DenominationBottomSheet(
 @Composable
 fun DenominatedValueItem(
     denominatedValue: DenominatedValue,
+    session: GdkSession? = null,
     isChecked: Boolean = false,
     onClick: () -> Unit = {}
 ) {
@@ -79,7 +82,13 @@ fun DenominatedValueItem(
     ) {
         GreenRow(verticalAlignment = Alignment.CenterVertically) {
             Column(modifier = Modifier.weight(1f)) {
-                Text(text = denominatedValue.denomination.denomination, style = titleSmall)
+                val title = session?.let {
+                    denominatedValue.denomination.assetTicker(
+                        session = it,
+                        assetId = denominatedValue.assetId
+                    )
+                } ?: denominatedValue.denomination.denomination
+                Text(text = title, style = titleSmall)
                 denominatedValue.asLook?.also {
                     Text(text = it, style = bodyLarge)
                 }

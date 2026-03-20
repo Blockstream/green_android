@@ -190,6 +190,7 @@ fun SendScreen(
                         denomination = denomination,
                         sendAll = isSendAll,
                         supportsSendAll = supportsSendAll,
+                        availableBalance = accountAssetBalance?.balance,
                         onSendAllClick = {
                             viewModel.postEvent(SendViewModel.LocalEvents.ToggleIsSendAll)
                         },

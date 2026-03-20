@@ -43,8 +43,8 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.max
 import androidx.compose.ui.unit.sp
 import blockstream_green.common.generated.resources.Res
-import blockstream_green.common.generated.resources.empty
 import blockstream_green.common.generated.resources.id_amount
+import blockstream_green.common.generated.resources.id_available
 import blockstream_green.common.generated.resources.id_send_all
 import blockstream_green.common.generated.resources.lock_simple
 import blockstream_green.common.generated.resources.pencil_simple_line
@@ -57,6 +57,7 @@ import com.blockstream.compose.GreenPreview
 import com.blockstream.compose.theme.bodyMedium
 import com.blockstream.compose.theme.bodySmall
 import com.blockstream.compose.theme.green
+import com.blockstream.compose.theme.titleSmall
 import com.blockstream.compose.theme.whiteHigh
 import com.blockstream.compose.theme.whiteMedium
 import com.blockstream.compose.utils.DecimalFormatter
@@ -64,7 +65,6 @@ import com.blockstream.compose.utils.appTestTag
 import com.blockstream.compose.utils.ifTrue
 import com.blockstream.data.data.Denomination
 import com.blockstream.data.extensions.isNotBlank
-import com.blockstream.data.extensions.isPolicyAsset
 import com.blockstream.data.gdk.GdkSession
 import com.blockstream.data.utils.DecimalFormat
 import org.jetbrains.compose.resources.painterResource
@@ -82,6 +82,7 @@ fun GreenAmountField(
     session: GdkSession? = null,
     sendAll: Boolean = false,
     supportsSendAll: Boolean = false,
+    availableBalance: String? = null,
     enabled: Boolean = true,
     isAmountLocked: Boolean = false,
     helperText: String? = null,
@@ -214,29 +215,20 @@ fun GreenAmountField(
                 Row(
                     modifier = Modifier.align(Alignment.CenterStart)
                         .onGloballyPositioned { coordinates ->
-                            // Convert pixels to dp
                             startRowWidth = with(density) {
                                 coordinates.size.width.toDp()
                             }
-                        }) {
+                        },
+                    verticalAlignment = Alignment.CenterVertically
+                ) {
 
-                    if (!isAmountLocked && supportsSendAll) {
-                        TextButton(
-                            modifier = Modifier.padding(start = 4.dp),
-                            contentPadding = PaddingValues(horizontal = 4.dp, vertical = 0.dp),
-                            onClick = { onSendAllClick() }) {
-                            GreenRow(padding = 0, space = 6) {
+                    if (!isAmountLocked && !isReadyOnly) {
+                        if (value.isNotEmpty()) {
+                            IconButton(onClick = { onValueChange("") }, enabled = isEditable) {
                                 Icon(
-                                    painter = painterResource(Res.drawable.empty),
-                                    contentDescription = null,
-                                    tint = if (sendAll) green else whiteMedium,
-                                    modifier = Modifier.size(16.dp)
-                                )
-
-                                Text(
-                                    text = stringResource(Res.string.id_send_all),
-                                    style = bodySmall,
-                                    color = if (sendAll) green else whiteMedium
+                                    imageVector = PhosphorIcons.Regular.XCircle,
+                                    contentDescription = "Clear",
+                                    modifier = Modifier.appTestTag("clear")
                                 )
                             }
                         }
@@ -258,7 +250,6 @@ fun GreenAmountField(
                 Row(
                     modifier = Modifier.align(Alignment.CenterEnd)
                         .onGloballyPositioned { coordinates ->
-                            // Convert pixels to dp
                             endRowWidth = with(density) {
                                 coordinates.size.width.toDp()
                             }
@@ -268,18 +259,6 @@ fun GreenAmountField(
                         },
                     verticalAlignment = Alignment.CenterVertically
                 ) {
-
-                    if (!isAmountLocked && !isReadyOnly) {
-                        if (value.isNotEmpty()) {
-                            IconButton(onClick = { onValueChange("") }, enabled = isEditable) {
-                                Icon(
-                                    imageVector = PhosphorIcons.Regular.XCircle,
-                                    contentDescription = "Clear",
-                                    modifier = Modifier.appTestTag("clear")
-                                )
-                            }
-                        }
-                    }
 
                     Row(
                         verticalAlignment = Alignment.CenterVertically,
@@ -292,7 +271,7 @@ fun GreenAmountField(
                             .appTestTag("amount_denomination")
                     ) {
                         val canBeEdited =
-                            isEditable && session?.let { assetId.isPolicyAsset(session = it) } != false && onDenominationClick != null
+                            isEditable && onDenominationClick != null
                         Text(
                             text = session?.let {
                                 denomination.assetTicker(
@@ -325,6 +304,36 @@ fun GreenAmountField(
                                 )
                             }
                         }
+                    }
+                }
+            }
+        }
+
+        if (availableBalance != null || (!isAmountLocked && supportsSendAll)) {
+            Column(
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .padding(top = 8.dp),
+                horizontalAlignment = Alignment.CenterHorizontally
+            ) {
+                if (availableBalance != null) {
+                    Text(
+                        text = "${stringResource(Res.string.id_available)} $availableBalance",
+                        style = bodyMedium,
+                        color = whiteMedium
+                    )
+                }
+
+                if (!isAmountLocked && supportsSendAll) {
+                    TextButton(
+                        contentPadding = PaddingValues(horizontal = 8.dp, vertical = 0.dp),
+                        onClick = { onSendAllClick() }
+                    ) {
+                        Text(
+                            text = stringResource(Res.string.id_send_all),
+                            style = titleSmall,
+                            color = green
+                        )
                     }
                 }
             }

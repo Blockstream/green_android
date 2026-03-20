@@ -7,8 +7,12 @@ import breez_sdk.ReceivePaymentResponse
 import breez_sdk.SwapInfo
 import co.touchlab.stately.collections.ConcurrentMutableMap
 import com.blockstream.data.BTC_POLICY_ASSET
+import com.blockstream.data.BITS_UNIT
 import com.blockstream.data.BTC_UNIT
 import com.blockstream.data.CountlyBase
+import com.blockstream.data.MBTC_UNIT
+import com.blockstream.data.SATOSHI_UNIT
+import com.blockstream.data.UBTC_UNIT
 import com.blockstream.data.LN_BTC_POLICY_ASSET
 import com.blockstream.data.data.AppConfig
 import com.blockstream.data.data.CountlyAsset
@@ -2741,6 +2745,8 @@ class GdkSession constructor(
         val isPolicyAsset = assetId.isPolicyAsset(this@GdkSession)
         val asset = assetId?.let { getAsset(it) }
 
+        val isFiatDenomination = denomination != null && denomination != BTC_UNIT && denomination != MBTC_UNIT && denomination != UBTC_UNIT && denomination != BITS_UNIT && denomination != SATOSHI_UNIT
+
         val convert = if (isPolicyAsset || assetId == null || asString == null) {
             Convert.create(
                 isPolicyAsset = isPolicyAsset,
@@ -2750,20 +2756,32 @@ class GdkSession constructor(
                 unit = denomination ?: BTC_UNIT
             ).toJsonElement()
         } else if (asset != null) {
-            buildJsonObject {
-                put("asset_info", asset.toJsonElement())
-                put(assetId, asString)
+            if (isFiatDenomination) {
+                buildJsonObject {
+                    put("asset_info", asset.toJsonElement())
+                    put("fiat", asString)
+                }
+            } else {
+                buildJsonObject {
+                    put("asset_info", asset.toJsonElement())
+                    put(assetId, asString)
+                }
             }
         } else {
             return@withContext Balance.fromAssetWithoutMetadata(asLong ?: 0)
         }
 
-        val balance = try {
+        logger.d { "GDK_CONVERT call: assetId=$assetId, network=${network.id}, isPolicyAsset=$isPolicyAsset, params=$convert" }
+
+        var balance = try {
+            val result = gdk.convertAmount(gdkSession(network), convert)
+            logger.d { "GDK_CONVERT result: assetId=$assetId, network=${network.id}, response=${result.toString().take(300)}" }
             Balance.fromJsonElement(
-                jsonElement = gdk.convertAmount(gdkSession(network), convert),
+                jsonElement = result,
                 assetId = assetId
             )
         } catch (e: Exception) {
+            logger.d { "GDK_CONVERT error: assetId=$assetId, network=${network.id}, error=${e.message}" }
             e.printStackTrace()
             if (!onlyInAcceptableRange) {
                 when (e.message) {

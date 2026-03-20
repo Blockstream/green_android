@@ -13,6 +13,7 @@ import com.blockstream.data.data.Denomination
 import com.blockstream.data.data.GreenWallet
 import com.blockstream.data.extensions.assetTickerOrNull
 import com.blockstream.data.extensions.isNotBlank
+import com.blockstream.data.extensions.isPolicyAsset
 import com.blockstream.data.gdk.data.AccountAsset
 import com.blockstream.data.gdk.data.Transaction
 import com.blockstream.data.gdk.data.isMeldPending
@@ -20,8 +21,10 @@ import com.blockstream.data.gdk.params.TransactionParams
 import com.blockstream.data.looks.AmountAssetLook
 import com.blockstream.data.utils.feeRateWithUnit
 import com.blockstream.data.utils.formatFullWithTime
+import com.blockstream.data.utils.getFiatCurrency
 import com.blockstream.data.utils.toAmountLook
 import com.blockstream.data.utils.toAmountLookOrNa
+import com.blockstream.data.utils.userNumberFormat
 import com.blockstream.compose.events.Event
 import com.blockstream.compose.extensions.details
 import com.blockstream.compose.extensions.previewAccountAsset
@@ -287,19 +290,41 @@ class TransactionViewModel(transaction: Transaction, greenWallet: GreenWallet) :
 
         _feeRate.value = transaction.feeRate.takeIf { _fee.value != null && !transaction.account.isLightning && it > 0 }?.feeRateWithUnit()
 
-        transaction.satoshiPolicyAsset.takeIf { transaction.satoshi.size == 1 && transaction.isOut && transaction.fee > 0 }?.also {
-            _total.value = it.toAmountLook(
-                session = session,
-                assetId = transaction.account.network.policyAssetOrNull,
-                withUnit = true
-            )
+        if (transaction.isOut && transaction.fee > 0) {
+            val policyAsset = transaction.account.network.policyAssetOrNull
+            val nonPolicyAssetId = transaction.satoshi.keys.firstOrNull { !it.isPolicyAsset(session) }
 
-            _totalFiat.value = it.toAmountLook(
-                session = session,
-                assetId = transaction.account.network.policyAssetOrNull,
-                withUnit = true,
-                denomination = Denomination.fiat(session)
-            )
+            if (nonPolicyAssetId != null) {
+                _total.value = null
+
+                val sentFiat = transaction.satoshi[nonPolicyAssetId]?.let { satoshi ->
+                    session.convert(assetId = nonPolicyAssetId, asLong = kotlin.math.abs(satoshi))?.fiat?.toDoubleOrNull()
+                }
+                val feeFiat = session.convert(assetId = policyAsset, asLong = transaction.fee)?.fiat?.toDoubleOrNull()
+
+                _totalFiat.value = if (sentFiat != null && feeFiat != null) {
+                    userNumberFormat(
+                        decimals = 2,
+                        withDecimalSeparator = true,
+                        withGrouping = true
+                    ).format(sentFiat + feeFiat)?.let { "≈ $it ${getFiatCurrency(session)}" }
+                } else {
+                    null
+                }
+            } else {
+                _total.value = transaction.satoshiPolicyAsset.toAmountLook(
+                    session = session,
+                    assetId = policyAsset,
+                    withUnit = true
+                )
+
+                _totalFiat.value = transaction.satoshiPolicyAsset.toAmountLook(
+                    session = session,
+                    assetId = policyAsset,
+                    withUnit = true,
+                    denomination = Denomination.fiat(session)
+                )
+            }
         }
 
         val utxoViews = transaction.utxoViews

@@ -8,9 +8,12 @@ import com.blockstream.data.gdk.data.CreateTransaction
 import com.blockstream.data.gdk.data.UtxoView
 import com.blockstream.data.gdk.params.CreateTransactionParams
 import com.blockstream.data.transaction.TransactionConfirmation
+import com.blockstream.data.extensions.isPolicyAsset
 import com.blockstream.data.utils.feeRateWithUnit
+import com.blockstream.data.utils.getFiatCurrency
 import com.blockstream.data.utils.toAmountLook
 import com.blockstream.data.utils.toAmountLookOrNa
+import com.blockstream.data.utils.userNumberFormat
 import kotlin.math.absoluteValue
 
 class GetTransactionConfirmationUseCase() {
@@ -177,21 +180,54 @@ class GetTransactionConfirmationUseCase() {
 
         val feeRate = transaction.feeRate?.feeRateWithUnit()
 
-        val totalPolicy = (transaction.satoshi[account.network.policyAsset] ?: 0).absoluteValue + (transaction.fee ?: 0)
+        val sentAssetId = params.addresseesAsParams?.firstOrNull()?.assetId
+        val isSentAssetPolicy = sentAssetId.isPolicyAsset(session)
 
-        val total = if (isRedeposit) fee else totalPolicy.toAmountLookOrNa(
-            session = session,
-            assetId = account.network.policyAsset,
-            withMinimumDigits = true,
-            denomination = if (isAddressVerificationOnDevice) Denomination.BTC else denomination
-        )
+        val total: String?
+        val totalFiat: String?
 
-        val totalFiat = if (isRedeposit) feeFiat else totalPolicy.toAmountLookOrNa(
-            session = session,
-            assetId = account.network.policyAsset,
-            withMinimumDigits = true,
-            denomination = Denomination.fiat(session)
-        )
+        if (isRedeposit) {
+            total = fee
+            totalFiat = feeFiat
+        } else if (isSentAssetPolicy) {
+            val totalPolicy = (transaction.satoshi[account.network.policyAsset] ?: 0).absoluteValue + (transaction.fee ?: 0)
+            total = totalPolicy.toAmountLookOrNa(
+                session = session,
+                assetId = account.network.policyAsset,
+                withMinimumDigits = true,
+                denomination = if (isAddressVerificationOnDevice) Denomination.BTC else denomination
+            )
+            totalFiat = totalPolicy.toAmountLookOrNa(
+                session = session,
+                assetId = account.network.policyAsset,
+                withMinimumDigits = true,
+                denomination = Denomination.fiat(session)
+            )
+        } else {
+            total = null
+
+            val sentFiatBalance = sentAssetId?.let { assetId ->
+                transaction.satoshi[assetId]?.absoluteValue?.let { satoshi ->
+                    session.convert(assetId = assetId, asLong = satoshi)
+                }
+            }
+            val feeFiatBalance = transaction.fee?.let { feeAmount ->
+                session.convert(assetId = account.network.policyAsset, asLong = feeAmount)
+            }
+
+            val sentFiatValue = sentFiatBalance?.fiat?.toDoubleOrNull()
+            val feeFiatValue = feeFiatBalance?.fiat?.toDoubleOrNull()
+
+            totalFiat = if (sentFiatValue != null && feeFiatValue != null) {
+                userNumberFormat(
+                    decimals = 2,
+                    withDecimalSeparator = true,
+                    withGrouping = true
+                ).format(sentFiatValue + feeFiatValue)?.let { "$it ${getFiatCurrency(session)}" }
+            } else {
+                null
+            }
+        }
 
         return TransactionConfirmation(
             from = params.from,

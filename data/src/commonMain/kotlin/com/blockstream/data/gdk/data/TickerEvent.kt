@@ -5,10 +5,10 @@ import kotlinx.serialization.Serializable
 
 @Serializable
 data class TickerEvent(
+    @SerialName("type")
+    val type: String? = null,
     @SerialName("exchange")
     val exchange: String? = null,
     @SerialName("currency")
     val currency: String? = null,
-    @SerialName("rate")
-    val rate: String? = null,
 )

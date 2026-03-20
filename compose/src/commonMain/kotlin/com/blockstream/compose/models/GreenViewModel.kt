@@ -55,7 +55,6 @@ import com.blockstream.data.extensions.cleanup
 import com.blockstream.data.extensions.createLoginCredentials
 import com.blockstream.data.extensions.ifConnected
 import com.blockstream.data.extensions.isNotBlank
-import com.blockstream.data.extensions.isPolicyAsset
 import com.blockstream.data.extensions.logException
 import com.blockstream.data.extensions.objectId
 import com.blockstream.data.gdk.GdkSession
@@ -526,16 +525,14 @@ open class GreenViewModel constructor(
             is Events.SelectDenomination -> {
                 viewModelScope.launch {
                     denominatedValue()?.also {
-                        if (it.assetId.isPolicyAsset(session)) {
-                            postSideEffect(
-                                SideEffects.NavigateTo(
-                                    NavigateDestinations.Denomination(
-                                        greenWallet = greenWallet,
-                                        denominatedValue = it
-                                    )
+                        postSideEffect(
+                            SideEffects.NavigateTo(
+                                NavigateDestinations.Denomination(
+                                    greenWallet = greenWallet,
+                                    denominatedValue = it
                                 )
                             )
-                        }
+                        )
                     }
                 }
             }

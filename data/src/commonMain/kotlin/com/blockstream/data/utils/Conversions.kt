@@ -132,17 +132,33 @@ fun Balance?.toAmountLook(
         }
 
     } else {
-        try {
-            userNumberFormat(
-                asset?.precision ?: 0,
-                withDecimalSeparator = false,
-                withGrouping = withGrouping,
-                withMinimumDigits = withMinimumDigits
-            ).format(assetAmount?.toDouble() ?: satoshi).let {
-                if (withUnit) "$it ${asset?.ticker ?: assetId?.substring(0 until 6) ?: ""}" else it
+        if (denomination?.isFiat == true) {
+            try {
+                fiat?.toDouble()?.let { fiatValue ->
+                    userNumberFormat(
+                        decimals = 2,
+                        withDecimalSeparator = true,
+                        withGrouping = withGrouping
+                    ).format(fiatValue)?.let {
+                        if (withUnit) "$it ${fiatCurrency?.getFiatUnit(session)}" else it
+                    }
+                }
+            } catch (e: Exception) {
+                null
             }
-        } catch (e: Exception) {
-            null
+        } else {
+            try {
+                userNumberFormat(
+                    asset?.precision ?: 0,
+                    withDecimalSeparator = false,
+                    withGrouping = withGrouping,
+                    withMinimumDigits = withMinimumDigits
+                ).format(assetAmount?.toDouble() ?: satoshi).let {
+                    if (withUnit) "$it ${asset?.ticker ?: assetId?.substring(0 until 6) ?: ""}" else it
+                }
+            } catch (e: Exception) {
+                null
+            }
         }
     }
 }
@@ -200,9 +216,14 @@ suspend fun Long?.toAmountLook(
         }
     } else {
         if (denomination?.isFiat == true) {
-            null
+            convert?.toAmountLook(
+                session = session,
+                assetId = assetId,
+                withUnit = withUnit,
+                withGrouping = withGrouping,
+                denomination = denomination
+            )
         } else {
-            // withMinimumDigits is not used on asset amounts
             convert?.toAmountLook(
                 session = session,
                 assetId = assetId,

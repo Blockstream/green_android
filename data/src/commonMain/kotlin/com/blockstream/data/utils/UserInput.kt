@@ -74,16 +74,20 @@ data class UserInput(
             val asset: Asset?
 
             when {
+                denomination.isFiat -> { // Fiat (for both policy and non-policy assets)
+                    asset = if (!assetId.isPolicyAsset(session) && assetId != null) {
+                        session.getAsset(assetId) ?: Asset.createEmpty(assetId)
+                    } else {
+                        null
+                    }
+                    userNumberFormat = userNumberFormat(decimals = 2, withDecimalSeparator = true, withGrouping = true, locale = locale)
+                    gdkNumberFormat = gdkNumberFormat(decimals = 2, withDecimalSeparator = true)
+                }
+
                 !assetId.isPolicyAsset(session) -> { // Asset
                     asset = session.getAsset(assetId!!) ?: Asset.createEmpty(assetId)
                     userNumberFormat = userNumberFormat(asset.precision, withDecimalSeparator = false, withGrouping = true, locale = locale)
                     gdkNumberFormat = gdkNumberFormat(asset.precision)
-                }
-
-                denomination.isFiat -> { // Fiat
-                    asset = null
-                    userNumberFormat = userNumberFormat(decimals = 2, withDecimalSeparator = true, withGrouping = true, locale = locale)
-                    gdkNumberFormat = gdkNumberFormat(decimals = 2, withDecimalSeparator = true)
                 }
 
                 else -> { // Policy Asset

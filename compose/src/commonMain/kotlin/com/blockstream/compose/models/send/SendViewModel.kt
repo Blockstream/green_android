@@ -131,22 +131,22 @@ class SendViewModel(
 
     override val amountExchange: StateFlow<String> = amount.map { amount ->
         session.ifConnected {
-            accountAsset.assetId.takeIf { it.isPolicyAsset(session) }?.let { assetId ->
-                UserInput.parseUserInputSafe(
+            val assetId = accountAsset.assetId
+            UserInput.parseUserInputSafe(
+                session = session,
+                input = amount,
+                assetId = assetId,
+                denomination = denomination.value
+            ).getBalance()?.let {
+                val exchangeDenom = Denomination.exchange(session, denomination.value)
+                it.toAmountLook(
                     session = session,
-                    input = amount,
                     assetId = assetId,
-                    denomination = denomination.value
-                ).getBalance()?.let {
-                    "≈ " + it.toAmountLook(
-                        session = session,
-                        assetId = assetId,
-                        denomination = Denomination.exchange(session, denomination.value),
-                        withUnit = true,
-                        withGrouping = true,
-                        withMinimumDigits = false
-                    )
-                }
+                    denomination = exchangeDenom,
+                    withUnit = true,
+                    withGrouping = true,
+                    withMinimumDigits = false
+                )?.let { formatted -> "≈ $formatted" }
             }
         } ?: ""
     }.stateIn(viewModelScope, SharingStarted.WhileSubscribed(), "")
@@ -385,10 +385,6 @@ class SendViewModel(
 
                     if (addressee.bip21Params?.hasAmount == true || addressee.isGreedy == true || addressee.isAmountLocked == true || isSwap) {
                         val assetId = addressee.assetId ?: account.network.policyAsset
-
-                        if (!assetId.isPolicyAsset(account.network) && denomination.value.isFiat) {
-                            _denomination.value = Denomination.default(session)
-                        }
 
                         (tx.satoshi[assetId]?.absoluteValue?.let { sendAmount ->
                             sendAmount.toAmountLook(
