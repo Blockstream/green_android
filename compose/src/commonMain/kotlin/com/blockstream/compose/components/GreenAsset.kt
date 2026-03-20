@@ -49,15 +49,18 @@ fun GreenAsset(
     trailingContent: @Composable (() -> Unit)? = null,
     onClick: (() -> Unit)? = null,
 ) {
-    val testTag = remember {
-        if (assetBalance?.asset?.isAnyAsset == true) {
-            if (assetBalance.asset.isAmp) {
-                "any_amp_asset"
-            } else {
-                "any_liquid_asset"
+    val testTag = remember(assetBalance) {
+        val asset = assetBalance?.asset
+        val ticker = asset?.ticker?.takeIf { it.isNotBlank() }
+
+        when {
+            asset?.isAnyAsset == true -> {
+                if (asset.isAmp) "any_amp_asset" else "any_liquid_asset"
             }
-        } else {
-            assetBalance?.asset?.ticker ?: assetBalance?.assetId
+            else -> {
+                val rawId = ticker ?: asset?.assetId ?: assetBalance?.assetId
+                rawId?.lowercase()?.replace(" ", "_")
+            }
         }
     }
 
