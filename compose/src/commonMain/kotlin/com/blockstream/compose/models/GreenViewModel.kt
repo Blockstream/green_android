@@ -75,11 +75,11 @@ import com.blockstream.data.utils.generateWalletName
 import com.blockstream.domain.account.RemoveAccountUseCase
 import com.blockstream.domain.banner.GetBannerUseCase
 import com.blockstream.domain.promo.GetPromoUseCase
-import com.blockstream.utils.Loggable
 import com.blockstream.jade.firmware.FirmwareInteraction
 import com.blockstream.jade.firmware.FirmwareUpdateState
 import com.blockstream.jade.firmware.FirmwareUpgradeRequest
 import com.blockstream.jade.firmware.HardwareQATester
+import com.blockstream.utils.Loggable
 import kotlinx.coroutines.CompletableDeferred
 import kotlinx.coroutines.Deferred
 import kotlinx.coroutines.Dispatchers
@@ -104,6 +104,10 @@ import org.koin.core.component.inject
 import kotlin.time.Duration
 import kotlin.time.Duration.Companion.minutes
 import kotlin.uuid.ExperimentalUuidApi
+import com.github.michaelbull.retry.retry
+import com.github.michaelbull.retry.policy.constantDelay
+import com.github.michaelbull.retry.policy.plus
+import com.github.michaelbull.retry.policy.stopAtAttempts
 
 open class SimpleGreenViewModel(
     greenWalletOrNull: GreenWallet? = null,
@@ -1024,16 +1028,22 @@ open class GreenViewModel constructor(
         watchOnlyCredentials: WatchOnlyCredentials,
         deviceModel: DeviceModel? = null
     ) {
+        val maxRetries = 3
+        val retryDelay = 500L
 
         doAsync({
-            val loginData = session.loginWatchOnly(
-                network = network,
-                wallet = null,
-                watchOnlyCredentials = MultipleWatchOnlyCredentials.fromWatchOnlyCredentials(
-                    network = network.id,
-                    watchOnlyCredentials = watchOnlyCredentials
+            val retryPolicy = stopAtAttempts<Throwable>(maxRetries) + constantDelay(retryDelay)
+
+            val loginData = retry(retryPolicy) {
+                session.loginWatchOnly(
+                    network = network,
+                    wallet = null,
+                    watchOnlyCredentials = MultipleWatchOnlyCredentials.fromWatchOnlyCredentials(
+                        network = network.id,
+                        watchOnlyCredentials = watchOnlyCredentials
+                    )
                 )
-            )
+            }
 
             // First get login credentials before creating the wallet
             val loginCredentials: LoginCredentials? =
@@ -1097,9 +1107,9 @@ open class GreenViewModel constructor(
                         )
                     )
                 }
-
             ).also {
                 database.insertWallet(it)
+                _greenWallet = it
             }
 
             loginCredentials?.also {
@@ -1108,14 +1118,16 @@ open class GreenViewModel constructor(
 
             // Disconnect and reconnect with wallet
             session.disconnectAsync()
-            session.loginWatchOnly(
-                network = network,
-                wallet = wallet,
-                watchOnlyCredentials = MultipleWatchOnlyCredentials.fromWatchOnlyCredentials(
-                    network = network.id,
-                    watchOnlyCredentials = watchOnlyCredentials
+            retry(retryPolicy) {
+                session.loginWatchOnly(
+                    network = network,
+                    wallet = wallet,
+                    watchOnlyCredentials = MultipleWatchOnlyCredentials.fromWatchOnlyCredentials(
+                        network = network.id,
+                        watchOnlyCredentials = watchOnlyCredentials
+                    )
                 )
-            )
+            }
 
             sessionManager.upgradeOnBoardingSessionToWallet(wallet)
             countly.importWallet(session)
