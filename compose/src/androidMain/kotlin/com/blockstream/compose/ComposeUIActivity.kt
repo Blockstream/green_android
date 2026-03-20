@@ -79,13 +79,35 @@ fun ComposeUI() {
         HorizontalDivider()
 
         GreenColumn(padding = 0, space = 4) {
-            WalletListItem(look = WalletListLook.preview())
+            WalletListItem(
+                look = WalletListLook.preview(),
+                isSwiped = false,
+                onSwipe = {}
+            )
 
-            WalletListItem(look = WalletListLook.preview(false))
-            WalletListItem(look = WalletListLook.preview(true, false))
+            WalletListItem(
+                look = WalletListLook.preview(false),
+                isSwiped = false,
+                onSwipe = {}
+            )
 
-            WalletListItem(look = WalletListLook.preview(true, true))
-            WalletListItem(look = WalletListLook.preview(false, true))
+            WalletListItem(
+                look = WalletListLook.preview(true, false),
+                isSwiped = false,
+                onSwipe = {}
+            )
+
+            WalletListItem(
+                look = WalletListLook.preview(true, true),
+                isSwiped = false,
+                onSwipe = {}
+            )
+
+            WalletListItem(
+                look = WalletListLook.preview(false, true),
+                isSwiped = false,
+                onSwipe = {}
+            )
         }
 
         HorizontalDivider()
