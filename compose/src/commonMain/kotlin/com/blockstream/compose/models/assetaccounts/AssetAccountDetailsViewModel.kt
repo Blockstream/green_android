@@ -232,12 +232,13 @@ class AssetAccountDetailsViewModel(
 
     private fun updateTotalBalance() {
         viewModelScope.launch {
+            val isHidden = hideAmounts.value
             accountAsset.value?.let { accountAsset ->
-                _totalBalance.value = accountAsset.balance(session).toAmountLook(
+                _totalBalance.value = if (isHidden) "*****" else accountAsset.balance(session).toAmountLook(
                     session = session, assetId = accountAsset.assetId, withUnit = true, withGrouping = true, withMinimumDigits = false
                 ) ?: ""
 
-                _totalBalanceFiat.value = accountAsset.balance(session).toAmountLook(
+                _totalBalanceFiat.value = if (isHidden) "*****" else accountAsset.balance(session).toAmountLook(
                     session = session, assetId = accountAsset.assetId, withUnit = true, denomination = Denomination.fiat(session)
                 )?.let { fiatBalance ->
                     _totalBalance.value.takeIf { it.isNotBlank() && it != fiatBalance }?.let {

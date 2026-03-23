@@ -24,7 +24,10 @@ data class TransactionLook constructor(
 ) {
 
     val asMasked: TransactionLook
-        get() = copy(assets = assets.map { "*****" })
+        get() = copy(
+            assets = assets.map { "*****" },
+            fiat = fiat?.let { "*****" }
+        )
 
     val directionText: StringResource
         get() = when {

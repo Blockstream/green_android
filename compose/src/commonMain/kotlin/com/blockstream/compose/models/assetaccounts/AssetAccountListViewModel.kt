@@ -90,8 +90,8 @@ class AssetAccountListViewModel(
 
             session.ifConnected {
                 combine(
-                    session.accounts, session.accountsAndBalanceUpdated
-                ) { accounts, _ ->
+                    session.accounts, session.accountsAndBalanceUpdated, hideAmounts
+                ) { accounts, _, _ ->
                     accounts.filterForAsset(assetId, session).map { account ->
                         AccountAssetBalance.create(
                             accountAsset = AccountAsset.fromAccountAsset(
@@ -135,17 +135,18 @@ class AssetAccountListViewModel(
 
     private fun updateTotalBalance(accountBalances: List<AccountAssetBalance>) {
         viewModelScope.launch {
+            val isHidden = hideAmounts.value
             var totalSatoshi = 0L
             accountBalances.forEach { accountAssetBalance ->
                 val balance = accountAssetBalance.accountAsset.balance(session)
                 totalSatoshi += balance
             }
 
-            _totalBalance.value = totalSatoshi.toAmountLook(
+            _totalBalance.value = if (isHidden) "*****" else totalSatoshi.toAmountLook(
                 session = session, assetId = assetId, withUnit = true, withGrouping = true, withMinimumDigits = false
             ) ?: "0"
 
-            _totalBalanceFiat.value = if (totalSatoshi > 0) {
+            _totalBalanceFiat.value = if (isHidden) "*****" else if (totalSatoshi > 0) {
                 totalSatoshi.toAmountLook(
                     session = session,
                     assetId = assetId,

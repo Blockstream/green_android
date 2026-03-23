@@ -190,8 +190,7 @@ fun GreenAccountAsset(
                             Column(horizontalAlignment = Alignment.End) {
                                 // Amount
                                 Text(
-                                    text = accountAssetBalance.balance ?: "",
-                                    style = labelLarge,
+                                    text = session?.starsOrNull ?: accountAssetBalance.balance ?: "",                                    style = labelLarge,
                                     maxLines = 1,
                                     overflow = TextOverflow.Ellipsis,
                                     color = whiteMedium
@@ -200,7 +199,7 @@ fun GreenAccountAsset(
                                 accountAssetBalance.balanceExchange?.also {
                                     // Fiat
                                     Text(
-                                        text = it,
+                                        text = session?.starsOrNull ?: it,
                                         style = bodyMedium,
                                         maxLines = 1,
                                         overflow = TextOverflow.Ellipsis,
