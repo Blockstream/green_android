@@ -1035,6 +1035,7 @@ open class GreenViewModel constructor(
             val retryPolicy = stopAtAttempts<Throwable>(maxRetries) + constantDelay(retryDelay)
 
             val loginData = retry(retryPolicy) {
+                session.disconnectAsync()
                 session.loginWatchOnly(
                     network = network,
                     wallet = null,
@@ -1107,18 +1108,11 @@ open class GreenViewModel constructor(
                         )
                     )
                 }
-            ).also {
-                database.insertWallet(it)
-                _greenWallet = it
-            }
-
-            loginCredentials?.also {
-                database.replaceLoginCredential(it.copy(wallet_id = wallet.id))
-            }
+            )
 
             // Disconnect and reconnect with wallet
-            session.disconnectAsync()
             retry(retryPolicy) {
+            session.disconnectAsync()
                 session.loginWatchOnly(
                     network = network,
                     wallet = wallet,
@@ -1128,10 +1122,15 @@ open class GreenViewModel constructor(
                     )
                 )
             }
-
             sessionManager.upgradeOnBoardingSessionToWallet(wallet)
             countly.importWallet(session)
 
+            database.insertWallet(wallet)
+            _greenWallet = wallet
+
+            loginCredentials?.also {
+                database.replaceLoginCredential(it.copy(wallet_id = wallet.id))
+            }
             wallet
         }, timeout = 1.minutes, onSuccess = {
             postSideEffect(SideEffects.NavigateTo(NavigateDestinations.WalletOverview(it)))
