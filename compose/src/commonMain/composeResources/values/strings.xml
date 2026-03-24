@@ -769,6 +769,7 @@
     <string name="id_insufficient_lbtc_for_fees">Insufficient LBTC for fees</string>
     <string name="id_insufficient_lbtc_to_send_a">Insufficient LBTC to send a transaction. In Liquid, LBTC are needed to pay transaction fees. Generate an address to receive LBTC</string>
     <string name="id_invalid_address">Invalid address</string>
+    <string name="id_swaps_not_enabled_for_this_wallet">Swaps are not enabled for this wallet</string>
     <string name="id_invalid_amount">Invalid amount</string>
     <string name="id_invalid_asset_id">Invalid Asset ID</string>
     <string name="id_invalid_clipboard_contents">Invalid clipboard contents</string>

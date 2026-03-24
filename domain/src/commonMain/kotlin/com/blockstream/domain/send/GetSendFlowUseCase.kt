@@ -29,6 +29,13 @@ class GetSendFlowUseCase(
         // Check if address is valid and get the appropriate assets
         val assets = getSendAssetsUseCase(session = session, address = address)
 
+        val isLightningAddress = assets.any { it.isLightning }
+        val isJadeCore = session.device?.isJadeCore?.value == true
+
+        if (isJadeCore && isLightningAddress) {
+            throw Exception("id_swaps_not_enabled_for_this_wallet")
+        }
+
         when {
             assets.isEmpty() -> throw Exception("id_invalid_address")
             asset != null -> {
