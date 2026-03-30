@@ -297,9 +297,6 @@ class Lwk(
                         }
 
                         PaymentState.SUCCESS, PaymentState.FAILED -> {
-                            lockup.claimTxid()?.let { txHash ->
-                                database.setSwapTxHash(id = swapId, txHash = txHash)
-                            }
                             database.setSwapComplete(swapId)
                         }
                     }
@@ -342,9 +339,6 @@ class Lwk(
 
                         PaymentState.SUCCESS, PaymentState.FAILED -> {
                             if (state == PaymentState.SUCCESS) {
-                                invoice.claimTxid()?.let { txHash ->
-                                    database.setSwapTxHash(id = swapId, txHash = txHash)
-                                }
                                 _invoicePaidSharedFlow.emit(
                                     invoice.bolt11Invoice().paymentHash() to invoice.bolt11Invoice().amountMilliSatoshis()?.satoshi()
                                 )
