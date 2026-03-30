@@ -65,7 +65,7 @@ class ReceiveChooseAssetViewModel(
             val accounts = receiveUseCase.getReceiveAccountsUseCase(session = session, asset = asset)
 
             if (accounts.isEmpty()) {
-                throw Exception("id_insufficient_funds")
+                throw Exception("id_no_available_accounts")
             }
 
             val account = accountAsset.value?.account?.let { account ->

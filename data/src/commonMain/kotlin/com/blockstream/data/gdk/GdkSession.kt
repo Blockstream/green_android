@@ -6,14 +6,14 @@ import breez_sdk.LnUrlPayResult
 import breez_sdk.ReceivePaymentResponse
 import breez_sdk.SwapInfo
 import co.touchlab.stately.collections.ConcurrentMutableMap
-import com.blockstream.data.BTC_POLICY_ASSET
 import com.blockstream.data.BITS_UNIT
+import com.blockstream.data.BTC_POLICY_ASSET
 import com.blockstream.data.BTC_UNIT
 import com.blockstream.data.CountlyBase
+import com.blockstream.data.LN_BTC_POLICY_ASSET
 import com.blockstream.data.MBTC_UNIT
 import com.blockstream.data.SATOSHI_UNIT
 import com.blockstream.data.UBTC_UNIT
-import com.blockstream.data.LN_BTC_POLICY_ASSET
 import com.blockstream.data.data.AppConfig
 import com.blockstream.data.data.CountlyAsset
 import com.blockstream.data.data.DataState
@@ -1804,7 +1804,7 @@ class GdkSession constructor(
     private suspend fun initializeSessionData(wallet: GreenWallet?, initNetwork: String?, initAccount: Long?) {
         // Check if active account index was archived from 1) a different client (multisig) or 2) from cached Singlesig hww session
         // Expect refresh = true to be already called
-        updateAccounts(unarchiveFunded = true)
+        updateAccounts(autoUnarchiveAccounts = true)
 
         _activeAccountStateFlow.value = accounts.value.find {
             it.networkId == initNetwork && it.pointer == initAccount && !it.hidden
@@ -2285,7 +2285,7 @@ class GdkSession constructor(
                 accountsAndBalancesMutex.withLock {
 
                     // Update accounts
-                    updateAccounts(refresh = refresh, unarchiveFunded = true)
+                    updateAccounts(refresh = refresh, autoUnarchiveAccounts = true)
 
                     for (account in this@GdkSession.allAccounts.value) {
                         if ((updateBalancesForAccounts == null && updateBalancesForNetwork == null) || updateBalancesForAccounts?.find { account.id == it.id } != null || account.network == updateBalancesForNetwork) {
@@ -2299,7 +2299,7 @@ class GdkSession constructor(
                     val walletAssets = linkedMapOf<String, Long>()
 
                     // Set default amounts for BTC / LBTC
-                    listOfNotNull(bitcoin, liquid).map { it.policyAsset }.forEach {
+                    listOfNotNull(bitcoin, lightning.takeIf { hasLightning }, liquid).map { it.policyAsset }.forEach {
                         walletAssets[it] = 0
                     }
 
@@ -2707,7 +2707,7 @@ class GdkSession constructor(
         }
     }
 
-    private suspend fun updateAccounts(refresh: Boolean = false, unarchiveFunded: Boolean = false) {
+    private suspend fun updateAccounts(refresh: Boolean = false, autoUnarchiveAccounts: Boolean = false) {
         getAccounts(refresh).also { fetchedAccounts ->
             _allAccountsStateFlow.value = fetchedAccounts
 
@@ -2716,10 +2716,33 @@ class GdkSession constructor(
                 _zeroAccounts.value = it.isEmpty() && failedNetworks.value.isEmpty()
             }
 
-            if (unarchiveFunded) {
+            if (autoUnarchiveAccounts) {
+                var accountsChanged = false
                 // Unarchive accounts if they are hidden and funded
                 fetchedAccounts.filter { it.hidden && it.isFunded(this) }.forEach {
+                    accountsChanged = true
                     updateAccount(it, isHidden = false)
+                }
+
+                // Refetch as some accounts could be unhidden
+                val visibleAccounts = getAccounts().filter { !it.hidden }
+
+                if (visibleAccounts.none { it.isBitcoin }) {
+                    fetchedAccounts.firstOrNull { it.isBitcoin }?.also {
+                        accountsChanged = true
+                        updateAccount(it, isHidden = false)
+                    }
+                }
+
+                if (visibleAccounts.none { it.isLiquid }) {
+                    fetchedAccounts.firstOrNull { it.isLiquid }?.also {
+                        accountsChanged = true
+                        updateAccount(it, isHidden = false)
+                    }
+                }
+
+                if (accountsChanged) {
+                    updateAccounts()
                 }
             }
 
