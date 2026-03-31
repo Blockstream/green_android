@@ -180,7 +180,8 @@ private fun BitcoinPrice(startPrice: Float, currentPrice: Float, currency: Strin
                     )
                 }
 
-                Text(text = currentPrice.formatFiatPrice(currency),
+                Text(
+                    text = currentPrice.formatFiatPrice(currency),
                     style = bodyMedium,
                     modifier = Modifier.appTestTag("price_value_text")
                 )
@@ -214,7 +215,10 @@ private fun XYChartLayout(chartPrices: List<Pair<Long, Float>>) {
         )
     }
     ChartLayout(
-        modifier = Modifier.height(100.dp), legendLocation = LegendLocation.NONE
+        modifier = Modifier
+            .height(100.dp)
+            .appTestTag("bitcoin_price_chart"),
+        legendLocation = LegendLocation.NONE
     ) {
         val hiddenAxisStyle = AxisStyle(
             color = Color.Transparent, minorTickSize = 0.dp, lineWidth = 0.dp

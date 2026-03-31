@@ -195,7 +195,12 @@ fun SwapComponent(
             }
         }
 
-        OutlinedCard(modifier = Modifier.align(Alignment.Center), onClick = onTogglePairsClick) {
+        OutlinedCard(
+            modifier = Modifier
+                .align(Alignment.Center)
+                .appTestTag("swap_invert_button"),
+            onClick = onTogglePairsClick
+        ) {
             Icon(
                 PhosphorIcons.Regular.ArrowsDownUp,
                 contentDescription = null,

@@ -61,6 +61,7 @@ import com.blockstream.compose.theme.bodySmall
 import com.blockstream.compose.theme.labelLarge
 import com.blockstream.compose.theme.whiteLow
 import com.blockstream.compose.utils.SetupScreen
+import com.blockstream.compose.utils.appTestTag
 import com.blockstream.compose.utils.noRippleClickable
 import com.blockstream.data.SupportType
 import com.blockstream.data.data.SupportData
@@ -179,6 +180,7 @@ fun AboutScreen(
                 Image(
                     painter = painterResource(Res.drawable.globe),
                     modifier = Modifier
+                        .appTestTag("about_link_web")
                         .size(30.dp)
                         .clickable {
                             viewModel.postEvent(AboutViewModel.LocalEvents.ClickWebsite)
@@ -188,6 +190,7 @@ fun AboutScreen(
                 Image(
                     painter = painterResource(Res.drawable.x_logo),
                     modifier = Modifier
+                        .appTestTag("about_link_x")
                         .size(30.dp)
                         .clickable {
                             viewModel.postEvent(AboutViewModel.LocalEvents.ClickTwitter)
@@ -197,6 +200,7 @@ fun AboutScreen(
                 Image(
                     painter = painterResource(Res.drawable.linkedin_logo),
                     modifier = Modifier
+                        .appTestTag("about_link_linkedin")
                         .size(30.dp)
                         .clickable {
                             viewModel.postEvent(AboutViewModel.LocalEvents.ClickLinkedIn)
@@ -206,6 +210,7 @@ fun AboutScreen(
                 Image(
                     painter = painterResource(Res.drawable.facebook_logo),
                     modifier = Modifier
+                        .appTestTag("about_link_facebook")
                         .size(30.dp)
                         .clickable {
                             viewModel.postEvent(AboutViewModel.LocalEvents.ClickFacebook)
@@ -222,6 +227,7 @@ fun AboutScreen(
                 Image(
                     painter = painterResource(Res.drawable.telegram_logo),
                     modifier = Modifier
+                        .appTestTag("about_link_telegram")
                         .size(30.dp)
                         .clickable {
                             viewModel.postEvent(AboutViewModel.LocalEvents.ClickTelegram)
@@ -231,6 +237,7 @@ fun AboutScreen(
                 Image(
                     painter = painterResource(Res.drawable.github_logo),
                     modifier = Modifier
+                        .appTestTag("about_link_github")
                         .size(30.dp)
                         .clickable {
                             viewModel.postEvent(AboutViewModel.LocalEvents.ClickGitHub)
@@ -240,6 +247,7 @@ fun AboutScreen(
                 Image(
                     painter = painterResource(Res.drawable.youtube_logo),
                     modifier = Modifier
+                        .appTestTag("about_link_youtube")
                         .size(30.dp)
                         .clickable {
                             viewModel.postEvent(AboutViewModel.LocalEvents.ClickYouTube)
