@@ -71,9 +71,6 @@ abstract class CountlyBase(
 
     val remoteConfigUpdateEvent = _remoteConfigUpdateEvent.asSharedFlow()
 
-    var exceptionCounter = 0L
-        protected set
-
     val countlyProxy: String?
         get() {
             val appSettings = settingsManager.appSettings
@@ -873,7 +870,6 @@ abstract class CountlyBase(
 
     fun recordException(throwable: Throwable) {
         if (!skipExceptionRecording.contains(throwable.message)) {
-            exceptionCounter++
             recordExceptionImpl(throwable)
         }
         if (appInfo.isDevelopmentOrDebug) {
@@ -1049,7 +1045,6 @@ abstract class CountlyBase(
             "id_action_canceled",
             "id_login_failed",
             "id_error_parsing",
-            "id_invalid_address",
             "id_invalid_asset_id"
         )
     }

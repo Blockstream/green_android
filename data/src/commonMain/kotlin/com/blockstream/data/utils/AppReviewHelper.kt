@@ -24,11 +24,6 @@ object AppReviewHelper {
             return false
         }
 
-        // Not an exception free session
-        if (countly.exceptionCounter > 0L) {
-            return false
-        }
-
         val lastShown = settingsManager.whenIsAskedAboutAppReview()
 
         // Calculate diff in months
