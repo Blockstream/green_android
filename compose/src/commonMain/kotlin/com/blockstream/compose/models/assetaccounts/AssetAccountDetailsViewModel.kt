@@ -154,7 +154,7 @@ class AssetAccountDetailsViewModel(
         } else if (accountAsset.account.isLightning) {
             (session.lightningSdk.balanceOnChannel() ?: 0) > 0
         } else {
-            accountBalance.balance(session) > 0
+            accountBalance.balance(session, assetId = accountAsset.assetId) > 0
         }
     }.stateIn(viewModelScope, SharingStarted.WhileSubscribed(5000), false)
 

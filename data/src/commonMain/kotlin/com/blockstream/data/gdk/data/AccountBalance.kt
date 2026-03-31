@@ -26,6 +26,8 @@ data class AccountBalance constructor(
 
     fun balance(session: GdkSession) = session.accountAssets(account).value.policyAsset
 
+    fun balance(session: GdkSession, assetId: String) = session.accountAssets(account).value.assets[assetId] ?: 0
+
     val accountAsset: AccountAsset
         get() = account.accountAsset
 

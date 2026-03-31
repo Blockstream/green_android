@@ -3,14 +3,14 @@ package com.blockstream.compose.models.send
 import androidx.lifecycle.viewModelScope
 import blockstream_green.common.generated.resources.Res
 import blockstream_green.common.generated.resources.id_enter_amount_in
+import com.blockstream.compose.extensions.previewWallet
+import com.blockstream.compose.models.GreenViewModel
+import com.blockstream.compose.navigation.NavData
 import com.blockstream.data.data.DenominatedValue
 import com.blockstream.data.data.Denomination
 import com.blockstream.data.data.GreenWallet
 import com.blockstream.data.extensions.ifConnected
 import com.blockstream.data.extensions.isPolicyAsset
-import com.blockstream.compose.extensions.previewWallet
-import com.blockstream.compose.models.GreenViewModel
-import com.blockstream.compose.navigation.NavData
 import com.blockstream.utils.Loggable
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
@@ -101,6 +101,9 @@ class DenominationViewModel(
                                 denomination = Denomination.FIAT(it),
                                 session = session
                             )
+                        }.takeIf {
+                            // check if there is a fiat rate available for the asset
+                            session.convert(assetId = denominatedValue.assetId, asLong = 0)?.fiatRate != null
                         }
                     )
                 }

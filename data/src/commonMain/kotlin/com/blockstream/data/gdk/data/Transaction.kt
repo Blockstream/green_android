@@ -54,13 +54,16 @@ data class Transaction constructor(
     @SerialName("extras")
     val extras: List<Pair<String, String>>? = null
 ) : GreenJson<Transaction>() {
+    override fun kSerializer() = serializer()
+
     val account
         get() = accountInjected!!
 
     val network
         get() = account.network
 
-    override fun kSerializer() = serializer()
+    val uniqueId
+        get() = "${account.id}:$txHash:${txType.ordinal}"
 
     enum class SPVResult {
         Disabled, InProgress, NotVerified, NotLongest, Unconfirmed, Verified;

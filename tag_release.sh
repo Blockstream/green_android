@@ -16,7 +16,7 @@ _EOF_
 }
 
 # ----- Vars
-GRADLE_BUILD_FILE='green/build.gradle.kts'
+GRADLE_BUILD_FILE='androidApp/build.gradle.kts'
 
 # --- Argument handling
 # https://stackoverflow.com/questions/192249/how-do-i-parse-command-line-arguments-in-bash

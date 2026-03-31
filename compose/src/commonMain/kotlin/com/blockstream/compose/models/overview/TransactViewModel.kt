@@ -105,7 +105,12 @@ class TransactViewModel(greenWallet: GreenWallet) : TransactViewModelAbstract(gr
         session.walletTransactions.filter { session.isConnected }, session.settings(), _meldTransactions
     ) { transactions, _, meldTransactions ->
         transactions.mapSuccess { gdkTransactions ->
-            val allTransactions = (gdkTransactions + meldTransactions).distinctBy { it.txHash }.sortedByDescending { it.createdAtTs }
+            // A txHash can appear across multiple accounts, so keep all gdk transactions
+            // and only add meld transactions that don't overlap.
+            val uniqueHashes = gdkTransactions.mapTo(mutableSetOf()) { it.txHash }
+
+            val allTransactions =
+                (gdkTransactions + meldTransactions.filter { it.txHash !in uniqueHashes }).sortedByDescending { it.createdAtTs }
 
             allTransactions.map {
                 TransactionLook.create(

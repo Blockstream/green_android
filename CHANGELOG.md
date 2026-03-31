@@ -3,6 +3,29 @@ All notable changes to this project will be documented in this file.
 
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/).
 
+## [5.3.0] - 2026-03-31
+
+### Added
+
+- Lightning support with Greenlight device credential storage
+- Fiat currency display for Liquid assets
+- Option to hide amounts in account details and transaction views
+- Lightning address validation for Jade wallets
+- Automatic swap ID linking when restoring wallets
+- Swipe actions for wallet list items
+
+### Fixed
+
+- Swap transaction details no longer lose the original transaction hash
+- Account selection and auto-unarchive now work correctly in the receive flow
+- Account archiving correctly counts active accounts in the same network family
+- App no longer stays locked when biometric authentication succeeds
+
+### Changed
+
+- Updated GDK to Release 0.77.2
+- Updated LWK to version 0.16.0
+
 ## [5.2.0] - 2026-03-02
 
 #### Added

@@ -107,11 +107,11 @@ import com.blockstream.data.gdk.params.UpdateSubAccountParams
 import com.blockstream.data.gdk.params.ValidateAddresseesParams
 import com.blockstream.data.lightning.ConnectStatus
 import com.blockstream.data.lightning.GreenlightMnemonicAndCredentials
-import com.blockstream.data.lightning.LightningSdk
 import com.blockstream.data.lightning.LightningEvent
 import com.blockstream.data.lightning.LightningInputType
 import com.blockstream.data.lightning.LightningManager
 import com.blockstream.data.lightning.LightningReceivePayment
+import com.blockstream.data.lightning.LightningSdk
 import com.blockstream.data.lightning.LightningSwapInfo
 import com.blockstream.data.lightning.LnUrlPayOutcome
 import com.blockstream.data.lightning.expireIn
@@ -2773,7 +2773,7 @@ class GdkSession constructor(
 
         val isFiatDenomination = denomination != null && denomination != BTC_UNIT && denomination != MBTC_UNIT && denomination != UBTC_UNIT && denomination != BITS_UNIT && denomination != SATOSHI_UNIT
 
-        val convert = if (isPolicyAsset || assetId == null || asString == null) {
+        val convert = if (isPolicyAsset || (asString == null && asset != null)) {
             Convert.create(
                 isPolicyAsset = isPolicyAsset,
                 asset = asset,
@@ -2794,12 +2794,12 @@ class GdkSession constructor(
                 }
             }
         } else {
-            return@withContext Balance.fromAssetWithoutMetadata(asLong ?: 0)
+            return@withContext Balance.fromAssetWithoutMetadata(asLong ?: asString?.toLongOrNull() ?: 0)
         }
 
         logger.d { "GDK_CONVERT call: assetId=$assetId, network=${network.id}, isPolicyAsset=$isPolicyAsset, params=$convert" }
 
-        var balance = try {
+        val balance = try {
             val result = gdk.convertAmount(gdkSession(network), convert)
             logger.d { "GDK_CONVERT result: assetId=$assetId, network=${network.id}, response=${result.toString().take(300)}" }
             Balance.fromJsonElement(

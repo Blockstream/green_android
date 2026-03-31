@@ -5,7 +5,7 @@ import com.blockstream.data.BTC_UNIT
 import com.blockstream.data.MBTC_UNIT
 import com.blockstream.data.SATOSHI_UNIT
 import com.blockstream.data.UBTC_UNIT
-import com.blockstream.data.extensions.assetTicker
+import com.blockstream.data.extensions.assetTickerOrNull
 import com.blockstream.data.extensions.ifConnected
 import com.blockstream.data.gdk.GdkSession
 import com.blockstream.data.gdk.GreenJson
@@ -146,7 +146,7 @@ sealed class Denomination {
     fun assetTicker(session: GdkSession, assetId: String?): String = if (this is FIAT) {
         denomination
     } else {
-        assetId.assetTicker(session = session, denomination = this)
+        assetId.assetTickerOrNull(session = session, denomination = this) ?: assetId?.substring(0 until 6) ?: ""
     }
 
     val isFiat

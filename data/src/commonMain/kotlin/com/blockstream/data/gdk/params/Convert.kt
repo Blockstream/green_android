@@ -48,7 +48,7 @@ data class Convert constructor(
             asLong: Long? = null,
             unit: String = BTC_UNIT
         ): Convert {
-            return if (isPolicyAsset || asset == null) {
+            return if (isPolicyAsset) {
                 if (asString != null) {
                     when (unit) {
                         BTC_UNIT -> Convert(btc = asString)

@@ -104,7 +104,7 @@ fun TransactScreen(viewModel: TransactViewModelAbstract) {
             }
 
             items(items = transactions.data() ?: listOf(), key = { tx ->
-                tx.transaction.account.id.hashCode() + tx.transaction.txHash.hashCode() + tx.transaction.txType.gdkType.hashCode()
+                tx.transaction.uniqueId
             }) { item ->
                 GreenTransaction(modifier = Modifier.padding(bottom = 6.dp), transactionLook = item) {
                     viewModel.postEvent(Events.Transaction(transaction = it.transaction))
