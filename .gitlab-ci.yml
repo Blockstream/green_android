@@ -18,6 +18,7 @@ variables:
   HOMEBREW_NO_AUTO_UPDATE: 1
   SAST_EXCLUDED_PATHS: "spec, test, tests, tmp, vendor, node_modules, .git"
   GITLAB_ADVANCED_SAST_ENABLED: "true"
+  SAST_EXCLUDED_ANALYZERS: "semgrep"
   AST_ENABLE_MR_PIPELINES: "true"
 
 cache:
@@ -337,13 +338,6 @@ gitlab-advanced-sast:
     - test ! -f gl-sast-report.json || chmod 0644 gl-sast-report.json
   artifacts:
     expire_in: 30 days
-
-semgrep-sast:
-  rules:
-    - if: $CI_PIPELINE_SOURCE == "merge_request_event"
-      when: never
-    - if: $CI_COMMIT_BRANCH
-      when: on_success
 
 #####################################
 # Sign production build
