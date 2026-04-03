@@ -507,6 +507,7 @@
     <string name="id_enable_bluetooth_from_system">Enable bluetooth from system settings</string>
     <string name="id_enable_custom_networks_debug">Enable custom networks debug options</string>
     <string name="id_enable_email_notifications_to">Enable email notifications to change nlocktime</string>
+    <string name="id_beta">Beta</string>
     <string name="id_enable_experimental_features">Enable Experimental Features</string>
     <string name="id_enable_face_id">Enable Face ID</string>
     <string name="id_enable_faceid">Enable FaceID</string>
@@ -587,6 +588,8 @@
     <string name="id_experimental">Experimental</string>
     <string name="id_experimental_feature">Experimental Feature</string>
     <string name="id_experimental_features_might">Experimental features might change, break, or be discontinued at any time, so you agree to use them at your own risk.</string>
+    <string name="id_lightning_is_in_beta">Lightning Is in Beta</string>
+    <string name="id_lightning_beta_disclaimer">While your underlying funds remain secure, you may experience occasional payment failures or temporary delays when accessing your balance during network updates.\n\nWe recommend only using funds that you don't need immediate, urgent access to.</string>
     <string name="id_expiration">Expiration</string>
     <string name="id_explore_your_wallet">Explore Your Wallet</string>
     <string name="id_export">Export</string>
@@ -1035,6 +1038,7 @@
     <string name="id_offline_written_backup">Offline, written backup</string>
     <string name="id_ok">Ok</string>
     <string name="id_ok_i_understand">Ok, I understand</string>
+    <string name="id_i_understand">I Understand</string>
     <string name="id_old_fee">Old fee</string>
     <string name="id_on_average">on average</string>
     <string name="id_on_hardware_wallet">On Hardware Wallet</string>

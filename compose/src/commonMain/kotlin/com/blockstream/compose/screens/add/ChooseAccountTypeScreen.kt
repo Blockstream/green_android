@@ -11,7 +11,10 @@ import androidx.compose.foundation.verticalScroll
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.alpha
@@ -24,15 +27,12 @@ import androidx.compose.ui.unit.sp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import blockstream_green.common.generated.resources.Res
 import blockstream_green.common.generated.resources.box_arrow_down
-import blockstream_green.common.generated.resources.flask_fill
 import blockstream_green.common.generated.resources.id_added_already
 import blockstream_green.common.generated.resources.id_archived_account
 import blockstream_green.common.generated.resources.id_archived_accounts
 import blockstream_green.common.generated.resources.id_asset
 import blockstream_green.common.generated.resources.id_choose_security_policy
 import blockstream_green.common.generated.resources.id_continue
-import blockstream_green.common.generated.resources.id_experimental_feature
-import blockstream_green.common.generated.resources.id_experimental_features_might
 import blockstream_green.common.generated.resources.id_hide_advanced_options
 import blockstream_green.common.generated.resources.id_show_advanced_options
 import blockstream_green.common.generated.resources.id_there_is_already_an_archived
@@ -46,6 +46,9 @@ import com.blockstream.compose.components.GreenCard
 import com.blockstream.compose.components.GreenColumn
 import com.blockstream.compose.components.GreenRow
 import com.blockstream.compose.components.OnProgressStyle
+import com.blockstream.compose.dialogs.LightningBetaDialog
+import com.blockstream.compose.events.Event
+import com.blockstream.compose.events.Events.OpenBrowser
 import com.blockstream.compose.extensions.drawDiagonalLabel
 import com.blockstream.compose.looks.AccountTypeLook
 import com.blockstream.compose.models.add.ChooseAccountTypeViewModel
@@ -68,6 +71,7 @@ import com.blockstream.compose.utils.SetupScreen
 import com.blockstream.compose.utils.StringHolder
 import com.blockstream.compose.utils.ifTrue
 import com.blockstream.compose.utils.roundBackground
+import com.blockstream.data.Urls
 import com.blockstream.data.extensions.toggle
 import com.blockstream.data.gdk.data.AssetBalance
 import kotlinx.coroutines.launch
@@ -81,6 +85,23 @@ fun ChooseAccountTypeScreen(
 ) {
     val dialog = LocalDialog.current
     val scope = rememberCoroutineScope()
+
+    var showLightningBetaDialog by remember { mutableStateOf<Event?>(null) }
+
+    showLightningBetaDialog?.also { pendingEvent ->
+        LightningBetaDialog(
+            onUnderstand = {
+                viewModel.postEvent(pendingEvent)
+                showLightningBetaDialog = null
+            },
+            onLearnMore = {
+                viewModel.postEvent(OpenBrowser(Urls.HELP_LIGHTNING_BETA))
+            },
+            onDismissRequest = {
+                showLightningBetaDialog = null
+            }
+        )
+    }
 
     NavigateDestinations.Assets.getResult<AssetBalance> {
         viewModel.asset.value = it
@@ -97,18 +118,7 @@ fun ChooseAccountTypeScreen(
             }
 
             is ChooseAccountTypeViewModel.LocalSideEffects.ExperimentalFeaturesDialog -> {
-                launch {
-                    dialog.openDialog(
-                        OpenDialogData(
-                            title = StringHolder.create(Res.string.id_experimental_feature),
-                            message = StringHolder.create(Res.string.id_experimental_features_might),
-                            icon = Res.drawable.flask_fill,
-                            onPrimary = {
-                                viewModel.postEvent(it.event)
-                            }
-                        )
-                    )
-                }
+                showLightningBetaDialog = it.event
             }
 
             is ChooseAccountTypeViewModel.LocalSideEffects.ArchivedAccountDialog -> {

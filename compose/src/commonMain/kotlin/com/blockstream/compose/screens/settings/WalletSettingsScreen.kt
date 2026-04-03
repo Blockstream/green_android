@@ -31,7 +31,6 @@ import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import blockstream_green.common.generated.resources.Res
 import blockstream_green.common.generated.resources.box_arrow_down
-import blockstream_green.common.generated.resources.flask_fill
 import blockstream_green.common.generated.resources.id_1d_minutes
 import blockstream_green.common.generated.resources.id_2fa_methods
 import blockstream_green.common.generated.resources.id_2fa_threshold
@@ -42,6 +41,7 @@ import blockstream_green.common.generated.resources.id_archived_account
 import blockstream_green.common.generated.resources.id_archived_accounts
 import blockstream_green.common.generated.resources.id_auto_logout_timeout
 import blockstream_green.common.generated.resources.id_back_up_recovery_phrase
+import blockstream_green.common.generated.resources.id_beta
 import blockstream_green.common.generated.resources.id_biometric_login_is_disabled
 import blockstream_green.common.generated.resources.id_biometric_login_is_enabled
 import blockstream_green.common.generated.resources.id_change_pin
@@ -52,8 +52,6 @@ import blockstream_green.common.generated.resources.id_create_a_new_account
 import blockstream_green.common.generated.resources.id_denomination
 import blockstream_green.common.generated.resources.id_display_values_in_s_and
 import blockstream_green.common.generated.resources.id_enabled
-import blockstream_green.common.generated.resources.id_experimental_feature
-import blockstream_green.common.generated.resources.id_experimental_features_might
 import blockstream_green.common.generated.resources.id_genuine_check
 import blockstream_green.common.generated.resources.id_get_support
 import blockstream_green.common.generated.resources.id_i_lost_my_2fa
@@ -95,9 +93,12 @@ import com.blockstream.compose.components.LearnMoreButton
 import com.blockstream.compose.components.OnProgressStyle
 import com.blockstream.compose.data.WalletSetting
 import com.blockstream.compose.dialogs.DenominationExchangeDialog
+import com.blockstream.compose.dialogs.LightningBetaDialog
 import com.blockstream.compose.dialogs.SingleChoiceDialog
 import com.blockstream.compose.dialogs.TextDialog
+import com.blockstream.compose.events.Event
 import com.blockstream.compose.events.Events.Logout
+import com.blockstream.compose.events.Events.OpenBrowser
 import com.blockstream.compose.extensions.colorText
 import com.blockstream.compose.extensions.localized
 import com.blockstream.compose.models.settings.DenominationExchangeRateViewModel
@@ -120,6 +121,7 @@ import com.blockstream.compose.sideeffects.OpenDialogData
 import com.blockstream.compose.sideeffects.SideEffects
 import com.blockstream.compose.theme.bodyLarge
 import com.blockstream.compose.theme.bodyMedium
+import com.blockstream.compose.theme.bodySmall
 import com.blockstream.compose.theme.green
 import com.blockstream.compose.theme.red
 import com.blockstream.compose.theme.titleSmall
@@ -132,6 +134,7 @@ import com.blockstream.compose.utils.bottom
 import com.blockstream.compose.utils.ifTrue
 import com.blockstream.compose.utils.plus
 import com.blockstream.data.SupportType
+import com.blockstream.data.Urls
 import com.blockstream.data.data.LogoutReason
 import com.blockstream.data.data.SupportData
 import com.blockstream.data.data.TwoFactorMethod
@@ -156,6 +159,7 @@ fun WalletSettingsScreen(
     var showPgpDialog by remember { mutableStateOf<String?>(null) }
     var showAutologoutTimeoutDialog by remember { mutableStateOf<Int?>(null) }
     var showThresholdDialog by remember { mutableStateOf<String?>(null) }
+    var showLightningBetaDialog by remember { mutableStateOf<Event?>(null) }
     var showTwoFactorChangeDialog by remember { mutableStateOf<LocalSideEffects.Disable2FA?>(null) }
     val onProgress by viewModel.onProgress.collectAsStateWithLifecycle()
 
@@ -259,6 +263,21 @@ fun WalletSettingsScreen(
         }
     }
 
+    showLightningBetaDialog?.also { pendingEvent ->
+        LightningBetaDialog(
+            onUnderstand = {
+                viewModel.postEvent(pendingEvent)
+                showLightningBetaDialog = null
+            },
+            onLearnMore = {
+                viewModel.postEvent(OpenBrowser(Urls.HELP_LIGHTNING_BETA))
+            },
+            onDismissRequest = {
+                showLightningBetaDialog = null
+            }
+        )
+    }
+
     NavigateDestinations.JadeQR.getResult<JadeQRResult> {
         when {
             it.lightningMnemonic != null -> viewModel.postEvent(LocalEvents.CreateLightningAccount(it.lightningMnemonic))
@@ -320,18 +339,7 @@ fun WalletSettingsScreen(
                 }
 
                 is LocalSideEffects.ExperimentalFeaturesDialog -> {
-                    launch {
-                        dialog.openDialog(
-                            OpenDialogData(
-                                title = StringHolder.create(Res.string.id_experimental_feature),
-                                message = StringHolder.create(Res.string.id_experimental_features_might),
-                                icon = Res.drawable.flask_fill,
-                                onPrimary = {
-                                    viewModel.postEvent(it.event)
-                                }
-                            )
-                        )
-                    }
+                    showLightningBetaDialog = it.event
                 }
 
                 is LocalSideEffects.OpenAutoLogoutTimeout -> {
@@ -717,6 +725,7 @@ fun WalletSettingsScreen(
                         Setting(
                             title = stringResource(Res.string.id_lightning),
                             checked = item.enabled,
+                            trailingLabel = stringResource(Res.string.id_beta),
                             onCheckedChange = {
                                 if (it) {
                                     viewModel.postEvent(LocalEvents.ChooseAccountType(AccountType.LIGHTNING))
@@ -850,6 +859,7 @@ fun Setting(
     isRadio: Boolean = false,
     enabled: Boolean = true,
     testTag: String? = null,
+    trailingLabel: String? = null,
     onCheckedChange: ((Boolean) -> Unit) = {},
 ) {
     OutlinedCard(
@@ -889,6 +899,15 @@ fun Setting(
                         color = subtitleColor
                     )
                 }
+            }
+
+            if (trailingLabel != null) {
+                Text(
+                    text = trailingLabel,
+                    style = bodySmall,
+                    color = whiteMedium,
+                    modifier = Modifier.align(Alignment.CenterVertically)
+                )
             }
 
             if (checked != null) {
@@ -940,3 +959,4 @@ fun Setting(
         }
     }
 }
+

@@ -74,7 +74,7 @@ class AppSettingsViewModel : AppSettingsViewModelAbstract() {
 
     override val analyticsFeatureEnabled = settingsManager.analyticsFeatureEnabled
 
-    override val experimentalFeatureEnabled = settingsManager.lightningFeatureEnabled
+    override val experimentalFeatureEnabled = false
     override val enhancedPrivacyEnabled = MutableStateFlow(appSettings.enhancedPrivacy)
     override val screenLockInSeconds = MutableStateFlow(ScreenLockSetting.bySeconds(appSettings.screenLockInSeconds))
     override val torEnabled = MutableStateFlow(appSettings.tor)

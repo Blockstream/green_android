@@ -43,6 +43,7 @@ object Urls {
     const val HELP_WHATS_COLLECTED = "https://help.blockstream.com/hc/en-us/articles/5988514431897"
     const val HELP_BIP39_PASSPHRASE = "https://help.blockstream.com/hc/en-us/articles/8712301763737"
     const val HELP_LIGHTNING_SHORTCUT = "https://help.blockstream.com/hc/en-us/articles/23020279153177"
+    const val HELP_LIGHTNING_BETA = "https://help.blockstream.com/hc/en-us/articles/18788578831897-Understand-Lightning-support-in-the-Blockstream-app"
     const val HELP_JADE_AIRGAPPED = "https://help.blockstream.com/hc/en-us/sections/10426339090713-Air-gapped-Usage"
     const val HELP_AMP_ASSETS = "https://help.blockstream.com/hc/en-us/articles/5301732614169-How-do-I-receive-AMP-assets-"
     const val HELP_QR_PIN_UNLOCK = "https://blockstream.zendesk.com/hc/en-us/articles/28264425434265"
