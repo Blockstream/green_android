@@ -9,7 +9,6 @@ import blockstream_green.common.generated.resources.id_max_payable_amount
 import blockstream_green.common.generated.resources.id_max_receivable_amount
 import blockstream_green.common.generated.resources.id_max_single_payment_amount
 import blockstream_green.common.generated.resources.id_onchain_balance
-import blockstream_green.common.generated.resources.id_rescan_swaps_initiated
 import com.blockstream.data.data.GreenWallet
 import com.blockstream.data.data.SetupArgs
 import com.blockstream.data.lightning.LightningManager
@@ -56,7 +55,8 @@ class LightningNodeViewModel(greenWallet: GreenWallet) :
     override val data = _data.asStateFlow()
 
     override val showEmptyAccount = session.lightningSdk.nodeInfoStateFlow.map {
-        it.channelsBalanceSatoshi() > 0
+        // session.lightningSdk.onchainBalanceWithdrawableSat() > 0
+        session.lightningSdk.nodeInfoStateFlow.value.onchainBalanceSatoshi() > 0
     }.stateIn(viewModelScope, SharingStarted.WhileSubscribed(), false)
 
     val lightningManager: LightningManager by inject()
@@ -64,7 +64,6 @@ class LightningNodeViewModel(greenWallet: GreenWallet) :
     class LocalEvents {
         object ShowRecoveryPhrase : Event
         object EmptyAccount : Event
-        object RescanSwaps : Event
         object ShareDiagnosticData : Event
     }
 
@@ -154,10 +153,6 @@ class LightningNodeViewModel(greenWallet: GreenWallet) :
                 postSideEffect(SideEffects.Dismiss)
             }
 
-            is LocalEvents.RescanSwaps -> {
-                rescanSwaps()
-            }
-
             is LocalEvents.ShareDiagnosticData -> {
                 shareDiagnosticData()
             }
@@ -167,22 +162,13 @@ class LightningNodeViewModel(greenWallet: GreenWallet) :
                     SideEffects.NavigateTo(
                         NavigateDestinations.RecoverFunds(
                             greenWallet = greenWallet,
-                            isSendAll = true,
+                            isEmptyChannels = true,
                         )
                     )
                 )
                 postSideEffect(SideEffects.Dismiss)
             }
         }
-    }
-
-    private fun rescanSwaps() {
-        doAsync({
-            postSideEffect(SideEffects.Snackbar(StringHolder.create(Res.string.id_rescan_swaps_initiated)))
-            session.lightningSdkOrNull?.rescanSwaps()
-        }, onSuccess = {
-            postSideEffect(SideEffects.Snackbar(StringHolder.create(Res.string.id_completed)))
-        })
     }
 
     private fun shareDiagnosticData() {

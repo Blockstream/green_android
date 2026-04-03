@@ -1,8 +1,6 @@
 package com.blockstream.data.lightning
 
-import breez_sdk.LogEntry
-import breez_sdk.LogStream
-import breez_sdk.setLogStream
+import com.blockstream.glsdk.*
 import com.blockstream.data.config.AppInfo
 import com.blockstream.data.data.AppConfig
 import com.blockstream.data.di.ApplicationScope
@@ -39,10 +37,15 @@ class LightningManager constructor(
 
     init {
         if (appConfig.lightningFeatureEnabled) {
-            setLogStream(object : LogStream {
-                override fun log(l: LogEntry) {
-                    if (l.level != "TRACE") {
-                        logs.append("${Clock.System.now()} - ${l.line}\n")
+            setLogger(LogLevel.DEBUG, object : LogListener {
+                val excludedTargets = listOf("tower", "h2")
+
+                override fun onLog(entry: LogEntry) {
+                    if(!excludedTargets.any { entry.target.startsWith(it) }) {
+                        if (appConfig.isDebug) {
+                            logger.d { "${entry.level} [${entry.target}] - ${entry.message}" }
+                        }
+                        logs.append("${Clock.System.now()} - ${entry.level} - ${entry.target} - ${entry.message} \n")
                         if (logs.length > 4_000_000) {
                             logger.d { "Clear Lightning Logs" }
                             logs.deleteRange(0, 1_000_000)

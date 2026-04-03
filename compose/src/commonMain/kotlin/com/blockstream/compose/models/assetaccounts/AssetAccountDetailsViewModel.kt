@@ -113,8 +113,7 @@ abstract class AssetAccountDetailsViewModelAbstract(
         postSideEffect(
             SideEffects.NavigateTo(
                 NavigateDestinations.RecoverFunds(
-                    greenWallet = greenWallet,
-                    amount = session.lightningSdk.nodeInfoStateFlow.value.onchainBalanceSatoshi()
+                    greenWallet = greenWallet
                 )
             )
         )
@@ -131,7 +130,7 @@ class AssetAccountDetailsViewModel(
 
     override val accountBalance: StateFlow<AccountBalance> = merge(flowOf(Unit), session.accountsAndBalanceUpdated).map {
         AccountBalance.create(account = account, session = session)
-    }.stateIn(viewModelScope, SharingStarted.WhileSubscribed(), AccountBalance.create(account = account))
+    }.stateIn(viewModelScope, SharingStarted.WhileSubscribed(5000L), AccountBalance.create(account = account))
 
     override val showBuyButton: Boolean = accountAsset.asset.isBitcoin
 
@@ -141,19 +140,19 @@ class AssetAccountDetailsViewModel(
 
     override val accounts: StateFlow<List<Account>> =
         session.accounts.filter { session.isConnected }
-            .stateIn(viewModelScope, SharingStarted.WhileSubscribed(), listOf())
+            .stateIn(viewModelScope, SharingStarted.WhileSubscribed(5000L), listOf())
 
     private val hideAmounts: StateFlow<Boolean> = settingsManager.appSettingsStateFlow.map {
         it.hideAmounts
     }.stateIn(
-        viewModelScope, SharingStarted.WhileSubscribed(), settingsManager.appSettings.hideAmounts
+        viewModelScope, SharingStarted.WhileSubscribed(5000L), settingsManager.appSettings.hideAmounts
     )
 
     override val isSendEnabled: StateFlow<Boolean> = combine(accountBalance, isMultisigWatchOnly) { accountBalance, isMultisigWatchOnly ->
         if (isMultisigWatchOnly) {
             false
         } else if (accountAsset.account.isLightning) {
-            (session.lightningSdk.balanceOnChannel() ?: 0) > 0
+             (session.lightningSdk.balanceOnChannel() ?: 0) > 0
         } else {
             accountBalance.balance(session, assetId = accountAsset.assetId) > 0
         }
@@ -201,9 +200,7 @@ class AssetAccountDetailsViewModel(
                     )
                 }
             }.launchIn(viewModelScope)
-        }
 
-        session.ifConnected {
             accountBalance.onEach {
                 updateTotalBalance()
             }.launchIn(viewModelScope)
@@ -217,12 +214,14 @@ class AssetAccountDetailsViewModel(
     private val _transactions: StateFlow<DataState<List<TransactionLook>>> = combine(
         session.accountTransactions(account), session.settings()
     ) { transactions, _ ->
-        DataState.Success(
-            (transactions.data() ?: emptyList()).map { transaction ->
+        transactions.mapSuccess {
+            it.map { transaction ->
                 TransactionLook.create(
                     transaction = transaction, session = session
                 )
-            })
+            }
+
+        }
     }.stateIn(viewModelScope, SharingStarted.WhileSubscribed(5000L), DataState.Loading)
 
     override val transactions: StateFlow<DataState<List<TransactionLook>>> = combine(

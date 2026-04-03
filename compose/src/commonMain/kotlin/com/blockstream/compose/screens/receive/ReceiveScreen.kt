@@ -50,20 +50,25 @@ import blockstream_green.common.generated.resources.id_please_verify_that_the_ad
 import blockstream_green.common.generated.resources.id_qr_code
 import blockstream_green.common.generated.resources.id_request_amount
 import blockstream_green.common.generated.resources.id_share
+import blockstream_green.common.generated.resources.id_show_lightning_invoice
+import blockstream_green.common.generated.resources.id_show_onchain_address
 import blockstream_green.common.generated.resources.id_verify_on_device
 import blockstream_green.common.generated.resources.id_you_will_receive_liquid_bitcoin
 import blockstream_green.common.generated.resources.warning
 import com.adamglin.PhosphorIcons
 import com.adamglin.phosphoricons.Regular
+import com.adamglin.phosphoricons.regular.Info
 import com.adamglin.phosphoricons.regular.SealCheck
 import com.adamglin.phosphoricons.regular.ShareNetwork
 import com.blockstream.compose.GreenPreview
+import com.blockstream.compose.LocalAppInfo
 import com.blockstream.compose.components.GreenAddress
 import com.blockstream.compose.components.GreenAlert
 import com.blockstream.compose.components.GreenAmountField
 import com.blockstream.compose.components.GreenAsset
 import com.blockstream.compose.components.GreenButton
 import com.blockstream.compose.components.GreenButtonColor
+import com.blockstream.compose.components.GreenButtonSize
 import com.blockstream.compose.components.GreenButtonType
 import com.blockstream.compose.components.GreenCard
 import com.blockstream.compose.components.GreenColumn
@@ -513,19 +518,23 @@ fun ReceiveScreen(
                     }
                 }
 
-//                AnimatedVisibility(visible = accountAsset?.account?.isLightning == true) {
-//                    GreenButton(
-//                        text = stringResource(if (showLightningOnChainAddress) Res.string.id_show_lightning_invoice else Res.string.id_show_onchain_address),
-//                        modifier = Modifier.fillMaxWidth(),
-//                        type = GreenButtonType.TEXT,
-//                        color = GreenButtonColor.WHITE,
-//                        icon = PhosphorIcons.Regular.Info,
-//                        size = GreenButtonSize.SMALL,
-//                        enabled = !onProgress
-//                    ) {
-//                        viewModel.postEvent(ReceiveViewModel.LocalEvents.ToggleLightning)
-//                    }
-//                }
+                val appInfo = LocalAppInfo.current
+
+                if(appInfo.isDevelopmentOrDebug) {
+                    AnimatedVisibility(visible = accountAsset?.account?.isLightning == true) {
+                        GreenButton(
+                            text = stringResource(if (showLightningOnChainAddress) Res.string.id_show_lightning_invoice else Res.string.id_show_onchain_address),
+                            modifier = Modifier.fillMaxWidth(),
+                            type = GreenButtonType.TEXT,
+                            color = GreenButtonColor.WHITE,
+                            icon = PhosphorIcons.Regular.Info,
+                            size = GreenButtonSize.SMALL,
+                            enabled = !onProgress
+                        ) {
+                            viewModel.postEvent(ReceiveViewModel.LocalEvents.ToggleLightningOnChain)
+                        }
+                    }
+                }
             }
 
             androidx.compose.animation.AnimatedVisibility(

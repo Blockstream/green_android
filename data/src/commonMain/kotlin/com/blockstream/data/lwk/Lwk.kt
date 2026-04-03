@@ -444,7 +444,7 @@ class Lwk(
             val cleanMessage = e.msg.replace("BoltzApi(HTTP(\"\\\"", "").replace("\\\"\"))", "")
                 .replaceFirstChar { if (it.isLowerCase()) it.titlecase() else it.toString() }
 
-            throw Exception(cleanMessage, e.cause)
+            throw Exception(cleanMessage, e)
         }
     }
 

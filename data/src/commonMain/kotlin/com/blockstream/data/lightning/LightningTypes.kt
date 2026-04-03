@@ -112,7 +112,7 @@ sealed class LightningInputType {
     data class LnUrlAuth(val data: LnUrlAuthData) : LightningInputType()
 }
 
-data class LightningInvoice(
+data class LightningInvoice constructor(
     val bolt11: String,
     val amountSatoshi: Long?,
     val timestamp: Long,
@@ -121,14 +121,15 @@ data class LightningInvoice(
     val description: String?,
 )
 
-// LNURL-pay request data. Carries `raw` internally because the SDK type has additional fields
-// (commentAllowed, allowsNostr, etc.) that are not exposed but are needed for SDK calls.
+// LNURL-pay request data. Carries `raw` internally because the glsdk type has additional fields
+// (commentAllowed, description, lnurl, etc.) that aren't exposed here but are needed to build
+// the glsdk LnUrlPayRequest at pay-time.
 class LnUrlPayData internal constructor(
     val domain: String,
     val minSendable: ULong,
     val maxSendable: ULong,
     val metadataStr: String,
-    internal val raw: breez_sdk.LnUrlPayRequestData,
+    internal val raw: com.blockstream.glsdk.LnUrlPayRequestData,
 )
 
 @Serializable
@@ -157,7 +158,7 @@ sealed class LightningSuccessAction {
 
 sealed class LightningPaymentDetails {
     data class Ln(
-        val destinationPubkey: String,
+        val destinationPubkey: String? = null,
         val paymentHash: String,
         val paymentPreimage: String,
         val bolt11: String,
@@ -177,6 +178,7 @@ data class LightningPayment(
     val paymentTime: Long,
     val amountMsat: ULong,
     val feeMsat: ULong,
+    val amountTotalMsat: ULong,
     val status: LightningPaymentStatus,
     val description: String?,
     val details: LightningPaymentDetails,
@@ -194,7 +196,7 @@ data class LightningFees(
 // Carries the opening fee amount and the opaque params needed to create an invoice at that fee tier.
 class LightningOpeningFeeParams internal constructor(
     val minMsat: ULong,
-    internal val raw: breez_sdk.OpeningFeeParams,
+//    internal val raw: breez_sdk.OpeningFeeParams,
 )
 
 // Fee charged when a new channel must be opened to receive a payment.
@@ -214,8 +216,6 @@ data class LightningReceivePayment(
 )
 
 data class PrepareRefundResult(val refundTxFeeSat: ULong)
-
-data class PrepareRedeemOnchainResult(val txFeeSat: ULong)
 
 data class RefundResult(val refundTxId: String)
 

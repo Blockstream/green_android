@@ -402,7 +402,7 @@ sealed class NavigateDestinations : NavigateDestination() {
     data class RecoverFunds(
         val greenWallet: GreenWallet,
         val amount: Long = 0,
-        val isSendAll: Boolean = false,
+        val isEmptyChannels: Boolean = false,
         val address: String? = null,
     ) : NavigateDestination()
 
@@ -555,7 +555,7 @@ sealed class NavigateDestinations : NavigateDestination() {
         val greenWallet: GreenWallet,
         val accountAsset: AccountAsset? = null,
         val isFeeRateOnly: Boolean = false,
-        val useBreezFees: Boolean
+        val useLightningFees: Boolean
     ) : NavigateDestination()
 
     @Serializable

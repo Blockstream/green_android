@@ -45,6 +45,8 @@ import androidx.compose.ui.unit.sp
 import blockstream_green.common.generated.resources.Res
 import blockstream_green.common.generated.resources.id_amount
 import blockstream_green.common.generated.resources.id_available
+import blockstream_green.common.generated.resources.id_max_payable
+import blockstream_green.common.generated.resources.id_max_payable_amount
 import blockstream_green.common.generated.resources.id_send_all
 import blockstream_green.common.generated.resources.lock_simple
 import blockstream_green.common.generated.resources.pencil_simple_line
@@ -83,6 +85,7 @@ fun GreenAmountField(
     sendAll: Boolean = false,
     supportsSendAll: Boolean = false,
     availableBalance: String? = null,
+    isMaxPayable: Boolean = false,
     enabled: Boolean = true,
     isAmountLocked: Boolean = false,
     helperText: String? = null,
@@ -318,7 +321,7 @@ fun GreenAmountField(
             ) {
                 if (availableBalance != null) {
                     Text(
-                        text = "${stringResource(Res.string.id_available)} $availableBalance",
+                        text = "${stringResource(if(isMaxPayable) Res.string.id_max_payable else Res.string.id_available)} $availableBalance",
                         style = bodyMedium,
                         color = whiteMedium
                     )

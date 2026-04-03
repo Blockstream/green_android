@@ -177,10 +177,11 @@ class LightningExtensionsTest {
         paymentTime = 0L,
         amountMsat = amountMsat,
         feeMsat = 0u,
+        amountTotalMsat = amountMsat,
         status = LightningPaymentStatus.COMPLETE,
         description = null,
         details = LightningPaymentDetails.Ln(
-            destinationPubkey = "",
+            destinationPubkey = null,
             paymentHash = "",
             paymentPreimage = "",
             bolt11 = "",

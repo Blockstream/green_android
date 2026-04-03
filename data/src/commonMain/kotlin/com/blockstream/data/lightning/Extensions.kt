@@ -2,7 +2,7 @@
 
 package com.blockstream.data.lightning
 
-import breez_sdk.GreenlightCredentials
+//import breez_sdk.GreenlightCredentials
 import com.blockstream.data.BTC_POLICY_ASSET
 import com.blockstream.data.data.FeePriority
 import com.blockstream.data.gdk.data.Account
@@ -104,6 +104,7 @@ fun LightningNodeState.maxSinglePaymentAmountSatoshi() = this.maxSinglePaymentAm
 fun LightningNodeState.maxPayableSatoshi() = this.maxPayableMsat.satoshi()
 
 fun LightningPayment.amountSatoshi() = amountMsat.satoshi() * if (paymentType == LightningPaymentType.RECEIVED) 1 else -1
+fun LightningPayment.amountTotalSatoshi() = amountTotalMsat.satoshi() * if (paymentType == LightningPaymentType.RECEIVED) 1 else -1
 
 fun Addressee.Companion.fromInvoice(invoice: LightningInvoice, fallbackAmount: Long): Addressee {
     return Addressee(
@@ -152,7 +153,7 @@ fun Transaction.Companion.fromPayment(payment: LightningPayment): Transaction {
 
             is LightningPaymentDetails.Ln -> {
                 payment.description.takeIf { it?.isNotBlank() == true }?.also { put("id_invoice_description", it) }
-                put("id_destination_public_key", details.destinationPubkey)
+                details.destinationPubkey?.also { put("id_destination_public_key", it) }
                 put("id_payment_hash", details.paymentHash)
                 put("id_payment_preimage", details.paymentPreimage)
                 put("id_invoice", details.bolt11)
@@ -189,7 +190,7 @@ fun Transaction.Companion.fromPayment(payment: LightningPayment): Transaction {
         spvVerified = "",
         txHash = lnDetails?.paymentHash ?: closedDetails?.closingTxid ?: payment.id,
         type = if (payment.paymentType == LightningPaymentType.RECEIVED) "incoming" else "outgoing",
-        satoshi = mapOf(BTC_POLICY_ASSET to (payment.amountSatoshi() - if (payment.paymentType == LightningPaymentType.SENT) payment.feeMsat.satoshi() else 0L)),
+        satoshi = mapOf(BTC_POLICY_ASSET to payment.amountTotalSatoshi()),
         message = (lnDetails?.successAction as? LightningSuccessAction.Message)?.message,
         plaintext = (lnDetails?.successAction as? LightningSuccessAction.Aes)?.let { it.description to it.plaintext },
         url = (lnDetails?.successAction as? LightningSuccessAction.Url)?.let { it.description to it.url },
@@ -228,7 +229,6 @@ fun Transaction.Companion.fromSwapInfo(account: Account, swapInfo: LightningSwap
         satoshi = mapOf(BTC_POLICY_ASSET to swapInfo.confirmedSats.toLong() + (if (isRefundableSwap) 0 else swapInfo.unconfirmedSats.toLong())),
         isLightningSwap = true,
         isInProgressSwap = swapInfo.confirmedSats.toLong() > 0 && !isRefundableSwap,
-        isRefundableSwap = isRefundableSwap,
         extras = extras
     )
 }
@@ -253,12 +253,12 @@ fun Transaction.Companion.fromReverseSwapInfo(account: Account, reverseSwapInfo:
     )
 }
 
-fun AppGreenlightCredentials.Companion.fromGreenlightCredentials(greenlightCredentials: GreenlightCredentials): AppGreenlightCredentials {
-    return AppGreenlightCredentials(
-        deviceKey = greenlightCredentials.developerKey,
-        deviceCert = greenlightCredentials.developerCert
-    )
-}
+//fun AppGreenlightCredentials.Companion.fromGreenlightCredentials(greenlightCredentials: GreenlightCredentials): AppGreenlightCredentials {
+//    return AppGreenlightCredentials(
+//        deviceKey = greenlightCredentials.developerKey,
+//        deviceCert = greenlightCredentials.developerCert
+//    )
+//}
 
 fun LightningFees.fee(feePriority: FeePriority): Long {
     return feePriority.let {

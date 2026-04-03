@@ -917,6 +917,7 @@
     <string name="id_market">Market</string>
     <string name="id_max_limit_s">Max Limit: %1$s</string>
     <string name="id_min_limit_s">Min Limit: %1$s</string>
+    <string name="id_max_payable">Max Payable</string>
     <string name="id_max_payable_amount">Max Payable Amount</string>
     <string name="id_max_payment_amount">Max Payment Amount</string>
     <string name="id_max_receivable_amount">Max Receivable Amount</string>

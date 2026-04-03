@@ -192,6 +192,7 @@ fun SendScreen(
                         sendAll = isSendAll,
                         supportsSendAll = supportsSendAll,
                         availableBalance = accountAssetBalance?.balance,
+                        isMaxPayable = accountAssetBalance?.account?.isLightning == true,
                         onSendAllClick = {
                             viewModel.postEvent(SendViewModel.LocalEvents.ToggleIsSendAll)
                         },

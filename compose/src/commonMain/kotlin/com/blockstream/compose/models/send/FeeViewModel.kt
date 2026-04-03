@@ -48,7 +48,7 @@ class FeeViewModel(
     greenWallet: GreenWallet,
     accountAssetOrNull: AccountAsset?,
     private val isFeeRateOnly: Boolean,
-    private val useBreezFees: Boolean
+    private val useLightningFees: Boolean
 ) : FeeViewModelAbstract(greenWallet = greenWallet, accountAssetOrNull = accountAssetOrNull) {
 
     final override val uiState: StateFlow<FeeUiState>
@@ -81,8 +81,8 @@ class FeeViewModel(
                 }
             }.launchIn(this)
 
-            if (useBreezFees) {
-                calculateBreezFees()
+            if (useLightningFees) {
+                calculateLightningFees()
             }
 
         }
@@ -90,9 +90,9 @@ class FeeViewModel(
         bootstrap()
     }
 
-    private fun calculateBreezFees() {
+    private fun calculateLightningFees() {
         doAsync({
-            sessionOrNull?.lightningSdkOrNull?.recommendedFees()?.let { recommendedFees ->
+            sessionOrNull?.getLightningFeeEstimation()?.let { recommendedFees ->
                 listOf(FeePriority.High(), FeePriority.Medium(), FeePriority.Low()).map {
 
                     val feeRate = (recommendedFees.fee(it) * 1000).feeRateWithUnit()

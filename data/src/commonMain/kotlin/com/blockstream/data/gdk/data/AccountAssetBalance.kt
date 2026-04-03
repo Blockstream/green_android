@@ -5,6 +5,7 @@ import com.blockstream.data.data.EnrichedAsset
 import com.blockstream.data.extensions.isPolicyAsset
 import com.blockstream.data.gdk.GdkSession
 import com.blockstream.data.gdk.GreenJson
+import com.blockstream.data.lightning.maxPayableSatoshi
 import com.blockstream.data.utils.toAmountLook
 import kotlinx.serialization.Serializable
 
@@ -39,16 +40,24 @@ data class AccountAssetBalance constructor(
 
     fun balance(session: GdkSession) = session.accountAssets(account).value.balance(assetId)
 
+
     companion object {
         suspend fun create(
             accountAsset: AccountAsset,
             session: GdkSession?,
+            isMaxPayable: Boolean = false,
             denomination: Denomination? = null
         ): AccountAssetBalance {
             if (session == null) {
                 return AccountAssetBalance.create(accountAsset)
             }
-            return accountAsset.balance(session).let { balance ->
+
+            val balance =
+                if (isMaxPayable && accountAsset.account.isLightning) session.lightningSdk.nodeInfoStateFlow.value.maxPayableSatoshi() else accountAsset.balance(
+                    session
+                )
+
+            return balance.let { balance ->
                 AccountAssetBalance(
                     account = accountAsset.account,
                     asset = accountAsset.asset,

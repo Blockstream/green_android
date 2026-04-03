@@ -28,6 +28,7 @@ import com.blockstream.data.extensions.ifConnectedSuspend
 import com.blockstream.data.extensions.isBlank
 import com.blockstream.data.gdk.data.AccountAssetBalance
 import com.blockstream.data.lightning.LightningFees
+import com.blockstream.data.lightning.onchainBalanceSatoshi
 import com.blockstream.data.utils.feeRateWithUnit
 import com.blockstream.data.utils.toAmountLook
 import com.blockstream.utils.Loggable
@@ -46,11 +47,10 @@ import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.sync.Mutex
 import org.jetbrains.compose.resources.getString
-import kotlin.math.absoluteValue
 
 abstract class RecoverFundsViewModelAbstract(
     greenWallet: GreenWallet,
-    val isSendAll: Boolean,
+    val isEmptyChannels: Boolean,
     val onChainAddress: String?
 ) : GreenViewModel(greenWalletOrNull = greenWallet) {
 
@@ -59,7 +59,7 @@ abstract class RecoverFundsViewModelAbstract(
     }
 
     override fun screenName(): String =
-        if (isRefund) "OnChainRefund" else if (isSendAll) "LightningSendAll" else "RedeemOnchainFunds"
+        if (isRefund) "OnChainRefund" else if (isEmptyChannels) "LightningSendAll" else "RedeemOnchainFunds"
     abstract val bitcoinAccounts: StateFlow<List<AccountAssetBalance>>
     abstract val manualAddress: MutableStateFlow<String>
     abstract val amount: StateFlow<String>
@@ -76,14 +76,15 @@ abstract class RecoverFundsViewModelAbstract(
 
 class RecoverFundsViewModel(
     greenWallet: GreenWallet,
-    isSendAll: Boolean,
+    isEmptyChannels: Boolean,
     onChainAddress: String?,
     val satoshi: Long,
 ) : RecoverFundsViewModelAbstract(
     greenWallet = greenWallet,
-    isSendAll = isSendAll,
+    isEmptyChannels = isEmptyChannels,
     onChainAddress = onChainAddress
 ) {
+    // private var _preparedOnchainSend: PreparedOnchainSend? = null
     override val manualAddress: MutableStateFlow<String> = MutableStateFlow("")
 
     override val amountToBeRefunded: MutableStateFlow<String?> =
@@ -107,7 +108,8 @@ class RecoverFundsViewModel(
 
     override val amount: StateFlow<String> = flow {
         session.ifConnectedSuspend {
-            ((if (isSendAll) session.accountAssets(session.lightningAccount).value.policyAsset else satoshi.absoluteValue).toAmountLook(
+            // session.lightningSdk.onchainBalanceWithdrawableSat()
+            ((if(isRefund) satoshi else session.lightningSdk.nodeInfoStateFlow.value.onchainBalanceSatoshi()).toAmountLook(
                 session = session,
                 withUnit = true,
             ) ?: "").also {
@@ -119,7 +121,7 @@ class RecoverFundsViewModel(
     override val recommendedFees: StateFlow<LightningFees?> = flow {
         session.ifConnectedSuspend {
             emit(
-                session.lightningSdk.recommendedFees().also {
+                session.getLightningFeeEstimation().also {
                     _customFeeRate.value = it?.minimumFee?.toLong()
                 }
             )
@@ -155,7 +157,7 @@ class RecoverFundsViewModel(
                 title = getString(
                     when {
                         isRefund -> Res.string.id_refund
-                        isSendAll -> Res.string.id_empty_lightning_account
+                        isEmptyChannels -> Res.string.id_empty_lightning_account
                         else -> Res.string.id_sweep
                     }
                 ),
@@ -316,7 +318,7 @@ class RecoverFundsViewModel(
                 return@doAsync false
             }
 
-            if (isSendAll) {
+            if (this@RecoverFundsViewModel.isEmptyChannels) {
                 val maxReverseSwapAmount = session.lightningSdk.onchainPaymentLimits().maxPayableSat
                 val minAmount =
                     session.lightningSdk.fetchReverseSwapFees().min
@@ -398,40 +400,44 @@ class RecoverFundsViewModel(
 
                 return@doAsync true
             } else {
-                // Redeem Onchain funds from Lightning node
-                session.lightningSdk.prepareRedeemOnchainFunds(
-                    toAddress = address,
-                    satPerVbyte = getFee()?.toUInt()
-                ).also {
-                    val toBeRefunded = satoshi - it.txFeeSat.toLong()
-                    if (toBeRefunded < 0) {
-                        throw Exception("id_insufficient_funds")
-                    }
+                try {
+                    // Redeem Onchain funds from Lightning node
+//                    session.lightningSdk.prepareOnchainSend(
+//                        toAddress = address,
+//                        satPerVbyte = getFee()?.toUInt()
+//                    ).also { preparedOnchainSend ->
+//
+//                        _preparedOnchainSend = preparedOnchainSend
+//
+//                        amountToBeRefunded.value = preparedOnchainSend.recipientSat.toLong().toAmountLook(
+//                            session = session,
+//                            withUnit = true
+//                        )
+//
+//                        amountToBeRefundedFiat.value = preparedOnchainSend.recipientSat.toLong().toAmountLook(
+//                            session = session,
+//                            withUnit = true,
+//                            denomination = Denomination.fiat(session)
+//                        )
+//
+//                        preparedOnchainSend.feeSat.toLong().let {
+//                            updateFee(
+//                                fee = it.toAmountLook(session = session, withUnit = true) ?: "",
+//                                feeFiat = it.toAmountLook(
+//                                    session = session,
+//                                    withUnit = true,
+//                                    denomination = Denomination.fiat(session)
+//                                ) ?: "",
+//                                feeRate = feeRate
+//                            )
+//                        }
+//                    }
 
-                    amountToBeRefunded.value = toBeRefunded.toAmountLook(
-                        session = session,
-                        withUnit = true
-                    )
-                    amountToBeRefundedFiat.value = toBeRefunded.toAmountLook(
-                        session = session,
-                        withUnit = true,
-                        denomination = Denomination.fiat(session)
-                    )
-
-                    it.txFeeSat.toLong().let {
-                        updateFee(
-                            fee = it.toAmountLook(session = session, withUnit = true) ?: "",
-                            feeFiat = it.toAmountLook(
-                                session = session,
-                                withUnit = true,
-                                denomination = Denomination.fiat(session)
-                            ) ?: "",
-                            feeRate = feeRate
-                        )
-                    }
+                    return@doAsync true
+                } catch (e: Exception) {
+                    e.printStackTrace()
+                    throw Exception("id_insufficient_funds")
                 }
-
-                return@doAsync true
             }
         }, onError = {
             if (it.message?.contains("Insufficient funds to pay fees") == true) {
@@ -469,7 +475,7 @@ class RecoverFundsViewModel(
                     account
                 ).address
 
-            if (isSendAll) {
+            if (this@RecoverFundsViewModel.isEmptyChannels) {
                 // Send Onchain all funds emptying the wallet
                 session.lightningSdk.payOnchain(
                     address = address,
@@ -484,10 +490,10 @@ class RecoverFundsViewModel(
                     satPerVbyte = getFee()?.toUInt()
                 )
             } else {
-                // Redeem Onchain funds from Lightning node
-                session.lightningSdk.redeemOnchainFunds(
+                session.lightningSdk.onchainSend(
                     toAddress = address,
-                    satPerVbyte = getFee()?.toUInt()
+//                    satPerVbyte = getFee()?.toUInt(),
+//                    prepared = _preparedOnchainSend!!
                 )
             }
         }, preAction = {
@@ -528,7 +534,7 @@ class RecoverFundsViewModel(
 
 class RecoverFundsViewModelPreview(greenWallet: GreenWallet) : RecoverFundsViewModelAbstract(
     greenWallet = greenWallet,
-    isSendAll = false,
+    isEmptyChannels = false,
     onChainAddress = null
 ) {
 

@@ -216,7 +216,8 @@ class OnOffRampsViewModel(greenWallet: GreenWallet) :
                     // Cache SwapInfo
                     if (swapInfo == null) {
                         swapInfo = tryCatch(context = Dispatchers.Default) {
-                            session.receiveOnchain()
+                            // session.receiveOnchain()
+                            null
                         }
                     }
 

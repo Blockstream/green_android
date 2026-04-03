@@ -161,7 +161,6 @@ class AccountOverviewViewModel(greenWallet: GreenWallet, accountAsset: AccountAs
         object Receive : Event
         object Refresh : Event
         object LoadMoreTransactions : Event
-        object RescanSwaps : Event
         object CopyAccountId : Event
         object ClickLightningSweep : Event
         object ClickLightningLearnMore : Events.OpenBrowser(Urls.HELP_RECEIVE_CAPACITY)
@@ -265,10 +264,6 @@ class AccountOverviewViewModel(greenWallet: GreenWallet, accountAsset: AccountAs
                 loadMoreTransactions()
             }
 
-            is LocalEvents.RescanSwaps -> {
-                rescanSwaps()
-            }
-
             is LocalEvents.CopyAccountId -> {
                 postSideEffect(
                     SideEffects.CopyToClipboard(
@@ -283,8 +278,7 @@ class AccountOverviewViewModel(greenWallet: GreenWallet, accountAsset: AccountAs
                 postSideEffect(
                     SideEffects.NavigateTo(
                         NavigateDestinations.RecoverFunds(
-                            greenWallet = greenWallet,
-                            amount = session.lightningSdk.nodeInfoStateFlow.value.onchainBalanceSatoshi()
+                            greenWallet = greenWallet
                         )
                     )
                 )
@@ -295,16 +289,6 @@ class AccountOverviewViewModel(greenWallet: GreenWallet, accountAsset: AccountAs
     private fun loadMoreTransactions() {
         logger.i { "Load more transactions" }
         session.getTransactions(account = account, isReset = false, isLoadMore = true)
-    }
-
-    private fun rescanSwaps() {
-        postSideEffect(SideEffects.Snackbar(StringHolder.create(Res.string.id_rescan_swaps_initiated)))
-
-        doAsync({
-            session.lightningSdkOrNull?.rescanSwaps()
-        }, onSuccess = {
-
-        })
     }
 
     companion object : Loggable()

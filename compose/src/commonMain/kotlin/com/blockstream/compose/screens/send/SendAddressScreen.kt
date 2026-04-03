@@ -55,6 +55,7 @@ fun SendAddressScreen(
 
     SetupScreen(
         viewModel = viewModel,
+        withImePadding = true,
         withPadding = false,
     ) {
         GreenColumn(

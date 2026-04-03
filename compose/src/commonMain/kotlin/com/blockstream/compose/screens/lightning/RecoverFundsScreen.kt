@@ -26,6 +26,7 @@ import blockstream_green.common.generated.resources.id_receive_on
 import blockstream_green.common.generated.resources.id_receive_on_address
 import blockstream_green.common.generated.resources.id_refundable
 import blockstream_green.common.generated.resources.id_set_custom_fee_rate
+import com.blockstream.compose.GreenPreview
 import com.blockstream.data.data.FeePriority
 import com.blockstream.data.data.ScanResult
 import com.blockstream.data.extensions.toggle
@@ -45,6 +46,7 @@ import com.blockstream.compose.events.Events
 import com.blockstream.compose.extensions.onValueChange
 import com.blockstream.compose.models.lightning.RecoverFundsViewModel
 import com.blockstream.compose.models.lightning.RecoverFundsViewModelAbstract
+import com.blockstream.compose.models.lightning.RecoverFundsViewModelPreview
 import com.blockstream.compose.navigation.NavigateDestinations
 import com.blockstream.compose.navigation.getResult
 import com.blockstream.compose.theme.green
@@ -54,6 +56,7 @@ import com.blockstream.compose.utils.AnimatedNullableVisibility
 import com.blockstream.compose.utils.SetupScreen
 import org.jetbrains.compose.resources.painterResource
 import org.jetbrains.compose.resources.stringResource
+import org.jetbrains.compose.ui.tooling.preview.Preview
 
 @Composable
 fun RecoverFundsScreen(
@@ -182,14 +185,15 @@ fun RecoverFundsScreen(
             }
 
             val feePriority by viewModel.feePriority.collectAsStateWithLifecycle()
-            GreenNetworkFee(feePriority = feePriority, onClick = { onIconClicked ->
-                viewModel.postEvent(
-                    RecoverFundsViewModel.LocalEvents.ClickFeePriority(
-                        showCustomFeeRateDialog = onIconClicked
+            if(viewModel.isRefund || viewModel.isEmptyChannels) {
+                GreenNetworkFee(feePriority = feePriority, onClick = { onIconClicked ->
+                    viewModel.postEvent(
+                        RecoverFundsViewModel.LocalEvents.ClickFeePriority(
+                            showCustomFeeRateDialog = onIconClicked
+                        )
                     )
-                )
+                })
             }
-            )
 
             val amountToBeRefunded by viewModel.amountToBeRefunded.collectAsStateWithLifecycle()
             val amountToBeRefundedFiat by viewModel.amountToBeRefundedFiat.collectAsStateWithLifecycle()
@@ -220,5 +224,13 @@ fun RecoverFundsScreen(
                 }
             )
         }
+    }
+}
+
+@Composable
+@Preview
+fun RecoverFundsScreenPreview() {
+    GreenPreview {
+        RecoverFundsScreen(viewModel = RecoverFundsViewModelPreview.preview())
     }
 }

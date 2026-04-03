@@ -108,6 +108,7 @@ import com.blockstream.data.gdk.params.ValidateAddresseesParams
 import com.blockstream.data.lightning.ConnectStatus
 import com.blockstream.data.lightning.GreenlightMnemonicAndCredentials
 import com.blockstream.data.lightning.LightningEvent
+import com.blockstream.data.lightning.LightningFees
 import com.blockstream.data.lightning.LightningInputType
 import com.blockstream.data.lightning.LightningManager
 import com.blockstream.data.lightning.LightningReceivePayment
@@ -117,12 +118,16 @@ import com.blockstream.data.lightning.LnUrlPayOutcome
 import com.blockstream.data.lightning.expireIn
 import com.blockstream.data.lightning.fromInvoice
 import com.blockstream.data.lightning.fromLnUrlPay
+//import com.blockstream.data.lightning.fromLnUrlPay
 import com.blockstream.data.lightning.fromPayment
 import com.blockstream.data.lightning.fromReverseSwapInfo
 import com.blockstream.data.lightning.fromSwapInfo
 import com.blockstream.data.lightning.isExpired
+import com.blockstream.data.lightning.maxPayableSatoshi
 import com.blockstream.data.lightning.maxSendableSatoshi
 import com.blockstream.data.lightning.minSendableSatoshi
+//import com.blockstream.data.lightning.maxSendableSatoshi
+//import com.blockstream.data.lightning.minSendableSatoshi
 import com.blockstream.data.lightning.sendableSatoshi
 import com.blockstream.data.lwk.Lwk
 import com.blockstream.data.lwk.LwkManager
@@ -136,12 +141,14 @@ import com.blockstream.data.utils.randomChars
 import com.blockstream.data.utils.server
 import com.blockstream.data.utils.toAmountLook
 import com.blockstream.data.utils.toHex
+import com.blockstream.glsdk.OnchainReceiveResponse
 import com.blockstream.jade.HttpRequestHandler
 import com.blockstream.utils.Loggable
 import kotlinx.coroutines.CoroutineDispatcher
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.CoroutineStart
 import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.IO
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.SupervisorJob
 import kotlinx.coroutines.async
@@ -1025,8 +1032,6 @@ class GdkSession constructor(
 
             if (connectStatus == ConnectStatus.Failed) {
                 throw Exception("Something went wrong while initiating your Lightning account")
-            } else if (connectStatus == ConnectStatus.NoNode) {
-                throw Exception("Experimental Lightning support is currently unavailable to new users.")
             }
 
             // update GreenSessions accounts (use cache)
@@ -1989,7 +1994,7 @@ class GdkSession constructor(
     }
 
     suspend fun getReceiveAddress(account: Account) =
-        if (account.isLightning) Address(address = lightningSdk.receiveOnchain().bitcoinAddress) else authHandler(
+        if (account.isLightning) Address(address = lightningSdk.receiveOnchain().bech32) else authHandler(
             account.network,
             gdk.getReceiveAddress(
                 gdkSession(account.network),
@@ -2000,7 +2005,7 @@ class GdkSession constructor(
     suspend fun getReceiveAddressAsString(account: Account): String = getReceiveAddress(account).address
 
     // Combine with receive address
-    suspend fun receiveOnchain(): LightningSwapInfo {
+    suspend fun receiveOnchain(): OnchainReceiveResponse {
         return lightningSdk.receiveOnchain()
     }
 
@@ -2202,31 +2207,35 @@ class GdkSession constructor(
         }
     }
 
+    suspend fun getLightningFeeEstimation(): LightningFees? {
+        // return lightningSdk.onchainFeeRates()
+        val fees = getFeeEstimates(lightning).fees
+        fun rate(index: Int): ULong = ((fees.getOrNull(index) ?: 0L) / 1000).toULong()
+        return LightningFees(
+            fastestFee = rate(FeeBlockHigh),
+            halfHourFee = rate(3),
+            hourFee = rate(FeeBlockMedium),
+            economyFee = rate(FeeBlockLow),
+            minimumFee = rate(0),
+        )
+    }
+
     suspend fun getFeeEstimates(network: Network): FeeEstimation = tryCatch(context = Dispatchers.Default) {
-        if (network.isLightning) {
-            lightningSdk.recommendedFees()?.let { fees ->
-                (
-                        listOf(fees.minimumFee) +
-                                List(FeeBlockTarget[0] - 0) { fees.fastestFee } +
-                                List(FeeBlockTarget[1] - FeeBlockTarget[0]) { fees.halfHourFee } +
-                                List(FeeBlockTarget[2] - FeeBlockTarget[1]) { fees.hourFee }
-                        ).map { it.toLong() }.let {
-                        FeeEstimation(it)
-                    }
+        val feeNetwork = if (network.isLightning) {
+            bitcoin ?: network
+        } else network
+
+        gdk.getFeeEstimates(gdkSession(feeNetwork)).let {
+            // Temp fix
+            if (feeNetwork.isSinglesig && feeNetwork.isLiquid) {
+                FeeEstimation(it.fees.map { fee ->
+                    fee.coerceAtLeast(100L)
+                })
+            } else {
+                it
             }
-        } else {
-            gdk.getFeeEstimates(gdkSession(network)).let {
-                // Temp fix
-                if (network.isSinglesig && network.isLiquid) {
-                    FeeEstimation(it.fees.map { fee ->
-                        fee.coerceAtLeast(100L)
-                    })
-                } else {
-                    it
-                }
-            }.also {
-                logger.d { "FeeEstimation: ${network.id} $it" }
-            }
+        }.also {
+            logger.d { "FeeEstimation: ${feeNetwork.id} $it" }
         }
     } ?: FeeEstimation(fees = mutableListOf(network.defaultFee))
 
@@ -2264,11 +2273,11 @@ class GdkSession constructor(
         }
     }
 
-    private fun syncLightning() {
+    private suspend fun syncLightning() {
         lightningSdkOrNull?.sync()
     }
 
-    private fun getLightningTransactions() = lightningSdkOrNull?.getTransactions()?.map {
+    private suspend fun getLightningTransactions() = lightningSdkOrNull?.getTransactions()?.map {
         Transaction.fromPayment(it)
     }.let {
         Transactions(transactions = it ?: listOf())
@@ -2353,7 +2362,7 @@ class GdkSession constructor(
 
     private val transactionsMutex = Mutex()
     fun getTransactions(account: Account, isReset: Boolean, isLoadMore: Boolean) {
-        scope.launch(context = logException(countly)) {
+        scope.launch(context = Dispatchers.IO + logException(countly)) {
             val transactionsPagerStateFlow = accountTransactionsPagerStateFlow(account)
             val transactionsStateFlow = accountTransactionsStateFlow(account)
 
@@ -2368,7 +2377,7 @@ class GdkSession constructor(
                     var offset = 0
 
                     if (isReset) {
-                        // transactionsStateFlow.value = listOf(Transaction.LoadingTransaction)
+                        transactionsStateFlow.value = DataState.Loading
                         offset = 0
                     } else if (isLoadMore) {
                         offset = txSize
@@ -2536,7 +2545,7 @@ class GdkSession constructor(
 
     suspend fun getBalance(account: Account, confirmations: Int = 0, cacheAssets: Boolean = false): Assets {
         val assets: LinkedHashMap<String, Long>? = if (account.isLightning) {
-            lightningSdkOrNull?.balanceCombined()?.let { linkedMapOf(LN_BTC_POLICY_ASSET to it) }
+            lightningSdkOrNull?.balanceOnChannel()?.let { linkedMapOf(LN_BTC_POLICY_ASSET to it) }
         } else {
             authHandler(
                 account.network, gdk.getBalance(
@@ -2767,11 +2776,13 @@ class GdkSession constructor(
         onlyInAcceptableRange: Boolean = true
     ): Balance? = withContext(context = Dispatchers.Default) {
 
-        val network = assetId.networkForAsset(this@GdkSession)?.takeIf { !it.isLightning } ?: defaultNetworkOrNull ?: return@withContext null
+        val network =
+            assetId.networkForAsset(this@GdkSession)?.takeIf { !it.isLightning } ?: defaultNetworkOrNull ?: return@withContext null
         val isPolicyAsset = assetId.isPolicyAsset(this@GdkSession)
         val asset = assetId?.let { getAsset(it) }
 
-        val isFiatDenomination = denomination != null && denomination != BTC_UNIT && denomination != MBTC_UNIT && denomination != UBTC_UNIT && denomination != BITS_UNIT && denomination != SATOSHI_UNIT
+        val isFiatDenomination =
+            denomination != null && denomination != BTC_UNIT && denomination != MBTC_UNIT && denomination != UBTC_UNIT && denomination != BITS_UNIT && denomination != SATOSHI_UNIT
 
         val convert = if (isPolicyAsset || (asString == null && asset != null)) {
             Convert.create(
@@ -2882,7 +2893,7 @@ class GdkSession constructor(
             network,
             gdk.createTransaction(gdkSession(network), params)
         ).result<CreateTransaction>()
-    
+
     suspend fun createRedepositTransaction(network: Network, params: CreateTransactionParams) =
         authHandler(
             network,
@@ -2895,7 +2906,7 @@ class GdkSession constructor(
         min: Long? = null,
         max: Long? = null
     ): String? {
-        val balance = this.accountAssets(account = account).value.policyAsset
+        val balance = lightningSdk.nodeInfoStateFlow.value.maxPayableSatoshi()
 
         return if (satoshi == null || satoshi < 0L) {
             "id_invalid_amount"
@@ -3356,7 +3367,7 @@ class GdkSession constructor(
 
         return privateKey
     }
-    
+
     suspend fun jadePsbtRequest(psbt: String): BcurEncodedData {
 
         val params = BcurEncodeParams(
@@ -3366,7 +3377,7 @@ class GdkSession constructor(
 
         return bcurEncode(params)
     }
-    
+
     suspend fun jadePinRequest(payload: String): BcurEncodedData {
 
         val params = BcurEncodeParams(
@@ -3393,7 +3404,7 @@ class GdkSession constructor(
     fun jadeBip8539Reply(privateKey: ByteArray, publicKey: ByteArray, encrypted: ByteArray): String? {
         return wally.bip85FromJade(privateKey, publicKey, "bip85_bip39_entropy", encrypted)
     }
-    
+
     suspend fun bcurEncode(params: BcurEncodeParams): BcurEncodedData {
         val network = defaultNetworkOrNull ?: networks.bitcoinElectrum
 

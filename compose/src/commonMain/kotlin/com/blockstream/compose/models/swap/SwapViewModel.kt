@@ -180,6 +180,7 @@ class SwapViewModel(
                             AccountAssetBalance.create(
                                 accountAsset = it,
                                 session = sessionOrNull,
+                                isMaxPayable = true,
                                 denomination = denomination
                             )
                         }

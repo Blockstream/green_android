@@ -8,7 +8,6 @@ data class AppConfig(
     val isDebug: Boolean,
     val filesDir: String,
     val cacheDir: String,
-    val breezApiKey: String? = null,
     val greenlightKey: String? = null,
     val greenlightCert: String? = null,
     val zendeskClientId: String? = null,
@@ -28,7 +27,7 @@ data class AppConfig(
         ): AppConfig {
             val appKeys: AppKeys? = appKeysString?.takeIf { it.isNotBlank() }?.let { AppKeys.fromText(it) }
 
-            if (lightningFeatureEnabled && (appKeys?.greenlightCert == null || appKeys.greenlightKey == null || appKeys.breezApiKey == null)) {
+            if (lightningFeatureEnabled && (appKeys?.greenlightCert == null || appKeys.greenlightKey == null)) {
                 logger.i { "Lightning Feature turned off" }
             }
 
@@ -36,7 +35,6 @@ data class AppConfig(
                 isDebug = isDebug,
                 filesDir = filesDir,
                 cacheDir = cacheDir,
-                breezApiKey = appKeys?.breezApiKey,
                 greenlightKey = appKeys?.greenlightKey,
                 greenlightCert = appKeys?.greenlightCert,
                 zendeskClientId = appKeys?.zendeskClientId,

@@ -138,8 +138,9 @@ class GetReceiveAmountUseCase(
                         }
                     }
 
+                    // Use as a workaround for newly created wallets nodeInfo.maxReceivableSatoshi() == 0L
                     val isValid =
-                        balance != null && error == null && (balance.satoshi >= 0 && balance.satoshi <= nodeInfo.maxReceivableSatoshi() && (balance.satoshi <= totalInboundLiquiditySatoshi || (balance.satoshi > (openChannelFee?.feeSatoshi()
+                        balance != null && error == null && (balance.satoshi >= 0 && (balance.satoshi <= nodeInfo.maxReceivableSatoshi() || nodeInfo.maxReceivableSatoshi() == 0L) && (balance.satoshi <= totalInboundLiquiditySatoshi || (balance.satoshi > (openChannelFee?.feeSatoshi()
                             ?: 0))))
 
                     val hint = nodeInfo.maxReceivableSatoshi().toAmountLook(

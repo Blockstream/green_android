@@ -76,9 +76,6 @@ fun commonModules(appConfig: AppConfig): List<Module> {
         }
         single {
             val greenlightKeys = GreenlightKeys(
-                breezApiKey = appConfig.breezApiKey?.let { base64 ->
-                    Base64.decode(base64).commonToUtf8String()
-                } ?: "",
                 deviceKey = appConfig.greenlightKey?.takeIf { it.isNotBlank() }?.let {
                     Base64.decode(it)
                 },

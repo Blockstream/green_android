@@ -218,6 +218,7 @@ class ReceiveViewModel(greenWallet: GreenWallet, accountAsset: AccountAsset) :
     class LocalEvents {
         object CreateAccount : Event
         object ToggleLightning : Event
+        object ToggleLightningOnChain : Event
         object GenerateNewAddress : Event
         object CreateInvoice : Event
         object CopyAddress : Event
@@ -485,6 +486,17 @@ class ReceiveViewModel(greenWallet: GreenWallet, accountAsset: AccountAsset) :
                 }
             }
 
+            is LocalEvents.ToggleLightningOnChain -> {
+                if(_showLightningOnChainAddress.value){
+                    _showLightningOnChainAddress.value = false
+                } else {
+                    _showLightningOnChainAddress.value = true
+                    viewModelScope.launch {
+                        generateAddress()
+                    }
+                }
+            }
+
             is LocalEvents.GenerateNewAddress -> {
                 if (onProgress.value) {
                     showWaitSnackbar()
@@ -548,7 +560,7 @@ class ReceiveViewModel(greenWallet: GreenWallet, accountAsset: AccountAsset) :
         _showLedgerAssetWarning.value = account.isLiquid && session.device?.isLedger == true
         _showVerifyOnDevice.value = session.device?.canVerifyAddressOnDevice(account) ?: session.isHwWatchOnly
 
-        if (account.isLightning) {
+        if (account.isLightning && !_showLightningOnChainAddress.value) {
             _receiveAddress.value = null
             _receiveAddressUri.value = null
             _address.value = null

@@ -90,15 +90,6 @@ fun LightningNodeBottomSheet(
                         horizontalArrangement = Arrangement.SpaceBetween
                     ) {
                         GreenButton(
-                            text = stringResource(Res.string.id_rescan_swaps),
-                            type = GreenButtonType.TEXT,
-                            enabled = !onProgress,
-                            modifier = Modifier.weight(1f)
-                        ) {
-                            viewModel.postEvent(LightningNodeViewModel.LocalEvents.RescanSwaps)
-                        }
-
-                        GreenButton(
                             text = stringResource(Res.string.id_share_diagnostic_data),
                             type = GreenButtonType.TEXT,
                             enabled = !onProgress,

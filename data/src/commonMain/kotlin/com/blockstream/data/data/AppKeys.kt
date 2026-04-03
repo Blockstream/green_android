@@ -9,8 +9,6 @@ import kotlin.io.encoding.Base64
 
 @Serializable
 data class AppKeys(
-    @SerialName("breez_api_key")
-    val breezApiKey: String? = null,
     @SerialName("greenlight_key")
     val greenlightKey: String? = null,
     @SerialName("greenlight_cert")

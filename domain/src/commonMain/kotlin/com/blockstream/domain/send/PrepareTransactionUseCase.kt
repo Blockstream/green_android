@@ -9,6 +9,7 @@ import com.blockstream.data.gdk.data.AccountAsset
 import com.blockstream.data.gdk.params.AddressParams
 import com.blockstream.data.gdk.params.CreateTransactionParams
 import com.blockstream.data.gdk.params.toJsonElement
+import com.blockstream.data.lightning.maxPayableSatoshi
 import com.blockstream.data.swap.SwapDetails
 import com.blockstream.data.utils.UserInput
 import com.blockstream.domain.swap.SwapUseCase
@@ -84,7 +85,7 @@ class PrepareTransactionUseCase(private val swapUseCase: SwapUseCase) {
                     addressees = listOf(params).toJsonElement(),
                     utxos = mapOf(BTC_POLICY_ASSET to listOf(buildJsonObject {
                         // a hack to re-create params when balance changes
-                        session.accountAssets(accountAsset.account).value.policyAsset
+                        session.lightningSdk.nodeInfoStateFlow.value.maxPayableSatoshi()
                     }))
                 )
             }

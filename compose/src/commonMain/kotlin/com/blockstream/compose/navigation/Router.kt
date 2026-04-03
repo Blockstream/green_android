@@ -621,7 +621,7 @@ fun Router(
                 RecoverFundsScreen(viewModel {
                     RecoverFundsViewModel(
                         greenWallet = args.greenWallet,
-                        isSendAll = args.isSendAll,
+                        isEmptyChannels = args.isEmptyChannels,
                         onChainAddress = args.address,
                         satoshi = args.amount
                     )
@@ -1246,7 +1246,7 @@ fun Router(
                             greenWallet = args.greenWallet,
                             accountAssetOrNull = args.accountAsset,
                             isFeeRateOnly = args.isFeeRateOnly,
-                            useBreezFees = args.useBreezFees
+                            useLightningFees = args.useLightningFees
                         )
                     },
                     onDismissRequest = navController.onDismissRequest()

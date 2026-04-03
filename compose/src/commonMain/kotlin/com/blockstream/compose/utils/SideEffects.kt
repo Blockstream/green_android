@@ -211,7 +211,7 @@ fun HandleSideEffect(
                             greenWallet = it.greenWallet,
                             accountAsset = it.accountAsset,
                             isFeeRateOnly = it.isFeeRateOnly,
-                            useBreezFees = it.useBreezFees
+                            useLightningFees = it.useBreezFees
                         )
                     )
                 }

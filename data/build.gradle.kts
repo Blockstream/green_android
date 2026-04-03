@@ -140,10 +140,6 @@ kotlin {
                 api(libs.blockstream.lwk)
                 api(libs.blockstream.glsdk)
 
-                /**  --- Breez ------------------------------------------------------------------------------ */
-                api(libs.breez.sdk.kmp)
-                /** ----------------------------------------------------------------------------------------- */
-
                 /**  --- Utils  --- */
                 api(libs.sqldelight.coroutines.extensions)
                 api(libs.stately.concurrent.collections)

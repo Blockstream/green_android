@@ -117,6 +117,7 @@ abstract class CreateTransactionViewModelAbstract(
                     AccountAssetBalance.create(
                         accountAsset = it,
                         session = session,
+                        isMaxPayable = true,
                         denomination = denomination.value
                     )
                 }
