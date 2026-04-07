@@ -98,6 +98,8 @@ abstract class SendViewModelAbstract(greenWallet: GreenWallet, accountAsset: Acc
 
     abstract val supportsSendAll: Boolean
 
+    abstract val showDenominationSelector: StateFlow<Boolean>
+
     abstract val description: StateFlow<String?>
 
     abstract val metadataDomain: StateFlow<String?>
@@ -118,6 +120,9 @@ class SendViewModel(
     internal val swapsUseCase: SwapUseCase by inject()
 
     override val supportsSendAll: Boolean = !accountAsset.account.isLightning
+
+    private val _showDenominationSelector: MutableStateFlow<Boolean> = MutableStateFlow(accountAsset.assetId.isPolicyAsset(session))
+    override val showDenominationSelector: StateFlow<Boolean> = _showDenominationSelector.asStateFlow()
 
     override val isSendAll: MutableStateFlow<Boolean> = MutableStateFlow(false)
 
@@ -186,6 +191,15 @@ class SendViewModel(
     init {
         _addressInputType = addressType
         _network.value = accountAsset.account.network
+
+        if (!_showDenominationSelector.value) {
+            session.ifConnected {
+                viewModelScope.launch {
+                    _showDenominationSelector.value =
+                        session.convert(assetId = accountAsset.assetId, asLong = 0)?.fiatRate != null
+                }
+            }
+        }
 
         isNoteEditable.onEach { isEditable ->
             _navData.value = NavData(
@@ -592,6 +606,7 @@ class SendViewModelPreview(greenWallet: GreenWallet, isLightning: Boolean = fals
     override val isAmountLocked: StateFlow<Boolean> = MutableStateFlow(false)
     override val isSendAll: MutableStateFlow<Boolean> = MutableStateFlow(false)
     override val supportsSendAll: Boolean = true
+    override val showDenominationSelector: StateFlow<Boolean> = MutableStateFlow(true)
     override val metadataDomain: StateFlow<String?> = MutableStateFlow("id_payment_requested_by_s|blockstream.com")
     override val metadataImage: StateFlow<ByteArray?> = MutableStateFlow(Base64.decode(base64Png))
     override val metadataDescription: StateFlow<String?> = MutableStateFlow("Metadata Description")

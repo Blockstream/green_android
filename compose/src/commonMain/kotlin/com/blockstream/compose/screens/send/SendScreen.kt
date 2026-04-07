@@ -174,6 +174,7 @@ fun SendScreen(
                 val isAmountLocked by viewModel.isAmountLocked.collectAsStateWithLifecycle()
                 val isSendAll by viewModel.isSendAll.collectAsStateWithLifecycle()
                 val supportsSendAll = viewModel.supportsSendAll
+                val showDenominationSelector by viewModel.showDenominationSelector.collectAsStateWithLifecycle()
 
                 AnimatedVisibility(visible = showAmount && accountAssetBalance != null) {
                     GreenAmountField(
@@ -208,9 +209,9 @@ fun SendScreen(
                                 )
                             }
                         },
-                        onDenominationClick = {
-                            viewModel.postEvent(Events.SelectDenomination)
-                        }
+                        onDenominationClick = if (showDenominationSelector) {
+                            { viewModel.postEvent(Events.SelectDenomination) }
+                        } else null
                     )
                 }
 
