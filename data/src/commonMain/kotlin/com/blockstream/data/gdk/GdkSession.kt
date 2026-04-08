@@ -2024,18 +2024,6 @@ class GdkSession constructor(
 
     fun setupDefaultAccounts(): Job {
         return scope.launch {
-            // Archive default gdk accounts with no history
-            accounts.value.filter {
-                (it.type == AccountType.BIP44_LEGACY || it.type == AccountType.BIP49_SEGWIT_WRAPPED) && !it.hasHistory(
-                    this@GdkSession
-                )
-            }.forEach { account ->
-                logger.d { "Archive ${account.name}" }
-                updateAccount(
-                    account = account, isHidden = true, resetAccountName = account.type.title()
-                )
-            }
-
             // Create Singlesig Segwit accounts
             val accountType = AccountType.BIP84_SEGWIT
 
@@ -2055,6 +2043,18 @@ class GdkSession constructor(
 
             // Be sure to update all accounts so that we properly calculate balances
             updateAccountsAndBalances().join()
+
+            // Archive default gdk legacy accounts with no history
+            accounts.value.filter {
+                (it.type == AccountType.BIP44_LEGACY || it.type == AccountType.BIP49_SEGWIT_WRAPPED) && !it.hasHistory(
+                    this@GdkSession
+                )
+            }.forEach { account ->
+                logger.d { "Archive ${account.name}" }
+                updateAccount(
+                    account = account, isHidden = true, resetAccountName = account.type.title()
+                )
+            }
 
             // Set active account as the first funded account or the first with history
             (accounts.value.find { !it.isLightning && it.isFunded(this@GdkSession) }
