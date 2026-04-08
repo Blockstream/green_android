@@ -335,7 +335,7 @@ class JadeHWWallet constructor(
                 }
             } catch (e: Exception) {
                 e.printStackTrace()
-                throw RuntimeException(e)
+                throw RuntimeException(e.message)
             }
         }
     }
