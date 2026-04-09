@@ -16,6 +16,7 @@ import com.blockstream.domain.promo.GetPromoUseCase
 import com.blockstream.domain.receive.receiveModule
 import com.blockstream.domain.send.sendModule
 import com.blockstream.domain.swap.swapModule
+import com.blockstream.domain.transaction.GetWalletTransactionsUseCase
 import com.blockstream.domain.wallet.walletModule
 import org.koin.dsl.module
 
@@ -27,6 +28,9 @@ val domainModule = module {
     includes(receiveModule)
     includes(walletModule)
     includes(accountModule)
+    single {
+        GetWalletTransactionsUseCase()
+    }
     single {
         LightningNodeIdUseCase(get())
     }

@@ -20,14 +20,15 @@ import com.blockstream.domain.base.Result
 import com.blockstream.domain.meld.GetPendingMeldTransactions
 import com.blockstream.domain.swap.IsSwapAvailableUseCase
 import com.blockstream.domain.swap.IsSwapsEnabledUseCase
+import com.blockstream.domain.transaction.GetWalletTransactionsUseCase
 import com.blockstream.utils.Loggable
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.StateFlow
+import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.combine
-import kotlinx.coroutines.flow.filter
 import kotlinx.coroutines.flow.filterNotNull
 import kotlinx.coroutines.flow.onEach
 import kotlinx.coroutines.flow.stateIn
@@ -42,11 +43,17 @@ abstract class TransactViewModelAbstract(
 
     override fun screenName(): String = "TransactTab"
 
+    abstract val isLoadingMore: StateFlow<Boolean>
+
     private val isSwapsEnabledUseCase: IsSwapsEnabledUseCase by inject()
 
     abstract val isSwapAvailable: Boolean
 
     abstract val transactions: StateFlow<DataState<List<TransactionLook>>>
+
+    abstract val hasMore: StateFlow<Boolean>
+
+    open fun resetTransactionList() {}
 
     fun onBuy() {
         postEvent(NavigateDestinations.Buy(greenWallet = greenWallet))
@@ -70,12 +77,16 @@ abstract class TransactViewModelAbstract(
             }
         }
     }
+
+    abstract fun onLoadMore()
 }
 
 class TransactViewModel(greenWallet: GreenWallet) : TransactViewModelAbstract(greenWallet = greenWallet) {
 
     private val isSwapAvailableUseCase: IsSwapAvailableUseCase by inject()
     private val getPendingMeldTransactions: GetPendingMeldTransactions by inject()
+    private val getWalletTransactionsUseCase: GetWalletTransactionsUseCase by inject()
+
     private var refreshJob: Job? = null
 
     override fun segmentation(): HashMap<String, Any> = countly.sessionSegmentation(session = session)
@@ -83,6 +94,11 @@ class TransactViewModel(greenWallet: GreenWallet) : TransactViewModelAbstract(gr
     override val isSwapAvailable: Boolean = session.ifConnected {
         isSwapAvailableUseCase(wallet = greenWallet, session = session)
     } ?: false
+
+    private val _isLoadingMore = MutableStateFlow(false)
+    override val isLoadingMore = _isLoadingMore.asStateFlow()
+
+    override val hasMore: StateFlow<Boolean> = session.walletTransactionsPager
 
     private val _meldTransactions: StateFlow<List<Transaction>> = greenWallet.xPubHashId.let {
         combine(
@@ -104,7 +120,7 @@ class TransactViewModel(greenWallet: GreenWallet) : TransactViewModelAbstract(gr
     }
 
     private val _transactions: StateFlow<DataState<List<TransactionLook>>> = combine(
-        session.walletTransactions.filter { session.isConnected }, session.settings(), _meldTransactions
+        getWalletTransactionsUseCase.observe(), session.settings(), _meldTransactions
     ) { transactions, _, meldTransactions ->
         transactions.mapSuccess { gdkTransactions ->
             // A txHash can appear across multiple accounts, so keep all gdk transactions
@@ -147,6 +163,14 @@ class TransactViewModel(greenWallet: GreenWallet) : TransactViewModelAbstract(gr
         startPeriodicRefresh()
 
         bootstrap()
+
+        viewModelScope.launch {
+            getWalletTransactionsUseCase(
+                GetWalletTransactionsUseCase.Params(
+                    session = session
+                )
+            )
+        }
     }
 
     private fun startPeriodicRefresh() {
@@ -176,6 +200,33 @@ class TransactViewModel(greenWallet: GreenWallet) : TransactViewModelAbstract(gr
         super.onCleared()
     }
 
+    override fun resetTransactionList() {
+        viewModelScope.launch {
+            getWalletTransactionsUseCase(
+                GetWalletTransactionsUseCase.Params(
+                    session = session,
+                    isReset = true
+                )
+            )
+        }
+    }
+
+    override fun onLoadMore() {
+        if (isLoadingMore.value) return
+
+        viewModelScope.launch {
+            _isLoadingMore.value = true
+            try {
+                getWalletTransactionsUseCase(GetWalletTransactionsUseCase.Params(session = session, isLoadMore = true))
+
+                // Wait for the UI to receive new items.
+                delay(1000)
+            } finally {
+                _isLoadingMore.value = false
+            }
+        }
+    }
+
     private suspend fun updateNavData(greenWallet: GreenWallet) {
         _navData.value = NavData(
             title = getString(Res.string.id_transact),
@@ -189,6 +240,8 @@ class TransactViewModel(greenWallet: GreenWallet) : TransactViewModelAbstract(gr
 class TransactViewModelPreview(val isEmpty: Boolean = false) : TransactViewModelAbstract(greenWallet = previewWallet()) {
 
     override val isSwapAvailable: Boolean = true
+
+    override val isLoadingMore: StateFlow<Boolean> = MutableStateFlow(false)
 
     override val transactions: StateFlow<DataState<List<TransactionLook>>> = MutableStateFlow(
         DataState.Success(
@@ -208,6 +261,10 @@ class TransactViewModelPreview(val isEmpty: Boolean = false) : TransactViewModel
             )
         )
     )
+
+    override val hasMore: StateFlow<Boolean> = MutableStateFlow(false)
+
+    override fun onLoadMore() {}
 
     companion object : Loggable() {
         fun create(isEmpty: Boolean = false) = TransactViewModelPreview(isEmpty = isEmpty)

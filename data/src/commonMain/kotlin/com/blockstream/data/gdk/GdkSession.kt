@@ -113,12 +113,10 @@ import com.blockstream.data.lightning.LightningInputType
 import com.blockstream.data.lightning.LightningManager
 import com.blockstream.data.lightning.LightningReceivePayment
 import com.blockstream.data.lightning.LightningSdk
-import com.blockstream.data.lightning.LightningSwapInfo
 import com.blockstream.data.lightning.LnUrlPayOutcome
 import com.blockstream.data.lightning.expireIn
 import com.blockstream.data.lightning.fromInvoice
 import com.blockstream.data.lightning.fromLnUrlPay
-//import com.blockstream.data.lightning.fromLnUrlPay
 import com.blockstream.data.lightning.fromPayment
 import com.blockstream.data.lightning.fromReverseSwapInfo
 import com.blockstream.data.lightning.fromSwapInfo
@@ -126,8 +124,6 @@ import com.blockstream.data.lightning.isExpired
 import com.blockstream.data.lightning.maxPayableSatoshi
 import com.blockstream.data.lightning.maxSendableSatoshi
 import com.blockstream.data.lightning.minSendableSatoshi
-//import com.blockstream.data.lightning.maxSendableSatoshi
-//import com.blockstream.data.lightning.minSendableSatoshi
 import com.blockstream.data.lightning.sendableSatoshi
 import com.blockstream.data.lwk.Lwk
 import com.blockstream.data.lwk.LwkManager
@@ -250,6 +246,7 @@ class GdkSession constructor(
     private var _accountAssetsFlow = mutableMapOf<AccountId, MutableStateFlow<Assets>>()
     private val _accountsAndBalanceUpdatedSharedFlow = MutableSharedFlow<Unit>(replay = 0)
     private var _walletTransactionsStateFlow: MutableStateFlow<DataState<List<Transaction>>> = MutableStateFlow(DataState.Loading)
+    private var _walletTransactionsPagerStateFlow: MutableStateFlow<Boolean> = MutableStateFlow(false)
     private var _accountTransactionsStateFlow = mutableMapOf<AccountId, MutableStateFlow<DataState<List<Transaction>>>>()
     private var _accountTransactionsPagerStateFlow = mutableMapOf<AccountId, MutableStateFlow<Boolean>>()
     private var _blockStateFlow = mutableMapOf<Network, MutableStateFlow<Block>>()
@@ -318,6 +315,7 @@ class GdkSession constructor(
     val accountsAndBalanceUpdated get() = _accountsAndBalanceUpdatedSharedFlow.asSharedFlow()
 
     val walletTransactions get() = _walletTransactionsStateFlow.asStateFlow()
+    val walletTransactionsPager get() = _walletTransactionsPagerStateFlow.asStateFlow()
 
     val failedNetworks get() = _failedNetworksStateFlow.asStateFlow()
 
@@ -816,6 +814,7 @@ class GdkSession constructor(
 
         // Clear Transactions
         _walletTransactionsStateFlow.value = DataState.Loading
+        _walletTransactionsPagerStateFlow.value = false
         _accountTransactionsStateFlow = mutableMapOf()
         _accountTransactionsPagerStateFlow = mutableMapOf()
 
@@ -2370,9 +2369,7 @@ class GdkSession constructor(
                 transactionsPagerStateFlow.value = false
 
                 transactionsMutex.withLock {
-                    val txSize = transactionsStateFlow.value.let {
-                        it.data()?.size ?: 0
-                    }
+                    val txSize = transactionsStateFlow.value.data()?.size ?: 0
 
                     var offset = 0
 
@@ -2415,14 +2412,36 @@ class GdkSession constructor(
 
     private val walletTransactionsMutex = Mutex()
     private val _walletTransactions = mutableMapOf<AccountId, List<Transaction>>()
-    fun updateWalletTransactions(updateForNetwork: Network? = null, updateForAccounts: Collection<Account>? = null) {
-        scope.launch(context = logException(countly)) {
+
+    private var _currentTransactionsLimit = DEFAULT_TRANSACTIONS_LIMIT
+    val currentTransactionsLimit: Int
+        get() = _currentTransactionsLimit
+
+    fun updateWalletTransactions(
+        updateForNetwork: Network? = null,
+        updateForAccounts: Collection<Account>? = null,
+        isReset: Boolean = false,
+        isLoadMore: Boolean = false
+    ): Job {
+        // updateForNetwork & updateForAccounts should not be set with isReset and isLoadMore
+        return scope.launch(context = logException(countly)) {
             try {
                 walletTransactionsMutex.withLock {
+
                     // Clear walletTransactions to avoid keeping archived accounts
                     if (updateForAccounts == null && updateForNetwork == null) {
                         _walletTransactions.clear()
+                        _walletTransactionsPagerStateFlow.value = false
                     }
+
+                    if (isReset) {
+                        _walletTransactionsStateFlow.value = DataState.Loading
+                        _currentTransactionsLimit = DEFAULT_TRANSACTIONS_LIMIT
+                    } else if (isLoadMore) {
+                        _currentTransactionsLimit += DEFAULT_TRANSACTIONS_LIMIT
+                    }
+
+                    logger.d { "updateWalletTransactions: $_currentTransactionsLimit, $isReset , $isLoadMore, $updateForAccounts, $updateForNetwork" }
 
                     allAccounts.value
                         .filter { account ->
@@ -2433,17 +2452,26 @@ class GdkSession constructor(
                                 // Clear transactions
                                 _walletTransactions.remove(account.id)
                             } else {
-                                _walletTransactions[account.id] = getTransactions(
+                                val accountTransactions = getTransactions(
                                     account,
-                                    TransactionParams(subaccount = account.pointer, limit = WALLET_OVERVIEW_TRANSACTIONS)
+                                    TransactionParams(
+                                        subaccount = account.pointer,
+                                        limit = _currentTransactionsLimit
+                                    )
                                 ).transactions
+
+                                _walletTransactions[account.id] = accountTransactions
+                                
+                                if (!account.isLightning && accountTransactions.size == _currentTransactionsLimit) {
+                                    _walletTransactionsPagerStateFlow.value = true
+                                }
                             }
                         }
 
                     var walletTransactions = _walletTransactions.values.flatten()
 
                     walletTransactions = walletTransactions.sortedWith(::sortTransactions).let {
-                        it.subList(0, it.size.coerceAtMost(WALLET_OVERVIEW_TRANSACTIONS))
+                        it.subList(0, it.size.coerceAtMost(_currentTransactionsLimit))
                     }
 
                     // Add Swap transactions
@@ -2458,11 +2486,13 @@ class GdkSession constructor(
                     if (walletTransactions.isNotEmpty()) {
                         _walletHasHistorySharedFlow.value = true
                     }
+
                     _walletTransactionsStateFlow.value = DataState.Success(walletTransactions)
                 }
 
             } catch (e: Exception) {
                 e.printStackTrace()
+                _walletTransactionsPagerStateFlow.value = false
             }
         }
     }
@@ -3463,7 +3493,7 @@ class GdkSession constructor(
     }
 
     companion object : Loggable() {
-        const val WALLET_OVERVIEW_TRANSACTIONS = 50
+        const val DEFAULT_TRANSACTIONS_LIMIT = 10
 
         const val LIQUID_ASSETS_KEY = "liquid_assets"
         const val LIQUID_ASSETS_TESTNET_KEY = "liquid_assets_testnet"
