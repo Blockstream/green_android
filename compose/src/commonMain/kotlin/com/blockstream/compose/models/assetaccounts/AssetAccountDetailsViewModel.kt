@@ -99,6 +99,7 @@ abstract class AssetAccountDetailsViewModelAbstract(
     }
 
     fun onSwap() {
+        postEvent(Events.SwapEntry)
         viewModelScope.launchSafe {
             if (isSwapsEnabledUseCase(greenWallet)) {
                 postEvent(NavigateDestinations.Swap(greenWallet = greenWallet, accountAsset = accountAsset.value))

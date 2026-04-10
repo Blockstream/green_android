@@ -516,6 +516,7 @@ class JadeQRViewModel(
 
         }, onSuccess = { mnemonic: String? ->
             if (mnemonic == null) {
+                postEvent(Events.SwapEnable)
                 postSideEffect(SideEffects.Snackbar(StringHolder.create(Res.string.id_swaps_enabled)))
                 postSideEffect(SideEffects.Success(true))
             } else {

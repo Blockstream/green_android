@@ -13,7 +13,6 @@ import blockstream_green.common.generated.resources.id_please_hold_on_while_your
 import blockstream_green.common.generated.resources.id_please_wait_until_your_ledger
 import blockstream_green.common.generated.resources.id_receive
 import blockstream_green.common.generated.resources.id_request_amount
-import blockstream_green.common.generated.resources.id_send_more_than_s_and_up_to_s_to
 import blockstream_green.common.generated.resources.id_sweep_from_paper_wallet
 import blockstream_green.common.generated.resources.id_the_address_is_valid
 import blockstream_green.common.generated.resources.lightning_fill
@@ -58,7 +57,6 @@ import com.blockstream.data.platformFileSystem
 import com.blockstream.data.receive.ReceiveAmountData
 import com.blockstream.data.utils.UserInput
 import com.blockstream.data.utils.formatAuto
-import com.blockstream.data.utils.toAmountLook
 import com.blockstream.data.utils.toAmountLookOrNa
 import com.blockstream.domain.hardware.VerifyAddressUseCase
 import com.blockstream.domain.receive.GetReceiveAmountUseCase
@@ -475,10 +473,15 @@ class ReceiveViewModel(greenWallet: GreenWallet, accountAsset: AccountAsset) :
             }
 
             is LocalEvents.ToggleLightning -> {
-                if (_showLightningOnChainAddress.value) {
-                    _showLightningOnChainAddress.value = false
-                } else {
-                    createOnchainSwap()
+                val isLightningSelected = !isReverseSubmarineSwap.value
+                isReverseSubmarineSwap.value = isLightningSelected
+
+                if (isLightningSelected) {
+                    sessionOrNull?.lightning?.let { lightning ->
+                        accountAsset.value?.account?.network?.let { liquid ->
+                            postEvent(Events.SwapToggle(from = lightning, to = liquid))
+                        }
+                    }
                 }
             }
 
@@ -628,7 +631,7 @@ class ReceiveViewModel(greenWallet: GreenWallet, accountAsset: AccountAsset) :
                     description = null
                 )
 
-                countly.swapReceive(session, from = accountAsset.value!!)
+                postEvent(Events.SwapReceive(from = session.lightning, to = account.network))
 
                 // Fee is lockup fee + boltz fee + claim fee. We hardcode claim value for 1in 1out tx
                 val fee = (invoice.fee()?.toLong() ?: 0) + 22
@@ -688,45 +691,6 @@ class ReceiveViewModel(greenWallet: GreenWallet, accountAsset: AccountAsset) :
             }
         }, onSuccess = {
 
-        })
-    }
-
-    private fun createOnchainSwap() {
-        doAsync({
-            val swapInfo = session.receiveOnchain()
-            swapInfo to (swapInfo.channelOpeningFees?.minMsat?.satoshi()?.toAmountLook(
-                session = session,
-                assetId = account.network.policyAsset,
-                withUnit = true
-            ) ?: "-")
-
-            _onchainSwapMessage.value = getString(
-                Res.string.id_send_more_than_s_and_up_to_s_to,
-                swapInfo.minAllowedDeposit.toAmountLookOrNa(
-                    session = session,
-                    assetId = session.lightningAccount.network.policyAsset,
-                    denomination = denomination.value,
-                    withUnit = true,
-                ),
-                swapInfo.maxAllowedDeposit.toAmountLookOrNa(
-                    session = session,
-                    assetId = session.lightningAccount.network.policyAsset,
-                    denomination = denomination.value,
-                    withUnit = true
-                ),
-                swapInfo.channelOpeningFees?.minMsat?.satoshi()?.toAmountLook(
-                    session = session,
-                    assetId = account.network.policyAsset,
-                    withUnit = true
-                ) ?: "-"
-            )
-
-            _receiveAddress.value = swapInfo.bitcoinAddress
-
-            swapInfo
-        }, onSuccess = {
-            _showLightningOnChainAddress.value = true
-            updateAddress(it.bitcoinAddress)
         })
     }
 

@@ -5,6 +5,7 @@ package com.blockstream.compose.models.swap
 import androidx.lifecycle.viewModelScope
 import blockstream_green.common.generated.resources.Res
 import blockstream_green.common.generated.resources.id_swap
+import com.blockstream.compose.events.Events
 import com.blockstream.compose.extensions.launchIn
 import com.blockstream.compose.extensions.previewAccountAsset
 import com.blockstream.compose.extensions.previewWallet
@@ -351,11 +352,12 @@ class SwapViewModel(
     }
 
     override fun createSwap() {
+        val from = checkNotNull(uiState.value.from)
+        val to = checkNotNull(uiState.value.to)
+
+        postEvent(Events.SwapInitiate(from = from.network, to = to.network))
+
         doAsync({
-
-            val from = checkNotNull(uiState.value.from)
-            val to = checkNotNull(uiState.value.to)
-
             val params = swapUseCase.prepareSwapTransactionUseCase(
                 greenWallet = greenWallet,
                 session = session,
@@ -436,11 +438,7 @@ class SwapViewModel(
             uiState.copy(
                 from = uiState.to,
                 to = uiState.from
-            ).also {
-                ifNotNull(it.from, it.to) { from, to ->
-                    countly.swapToggle(session = session, from = from, to = to)
-                }
-            }
+            )
         }
     }
 

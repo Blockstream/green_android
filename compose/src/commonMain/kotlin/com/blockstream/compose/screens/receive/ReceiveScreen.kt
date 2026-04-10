@@ -302,7 +302,7 @@ fun ReceiveScreen(
                                 SegmentedButton(
                                     shape = SegmentedButtonDefaults.itemShape(index = index, count = options.size),
                                     onClick = {
-                                        viewModel.isReverseSubmarineSwap.value = index == 1
+                                        viewModel.postEvent(ReceiveViewModel.LocalEvents.ToggleLightning)
                                     },
                                     selected = (index == 1) == isReverseSubmarineSwap
                                 ) {

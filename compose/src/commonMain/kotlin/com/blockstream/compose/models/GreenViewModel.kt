@@ -428,6 +428,30 @@ open class GreenViewModel constructor(
                 postSideEffect(SideEffects.NavigateTo(event))
             }
 
+            is Events.SwapInitiate -> {
+                countly.swapInitiate(session, event.from, event.to)
+            }
+
+            is Events.SwapSetup -> {
+                countly.swapSetup(session)
+            }
+
+            is Events.SwapEnable -> {
+                countly.swapEnable(session)
+            }
+
+            is Events.SwapEntry -> {
+                countly.swapEntry(session)
+            }
+
+            is Events.SwapReceive -> {
+                countly.swapReceive(session, event.from, event.to)
+            }
+
+            is Events.SwapToggle -> {
+                countly.swapToggle(session, event.from, event.to)
+            }
+
             is Events.PromoImpression -> {
                 promo.value?.also {
                     if (!promoImpression) {

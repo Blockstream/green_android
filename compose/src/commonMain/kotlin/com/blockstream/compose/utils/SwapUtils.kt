@@ -8,6 +8,8 @@ import com.blockstream.data.devices.DeviceModel
 
 object SwapUtils {
     fun navigateToDeviceScanOrJadeQr(viewModel: GreenViewModel) {
+        viewModel.postEvent(Events.SwapSetup)
+
         if (viewModel.session.isHwWatchOnly && !viewModel.greenWallet.isWatchOnlyQr) {
             viewModel.postEvent(
                 NavigateDestinations.DeviceScan(

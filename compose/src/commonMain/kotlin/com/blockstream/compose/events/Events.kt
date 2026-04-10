@@ -34,6 +34,12 @@ object Events {
     data class ChooseAccountType(val isFirstAccount: Boolean = false, val popTo: PopTo? = null) : Event
     data class HandleUserInput(val data: String, val isQr: Boolean = false) : Event
     object Continue : Event
+    object SwapSetup : Event
+    object SwapEnable : Event
+    object SwapEntry : Event
+    data class SwapInitiate(val from: Network, val to: Network) : Event
+    data class SwapReceive(val from: Network, val to: Network) : Event
+    data class SwapToggle(val from: Network, val to: Network) : Event
     object PromoImpression : Event
     object PromoDismiss : Event
     object PromoOpen : Event

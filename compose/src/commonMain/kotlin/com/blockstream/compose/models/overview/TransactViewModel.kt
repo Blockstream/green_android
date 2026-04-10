@@ -3,6 +3,7 @@ package com.blockstream.compose.models.overview
 import androidx.lifecycle.viewModelScope
 import blockstream_green.common.generated.resources.Res
 import blockstream_green.common.generated.resources.id_transact
+import com.blockstream.compose.events.Events
 import com.blockstream.compose.extensions.launchIn
 import com.blockstream.compose.extensions.previewTransactionLook
 import com.blockstream.compose.extensions.previewWallet
@@ -60,6 +61,7 @@ abstract class TransactViewModelAbstract(
     }
 
     fun onSwap() {
+        postEvent(Events.SwapEntry)
         viewModelScope.launchSafe {
             if (isSwapsEnabledUseCase(greenWallet)) {
                 postEvent(NavigateDestinations.Swap(greenWallet = greenWallet, accountAsset = accountAsset.value))

@@ -713,13 +713,28 @@ abstract class CountlyBase(
             }
         )
     }
-
-    fun swapToggle(session: GdkSession, from: AccountAsset, to: AccountAsset) {
-        eventRecord(Events.SWAP_TOGGLE.toString(), swapSegmentation(session, from.network, to.network))
+    fun swapEntry(session: GdkSession) {
+        eventRecord(Events.SWAP_ENTRY.toString(), sessionSegmentation(session))
     }
 
-    fun swapReceive(session: GdkSession, from: AccountAsset) {
-        eventRecord(Events.SWAP_RECEIVE.toString(), swapSegmentation(session, from.network, session.lightning))
+    fun swapInitiate(session: GdkSession, from: Network, to: Network) {
+        eventRecord(Events.SWAP_INITIATE.toString(), swapSegmentation(session, from, to))
+    }
+
+    fun swapSetup(session: GdkSession) {
+        eventRecord(Events.SWAP_SETUP.toString(), sessionSegmentation(session))
+    }
+
+    fun swapEnable(session: GdkSession) {
+        eventRecord(Events.SWAP_ENABLE.toString(), sessionSegmentation(session))
+    }
+
+    fun swapToggle(session: GdkSession, from: Network, to: Network) {
+        eventRecord(Events.SWAP_TOGGLE.toString(), swapSegmentation(session, from, to))
+    }
+
+    fun swapReceive(session: GdkSession, from: Network, to: Network) {
+        eventRecord(Events.SWAP_RECEIVE.toString(), swapSegmentation(session, from, to))
     }
 
     fun swapSend(session: GdkSession, from: AccountAsset) {
@@ -945,6 +960,10 @@ abstract class CountlyBase(
         SEND_TRANSACTION("send_transaction"),
         FAILED_TRANSACTION("failed_transaction"),
         FAILED_RECOVERY_PHRASE_CHECK("failed_recovery_phrase_check"),
+        SWAP_ENTRY("swap_entry"),
+        SWAP_INITIATE("swap_initiate"),
+        SWAP_SETUP("swap_setup"),
+        SWAP_ENABLE("swap_enable"),
         SWAP_TOGGLE("swap_toggle"),
         SWAP_RECEIVE("swap_receive"),
         SWAP_SEND("swap_send"),
