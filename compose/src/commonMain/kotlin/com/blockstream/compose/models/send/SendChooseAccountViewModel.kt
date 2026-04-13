@@ -55,6 +55,7 @@ class SendChooseAccountViewModel(
     init {
         viewModelScope.launch {
             _navData.value = NavData(
+                isCentered = true,
                 title = getString(Res.string.id_send),
                 subtitle = getString(Res.string.id_select_account),
             )

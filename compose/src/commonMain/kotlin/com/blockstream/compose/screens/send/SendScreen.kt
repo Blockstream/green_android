@@ -35,7 +35,7 @@ import blockstream_green.common.generated.resources.id_description
 import blockstream_green.common.generated.resources.id_fee_rate
 import blockstream_green.common.generated.resources.id_lightning_account
 import blockstream_green.common.generated.resources.id_next
-import blockstream_green.common.generated.resources.id_recipient_address
+import blockstream_green.common.generated.resources.id_recipient
 import blockstream_green.common.generated.resources.id_set_custom_fee_rate
 import blockstream_green.common.generated.resources.pencil_simple_line
 import com.blockstream.data.data.DenominatedValue
@@ -149,7 +149,7 @@ fun SendScreen(
                 Banner(viewModel)
 
                 GreenTextField(
-                    title = stringResource(Res.string.id_recipient_address),
+                    title = stringResource(Res.string.id_recipient),
                     value = viewModel.address,
                     onValueChange = { },
                     singleLine = false,

@@ -10,15 +10,23 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import blockstream_green.common.generated.resources.Res
+import blockstream_green.common.generated.resources.id_enter_an_address_or_invoice
 import blockstream_green.common.generated.resources.id_next
-import blockstream_green.common.generated.resources.id_recipient_address
+import blockstream_green.common.generated.resources.id_paste
+import blockstream_green.common.generated.resources.id_recipient
+import blockstream_green.common.generated.resources.id_scan_qr_code
+import com.adamglin.PhosphorIcons
+import com.adamglin.phosphoricons.Regular
+import com.adamglin.phosphoricons.regular.Clipboard
 import com.blockstream.compose.GreenPreview
 import com.blockstream.compose.components.Banner
 import com.blockstream.compose.components.GreenButton
 import com.blockstream.compose.components.GreenButtonSize
+import com.blockstream.compose.components.GreenButtonType
 import com.blockstream.compose.components.GreenColumn
 import com.blockstream.compose.components.GreenTextField
 import com.blockstream.compose.events.Events
+import com.blockstream.compose.managers.LocalPlatformManager
 import com.blockstream.compose.models.send.CreateTransactionViewModelAbstract
 import com.blockstream.compose.models.send.SendAddressViewModelAbstract
 import com.blockstream.compose.models.send.SendAddressViewModelPreview
@@ -40,7 +48,10 @@ fun SendAddressScreen(
         viewModel.postEvent(CreateTransactionViewModelAbstract.LocalEvents.SetAddressInputType(AddressInputType.SCAN))
     }
 
+    val platformManager = LocalPlatformManager.current
+
     val error by viewModel.error.collectAsStateWithLifecycle()
+    val address by viewModel.address.collectAsStateWithLifecycle()
 
     SetupScreen(
         viewModel = viewModel,
@@ -60,11 +71,12 @@ fun SendAddressScreen(
             ) {
                 Banner(viewModel)
 
-                val address by viewModel.address.collectAsStateWithLifecycle()
 
                 GreenTextField(
-                    title = stringResource(Res.string.id_recipient_address),
+                    title = stringResource(Res.string.id_recipient),
+                    placeholder = stringResource(Res.string.id_enter_an_address_or_invoice),
                     value = address,
+                    pasteIconEnabled = false,
                     onValueChange = {
                         viewModel.postEvent(CreateTransactionViewModelAbstract.LocalEvents.SetAddressInputType(AddressInputType.PASTE))
                         viewModel.address.value = it
@@ -73,25 +85,48 @@ fun SendAddressScreen(
                     maxLines = 8,
                     error = error,
                     testTag = "address_textfield",
-                    onQrClick = {
-                        viewModel.postEvent(
-                            NavigateDestinations.Camera(
-                                isDecodeContinuous = true,
-                                parentScreenName = viewModel.screenName()
-                            )
-                        )
-                    }
                 )
             }
 
-            val isValid by viewModel.isValid.collectAsStateWithLifecycle()
             GreenButton(
-                text = stringResource(Res.string.id_next),
-                enabled = isValid,
+                text = stringResource(Res.string.id_scan_qr_code),
                 size = GreenButtonSize.BIG,
-                modifier = Modifier.fillMaxWidth()
-            ) {
-                viewModel.postEvent(Events.Continue)
+                type = GreenButtonType.TEXT,
+                modifier = Modifier.fillMaxWidth(),
+                onClick = {
+                    viewModel.postEvent(
+                        NavigateDestinations.Camera(
+                            isDecodeContinuous = true,
+                            parentScreenName = viewModel.screenName()
+                        )
+                    )
+                }
+            )
+
+            val isValid by viewModel.isValid.collectAsStateWithLifecycle()
+
+            if (address.isEmpty()) {
+                GreenButton(
+                    text = stringResource(Res.string.id_paste),
+                    icon = PhosphorIcons.Regular.Clipboard,
+                    size = GreenButtonSize.BIG,
+                    modifier = Modifier.fillMaxWidth(),
+                    onClick = {
+                        platformManager.getClipboard()?.let {
+                            viewModel.address.value = it
+                            viewModel.postEvent(CreateTransactionViewModelAbstract.LocalEvents.SetAddressInputType(AddressInputType.PASTE))
+                        }
+                    }
+                )
+            } else {
+                GreenButton(
+                    text = stringResource(Res.string.id_next),
+                    enabled = isValid,
+                    size = GreenButtonSize.BIG,
+                    modifier = Modifier.fillMaxWidth()
+                ) {
+                    viewModel.postEvent(Events.Continue)
+                }
             }
         }
     }

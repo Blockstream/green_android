@@ -32,6 +32,7 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import androidx.constraintlayout.compose.ConstraintLayout
@@ -120,22 +121,30 @@ fun GreenTopAppBar(
                 enter = fadeIn(),
                 exit = fadeOut()
             ) {
-                ConstraintLayout {
+                ConstraintLayout(modifier = Modifier.fillMaxWidth()) {
                     val (title, subtitle) = createRefs()
+                    val isCentered = navData.isCentered
 
                     Crossfade(
                         targetState = navData.title ?: navData.titleRes?.let { stringResource(it) }
                         ?: "",
                         modifier = Modifier.constrainAs(title) {
-                            start.linkTo(parent.start)
-                            // end.linkTo(parent.end)
+                            if (isCentered) {
+                                start.linkTo(parent.start)
+                                end.linkTo(parent.end)
+                            } else {
+                                start.linkTo(parent.start)
+                            }
                             top.linkTo(parent.top)
-                            bottom.linkTo(parent.bottom)
+                            if (navData.subtitle.isNullOrBlank()) {
+                                bottom.linkTo(parent.bottom)
+                            }
                         }) {
                         Text(
                             text = it,
                             maxLines = 1,
                             style = titleMedium,
+                            textAlign = if (isCentered) TextAlign.Center else TextAlign.Start,
                             overflow = TextOverflow.Ellipsis,
                             modifier = Modifier.fillMaxWidth()
                         )
@@ -155,20 +164,30 @@ fun GreenTopAppBar(
 //                        }
 //                    )
 
-                    Crossfade(
-                        targetState = navData.subtitle ?: "",
+                    AnimatedVisibility(
+                        visible = !navData.subtitle.isNullOrBlank(),
+                        enter = fadeIn(),
+                        exit = fadeOut(),
                         modifier = Modifier.constrainAs(subtitle) {
-                            start.linkTo(parent.start)
-                            // end.linkTo(parent.end)
+                            if (isCentered) {
+                                start.linkTo(parent.start)
+                                end.linkTo(parent.end)
+                            } else {
+                                start.linkTo(parent.start)
+                            }
                             top.linkTo(title.bottom)
-                        }) {
-                        Text(
-                            text = it,
-                            maxLines = 1,
-                            style = bodySmall,
-                            overflow = TextOverflow.Ellipsis,
-                            modifier = Modifier.fillMaxWidth()
-                        )
+                        }
+                    ) {
+                        Crossfade(targetState = navData.subtitle ?: "") { currentSubtitle ->
+                            Text(
+                                text = currentSubtitle,
+                                maxLines = 1,
+                                style = bodySmall,
+                                textAlign = if (isCentered) TextAlign.Center else TextAlign.Start,
+                                overflow = TextOverflow.Ellipsis,
+                                modifier = Modifier.fillMaxWidth()
+                            )
+                        }
                     }
                 }
             }
@@ -184,7 +203,7 @@ fun GreenTopAppBar(
                         contentPadding = PaddingValues(),
                     ) {
                         Text(
-                            text = navData.walletName ?: "",
+                            text = navData.walletName,
                             style = bodyLarge,
                             modifier = Modifier.ifTrue(navData.title.isNotBlank() || navData.titleRes != null) {
                                 it.widthIn(max = 180.dp)
@@ -218,6 +237,11 @@ fun GreenTopAppBar(
             }
 
             ActionMenu(navData = navData)
+            // If the title is centered, we add an invisible box to balance
+            // the space taken by the navigation icon on the left
+            if (navData.isCentered && navData.actions.isEmpty()) {
+                Box(modifier = Modifier.size(48.dp))
+            }
         }
     )
 }

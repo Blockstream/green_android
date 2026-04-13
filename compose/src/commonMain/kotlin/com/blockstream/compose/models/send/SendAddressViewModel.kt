@@ -54,6 +54,8 @@ class SendAddressViewModel(
     init {
         viewModelScope.launch {
             _navData.value = NavData(
+                isCentered = true,
+                subtitle = greenWallet.name,
                 title = getString(Res.string.id_send),
             )
         }

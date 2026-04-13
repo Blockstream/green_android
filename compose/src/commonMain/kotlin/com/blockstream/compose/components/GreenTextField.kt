@@ -2,6 +2,7 @@ package com.blockstream.compose.components
 
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.heightIn
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.text.BasicTextField
 import androidx.compose.foundation.text.KeyboardActions
@@ -47,7 +48,8 @@ fun GreenTextField(
     keyboardOptions: KeyboardOptions = KeyboardOptions.Default,
     keyboardActions: KeyboardActions = KeyboardActions.Default,
     testTag: String? = null,
-    onQrClick: (() -> Unit)? = null
+    onQrClick: (() -> Unit)? = null,
+    pasteIconEnabled: Boolean = true
 ) {
     val platformManager = LocalPlatformManager.current
     Column(modifier = modifier) {
@@ -57,6 +59,7 @@ fun GreenTextField(
                 modifier = Modifier
                     .padding(start = 16.dp)
                     .padding(vertical = 4.dp)
+                    .heightIn(min = 48.dp)
             ) {
 
                 val textStyle = LocalTextStyle.current.merge(
@@ -103,15 +106,17 @@ fun GreenTextField(
                         }
                     }
 
-                    IconButton(
-                        modifier = Modifier.appTestTag("paste_button"),
-                        onClick = { onValueChange(platformManager.getClipboard() ?: "") },
-                        enabled = enabled
-                    ) {
-                        Icon(
-                            imageVector = PhosphorIcons.Regular.Clipboard,
-                            contentDescription = "Edit"
-                        )
+                    if (pasteIconEnabled) {
+                        IconButton(
+                            modifier = Modifier.appTestTag("paste_button"),
+                            onClick = { onValueChange(platformManager.getClipboard() ?: "") },
+                            enabled = enabled
+                        ) {
+                            Icon(
+                                imageVector = PhosphorIcons.Regular.Clipboard,
+                                contentDescription = "Edit"
+                            )
+                        }
                     }
                 } else {
                     IconButton(modifier = Modifier.appTestTag("clear_button"), onClick = { onValueChange("") }, enabled = enabled) {
