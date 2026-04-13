@@ -1652,7 +1652,7 @@
     <string name="id_use_hardware_device">Use Hardware Device</string>
     <string name="id_use_s_for_quick_access">Use %1$s for Quick Access</string>
     <string name="id_use_secure_display_and_screen">Use Secure Display and Screen Lock</string>
-    <string name="id_use_the_jogwheel_to_select_the">Use the jog-wheel to select the word that matches your recovery phrase.</string>
+    <string name="id_use_the_controls_to_select_the_word">Use the controls to select the word that matches your recovery phrase</string>
     <string name="id_use_this_recovery_phrase_to">Use this recovery phrase to restore your lightning account.\n\nWARNING: This recovery phrase does not restore all your other bitcoin or liquid accounts.</string>
     <string name="id_use_your_email_to_receive">Use your email to receive recovery transactions and transactions notifications</string>
     <string name="id_user_authentication">User Authentication</string>

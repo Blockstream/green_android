@@ -1637,7 +1637,7 @@
     <string name="id_use_hardware_device">ハードウェアデバイスを利用する</string>
     <string name="id_use_s_for_quick_access">クイックアクセスには%1$sをご利用ください</string>
     <string name="id_use_secure_display_and_screen">セキュアディスプレイおよびスクリーンロック機能を利用する</string>
-    <string name="id_use_the_jogwheel_to_select_the">ダイヤルを使ってあなたのリカバリーフレーズと同じ単語を選択してください。</string>
+    <string name="id_use_the_controls_to_select_the_word">ダイヤルを使ってあなたのリカバリーフレーズと同じ単語を選択してください。</string>
     <string name="id_use_this_recovery_phrase_to">リカバリーフレーズを使ってライトニングアカウントを復元する\n\n注意: このリカバリフレーズは、他のビットコインまたはLiquidアカウントが復元されるわけではありません。</string>
     <string name="id_use_your_email_to_receive">メールアドレスでリカバリー用のトランザクションとトランザクション通知を受け取ります</string>
     <string name="id_user_authentication">ユーザー認証</string>

@@ -28,7 +28,7 @@ import blockstream_green.common.generated.resources.id_initialize_and_create_wal
 import blockstream_green.common.generated.resources.id_note_down_your_recovery_phrase
 import blockstream_green.common.generated.resources.id_select_initialize_and_choose_to
 import blockstream_green.common.generated.resources.id_step_1s
-import blockstream_green.common.generated.resources.id_use_the_jogwheel_to_select_the
+import blockstream_green.common.generated.resources.id_use_the_controls_to_select_the_word
 import blockstream_green.common.generated.resources.id_verify_recovery_phrase
 import com.blockstream.compose.events.Events
 import com.blockstream.compose.models.devices.JadeGuideViewModelAbstract
@@ -130,7 +130,7 @@ fun JadeGuideScreen(
                                     when (s) {
                                         0 -> Res.string.id_select_initialize_and_choose_to
                                         1 -> Res.string.id_note_down_your_recovery_phrase
-                                        else -> Res.string.id_use_the_jogwheel_to_select_the
+                                        else -> Res.string.id_use_the_controls_to_select_the_word
                                     }.also {
                                         Text(
                                             stringResource(it),
