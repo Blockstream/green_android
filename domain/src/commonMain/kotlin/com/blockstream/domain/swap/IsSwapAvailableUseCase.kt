@@ -15,6 +15,17 @@ class IsSwapAvailableUseCase {
 
         if (wallet.isWatchOnly && !wallet.isHardware) return false
 
-        return wallet.isMainnet && !wallet.isEphemeral && (asset == null || asset.isPolicyAsset(session))
+        if (asset?.isLightning == true) return false
+
+        if (!wallet.isMainnet || wallet.isEphemeral) return false
+        if (asset != null && !asset.isPolicyAsset(session)) return false
+
+        // Also require at least 2 distinct swappable (non-Lightning) networks before showing the swap button.
+        val swappableNetworks = session.accountAsset.value
+            .filter { it.asset.isPolicyAsset(session) && !it.account.isLightning }
+            .map { it.account.network.canonicalNetworkId }
+            .distinct()
+
+        return swappableNetworks.size >= 2
     }
 }

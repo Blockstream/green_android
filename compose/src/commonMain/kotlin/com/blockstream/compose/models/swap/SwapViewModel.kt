@@ -118,13 +118,13 @@ class SwapViewModel(
             // Update From Accounts
             uiState.update { uiState ->
                 val fromAccounts = session.accountAsset.value
-                    .filter { it.asset.isPolicyAsset(session) } // Only policy assets for now
+                    .filter { it.asset.isPolicyAsset(session) && !it.account.isLightning }
 
                 val accountsWithBalance = fromAccounts.filter {
                     it.balance(session) > 0
                 }
 
-                val from = accountAssetOrNull
+                val from = accountAssetOrNull?.takeIf { !it.account.isLightning }
                     ?: accountsWithBalance.firstOrNull()
                     ?: fromAccounts.firstOrNull()
 
@@ -134,7 +134,7 @@ class SwapViewModel(
             }
 
             session.accountAsset.value
-                .filter { it.asset.isPolicyAsset(session) } // Only policy assets for now
+                .filter { it.asset.isPolicyAsset(session) && !it.account.isLightning }
                 .mapNotNull {
                     AccountAssetBalance.createIfBalance(
                         accountAsset = it,
@@ -147,7 +147,7 @@ class SwapViewModel(
         combine(uiState.map { it.from }.filterNotNull().distinctUntilChanged(), denomination) { from, denomination ->
 
             val fromAccounts = session.accountAsset.value
-                .filter { it.asset.isPolicyAsset(session) } // Only policy assets for now
+                .filter { it.asset.isPolicyAsset(session) && !it.account.isLightning }
 
             val accountsWithBalance = fromAccounts.mapNotNull {
                 AccountAssetBalance.createIfBalance(

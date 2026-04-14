@@ -11,8 +11,8 @@ import com.blockstream.jade.Loggable
  * Swap Compatibility Rules:
  * 1. **Asset Type**: Only the primary policy assets (L-BTC on Liquid and BTC on Bitcoin) are eligible.
  * 2. **Network Isolation**: Source and destination must reside on different networks (e.g., BTC to Liquid).
- * 3. **Lightning Routing**: Directly swapping between Bitcoin (on-chain) and Lightning is currently
- *    **NOT supported**. Users must bridge through a Liquid account (Bitcoin <-> Liquid <-> Lightning).
+ * 3. **Lightning Excluded**: Lightning accounts are excluded from chain swaps entirely.
+ *    Users must bridge through a Liquid account (Bitcoin <-> Liquid <-> Lightning).
  */
 class GetSwappableAccountsUseCase() {
     /**
@@ -31,12 +31,10 @@ class GetSwappableAccountsUseCase() {
         return session.accountAsset.value.filter {
             it.asset.isPolicyAsset(session)
         }.filter {
-            // Except BTC <> LN
             when {
                 swapFrom == null -> true
                 swapFrom.account.network.isSameNetwork(it.account.network) -> false
-                (swapFrom.account.isBitcoin && it.account.isLightning) -> false
-                (swapFrom.account.isLightning && it.account.isBitcoin) -> false
+                swapFrom.account.isLightning || it.account.isLightning -> false
                 else -> true
             }
         }
