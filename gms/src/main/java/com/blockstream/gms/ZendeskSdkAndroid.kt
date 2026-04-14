@@ -14,6 +14,7 @@ import com.zendesk.service.ErrorResponse
 import com.zendesk.service.ZendeskCallback
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
+import kotlinx.coroutines.suspendCancellableCoroutine
 import zendesk.core.AnonymousIdentity
 import zendesk.core.Zendesk
 import zendesk.support.CreateRequest
@@ -21,14 +22,14 @@ import zendesk.support.CustomField
 import zendesk.support.Request
 import zendesk.support.RequestProvider
 import zendesk.support.Support
+import zendesk.support.UploadResponse
 import kotlin.coroutines.resume
 import kotlin.coroutines.resumeWithException
-import kotlin.coroutines.suspendCoroutine
 import kotlin.time.DurationUnit
 import kotlin.time.toDuration
 
 class ZendeskSdkAndroid constructor(
-    context: Context,
+    private val context: Context,
     private val appInfo: AppInfo,
     private val scope: ApplicationScope,
     private val countlyBase: CountlyBase,
@@ -47,6 +48,55 @@ class ZendeskSdkAndroid constructor(
     override val appVersion: String
         get() = appInfo.version
 
+    private fun getMetadata(supportData: SupportData): String {
+        return buildString {
+            append(supportData.error ?: "")
+            append("\r\n")
+
+            val timestamp = System.currentTimeMillis() / 1000
+            append("Timestamp: $timestamp\r\n")
+        }
+    }
+
+    private suspend fun uploadLogFile(logs: String): UploadResponse = suspendCancellableCoroutine { continuation ->
+        val provider = support.provider()?.uploadProvider()
+        val timestamp = java.text.SimpleDateFormat(
+            "dd-MM-yyyy_HH-mm-ss",
+            java.util.Locale.getDefault()
+        ).format(
+            java.util.Date()
+        )
+        val filename = "android_logs_$timestamp.txt"
+
+        if (provider == null) {
+            continuation.resumeWithException(Exception("Zendesk UploadProvider is null"))
+            return@suspendCancellableCoroutine
+        }
+
+        val tempFile = java.io.File(context.cacheDir, filename)
+        continuation.invokeOnCancellation { tempFile.delete() }
+        try {
+            val maxLogBytes = 5 * 1024 * 1024 // 5 MB per log file
+            val logData = logs.takeLast(maxLogBytes).toByteArray(Charsets.UTF_8)
+            tempFile.writeBytes(logData)
+
+            provider.uploadAttachment(tempFile.name, tempFile, "text/plain", object : ZendeskCallback<UploadResponse>() {
+                override fun onSuccess(result: UploadResponse) {
+                    tempFile.delete()
+                    if (continuation.isActive) continuation.resume(result)
+                }
+
+                override fun onError(error: ErrorResponse) {
+                    tempFile.delete()
+                    if (continuation.isActive) continuation.resumeWithException(Exception("Zendesk upload error: ${error.reason}"))
+                }
+            })
+        } catch (e: Exception) {
+            tempFile.delete()
+            if (continuation.isActive) continuation.resumeWithException(e)
+        }
+    }
+
     override suspend fun submitNewTicket(
         type: SupportType,
         subject: String,
@@ -54,9 +104,29 @@ class ZendeskSdkAndroid constructor(
         message: String,
         supportData: SupportData,
         autoRetry: Boolean
-    ): Boolean = suspendCoroutine { continuation ->
-
+    ): Boolean {
+        AnonymousIdentity.Builder().apply {
+            if (email.isNotBlank()) {
+                withEmailIdentifier(email)
+            }
+        }.build().also { identity ->
+            zendeskSdk.setIdentity(identity)
+        }
         val request = CreateRequest()
+
+        if (!supportData.gdkLogs.isNullOrBlank()) {
+            try {
+                val uploadResponse = uploadLogFile(supportData.gdkLogs!!)
+                val token = uploadResponse.token
+                if (!token.isNullOrBlank()) {
+                    request.attachments = listOf(token)
+                } else {
+                    logger.e { "Log upload returned empty token, sending without logs" }
+                }
+            } catch (e: Exception) {
+                logger.e { "Log upload failed, sending without logs: ${e.message}" }
+            }
+        }
 
         request.tags = mutableListOf("android", "green")
         request.subject = subject
@@ -69,7 +139,7 @@ class ZendeskSdkAndroid constructor(
             CustomField(900009625166, appVersion), // App Version
             CustomField(42306364242073, countlyBase.getDeviceId()), // Device ID
             supportData.supportId?.let { CustomField(23833728377881L, it) }, // Support ID
-            supportData.error?.let { CustomField(21409433258649L, it) }, // Logs
+            CustomField(21409433258649L, getMetadata(supportData)), // Logs
             supportData.zendeskHardwareWallet?.let {
                 CustomField(
                     900006375926L,
@@ -79,46 +149,39 @@ class ZendeskSdkAndroid constructor(
             supportData.zendeskSecurityPolicy?.let { CustomField(6167739898649L, it) } // Policy
         )
 
-        AnonymousIdentity.Builder().apply {
-            if (email.isNotBlank()) {
-                withEmailIdentifier(email)
-            }
-        }.build().also { identity ->
-            zendeskSdk.setIdentity(identity)
-        }
+        return suspendCancellableCoroutine { continuation ->
+            val provider: RequestProvider = support.provider()!!.requestProvider()
 
-        val provider: RequestProvider = support.provider()!!.requestProvider()
-
-        provider.createRequest(request, object : ZendeskCallback<Request>() {
-            override fun onSuccess(createRequest: Request) {
-                logger.i { "Success" }
-                continuation.resume(true)
-            }
-
-            override fun onError(errorResponse: ErrorResponse) {
-                logger.e { "createRequest: Error(${errorResponse.responseBody}) ... retry with delay" }
-
-                if (autoRetry) {
-                    scope.launch(context = logException()) {
-                        delay(1L.toDuration(DurationUnit.MINUTES))
-
-                        submitNewTicket(
-                            type = type,
-                            subject = subject,
-                            email = email,
-                            message = message,
-                            supportData = supportData,
-                            autoRetry = false
-                        ).let {
-                            continuation.resume(it)
-                        }
-                    }
-                } else {
-                    continuation.resumeWithException(Exception(errorResponse.reason))
+            provider.createRequest(request, object : ZendeskCallback<Request>() {
+                override fun onSuccess(createRequest: Request) {
+                    logger.i { "createRequest: ${request.id} Successfully created" }
+                    if (continuation.isActive) continuation.resume(true)
                 }
-            }
-        })
 
+                override fun onError(errorResponse: ErrorResponse) {
+                    logger.e { "createRequest: Error(${errorResponse.responseBody}) ... retry with delay" }
+
+                    if (autoRetry) {
+                        scope.launch(context = logException()) {
+                            delay(1L.toDuration(DurationUnit.MINUTES))
+
+                            submitNewTicket(
+                                type = type,
+                                subject = subject,
+                                email = email,
+                                message = message,
+                                supportData = supportData,
+                                autoRetry = false
+                            ).let {
+                                if (continuation.isActive) continuation.resume(it)
+                            }
+                        }
+                    } else {
+                        if (continuation.isActive) continuation.resumeWithException(Exception(errorResponse.reason))
+                    }
+                }
+            })
+        }
     }
 
     companion object : Loggable() {

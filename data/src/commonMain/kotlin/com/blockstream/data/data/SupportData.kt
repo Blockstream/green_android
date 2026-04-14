@@ -9,6 +9,7 @@ import kotlinx.serialization.Serializable
 data class SupportData(
     val subject: String? = null,
     val error: String? = null,
+    val gdkLogs: String? = null,
     val supportId: String? = null,
     val paymentHash: String? = null,
     val zendeskSecurityPolicy: String? = null,
@@ -18,7 +19,7 @@ data class SupportData(
     override fun kSerializer() = serializer()
 
     fun withGdkLogs(session: GdkSession?): SupportData =
-        copy(error = listOfNotNull(error, session?.logs).takeIf { it.isNotEmpty() }?.joinToString("\n------------------\n"))
+        copy(gdkLogs = session?.logs)
 
     companion object {
 
