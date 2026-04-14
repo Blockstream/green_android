@@ -70,7 +70,7 @@ fun TransactScreen(viewModel: TransactViewModelAbstract) {
                 TransactionActionButtons(
                     modifier = Modifier.padding(top = 16.dp),
                     showBuyButton = isMainnet,
-                    isSwapEnabled = isSwapAvailable,
+                    showSwapButton = isSwapAvailable,
                     isSendEnabled = !isMultisigWatchOnly,
                     onBuy = viewModel::onBuy,
                     onSend = viewModel::onSend,

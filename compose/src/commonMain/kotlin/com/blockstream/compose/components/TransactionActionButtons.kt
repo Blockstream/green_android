@@ -20,8 +20,8 @@ import org.jetbrains.compose.ui.tooling.preview.Preview
 fun TransactionActionButtons(
     modifier: Modifier = Modifier,
     showBuyButton: Boolean,
+    showSwapButton: Boolean,
     isSendEnabled: Boolean,
-    isSwapEnabled: Boolean,
     onBuy: () -> Unit,
     onSend: () -> Unit,
     onReceive: () -> Unit,
@@ -53,12 +53,13 @@ fun TransactionActionButtons(
             onClick = onReceive
         )
 
-        GreenActionButton(
-            text = Res.string.id_swap,
-            icon = PhosphorIcons.Regular.ArrowsDownUp,
-            enabled = isSwapEnabled,
-            onClick = onSwap
-        )
+        if (showSwapButton) {
+            GreenActionButton(
+                text = Res.string.id_swap,
+                icon = PhosphorIcons.Regular.ArrowsDownUp,
+                onClick = onSwap
+            )
+        }
     }
 }
 
@@ -68,7 +69,7 @@ fun TransactionActionButtonsPreview() {
     GreenPreview {
         TransactionActionButtons(
             showBuyButton = true,
-            isSwapEnabled = true,
+            showSwapButton = true,
             isSendEnabled = true,
             onBuy = { },
             onSend = { },

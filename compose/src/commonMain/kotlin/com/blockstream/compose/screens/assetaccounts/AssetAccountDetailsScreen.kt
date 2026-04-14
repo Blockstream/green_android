@@ -96,7 +96,7 @@ fun AssetAccountDetailsScreen(
                 TransactionActionButtons(
                     showBuyButton = showBuyButton,
                     isSendEnabled = isSendEnabled,
-                    isSwapEnabled = isSwapAvailable,
+                    showSwapButton = isSwapAvailable,
                     onBuy = viewModel::onBuy,
                     onSend = viewModel::onSend,
                     onReceive = viewModel::onReceive,
