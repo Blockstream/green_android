@@ -9,6 +9,8 @@ stages:
 
 include:
   - template: Jobs/SAST.gitlab-ci.yml
+  - template: Jobs/Secret-Detection.gitlab-ci.yml
+  - template: Jobs/Dependency-Scanning.v2.gitlab-ci.yml
 
 variables:
   GRADLE_USER_HOME: "${CI_PROJECT_DIR}/.gradle"
@@ -17,9 +19,7 @@ variables:
   ANDROID_IMAGE: blockstream/green_android
   HOMEBREW_NO_AUTO_UPDATE: 1
   SAST_EXCLUDED_PATHS: "spec, test, tests, tmp, vendor, node_modules, .git"
-  GITLAB_ADVANCED_SAST_ENABLED: "true"
-  SAST_EXCLUDED_ANALYZERS: "semgrep"
-  AST_ENABLE_MR_PIPELINES: "true"
+  AST_ENABLE_MR_PIPELINES: "false"
 
 cache:
   - key:
@@ -319,25 +319,16 @@ unit_tests:
     - ./gradlew test
 
 #####################################
-# SAST
+# SECURITY
 
-gitlab-advanced-sast:
+sast:
   stage: security
-  needs: []
-  before_script:
-    - rm -f gl-sast-report.json gitlab-advanced-sast.sarif || true
-  rules:
-    # 1. Disable MR event triggers explicitly
-    - if: $CI_PIPELINE_SOURCE == "merge_request_event"
-      when: never
-    # 2. Force run on standard branch pushes
-    - if: $CI_COMMIT_BRANCH
-      when: on_success
-  allow_failure: true
-  after_script:
-    - test ! -f gl-sast-report.json || chmod 0644 gl-sast-report.json
-  artifacts:
-    expire_in: 30 days
+
+secret_detection:
+  stage: security
+
+dependency-scanning:
+  stage: security
 
 #####################################
 # Sign production build
