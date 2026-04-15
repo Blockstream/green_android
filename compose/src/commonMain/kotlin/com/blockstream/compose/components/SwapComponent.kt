@@ -71,7 +71,6 @@ import com.blockstream.compose.theme.whiteLow
 import com.blockstream.compose.utils.DecimalFormatter
 import com.blockstream.compose.utils.appTestTag
 import com.blockstream.compose.utils.ifTrue
-import com.blockstream.compose.utils.invisible
 import com.blockstream.compose.utils.noRippleClickable
 import com.blockstream.data.data.Denomination
 import com.blockstream.data.gdk.GdkSession
@@ -261,9 +260,18 @@ private fun SwapCard(
                     color = textLow
                 )
 
-                TextButton(onClick = onAccountClick, content = {
-                    Text(accountAsset.account.name, style = bodyMedium, color = green)
-                }, modifier = Modifier.invisible(!showAccountSelector), contentPadding = PaddingValues(horizontal = 4.dp, vertical = 4.dp))
+                TextButton(
+                    onClick = onAccountClick,
+                    enabled = showAccountSelector,
+                    contentPadding = PaddingValues(horizontal = 4.dp, vertical = 4.dp),
+                    content = {
+                        Text(
+                            accountAsset.account.name,
+                            style = bodyMedium,
+                            color = if (showAccountSelector) green else textLow
+                        )
+                    }
+                )
             }
 
             // Currency and amount row
