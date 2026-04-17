@@ -1,9 +1,10 @@
 package com.blockstream.compose.models.overview
 
 import androidx.lifecycle.viewModelScope
-import com.blockstream.data.data.Denomination
 import com.blockstream.data.data.GreenWallet
-import com.blockstream.data.utils.toAmountLook
+import com.blockstream.data.gdk.data.Assets
+import com.blockstream.data.utils.getFiatCurrency
+import com.blockstream.data.utils.userNumberFormat
 import com.blockstream.compose.events.Event
 import com.blockstream.compose.extensions.launchIn
 import com.blockstream.compose.models.GreenViewModel
@@ -21,7 +22,6 @@ import kotlinx.coroutines.flow.stateIn
 interface IWalletBalance : IPostEvent {
     val hideAmounts: StateFlow<Boolean>
     val balancePrimary: StateFlow<String?>
-    // val balanceSecondary: StateFlow<String?>
 }
 
 open class WalletBalanceViewModel(greenWallet: GreenWallet) :
@@ -38,11 +38,7 @@ open class WalletBalanceViewModel(greenWallet: GreenWallet) :
     private val _balancePrimary: MutableStateFlow<String?> = MutableStateFlow(null)
     override val balancePrimary: StateFlow<String?> = _balancePrimary.asStateFlow()
 
-    // private val _balanceSecondary: MutableStateFlow<String?> = MutableStateFlow(null)
-    // override val balanceSecondary: StateFlow<String?> = _balanceSecondary.asStateFlow()
-
     class LocalEvents {
-        object ToggleBalance : Event
         object ToggleHideAmounts : Event
     }
 
@@ -50,20 +46,20 @@ open class WalletBalanceViewModel(greenWallet: GreenWallet) :
         super.bootstrap()
 
         combine(
-            session.walletTotalBalance,
-            session.walletTotalBalanceDenominationStateFlow,
+            session.walletAssets,
             hideAmounts,
             session.settings()
-        ) { _, _, _, _ ->
+        ) { walletAssets, _, _ ->
+            walletAssets
+        }.filter {
             session.isConnected
-        }.filter { isConnected ->
-            // Prevent from updating on non connected sessions
-            isConnected
-        }.onEach {
-            updateBalance(
-                session.walletTotalBalance.value,
-                session.walletTotalBalanceDenominationStateFlow.value.isFiat
-            )
+        }.onEach { walletAssetsState ->
+            val assets = walletAssetsState.data()
+            if (assets == null) {
+                _balancePrimary.value = null
+            } else {
+                _balancePrimary.value = session.starsOrNull ?: buildFiatBalance(assets)
+            }
         }.launchIn(this)
     }
 
@@ -71,10 +67,6 @@ open class WalletBalanceViewModel(greenWallet: GreenWallet) :
         super.handleEvent(event)
 
         when (event) {
-            is LocalEvents.ToggleBalance -> {
-                toggleBalance()
-            }
-
             is LocalEvents.ToggleHideAmounts -> {
                 settingsManager.saveApplicationSettings(
                     settingsManager.getApplicationSettings().let {
@@ -88,38 +80,32 @@ open class WalletBalanceViewModel(greenWallet: GreenWallet) :
         }
     }
 
-    fun toggleBalance() {
-        doAsync({
-            session.walletTotalBalanceDenominationStateFlow.value =
-                session.walletTotalBalanceDenominationStateFlow.value.let {
-                    Denomination.defaultOrFiat(session = session, isFiat = !it.isFiat)
-                }
+    private suspend fun buildFiatBalance(assets: Assets): String {
+        val fiatValues = mutableListOf<Double>()
 
-            if (!greenWallet.isEphemeral) {
-                walletSettingsManager.setTotalBalanceInFiat(
-                    walletId = greenWallet.id,
-                    enabled = session.walletTotalBalanceDenominationStateFlow.value.isFiat
-                )
+        for ((assetId, satoshi) in assets.assets) {
+            try {
+                val balance = session.convert(assetId = assetId, asLong = satoshi)
+                val fiatString = balance?.fiat ?: continue
+                val fiatDouble = fiatString.toDoubleOrNull() ?: continue
+                fiatValues.add(fiatDouble)
+            } catch (_: Exception) {
             }
-        })
-    }
-
-    private suspend fun updateBalance(value: Long, isFiat: Boolean) {
-        // Loading
-        if (value == -1L) {
-            _balancePrimary.value = null
-        } else {
-            val balance = session.starsOrNull ?: value.toAmountLook(
-                session = session,
-                assetId = session.walletAssets.value.data()?.policyId
-                    ?: session.defaultNetwork.policyAsset,
-                denomination = Denomination.defaultOrFiat(
-                    session = session,
-                    isFiat = isFiat
-                ) // Always create fiat from session, so that we get the correct fiat denomination
-            )
-
-            _balancePrimary.value = balance
         }
+
+        val fiatAmount = if (fiatValues.isNotEmpty()) fiatValues.sum() else null
+
+        val currency = getFiatCurrency(session)
+
+        if (fiatAmount != null) {
+            val formatted = try {
+                userNumberFormat(decimals = 2, withDecimalSeparator = true, withGrouping = true).format(fiatAmount)
+            } catch (_: Exception) {
+                null
+            }
+            return if (formatted != null) "$formatted $currency" else "-/- $currency"
+        }
+
+        return "-/- $currency"
     }
 }
