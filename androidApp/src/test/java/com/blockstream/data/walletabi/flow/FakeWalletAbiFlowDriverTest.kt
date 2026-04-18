@@ -1,6 +1,8 @@
 package com.blockstream.data.walletabi.flow
 
 import org.junit.Test
+import kotlinx.coroutines.flow.toList
+import kotlinx.coroutines.test.runTest
 import kotlin.test.assertEquals
 
 class FakeWalletAbiFlowDriverTest {
@@ -37,5 +39,28 @@ class FakeWalletAbiFlowDriverTest {
         val resolvedReview = driver.resolveRequest(review)
 
         assertEquals(review, resolvedReview)
+    }
+
+    @Test
+    fun submitRequest_emits_success_sequence() = runTest {
+        val driver = FakeWalletAbiFlowDriver()
+
+        val events = driver.submitRequest(
+            requestId = "wallet-abi-demo-request"
+        ).toList()
+
+        assertEquals(
+            listOf(
+                FakeWalletAbiSubmissionEvent.Submitted,
+                FakeWalletAbiSubmissionEvent.Broadcasted,
+                FakeWalletAbiSubmissionEvent.RemoteResponseSent(
+                    result = WalletAbiSuccessPayload(
+                        requestId = "wallet-abi-demo-request",
+                        responseId = "wallet-abi-demo-response"
+                    )
+                )
+            ),
+            events
+        )
     }
 }
