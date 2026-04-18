@@ -1,5 +1,6 @@
 package com.blockstream.compose.models.walletabi
 
+import androidx.lifecycle.viewModelScope
 import com.blockstream.compose.extensions.previewWallet
 import com.blockstream.compose.sideeffects.SideEffects
 import com.blockstream.data.CountlyBase
@@ -42,6 +43,7 @@ import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.flowOf
 import kotlinx.coroutines.test.StandardTestDispatcher
 import kotlinx.coroutines.test.advanceUntilIdle
+import kotlinx.coroutines.cancel
 import kotlinx.coroutines.test.resetMain
 import kotlinx.coroutines.test.runTest
 import kotlinx.coroutines.test.setMain
@@ -62,6 +64,7 @@ class WalletAbiFlowRouteViewModelTest {
     private lateinit var store: FakeWalletAbiFlowStore
     private lateinit var snapshotRepository: WalletAbiFlowSnapshotRepository
     private lateinit var driver: FakeWalletAbiFlowDriver
+    private val createdViewModels = mutableListOf<WalletAbiFlowRouteViewModel>()
 
     @Before
     fun setUp() {
@@ -110,13 +113,17 @@ class WalletAbiFlowRouteViewModelTest {
 
     @After
     fun tearDown() {
+        createdViewModels.forEach { viewModel ->
+            viewModel.viewModelScope.cancel()
+        }
+        createdViewModels.clear()
         Dispatchers.resetMain()
         stopKoin()
     }
 
     @Test
     fun init_dispatches_start_for_demo_request() = runTest(dispatcher) {
-        WalletAbiFlowRouteViewModel(
+        createViewModel(
             greenWallet = greenWallet,
             store = store,
             snapshotRepository = snapshotRepository,
@@ -141,7 +148,7 @@ class WalletAbiFlowRouteViewModelTest {
 
     @Test
     fun loadRequest_output_dispatches_request_loaded_review() = runTest(dispatcher) {
-        WalletAbiFlowRouteViewModel(
+        createViewModel(
             greenWallet = greenWallet,
             store = store,
             snapshotRepository = snapshotRepository,
@@ -191,7 +198,7 @@ class WalletAbiFlowRouteViewModelTest {
             every { loadRequestEnvelope(any()) } returns "{"
         }
 
-        WalletAbiFlowRouteViewModel(
+        createViewModel(
             greenWallet = greenWallet,
             store = store,
             snapshotRepository = snapshotRepository,
@@ -224,7 +231,7 @@ class WalletAbiFlowRouteViewModelTest {
     @Test
     fun init_reaches_request_loaded_with_real_store() = runTest(dispatcher) {
         val realStore = DefaultWalletAbiFlowStore()
-        val viewModel = WalletAbiFlowRouteViewModel(
+        val viewModel = createViewModel(
             greenWallet = greenWallet,
             store = realStore,
             snapshotRepository = snapshotRepository,
@@ -242,7 +249,7 @@ class WalletAbiFlowRouteViewModelTest {
     @Test
     fun approve_reaches_success_with_real_store() = runTest(dispatcher) {
         val realStore = DefaultWalletAbiFlowStore()
-        val viewModel = WalletAbiFlowRouteViewModel(
+        val viewModel = createViewModel(
             greenWallet = greenWallet,
             store = realStore,
             snapshotRepository = snapshotRepository,
@@ -261,7 +268,7 @@ class WalletAbiFlowRouteViewModelTest {
 
     @Test
     fun state_exposes_store_state() {
-        val viewModel = WalletAbiFlowRouteViewModel(
+        val viewModel = createViewModel(
             greenWallet = greenWallet,
             store = store,
             snapshotRepository = snapshotRepository,
@@ -276,7 +283,7 @@ class WalletAbiFlowRouteViewModelTest {
 
     @Test
     fun persistSnapshot_output_is_forwarded_to_repository() = runTest(dispatcher) {
-        WalletAbiFlowRouteViewModel(
+        createViewModel(
             greenWallet = greenWallet,
             store = store,
             snapshotRepository = snapshotRepository,
@@ -340,7 +347,7 @@ class WalletAbiFlowRouteViewModelTest {
             )
         )
 
-        WalletAbiFlowRouteViewModel(
+        createViewModel(
             greenWallet = greenWallet,
             store = store,
             snapshotRepository = snapshotRepository,
@@ -390,7 +397,7 @@ class WalletAbiFlowRouteViewModelTest {
 
     @Test
     fun startSubmission_output_dispatches_success_sequence() = runTest(dispatcher) {
-        WalletAbiFlowRouteViewModel(
+        createViewModel(
             greenWallet = greenWallet,
             store = store,
             snapshotRepository = snapshotRepository,
@@ -438,7 +445,7 @@ class WalletAbiFlowRouteViewModelTest {
                 responseId = "wallet-abi-demo-response"
             )
         )
-        val viewModel = WalletAbiFlowRouteViewModel(
+        val viewModel = createViewModel(
             greenWallet = greenWallet,
             store = store,
             snapshotRepository = snapshotRepository,
@@ -476,5 +483,19 @@ class WalletAbiFlowRouteViewModelTest {
             }
             intents += intent
         }
+    }
+
+    private fun createViewModel(
+        greenWallet: com.blockstream.data.data.GreenWallet = this.greenWallet,
+        store: WalletAbiFlowStore = this.store,
+        snapshotRepository: WalletAbiFlowSnapshotRepository = this.snapshotRepository,
+        driver: FakeWalletAbiFlowDriver = this.driver
+    ): WalletAbiFlowRouteViewModel {
+        return WalletAbiFlowRouteViewModel(
+            greenWallet = greenWallet,
+            store = store,
+            snapshotRepository = snapshotRepository,
+            driver = driver
+        ).also { createdViewModels += it }
     }
 }

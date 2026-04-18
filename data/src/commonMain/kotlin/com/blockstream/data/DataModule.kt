@@ -14,7 +14,7 @@ val dataModule = module {
     single { GreenWebhooksHttpClient(get()) }
     single { DefaultJson }
     singleOf(::WalletAbiFlowSnapshotStore)
-    singleOf(::FakeWalletAbiFlowDriver)
+    single { FakeWalletAbiFlowDriver() }
     includes(meldModule)
     includes(notificationsDataModule)
 

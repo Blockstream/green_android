@@ -55,6 +55,24 @@ class FakeWalletAbiFlowDriverTest {
     }
 
     @Test
+    fun loadRequestEnvelope_uses_custom_loader() {
+        val driver = FakeWalletAbiFlowDriver(
+            requestEnvelopeLoader = { requestId ->
+                """{"request_id":"$requestId","kind":"custom"}"""
+            }
+        )
+
+        val envelope = driver.loadRequestEnvelope(
+            requestId = "wallet-abi-demo-request"
+        )
+
+        assertEquals(
+            """{"request_id":"wallet-abi-demo-request","kind":"custom"}""",
+            envelope
+        )
+    }
+
+    @Test
     fun loadRequest_returns_deterministic_software_review() {
         val driver = FakeWalletAbiFlowDriver()
         val requestId = "wallet-abi-demo-request"
