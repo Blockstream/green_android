@@ -64,8 +64,16 @@ class DefaultWalletAbiFlowStore : WalletAbiFlowStore {
         )
     }
 
-    private fun handleExecutionResolved(event: WalletAbiExecutionEvent.Resolved) {
+    private suspend fun handleExecutionResolved(event: WalletAbiExecutionEvent.Resolved) {
         mutableState.value = WalletAbiFlowState.RequestLoaded(event.review)
+        mutableOutputs.emit(
+            WalletAbiFlowOutput.PersistSnapshot(
+                WalletAbiResumeSnapshot(
+                    review = event.review,
+                    phase = WalletAbiResumePhase.REQUEST_LOADED
+                )
+            )
+        )
     }
 
     private fun handleExecutionSubmitted() {
