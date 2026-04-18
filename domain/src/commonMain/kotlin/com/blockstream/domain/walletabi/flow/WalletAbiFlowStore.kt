@@ -105,12 +105,42 @@ class DefaultWalletAbiFlowStore : WalletAbiFlowStore {
 
     private suspend fun handleApprove() {
         val currentState = mutableState.value as? WalletAbiFlowState.RequestLoaded ?: return
-        mutableState.value = WalletAbiFlowState.Submitting(currentState.review.requestContext)
+        when (val approvalTarget = currentState.review.approvalTarget) {
+            is WalletAbiApprovalTarget.Jade -> handleApproveJade(currentState.review, approvalTarget)
+            WalletAbiApprovalTarget.Software -> {
+                mutableState.value = WalletAbiFlowState.Submitting(currentState.review.requestContext)
+                mutableOutputs.emit(
+                    WalletAbiFlowOutput.StartSubmission(
+                        WalletAbiSubmissionCommand(
+                            requestContext = currentState.review.requestContext,
+                            selectedAccountId = currentState.review.selectedAccountId
+                        )
+                    )
+                )
+            }
+        }
+    }
+
+    private suspend fun handleApproveJade(
+        review: WalletAbiFlowReview,
+        approvalTarget: WalletAbiApprovalTarget.Jade
+    ) {
+        val jade = WalletAbiJadeContext(
+            deviceId = approvalTarget.deviceId,
+            step = WalletAbiJadeStep.CONNECT,
+            message = null,
+            retryable = false
+        )
+        mutableState.value = WalletAbiFlowState.AwaitingApproval(
+            requestContext = review.requestContext,
+            jade = jade
+        )
         mutableOutputs.emit(
-            WalletAbiFlowOutput.StartSubmission(
-                WalletAbiSubmissionCommand(
-                    requestContext = currentState.review.requestContext,
-                    selectedAccountId = currentState.review.selectedAccountId
+            WalletAbiFlowOutput.StartApproval(
+                WalletAbiApprovalCommand(
+                    requestContext = review.requestContext,
+                    selectedAccountId = review.selectedAccountId,
+                    jade = jade
                 )
             )
         )
@@ -152,6 +182,11 @@ sealed interface WalletAbiFlowState {
 
     data class RequestLoaded(
         val review: WalletAbiFlowReview
+    ) : WalletAbiFlowState
+
+    data class AwaitingApproval(
+        val requestContext: WalletAbiStartRequestContext,
+        val jade: WalletAbiJadeContext
     ) : WalletAbiFlowState
 
     data class Submitting(
@@ -199,6 +234,10 @@ sealed interface WalletAbiFlowOutput {
         val command: WalletAbiResolutionCommand
     ) : WalletAbiFlowOutput
 
+    data class StartApproval(
+        val command: WalletAbiApprovalCommand
+    ) : WalletAbiFlowOutput
+
     data class StartSubmission(
         val command: WalletAbiSubmissionCommand
     ) : WalletAbiFlowOutput
@@ -221,6 +260,12 @@ data class WalletAbiResolutionCommand(
 data class WalletAbiSubmissionCommand(
     val requestContext: WalletAbiStartRequestContext,
     val selectedAccountId: String?
+)
+
+data class WalletAbiApprovalCommand(
+    val requestContext: WalletAbiStartRequestContext,
+    val selectedAccountId: String?,
+    val jade: WalletAbiJadeContext
 )
 
 sealed interface WalletAbiFlowTerminalResult {
@@ -266,7 +311,26 @@ data class WalletAbiAccountOption(
 )
 
 sealed interface WalletAbiApprovalTarget {
+    data class Jade(
+        val deviceName: String?,
+        val deviceId: String?
+    ) : WalletAbiApprovalTarget
+
     data object Software : WalletAbiApprovalTarget
+}
+
+data class WalletAbiJadeContext(
+    val deviceId: String?,
+    val step: WalletAbiJadeStep,
+    val message: String?,
+    val retryable: Boolean
+)
+
+enum class WalletAbiJadeStep {
+    CONNECT,
+    UNLOCK,
+    REVIEW,
+    SIGN
 }
 
 sealed interface WalletAbiExecutionEvent {
