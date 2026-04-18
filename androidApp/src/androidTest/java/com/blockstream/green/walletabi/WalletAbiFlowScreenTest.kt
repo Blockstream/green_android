@@ -19,6 +19,13 @@ import com.blockstream.domain.walletabi.flow.WalletAbiResumePhase
 import com.blockstream.domain.walletabi.flow.WalletAbiResumeSnapshot
 import com.blockstream.domain.walletabi.flow.WalletAbiStartRequestContext
 import com.blockstream.domain.walletabi.flow.WalletAbiSuccessResult
+import com.blockstream.domain.walletabi.request.WalletAbiInput
+import com.blockstream.domain.walletabi.request.WalletAbiNetwork
+import com.blockstream.domain.walletabi.request.WalletAbiOutput
+import com.blockstream.domain.walletabi.request.WalletAbiParsedRequest
+import com.blockstream.domain.walletabi.request.WalletAbiRuntimeParams
+import com.blockstream.domain.walletabi.request.WalletAbiTxCreateRequest
+import kotlinx.serialization.json.JsonPrimitive
 import org.junit.Rule
 import org.junit.Test
 import kotlin.test.assertEquals
@@ -84,6 +91,58 @@ class WalletAbiFlowScreenTest {
             ),
             intents
         )
+    }
+
+    @Test
+    fun walletAbiFlowScreen_shows_parsed_request_facts() {
+        setScreen(
+            WalletAbiFlowState.RequestLoaded(
+                softwareReview.copy(
+                    parsedRequest = WalletAbiParsedRequest.TxCreate(
+                        request = WalletAbiTxCreateRequest(
+                            abiVersion = "wallet-abi-0.1",
+                            requestId = "parsed-request-id",
+                            network = WalletAbiNetwork.TESTNET_LIQUID,
+                            params = WalletAbiRuntimeParams(
+                                inputs = listOf(
+                                    WalletAbiInput(
+                                        id = "input-1",
+                                        utxoSource = kotlinx.serialization.json.buildJsonObject { put("kind", JsonPrimitive("wallet")) },
+                                        unblinding = kotlinx.serialization.json.buildJsonObject { put("kind", JsonPrimitive("known")) },
+                                        sequence = 1L,
+                                        finalizer = kotlinx.serialization.json.buildJsonObject { put("kind", JsonPrimitive("default")) }
+                                    )
+                                ),
+                                outputs = listOf(
+                                    WalletAbiOutput(
+                                        id = "output-1",
+                                        amountSat = 1000L,
+                                        lock = kotlinx.serialization.json.buildJsonObject { put("kind", JsonPrimitive("pkh")) },
+                                        asset = kotlinx.serialization.json.buildJsonObject { put("kind", JsonPrimitive("btc")) },
+                                        blinder = kotlinx.serialization.json.buildJsonObject { put("kind", JsonPrimitive("default")) }
+                                    ),
+                                    WalletAbiOutput(
+                                        id = "output-2",
+                                        amountSat = 2000L,
+                                        lock = kotlinx.serialization.json.buildJsonObject { put("kind", JsonPrimitive("pkh")) },
+                                        asset = kotlinx.serialization.json.buildJsonObject { put("kind", JsonPrimitive("btc")) },
+                                        blinder = kotlinx.serialization.json.buildJsonObject { put("kind", JsonPrimitive("default")) }
+                                    )
+                                ),
+                                feeRateSatKvb = 12.5f
+                            ),
+                            broadcast = true
+                        )
+                    )
+                )
+            )
+        )
+
+        composeRule.onNodeWithTag("wallet_abi_flow_parsed_request_id").assertIsDisplayed()
+        composeRule.onNodeWithTag("wallet_abi_flow_parsed_network").assertIsDisplayed()
+        composeRule.onNodeWithTag("wallet_abi_flow_parsed_broadcast").assertIsDisplayed()
+        composeRule.onNodeWithTag("wallet_abi_flow_parsed_input_count").assertIsDisplayed()
+        composeRule.onNodeWithTag("wallet_abi_flow_parsed_output_count").assertIsDisplayed()
     }
 
     @Test

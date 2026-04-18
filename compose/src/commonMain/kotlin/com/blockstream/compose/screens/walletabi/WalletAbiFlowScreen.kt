@@ -22,6 +22,7 @@ import com.blockstream.domain.walletabi.flow.WalletAbiCancelledReason
 import com.blockstream.domain.walletabi.flow.WalletAbiFlowIntent
 import com.blockstream.domain.walletabi.flow.WalletAbiFlowState
 import com.blockstream.domain.walletabi.flow.WalletAbiJadeStep
+import com.blockstream.domain.walletabi.request.WalletAbiParsedRequest
 
 @Composable
 fun WalletAbiFlowScreen(viewModel: WalletAbiFlowViewModel) {
@@ -67,6 +68,33 @@ fun WalletAbiFlowScreen(
                     Text(state.review.message)
                     Text("Wallet: ${state.review.requestContext.walletId}")
                     Text("Request: ${state.review.requestContext.requestId}")
+                    when (val parsedRequest = state.review.parsedRequest) {
+                        is WalletAbiParsedRequest.TxCreate -> {
+                            val request = parsedRequest.request
+                            Text(
+                                text = "Parsed request: ${request.requestId}",
+                                modifier = Modifier.testTag("wallet_abi_flow_parsed_request_id")
+                            )
+                            Text(
+                                text = "Network: ${request.network.wireValue}",
+                                modifier = Modifier.testTag("wallet_abi_flow_parsed_network")
+                            )
+                            Text(
+                                text = "Broadcast: ${if (request.broadcast) "yes" else "no"}",
+                                modifier = Modifier.testTag("wallet_abi_flow_parsed_broadcast")
+                            )
+                            Text(
+                                text = "Inputs: ${request.params.inputs.size}",
+                                modifier = Modifier.testTag("wallet_abi_flow_parsed_input_count")
+                            )
+                            Text(
+                                text = "Outputs: ${request.params.outputs.size}",
+                                modifier = Modifier.testTag("wallet_abi_flow_parsed_output_count")
+                            )
+                        }
+
+                        null -> Unit
+                    }
                     state.review.accounts.forEachIndexed { index, account ->
                         OutlinedButton(
                             onClick = { onIntent(WalletAbiFlowIntent.SelectAccount(account.accountId)) },
