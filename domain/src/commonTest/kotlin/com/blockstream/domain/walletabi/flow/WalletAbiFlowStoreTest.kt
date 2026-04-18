@@ -57,6 +57,7 @@ class WalletAbiFlowStoreTest {
             deviceId = "jade-id"
         )
     )
+    private val jadeFailedError = WalletAbiFlowError("Jade failed")
 
     @Test
     fun request_loaded_event_updates_loading_state() = runTest {
@@ -161,7 +162,7 @@ class WalletAbiFlowStoreTest {
         store.dispatch(WalletAbiFlowIntent.Approve)
 
         assertEquals(
-            WalletAbiFlowState.Submitting(review.requestContext),
+            WalletAbiFlowState.Submitting(review.requestContext, null),
             store.state.value
         )
         assertEquals(
@@ -190,7 +191,7 @@ class WalletAbiFlowStoreTest {
             WalletAbiFlowIntent.OnExecutionEvent(WalletAbiExecutionEvent.Submitted)
         )
         assertEquals(
-            WalletAbiFlowState.Submitting(review.requestContext),
+            WalletAbiFlowState.Submitting(review.requestContext, null),
             store.state.value
         )
 
@@ -306,6 +307,7 @@ class WalletAbiFlowStoreTest {
         assertEquals(
             WalletAbiFlowState.AwaitingApproval(
                 requestContext = jadeReview.requestContext,
+                selectedAccountId = jadeReview.selectedAccountId,
                 jade = jadeContext
             ),
             store.state.value
@@ -317,6 +319,170 @@ class WalletAbiFlowStoreTest {
                     selectedAccountId = jadeReview.selectedAccountId,
                     jade = jadeContext
                 )
+            ),
+            output.await()
+        )
+    }
+
+    @Test
+    fun jade_events_move_awaiting_approval_to_submitting() = runTest {
+        val store = DefaultWalletAbiFlowStore()
+        store.dispatch(WalletAbiFlowIntent.Start(jadeReview.requestContext))
+        store.dispatch(
+            WalletAbiFlowIntent.OnExecutionEvent(
+                WalletAbiExecutionEvent.RequestLoaded(jadeReview)
+            )
+        )
+        store.dispatch(WalletAbiFlowIntent.Approve)
+
+        store.dispatch(WalletAbiFlowIntent.OnJadeEvent(WalletAbiJadeEvent.Connected))
+        assertEquals(
+            WalletAbiFlowState.AwaitingApproval(
+                requestContext = jadeReview.requestContext,
+                selectedAccountId = jadeReview.selectedAccountId,
+                jade = WalletAbiJadeContext(
+                    deviceId = "jade-id",
+                    step = WalletAbiJadeStep.UNLOCK,
+                    message = null,
+                    retryable = false
+                )
+            ),
+            store.state.value
+        )
+
+        store.dispatch(WalletAbiFlowIntent.OnJadeEvent(WalletAbiJadeEvent.UnlockConfirmed))
+        assertEquals(
+            WalletAbiFlowState.AwaitingApproval(
+                requestContext = jadeReview.requestContext,
+                selectedAccountId = jadeReview.selectedAccountId,
+                jade = WalletAbiJadeContext(
+                    deviceId = "jade-id",
+                    step = WalletAbiJadeStep.REVIEW,
+                    message = null,
+                    retryable = false
+                )
+            ),
+            store.state.value
+        )
+
+        store.dispatch(WalletAbiFlowIntent.OnJadeEvent(WalletAbiJadeEvent.ReviewConfirmed))
+        assertEquals(
+            WalletAbiFlowState.AwaitingApproval(
+                requestContext = jadeReview.requestContext,
+                selectedAccountId = jadeReview.selectedAccountId,
+                jade = WalletAbiJadeContext(
+                    deviceId = "jade-id",
+                    step = WalletAbiJadeStep.SIGN,
+                    message = null,
+                    retryable = false
+                )
+            ),
+            store.state.value
+        )
+
+        val output = async(start = CoroutineStart.UNDISPATCHED) { store.outputs.first() }
+        store.dispatch(WalletAbiFlowIntent.OnJadeEvent(WalletAbiJadeEvent.Signed))
+
+        assertEquals(
+            WalletAbiFlowState.Submitting(
+                requestContext = jadeReview.requestContext,
+                jade = WalletAbiJadeContext(
+                    deviceId = "jade-id",
+                    step = WalletAbiJadeStep.SIGN,
+                    message = null,
+                    retryable = false
+                )
+            ),
+            store.state.value
+        )
+        assertEquals(
+            WalletAbiFlowOutput.StartSubmission(
+                WalletAbiSubmissionCommand(
+                    requestContext = jadeReview.requestContext,
+                    selectedAccountId = jadeReview.selectedAccountId
+                )
+            ),
+            output.await()
+        )
+    }
+
+    @Test
+    fun jade_cancel_ends_cancelled() = runTest {
+        val store = DefaultWalletAbiFlowStore()
+        store.dispatch(WalletAbiFlowIntent.Start(jadeReview.requestContext))
+        store.dispatch(
+            WalletAbiFlowIntent.OnExecutionEvent(
+                WalletAbiExecutionEvent.RequestLoaded(jadeReview)
+            )
+        )
+        store.dispatch(WalletAbiFlowIntent.Approve)
+        val output = async(start = CoroutineStart.UNDISPATCHED) { store.outputs.first() }
+
+        store.dispatch(WalletAbiFlowIntent.OnJadeEvent(WalletAbiJadeEvent.Cancelled))
+
+        assertEquals(
+            WalletAbiFlowState.Cancelled(WalletAbiCancelledReason.JadeCancelled),
+            store.state.value
+        )
+        assertEquals(
+            WalletAbiFlowOutput.Complete(
+                WalletAbiFlowTerminalResult.Cancelled(WalletAbiCancelledReason.JadeCancelled)
+            ),
+            output.await()
+        )
+    }
+
+    @Test
+    fun jade_failure_ends_error() = runTest {
+        val store = DefaultWalletAbiFlowStore()
+        store.dispatch(WalletAbiFlowIntent.Start(jadeReview.requestContext))
+        store.dispatch(
+            WalletAbiFlowIntent.OnExecutionEvent(
+                WalletAbiExecutionEvent.RequestLoaded(jadeReview)
+            )
+        )
+        store.dispatch(WalletAbiFlowIntent.Approve)
+        val output = async(start = CoroutineStart.UNDISPATCHED) { store.outputs.first() }
+
+        store.dispatch(
+            WalletAbiFlowIntent.OnJadeEvent(
+                WalletAbiJadeEvent.Failed(jadeFailedError)
+            )
+        )
+
+        assertEquals(
+            WalletAbiFlowState.Error(jadeFailedError),
+            store.state.value
+        )
+        assertEquals(
+            WalletAbiFlowOutput.Complete(
+                WalletAbiFlowTerminalResult.Error(jadeFailedError)
+            ),
+            output.await()
+        )
+    }
+
+    @Test
+    fun jade_disconnect_ends_error() = runTest {
+        val store = DefaultWalletAbiFlowStore()
+        store.dispatch(WalletAbiFlowIntent.Start(jadeReview.requestContext))
+        store.dispatch(
+            WalletAbiFlowIntent.OnExecutionEvent(
+                WalletAbiExecutionEvent.RequestLoaded(jadeReview)
+            )
+        )
+        store.dispatch(WalletAbiFlowIntent.Approve)
+        val output = async(start = CoroutineStart.UNDISPATCHED) { store.outputs.first() }
+
+        store.dispatch(WalletAbiFlowIntent.OnJadeEvent(WalletAbiJadeEvent.Disconnected))
+
+        assertEquals(
+            WalletAbiFlowState.Error(WalletAbiFlowError("Jade disconnected")),
+            store.state.value
+        )
+        assertEquals(
+            WalletAbiFlowOutput.Complete(
+                WalletAbiFlowTerminalResult.Error(WalletAbiFlowError("Jade disconnected"))
             ),
             output.await()
         )
