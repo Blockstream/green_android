@@ -252,6 +252,30 @@ class WalletAbiFlowStoreTest {
     }
 
     @Test
+    fun dismiss_success_returns_idle() = runTest {
+        val store = DefaultWalletAbiFlowStore()
+        store.dispatch(WalletAbiFlowIntent.Start(review.requestContext))
+        store.dispatch(
+            WalletAbiFlowIntent.OnExecutionEvent(
+                WalletAbiExecutionEvent.RequestLoaded(review)
+            )
+        )
+        store.dispatch(WalletAbiFlowIntent.Approve)
+        store.dispatch(
+            WalletAbiFlowIntent.OnExecutionEvent(
+                WalletAbiExecutionEvent.RemoteResponseSent(successResult)
+            )
+        )
+
+        store.dispatch(WalletAbiFlowIntent.DismissTerminal)
+
+        assertEquals(
+            WalletAbiFlowState.Idle,
+            store.state.value
+        )
+    }
+
+    @Test
     fun reject_ends_cancelled() = runTest {
         val store = DefaultWalletAbiFlowStore()
         val outputs = async(start = CoroutineStart.UNDISPATCHED) {
@@ -299,6 +323,28 @@ class WalletAbiFlowStoreTest {
     }
 
     @Test
+    fun dismiss_error_returns_idle() = runTest {
+        val store = DefaultWalletAbiFlowStore()
+        store.dispatch(
+            WalletAbiFlowIntent.OnExecutionEvent(
+                WalletAbiExecutionEvent.Failed(failedError)
+            )
+        )
+        val output = async(start = CoroutineStart.UNDISPATCHED) { store.outputs.first() }
+
+        store.dispatch(WalletAbiFlowIntent.DismissTerminal)
+
+        assertEquals(
+            WalletAbiFlowState.Idle,
+            store.state.value
+        )
+        assertEquals(
+            WalletAbiFlowOutput.PersistSnapshot(null),
+            output.await()
+        )
+    }
+
+    @Test
     fun expired_event_ends_cancelled() = runTest {
         val store = DefaultWalletAbiFlowStore()
         val outputs = async(start = CoroutineStart.UNDISPATCHED) {
@@ -321,6 +367,19 @@ class WalletAbiFlowStoreTest {
                 )
             ),
             outputs.await()
+        )
+    }
+
+    @Test
+    fun dismiss_cancelled_returns_idle() = runTest {
+        val store = DefaultWalletAbiFlowStore()
+
+        store.dispatch(WalletAbiFlowIntent.Reject)
+        store.dispatch(WalletAbiFlowIntent.DismissTerminal)
+
+        assertEquals(
+            WalletAbiFlowState.Idle,
+            store.state.value
         )
     }
 

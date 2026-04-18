@@ -25,6 +25,7 @@ class DefaultWalletAbiFlowStore : WalletAbiFlowStore {
         when (intent) {
             WalletAbiFlowIntent.Approve -> handleApprove()
             WalletAbiFlowIntent.CancelResume -> handleCancelResume()
+            WalletAbiFlowIntent.DismissTerminal -> handleDismissTerminal()
             WalletAbiFlowIntent.Reject -> handleReject()
             is WalletAbiFlowIntent.OnJadeEvent -> handleJadeEvent(intent.event)
             is WalletAbiFlowIntent.Restore -> handleRestore(intent)
@@ -247,6 +248,22 @@ class DefaultWalletAbiFlowStore : WalletAbiFlowStore {
         mutableOutputs.emit(WalletAbiFlowOutput.Complete(result))
     }
 
+    private suspend fun handleDismissTerminal() {
+        when (mutableState.value) {
+            is WalletAbiFlowState.Cancelled,
+            is WalletAbiFlowState.Success -> {
+                mutableState.value = WalletAbiFlowState.Idle
+            }
+
+            is WalletAbiFlowState.Error -> {
+                mutableOutputs.emit(WalletAbiFlowOutput.PersistSnapshot(null))
+                mutableState.value = WalletAbiFlowState.Idle
+            }
+
+            else -> Unit
+        }
+    }
+
     private fun restoreSubmittingAsError(): WalletAbiFlowState.Error {
         return WalletAbiFlowState.Error(
             WalletAbiFlowError("Execution status uncertain")
@@ -361,6 +378,7 @@ sealed interface WalletAbiFlowState {
 sealed interface WalletAbiFlowIntent {
     data object Approve : WalletAbiFlowIntent
     data object CancelResume : WalletAbiFlowIntent
+    data object DismissTerminal : WalletAbiFlowIntent
     data object Reject : WalletAbiFlowIntent
     data object Resume : WalletAbiFlowIntent
 
