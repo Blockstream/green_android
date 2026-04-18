@@ -216,11 +216,13 @@ dependencies {
 
     /**  --- Koin   ----------------------------------------------------------------------------- */
     // For instrumentation tests
-     androidTestImplementation(libs.koin.test)
+    androidTestImplementation(platform(libs.koin.bom))
+    androidTestImplementation(libs.koin.test)
     // androidTestImplementation(libs.koin.test.junit4)
 
     // For local unit tests
-     testImplementation(libs.koin.test)
+    testImplementation(platform(libs.koin.bom))
+    testImplementation(libs.koin.test)
     // testImplementation(libs.koin.test.junit4)
     /** ----------------------------------------------------------------------------------------- */
 

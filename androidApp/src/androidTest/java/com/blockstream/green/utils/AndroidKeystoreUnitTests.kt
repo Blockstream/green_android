@@ -1,5 +1,6 @@
 package com.blockstream.green.utils
 
+import androidx.test.core.app.ApplicationProvider
 import androidx.test.ext.junit.runners.AndroidJUnit4
 import com.blockstream.data.utils.AndroidKeystore
 import org.junit.Assert
@@ -16,7 +17,7 @@ class AndroidKeystoreUnitTests {
 
     @Before
     fun setup() {
-        androidKeystore = AndroidKeystore()
+        androidKeystore = AndroidKeystore(ApplicationProvider.getApplicationContext())
         androidKeystore.deleteFromKeyStore(ALIAS)
     }
 
