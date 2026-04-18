@@ -19,8 +19,13 @@ import com.blockstream.domain.walletabi.flow.WalletAbiFlowOutput
 import com.blockstream.domain.walletabi.flow.WalletAbiFlowSnapshotRepository
 import com.blockstream.domain.walletabi.flow.WalletAbiFlowState
 import com.blockstream.domain.walletabi.flow.WalletAbiFlowStore
+import com.blockstream.domain.walletabi.flow.WalletAbiFlowError
 import com.blockstream.domain.walletabi.flow.WalletAbiStartRequestContext
 import com.blockstream.domain.walletabi.flow.WalletAbiSuccessResult
+import com.blockstream.domain.walletabi.request.DefaultWalletAbiRequestParser
+import com.blockstream.domain.walletabi.request.WalletAbiMethod
+import com.blockstream.domain.walletabi.request.WalletAbiParsedEnvelope
+import com.blockstream.domain.walletabi.request.WalletAbiRequestParseResult
 import kotlinx.coroutines.flow.collect
 import kotlinx.coroutines.flow.launchIn
 import kotlinx.coroutines.flow.onEach
@@ -33,6 +38,8 @@ class WalletAbiFlowRouteViewModel(
     private val snapshotRepository: WalletAbiFlowSnapshotRepository,
     private val driver: FakeWalletAbiFlowDriver
 ) : GreenViewModel(greenWalletOrNull = greenWallet) {
+    private val requestParser = DefaultWalletAbiRequestParser()
+
     override fun screenName(): String = "WalletAbiFlow"
     override val isLoginRequired: Boolean = false
 
@@ -44,15 +51,49 @@ class WalletAbiFlowRouteViewModel(
             subtitle = greenWallet.name
         )
         store.outputs.onEach { output ->
-            if (output is WalletAbiFlowOutput.PersistSnapshot) {
+            handleOutput(output = output, greenWallet = greenWallet)
+        }.launchIn(viewModelScope)
+        startFlow(greenWallet = greenWallet)
+        bootstrap()
+    }
+
+    private suspend fun handleOutput(output: WalletAbiFlowOutput, greenWallet: GreenWallet) {
+        when (output) {
+            is WalletAbiFlowOutput.LoadRequest -> {
+                when (val parseResult = requestParser.parse(driver.loadRequestEnvelope(output.requestContext.requestId))) {
+                    is WalletAbiRequestParseResult.Failure -> {
+                        store.dispatch(
+                            WalletAbiFlowIntent.OnExecutionEvent(
+                                WalletAbiExecutionEvent.Failed(
+                                    WalletAbiFlowError(parseResult.error.message)
+                                )
+                            )
+                        )
+                    }
+
+                    is WalletAbiRequestParseResult.Success -> {
+                        store.dispatch(
+                            WalletAbiFlowIntent.OnExecutionEvent(
+                                WalletAbiExecutionEvent.RequestLoaded(
+                                    review = parseResult.envelope.toDomainReview(output.requestContext)
+                                )
+                            )
+                        )
+                    }
+                }
+            }
+
+            is WalletAbiFlowOutput.PersistSnapshot -> {
                 val snapshot = output.snapshot
                 if (snapshot == null) {
                     snapshotRepository.clear(greenWallet.id)
                 } else {
                     snapshotRepository.save(greenWallet.id, snapshot)
                 }
-            } else if (output is WalletAbiFlowOutput.StartResolution) {
-                val review = (store.state.value as? WalletAbiFlowState.RequestLoaded)?.review ?: return@onEach
+            }
+
+            is WalletAbiFlowOutput.StartResolution -> {
+                val review = (store.state.value as? WalletAbiFlowState.RequestLoaded)?.review ?: return
                 val resolvedPayload = driver.resolveRequest(
                     review = WalletAbiFlowReviewPayload(
                         requestId = output.command.requestContext.requestId,
@@ -76,17 +117,29 @@ class WalletAbiFlowRouteViewModel(
                             WalletAbiApprovalTarget.Software -> WalletAbiApprovalTargetPayload(
                                 kind = "software"
                             )
-                        }
+                        },
+                        parsedRequest = null
                     )
                 )
                 store.dispatch(
                     WalletAbiFlowIntent.OnExecutionEvent(
                         WalletAbiExecutionEvent.Resolved(
-                            review = resolvedPayload.toDomainReview(output.command.requestContext)
+                            review = resolvedPayload.toDomainReview(
+                                requestContext = output.command.requestContext,
+                                parsedEnvelope = review.parsedRequest?.let { parsedRequest ->
+                                    WalletAbiParsedEnvelope(
+                                        id = null,
+                                        method = WalletAbiMethod.PROCESS_REQUEST,
+                                        request = parsedRequest
+                                    )
+                                }
+                            )
                         )
                     )
                 )
-            } else if (output is WalletAbiFlowOutput.StartSubmission) {
+            }
+
+            is WalletAbiFlowOutput.StartSubmission -> {
                 driver.submitRequest(
                     requestId = output.command.requestContext.requestId
                 ).collect { event ->
@@ -107,9 +160,10 @@ class WalletAbiFlowRouteViewModel(
                     )
                 }
             }
-        }.launchIn(viewModelScope)
-        startFlow(greenWallet = greenWallet)
-        bootstrap()
+
+            is WalletAbiFlowOutput.Complete -> Unit
+            is WalletAbiFlowOutput.StartApproval -> Unit
+        }
     }
 
     fun dispatch(intent: WalletAbiFlowIntent) {
@@ -129,23 +183,11 @@ class WalletAbiFlowRouteViewModel(
 
     private fun startFlow(greenWallet: GreenWallet) {
         viewModelScope.launch {
-            val requestContext = WalletAbiStartRequestContext(
-                requestId = DEMO_REQUEST_ID,
-                walletId = greenWallet.id
-            )
             store.dispatch(
                 WalletAbiFlowIntent.Start(
-                    requestContext = requestContext
-                )
-            )
-            val reviewPayload = driver.loadRequest(
-                requestId = requestContext.requestId,
-                walletId = requestContext.walletId
-            )
-            store.dispatch(
-                WalletAbiFlowIntent.OnExecutionEvent(
-                    WalletAbiExecutionEvent.RequestLoaded(
-                        review = reviewPayload.toDomainReview(requestContext)
+                    requestContext = WalletAbiStartRequestContext(
+                        requestId = DEMO_REQUEST_ID,
+                        walletId = greenWallet.id
                     )
                 )
             )
@@ -158,7 +200,8 @@ class WalletAbiFlowRouteViewModel(
 }
 
 private fun WalletAbiFlowReviewPayload.toDomainReview(
-    requestContext: WalletAbiStartRequestContext
+    requestContext: WalletAbiStartRequestContext,
+    parsedEnvelope: WalletAbiParsedEnvelope? = null
 ): WalletAbiFlowReview {
     return WalletAbiFlowReview(
         requestContext = requestContext,
@@ -178,6 +221,26 @@ private fun WalletAbiFlowReviewPayload.toDomainReview(
             )
 
             else -> WalletAbiApprovalTarget.Software
-        }
+        },
+        parsedRequest = parsedEnvelope?.request
+    )
+}
+
+private fun WalletAbiParsedEnvelope.toDomainReview(
+    requestContext: WalletAbiStartRequestContext
+): WalletAbiFlowReview {
+    return WalletAbiFlowReview(
+        requestContext = requestContext,
+        title = "Demo payment",
+        message = "Approve a fake Wallet ABI request",
+        accounts = listOf(
+            WalletAbiAccountOption(
+                accountId = "fake-account-1",
+                name = "Main account"
+            )
+        ),
+        selectedAccountId = "fake-account-1",
+        approvalTarget = WalletAbiApprovalTarget.Software,
+        parsedRequest = request
     )
 }

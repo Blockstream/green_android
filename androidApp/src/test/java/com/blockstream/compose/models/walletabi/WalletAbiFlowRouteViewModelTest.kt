@@ -26,9 +26,12 @@ import com.blockstream.domain.walletabi.flow.WalletAbiResumeSnapshot
 import com.blockstream.domain.walletabi.flow.WalletAbiResolutionCommand
 import com.blockstream.domain.walletabi.flow.WalletAbiFlowState
 import com.blockstream.domain.walletabi.flow.WalletAbiFlowStore
+import com.blockstream.domain.walletabi.flow.WalletAbiFlowError
 import com.blockstream.domain.walletabi.flow.WalletAbiStartRequestContext
 import com.blockstream.domain.walletabi.flow.WalletAbiSubmissionCommand
 import com.blockstream.domain.walletabi.flow.WalletAbiSuccessResult
+import com.blockstream.domain.walletabi.request.WalletAbiNetwork
+import com.blockstream.domain.walletabi.request.WalletAbiParsedRequest
 import io.mockk.coVerify
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.async
@@ -56,13 +59,16 @@ import kotlin.test.assertIs
 class WalletAbiFlowRouteViewModelTest {
     private val dispatcher = StandardTestDispatcher()
     private val greenWallet = previewWallet()
-    private val store = FakeWalletAbiFlowStore()
-    private val snapshotRepository = mockk<WalletAbiFlowSnapshotRepository>(relaxed = true)
-    private val driver = FakeWalletAbiFlowDriver()
+    private lateinit var store: FakeWalletAbiFlowStore
+    private lateinit var snapshotRepository: WalletAbiFlowSnapshotRepository
+    private lateinit var driver: FakeWalletAbiFlowDriver
 
     @Before
     fun setUp() {
         Dispatchers.setMain(dispatcher)
+        store = FakeWalletAbiFlowStore()
+        snapshotRepository = mockk(relaxed = true)
+        driver = FakeWalletAbiFlowDriver()
 
         val countly = mockk<CountlyBase>(relaxed = true).also {
             every { it.remoteConfigUpdateEvent } returns MutableSharedFlow()
@@ -126,32 +132,112 @@ class WalletAbiFlowRouteViewModelTest {
                         requestId = WalletAbiFlowRouteViewModel.DEMO_REQUEST_ID,
                         walletId = greenWallet.id
                     )
-                ),
-                WalletAbiFlowIntent.OnExecutionEvent(
-                    WalletAbiExecutionEvent.RequestLoaded(
-                        review = WalletAbiFlowReview(
-                            requestContext = WalletAbiStartRequestContext(
-                                requestId = WalletAbiFlowRouteViewModel.DEMO_REQUEST_ID,
-                                walletId = greenWallet.id
-                            ),
-                            title = "Demo payment",
-                            message = "Approve a fake Wallet ABI request",
-                            accounts = listOf(
-                                WalletAbiAccountOption(
-                                    accountId = "fake-account-1",
-                                    name = "Main account"
-                                )
-                            ),
-                            selectedAccountId = "fake-account-1",
-                            approvalTarget = WalletAbiApprovalTarget.Software
-                        )
-                    )
                 )
             ),
             store.intents
         )
     }
 
+
+    @Test
+    fun loadRequest_output_dispatches_request_loaded_review() = runTest(dispatcher) {
+        WalletAbiFlowRouteViewModel(
+            greenWallet = greenWallet,
+            store = store,
+            snapshotRepository = snapshotRepository,
+            driver = driver
+        )
+
+        advanceUntilIdle()
+
+        store.mutableOutputs.emit(
+            WalletAbiFlowOutput.LoadRequest(
+                WalletAbiStartRequestContext(
+                    requestId = WalletAbiFlowRouteViewModel.DEMO_REQUEST_ID,
+                    walletId = greenWallet.id
+                )
+            )
+        )
+
+        advanceUntilIdle()
+
+        val intent = assertIs<WalletAbiFlowIntent.OnExecutionEvent>(store.intents.last())
+        val review = assertIs<WalletAbiExecutionEvent.RequestLoaded>(intent.event).review
+        val parsedRequest = assertIs<WalletAbiParsedRequest.TxCreate>(review.parsedRequest).request
+
+        assertEquals(
+            WalletAbiStartRequestContext(
+                requestId = WalletAbiFlowRouteViewModel.DEMO_REQUEST_ID,
+                walletId = greenWallet.id
+            ),
+            review.requestContext
+        )
+        assertEquals("Demo payment", review.title)
+        assertEquals("Approve a fake Wallet ABI request", review.message)
+        assertEquals("fake-account-1", review.selectedAccountId)
+        assertEquals(WalletAbiApprovalTarget.Software, review.approvalTarget)
+        assertEquals("wallet-abi-0.1", parsedRequest.abiVersion)
+        assertEquals(WalletAbiFlowRouteViewModel.DEMO_REQUEST_ID, parsedRequest.requestId)
+        assertEquals(WalletAbiNetwork.TESTNET_LIQUID, parsedRequest.network)
+        assertEquals(1, parsedRequest.params.inputs.size)
+        assertEquals(1, parsedRequest.params.outputs.size)
+        assertEquals(12.5f, parsedRequest.params.feeRateSatKvb)
+        assertEquals(true, parsedRequest.broadcast)
+    }
+
+    @Test
+    fun loadRequest_output_dispatches_error_for_malformed_request() = runTest(dispatcher) {
+        driver = mockk {
+            every { loadRequestEnvelope(any()) } returns "{"
+        }
+
+        WalletAbiFlowRouteViewModel(
+            greenWallet = greenWallet,
+            store = store,
+            snapshotRepository = snapshotRepository,
+            driver = driver
+        )
+
+        advanceUntilIdle()
+
+        store.mutableOutputs.emit(
+            WalletAbiFlowOutput.LoadRequest(
+                WalletAbiStartRequestContext(
+                    requestId = WalletAbiFlowRouteViewModel.DEMO_REQUEST_ID,
+                    walletId = greenWallet.id
+                )
+            )
+        )
+
+        advanceUntilIdle()
+
+        assertEquals(
+            WalletAbiFlowIntent.OnExecutionEvent(
+                WalletAbiExecutionEvent.Failed(
+                    WalletAbiFlowError("Wallet ABI request envelope is malformed")
+                )
+            ),
+            store.intents.last()
+        )
+    }
+
+    @Test
+    fun init_reaches_request_loaded_with_real_store() = runTest(dispatcher) {
+        val realStore = DefaultWalletAbiFlowStore()
+        val viewModel = WalletAbiFlowRouteViewModel(
+            greenWallet = greenWallet,
+            store = realStore,
+            snapshotRepository = snapshotRepository,
+            driver = driver
+        )
+
+        advanceUntilIdle()
+
+        val state = assertIs<WalletAbiFlowState.RequestLoaded>(viewModel.state.value)
+        assertEquals(WalletAbiFlowRouteViewModel.DEMO_REQUEST_ID, state.review.requestContext.requestId)
+        assertEquals("fake-account-1", state.review.selectedAccountId)
+        assertIs<WalletAbiParsedRequest.TxCreate>(state.review.parsedRequest)
+    }
 
     @Test
     fun approve_reaches_success_with_real_store() = runTest(dispatcher) {
