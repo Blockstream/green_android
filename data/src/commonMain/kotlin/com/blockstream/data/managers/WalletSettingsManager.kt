@@ -30,6 +30,18 @@ class WalletSettingsManager(
         return getBoolean(walletId = walletId, key = KEY_TOTAL_BALANCE_IN_FIAT)
     }
 
+    suspend fun getWalletAbiFlowSnapshot(walletId: String): String? {
+        return getString(walletId = walletId, key = KEY_WALLET_ABI_FLOW_SNAPSHOT)
+    }
+
+    suspend fun setWalletAbiFlowSnapshot(walletId: String, snapshot: String) {
+        setString(walletId = walletId, key = KEY_WALLET_ABI_FLOW_SNAPSHOT, value = snapshot)
+    }
+
+    suspend fun clearWalletAbiFlowSnapshot(walletId: String) {
+        database.deleteWalletSetting(walletId = walletId, key = KEY_WALLET_ABI_FLOW_SNAPSHOT)
+    }
+
     // Private methods
     private suspend fun getBoolean(walletId: String, key: String): Boolean {
         return database.getWalletSetting(walletId = walletId, key = key)?.let {
@@ -70,5 +82,6 @@ class WalletSettingsManager(
         const val FALSE_VALUE = "false"
         const val KEY_LIGHTNING_NODE_ID = "lightning_node_id"
         const val KEY_TOTAL_BALANCE_IN_FIAT = "total_balance_in_fiat"
+        const val KEY_WALLET_ABI_FLOW_SNAPSHOT = "wallet_abi_flow_snapshot"
     }
 }
