@@ -59,6 +59,9 @@ sealed class NavigateDestinations : NavigateDestination() {
     data class Security(val greenWallet: GreenWallet) : NavigateDestination(unique = true, isBottomNavigation = true)
 
     @Serializable
+    data class WalletAbiFlow(val greenWallet: GreenWallet) : NavigateDestination(unique = true)
+
+    @Serializable
     data object Home : NavigateDestination(unique = true, makeItRoot = true)
 
     @Serializable

@@ -10,6 +10,7 @@ import androidx.compose.runtime.CompositionLocalProvider
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
+import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.compose.ui.window.DialogProperties
 import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavHostController
@@ -99,6 +100,7 @@ import com.blockstream.compose.models.support.SupportViewModel
 import com.blockstream.compose.models.swap.SwapViewModel
 import com.blockstream.compose.models.transaction.TransactionViewModel
 import com.blockstream.compose.models.twofactor.ReEnable2FAViewModel
+import com.blockstream.compose.models.walletabi.WalletAbiFlowRouteViewModel
 import com.blockstream.compose.models.wallet.WalletDeleteViewModel
 import com.blockstream.compose.models.wallet.WalletNameViewModel
 import com.blockstream.compose.navigation.bottomsheet.onDismissRequest
@@ -168,6 +170,7 @@ import com.blockstream.compose.screens.support.SupportScreen
 import com.blockstream.compose.screens.swap.SwapScreen
 import com.blockstream.compose.screens.transaction.TransactionScreen
 import com.blockstream.compose.screens.twofactor.ReEnable2FAScreen
+import com.blockstream.compose.screens.walletabi.WalletAbiFlowScreen
 import com.blockstream.compose.sheets.AccountRenameBottomSheet
 import com.blockstream.compose.sheets.AccountsBottomSheet
 import com.blockstream.compose.sheets.AnalyticsBottomSheet
@@ -207,8 +210,11 @@ import com.blockstream.compose.sheets.WalletDeleteBottomSheet
 import com.blockstream.compose.sheets.WalletRenameBottomSheet
 import com.blockstream.compose.sheets.WatchOnlyCredentialsSettingsBottomSheet
 import com.blockstream.compose.utils.StringHolder
+import com.blockstream.compose.utils.SetupScreen
 import com.blockstream.data.devices.DeviceModel
 import com.blockstream.data.managers.DeviceManager
+import org.koin.core.context.GlobalContext
+import org.koin.core.parameter.parametersOf
 import org.koin.compose.koinInject
 
 @Composable
@@ -372,6 +378,21 @@ fun Router(
                         greenWallet = args.greenWallet
                     )
                 })
+            }
+            appComposable<NavigateDestinations.WalletAbiFlow> {
+                val args = it.toRoute<NavigateDestinations.WalletAbiFlow>()
+                val viewModel = viewModel {
+                    GlobalContext.get().get<WalletAbiFlowRouteViewModel> {
+                        parametersOf(args.greenWallet)
+                    }
+                }
+                SetupScreen(viewModel = viewModel, withPadding = false, withBottomInsets = false) {
+                    val state by viewModel.state.collectAsStateWithLifecycle()
+                    WalletAbiFlowScreen(
+                        state = state,
+                        onIntent = viewModel::dispatch
+                    )
+                }
             }
             appComposable<NavigateDestinations.AccountOverview> {
                 val args = it.toRoute<NavigateDestinations.AccountOverview>()

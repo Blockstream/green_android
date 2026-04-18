@@ -8,10 +8,12 @@ import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.lazy.rememberLazyListState
 import androidx.compose.material3.LinearProgressIndicator
+import androidx.compose.material3.OutlinedButton
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.platform.testTag
 import androidx.compose.ui.text.font.FontStyle
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
@@ -79,6 +81,13 @@ fun TransactScreen(viewModel: TransactViewModelAbstract) {
                 )
             }
 
+            item(key = "WalletAbiEntry") {
+                WalletAbiDevelopmentEntry(
+                    visible = viewModel.appInfo.isDevelopment,
+                    onOpen = viewModel::openWalletAbiFlow
+                )
+            }
+
             item(key = "TransactionsHeader") {
                 ListHeader(title = stringResource(Res.string.id_latest_transactions))
 
@@ -111,6 +120,24 @@ fun TransactScreen(viewModel: TransactViewModelAbstract) {
                 }
             }
         }
+    }
+}
+
+@Composable
+fun WalletAbiDevelopmentEntry(
+    visible: Boolean,
+    onOpen: () -> Unit
+) {
+    if (!visible) return
+
+    OutlinedButton(
+        onClick = onOpen,
+        modifier = Modifier
+            .padding(top = 16.dp)
+            .fillMaxWidth()
+            .testTag("transact_wallet_abi_entry")
+    ) {
+        Text("Open Wallet ABI demo")
     }
 }
 

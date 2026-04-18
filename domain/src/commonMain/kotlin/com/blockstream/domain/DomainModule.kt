@@ -17,6 +17,9 @@ import com.blockstream.domain.receive.receiveModule
 import com.blockstream.domain.send.sendModule
 import com.blockstream.domain.swap.swapModule
 import com.blockstream.domain.wallet.walletModule
+import com.blockstream.domain.walletabi.flow.DefaultWalletAbiFlowStore
+import com.blockstream.domain.walletabi.flow.WalletAbiFlowSnapshotRepository
+import com.blockstream.domain.walletabi.flow.WalletAbiFlowStore
 import org.koin.dsl.module
 
 val domainModule = module {
@@ -56,5 +59,11 @@ val domainModule = module {
     }
     single {
         GetPromoUseCase(get(), get(), get())
+    }
+    factory<WalletAbiFlowStore> {
+        DefaultWalletAbiFlowStore()
+    }
+    single {
+        WalletAbiFlowSnapshotRepository(get())
     }
 }

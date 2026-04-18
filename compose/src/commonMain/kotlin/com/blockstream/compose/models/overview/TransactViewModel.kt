@@ -68,6 +68,10 @@ abstract class TransactViewModelAbstract(
             }
         }
     }
+
+    fun openWalletAbiFlow() {
+        postEvent(NavigateDestinations.WalletAbiFlow(greenWallet = greenWallet))
+    }
 }
 
 class TransactViewModel(greenWallet: GreenWallet) : TransactViewModelAbstract(greenWallet = greenWallet) {
