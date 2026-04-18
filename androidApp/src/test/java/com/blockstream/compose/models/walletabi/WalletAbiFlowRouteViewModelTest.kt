@@ -1,6 +1,7 @@
 package com.blockstream.compose.models.walletabi
 
 import com.blockstream.compose.extensions.previewWallet
+import com.blockstream.compose.sideeffects.SideEffects
 import com.blockstream.data.CountlyBase
 import com.blockstream.data.banner.Banner
 import com.blockstream.data.config.AppInfo
@@ -29,7 +30,9 @@ import com.blockstream.domain.walletabi.flow.WalletAbiSubmissionCommand
 import com.blockstream.domain.walletabi.flow.WalletAbiSuccessResult
 import io.mockk.coVerify
 import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.async
 import kotlinx.coroutines.flow.Flow
+import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.flowOf
@@ -318,6 +321,36 @@ class WalletAbiFlowRouteViewModelTest {
         )
     }
 
+    @Test
+    fun dismissTerminal_posts_navigate_back() = runTest(dispatcher) {
+        store.state.value = WalletAbiFlowState.Success(
+            WalletAbiSuccessResult(
+                requestId = WalletAbiFlowRouteViewModel.DEMO_REQUEST_ID,
+                responseId = "wallet-abi-demo-response"
+            )
+        )
+        val viewModel = WalletAbiFlowRouteViewModel(
+            greenWallet = greenWallet,
+            store = store,
+            snapshotRepository = snapshotRepository,
+            driver = driver
+        )
+
+        advanceUntilIdle()
+
+        val sideEffect = async {
+            viewModel.sideEffect.first()
+        }
+
+        viewModel.dispatch(WalletAbiFlowIntent.DismissTerminal)
+        advanceUntilIdle()
+
+        assertEquals(
+            SideEffects.NavigateBack(),
+            sideEffect.await()
+        )
+    }
+
     private class FakeWalletAbiFlowStore : WalletAbiFlowStore {
         override val state = MutableStateFlow<WalletAbiFlowState>(WalletAbiFlowState.Idle)
         val mutableOutputs = MutableSharedFlow<WalletAbiFlowOutput>()
@@ -325,6 +358,13 @@ class WalletAbiFlowRouteViewModelTest {
         val intents = mutableListOf<WalletAbiFlowIntent>()
 
         override suspend fun dispatch(intent: WalletAbiFlowIntent) {
+            if (intent == WalletAbiFlowIntent.DismissTerminal &&
+                (state.value is WalletAbiFlowState.Success ||
+                    state.value is WalletAbiFlowState.Cancelled ||
+                    state.value is WalletAbiFlowState.Error)
+            ) {
+                state.value = WalletAbiFlowState.Idle
+            }
             intents += intent
         }
     }

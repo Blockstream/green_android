@@ -3,6 +3,7 @@ package com.blockstream.compose.models.walletabi
 import androidx.lifecycle.viewModelScope
 import com.blockstream.compose.models.GreenViewModel
 import com.blockstream.compose.navigation.NavData
+import com.blockstream.compose.sideeffects.SideEffects
 import com.blockstream.data.data.GreenWallet
 import com.blockstream.data.walletabi.flow.FakeWalletAbiFlowDriver
 import com.blockstream.data.walletabi.flow.FakeWalletAbiSubmissionEvent
@@ -113,7 +114,16 @@ class WalletAbiFlowRouteViewModel(
 
     fun dispatch(intent: WalletAbiFlowIntent) {
         viewModelScope.launch {
+            val wasTerminal = store.state.value is WalletAbiFlowState.Success ||
+                store.state.value is WalletAbiFlowState.Cancelled ||
+                store.state.value is WalletAbiFlowState.Error
             store.dispatch(intent)
+            if (intent == WalletAbiFlowIntent.DismissTerminal &&
+                wasTerminal &&
+                store.state.value == WalletAbiFlowState.Idle
+            ) {
+                postSideEffect(SideEffects.NavigateBack())
+            }
         }
     }
 
