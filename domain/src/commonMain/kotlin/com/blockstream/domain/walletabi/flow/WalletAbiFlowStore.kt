@@ -24,6 +24,7 @@ class DefaultWalletAbiFlowStore : WalletAbiFlowStore {
     override suspend fun dispatch(intent: WalletAbiFlowIntent) {
         when (intent) {
             is WalletAbiFlowIntent.Start -> handleStart(intent)
+            is WalletAbiFlowIntent.SelectAccount -> handleSelectAccount(intent)
             is WalletAbiFlowIntent.OnExecutionEvent -> handleExecutionEvent(intent.event)
         }
     }
@@ -40,6 +41,20 @@ class DefaultWalletAbiFlowStore : WalletAbiFlowStore {
 
     private fun handleExecutionRequestLoaded(event: WalletAbiExecutionEvent.RequestLoaded) {
         mutableState.value = WalletAbiFlowState.RequestLoaded(event.review)
+    }
+
+    private suspend fun handleSelectAccount(intent: WalletAbiFlowIntent.SelectAccount) {
+        val currentState = mutableState.value as? WalletAbiFlowState.RequestLoaded ?: return
+        val updatedReview = currentState.review.copy(selectedAccountId = intent.accountId)
+        mutableState.value = WalletAbiFlowState.RequestLoaded(updatedReview)
+        mutableOutputs.emit(
+            WalletAbiFlowOutput.PersistSnapshot(
+                WalletAbiResumeSnapshot(
+                    requestContext = updatedReview.requestContext,
+                    selectedAccountId = updatedReview.selectedAccountId
+                )
+            )
+        )
     }
 }
 
@@ -64,14 +79,28 @@ sealed interface WalletAbiFlowIntent {
         val requestContext: WalletAbiStartRequestContext
     ) : WalletAbiFlowIntent
 
+    data class SelectAccount(
+        val accountId: String
+    ) : WalletAbiFlowIntent
+
     data class OnExecutionEvent(
         val event: WalletAbiExecutionEvent
     ) : WalletAbiFlowIntent
 }
 
-sealed interface WalletAbiFlowOutput
+sealed interface WalletAbiFlowOutput {
+    data class PersistSnapshot(
+        val snapshot: WalletAbiResumeSnapshot
+    ) : WalletAbiFlowOutput
+}
+
+data class WalletAbiResumeSnapshot(
+    val requestContext: WalletAbiStartRequestContext,
+    val selectedAccountId: String?
+)
 
 data class WalletAbiFlowReview(
+    val requestContext: WalletAbiStartRequestContext,
     val title: String,
     val message: String,
     val accounts: List<WalletAbiAccountOption>,

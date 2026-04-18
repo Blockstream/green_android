@@ -1,5 +1,8 @@
 package com.blockstream.domain.walletabi.flow
 
+import kotlinx.coroutines.CoroutineStart
+import kotlinx.coroutines.async
+import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.test.runTest
 import kotlin.test.Test
 import kotlin.test.assertEquals
@@ -7,6 +10,10 @@ import kotlin.test.assertEquals
 class WalletAbiFlowStoreTest {
 
     private val review = WalletAbiFlowReview(
+        requestContext = WalletAbiStartRequestContext(
+            requestId = "request-id",
+            walletId = "wallet-id"
+        ),
         title = "Send",
         message = "Review the request",
         accounts = listOf(
@@ -56,6 +63,36 @@ class WalletAbiFlowStoreTest {
         assertEquals(
             WalletAbiFlowState.RequestLoaded(review),
             store.state.value
+        )
+    }
+
+    @Test
+    fun select_account_updates_request_loaded() = runTest {
+        val store = DefaultWalletAbiFlowStore()
+        store.dispatch(WalletAbiFlowIntent.Start(review.requestContext))
+        store.dispatch(
+            WalletAbiFlowIntent.OnExecutionEvent(
+                WalletAbiExecutionEvent.RequestLoaded(review)
+            )
+        )
+        val output = async(start = CoroutineStart.UNDISPATCHED) { store.outputs.first() }
+
+        store.dispatch(WalletAbiFlowIntent.SelectAccount("account-id-2"))
+
+        assertEquals(
+            WalletAbiFlowState.RequestLoaded(
+                review.copy(selectedAccountId = "account-id-2")
+            ),
+            store.state.value
+        )
+        assertEquals(
+            WalletAbiFlowOutput.PersistSnapshot(
+                WalletAbiResumeSnapshot(
+                    requestContext = review.requestContext,
+                    selectedAccountId = "account-id-2"
+                )
+            ),
+            output.await()
         )
     }
 }
