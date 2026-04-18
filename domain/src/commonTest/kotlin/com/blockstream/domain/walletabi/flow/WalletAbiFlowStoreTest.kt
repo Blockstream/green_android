@@ -46,6 +46,10 @@ class WalletAbiFlowStoreTest {
         message = "Resolved request",
         selectedAccountId = "account-id-2"
     )
+    private val successResult = WalletAbiSuccessResult(
+        requestId = review.requestContext.requestId,
+        responseId = "response-id"
+    )
 
     @Test
     fun request_loaded_event_updates_loading_state() = runTest {
@@ -159,6 +163,52 @@ class WalletAbiFlowStoreTest {
                     requestContext = review.requestContext,
                     selectedAccountId = review.selectedAccountId
                 )
+            ),
+            output.await()
+        )
+    }
+
+    @Test
+    fun remote_response_sent_completes_success() = runTest {
+        val store = DefaultWalletAbiFlowStore()
+        store.dispatch(WalletAbiFlowIntent.Start(review.requestContext))
+        store.dispatch(
+            WalletAbiFlowIntent.OnExecutionEvent(
+                WalletAbiExecutionEvent.RequestLoaded(review)
+            )
+        )
+        store.dispatch(WalletAbiFlowIntent.Approve)
+
+        store.dispatch(
+            WalletAbiFlowIntent.OnExecutionEvent(WalletAbiExecutionEvent.Submitted)
+        )
+        assertEquals(
+            WalletAbiFlowState.Submitting(review.requestContext),
+            store.state.value
+        )
+
+        store.dispatch(
+            WalletAbiFlowIntent.OnExecutionEvent(WalletAbiExecutionEvent.Broadcasted)
+        )
+        assertEquals(
+            WalletAbiFlowState.Submitting(review.requestContext),
+            store.state.value
+        )
+
+        val output = async(start = CoroutineStart.UNDISPATCHED) { store.outputs.first() }
+        store.dispatch(
+            WalletAbiFlowIntent.OnExecutionEvent(
+                WalletAbiExecutionEvent.RemoteResponseSent(successResult)
+            )
+        )
+
+        assertEquals(
+            WalletAbiFlowState.Success(successResult),
+            store.state.value
+        )
+        assertEquals(
+            WalletAbiFlowOutput.Complete(
+                WalletAbiFlowTerminalResult.Success(successResult)
             ),
             output.await()
         )

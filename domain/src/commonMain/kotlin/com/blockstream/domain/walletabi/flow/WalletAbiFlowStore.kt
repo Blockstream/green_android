@@ -35,10 +35,13 @@ class DefaultWalletAbiFlowStore : WalletAbiFlowStore {
         mutableState.value = WalletAbiFlowState.Loading(intent.requestContext)
     }
 
-    private fun handleExecutionEvent(event: WalletAbiExecutionEvent) {
+    private suspend fun handleExecutionEvent(event: WalletAbiExecutionEvent) {
         when (event) {
+            WalletAbiExecutionEvent.Broadcasted -> handleExecutionBroadcasted()
             is WalletAbiExecutionEvent.RequestLoaded -> handleExecutionRequestLoaded(event)
             is WalletAbiExecutionEvent.Resolved -> handleExecutionResolved(event)
+            is WalletAbiExecutionEvent.RemoteResponseSent -> handleExecutionRemoteResponseSent(event)
+            WalletAbiExecutionEvent.Submitted -> handleExecutionSubmitted()
         }
     }
 
@@ -48,6 +51,27 @@ class DefaultWalletAbiFlowStore : WalletAbiFlowStore {
 
     private fun handleExecutionResolved(event: WalletAbiExecutionEvent.Resolved) {
         mutableState.value = WalletAbiFlowState.RequestLoaded(event.review)
+    }
+
+    private fun handleExecutionSubmitted() {
+        val currentState = mutableState.value as? WalletAbiFlowState.Submitting ?: return
+        mutableState.value = currentState
+    }
+
+    private fun handleExecutionBroadcasted() {
+        val currentState = mutableState.value as? WalletAbiFlowState.Submitting ?: return
+        mutableState.value = currentState
+    }
+
+    private suspend fun handleExecutionRemoteResponseSent(
+        event: WalletAbiExecutionEvent.RemoteResponseSent
+    ) {
+        mutableState.value = WalletAbiFlowState.Success(event.result)
+        mutableOutputs.emit(
+            WalletAbiFlowOutput.Complete(
+                WalletAbiFlowTerminalResult.Success(event.result)
+            )
+        )
     }
 
     private suspend fun handleSelectAccount(intent: WalletAbiFlowIntent.SelectAccount) {
@@ -108,6 +132,10 @@ sealed interface WalletAbiFlowState {
     data class Submitting(
         val requestContext: WalletAbiStartRequestContext
     ) : WalletAbiFlowState
+
+    data class Success(
+        val result: WalletAbiSuccessResult
+    ) : WalletAbiFlowState
 }
 
 sealed interface WalletAbiFlowIntent {
@@ -140,6 +168,10 @@ sealed interface WalletAbiFlowOutput {
     data class StartSubmission(
         val command: WalletAbiSubmissionCommand
     ) : WalletAbiFlowOutput
+
+    data class Complete(
+        val result: WalletAbiFlowTerminalResult
+    ) : WalletAbiFlowOutput
 }
 
 data class WalletAbiResumeSnapshot(
@@ -155,6 +187,17 @@ data class WalletAbiResolutionCommand(
 data class WalletAbiSubmissionCommand(
     val requestContext: WalletAbiStartRequestContext,
     val selectedAccountId: String?
+)
+
+sealed interface WalletAbiFlowTerminalResult {
+    data class Success(
+        val result: WalletAbiSuccessResult
+    ) : WalletAbiFlowTerminalResult
+}
+
+data class WalletAbiSuccessResult(
+    val requestId: String,
+    val responseId: String
 )
 
 data class WalletAbiFlowReview(
@@ -176,6 +219,8 @@ sealed interface WalletAbiApprovalTarget {
 }
 
 sealed interface WalletAbiExecutionEvent {
+    data object Broadcasted : WalletAbiExecutionEvent
+
     data class RequestLoaded(
         val review: WalletAbiFlowReview
     ) : WalletAbiExecutionEvent
@@ -183,4 +228,10 @@ sealed interface WalletAbiExecutionEvent {
     data class Resolved(
         val review: WalletAbiFlowReview
     ) : WalletAbiExecutionEvent
+
+    data class RemoteResponseSent(
+        val result: WalletAbiSuccessResult
+    ) : WalletAbiExecutionEvent
+
+    data object Submitted : WalletAbiExecutionEvent
 }
