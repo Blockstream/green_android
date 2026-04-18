@@ -5,7 +5,18 @@ import com.blockstream.data.walletabi.flow.WalletAbiApprovalTargetPayload
 import com.blockstream.data.walletabi.flow.WalletAbiFlowReviewPayload
 import com.blockstream.data.walletabi.flow.WalletAbiFlowSnapshotPayload
 import com.blockstream.data.walletabi.flow.WalletAbiFlowSnapshotStore
+import com.blockstream.data.walletabi.flow.WalletAbiInputPayload
 import com.blockstream.data.walletabi.flow.WalletAbiJadeContextPayload
+import com.blockstream.data.walletabi.flow.WalletAbiOutputPayload
+import com.blockstream.data.walletabi.flow.WalletAbiParsedRequestPayload
+import com.blockstream.data.walletabi.flow.WalletAbiRuntimeParamsPayload
+import com.blockstream.data.walletabi.flow.WalletAbiTxCreateRequestPayload
+import com.blockstream.domain.walletabi.request.WalletAbiInput
+import com.blockstream.domain.walletabi.request.WalletAbiNetwork
+import com.blockstream.domain.walletabi.request.WalletAbiOutput
+import com.blockstream.domain.walletabi.request.WalletAbiParsedRequest
+import com.blockstream.domain.walletabi.request.WalletAbiRuntimeParams
+import com.blockstream.domain.walletabi.request.WalletAbiTxCreateRequest
 
 class WalletAbiFlowSnapshotRepository(
     private val store: WalletAbiFlowSnapshotStore
@@ -39,7 +50,8 @@ private fun WalletAbiFlowReview.toPayload(): WalletAbiFlowReviewPayload {
         message = message,
         accounts = accounts.map { it.toPayload() },
         selectedAccountId = selectedAccountId,
-        approvalTarget = approvalTarget.toPayload()
+        approvalTarget = approvalTarget.toPayload(),
+        parsedRequest = parsedRequest?.toPayload()
     )
 }
 
@@ -73,6 +85,55 @@ private fun WalletAbiJadeContext.toPayload(): WalletAbiJadeContextPayload {
     )
 }
 
+private fun WalletAbiParsedRequest.toPayload(): WalletAbiParsedRequestPayload {
+    return when (this) {
+        is WalletAbiParsedRequest.TxCreate -> WalletAbiParsedRequestPayload(
+            kind = "tx_create",
+            txCreate = request.toPayload()
+        )
+    }
+}
+
+private fun WalletAbiTxCreateRequest.toPayload(): WalletAbiTxCreateRequestPayload {
+    return WalletAbiTxCreateRequestPayload(
+        abiVersion = abiVersion,
+        requestId = requestId,
+        network = network.wireValue,
+        params = params.toPayload(),
+        broadcast = broadcast
+    )
+}
+
+private fun WalletAbiRuntimeParams.toPayload(): WalletAbiRuntimeParamsPayload {
+    return WalletAbiRuntimeParamsPayload(
+        inputs = inputs.map { it.toPayload() },
+        outputs = outputs.map { it.toPayload() },
+        feeRateSatKvb = feeRateSatKvb,
+        lockTime = lockTime
+    )
+}
+
+private fun WalletAbiInput.toPayload(): WalletAbiInputPayload {
+    return WalletAbiInputPayload(
+        id = id,
+        utxoSource = utxoSource,
+        unblinding = unblinding,
+        sequence = sequence,
+        issuance = issuance,
+        finalizer = finalizer
+    )
+}
+
+private fun WalletAbiOutput.toPayload(): WalletAbiOutputPayload {
+    return WalletAbiOutputPayload(
+        id = id,
+        amountSat = amountSat,
+        lock = lock,
+        asset = asset,
+        blinder = blinder
+    )
+}
+
 private fun WalletAbiFlowSnapshotPayload.toDomain(): WalletAbiResumeSnapshot {
     return WalletAbiResumeSnapshot(
         review = review.toDomain(),
@@ -91,7 +152,8 @@ private fun WalletAbiFlowReviewPayload.toDomain(): WalletAbiFlowReview {
         message = message,
         accounts = accounts.map { it.toDomain() },
         selectedAccountId = selectedAccountId,
-        approvalTarget = approvalTarget.toDomain()
+        approvalTarget = approvalTarget.toDomain(),
+        parsedRequest = parsedRequest?.toDomain()
     )
 }
 
@@ -119,5 +181,55 @@ private fun WalletAbiJadeContextPayload.toDomain(): WalletAbiJadeContext {
         step = WalletAbiJadeStep.valueOf(step),
         message = message,
         retryable = retryable
+    )
+}
+
+private fun WalletAbiParsedRequestPayload.toDomain(): WalletAbiParsedRequest {
+    return when (kind) {
+        "tx_create" -> WalletAbiParsedRequest.TxCreate(
+            request = requireNotNull(txCreate) { "Missing tx_create payload" }.toDomain()
+        )
+
+        else -> error("Unsupported parsed request payload kind: $kind")
+    }
+}
+
+private fun WalletAbiTxCreateRequestPayload.toDomain(): WalletAbiTxCreateRequest {
+    return WalletAbiTxCreateRequest(
+        abiVersion = abiVersion,
+        requestId = requestId,
+        network = WalletAbiNetwork.entries.first { it.wireValue == network },
+        params = params.toDomain(),
+        broadcast = broadcast
+    )
+}
+
+private fun WalletAbiRuntimeParamsPayload.toDomain(): WalletAbiRuntimeParams {
+    return WalletAbiRuntimeParams(
+        inputs = inputs.map { it.toDomain() },
+        outputs = outputs.map { it.toDomain() },
+        feeRateSatKvb = feeRateSatKvb,
+        lockTime = lockTime
+    )
+}
+
+private fun WalletAbiInputPayload.toDomain(): WalletAbiInput {
+    return WalletAbiInput(
+        id = id,
+        utxoSource = utxoSource,
+        unblinding = unblinding,
+        sequence = sequence,
+        issuance = issuance,
+        finalizer = finalizer
+    )
+}
+
+private fun WalletAbiOutputPayload.toDomain(): WalletAbiOutput {
+    return WalletAbiOutput(
+        id = id,
+        amountSat = amountSat,
+        lock = lock,
+        asset = asset,
+        blinder = blinder
     )
 }
