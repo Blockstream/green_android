@@ -168,6 +168,70 @@ class WalletAbiHappyPathTest {
             .assertTextContains("Wallet ABI request envelope is malformed")
     }
 
+    @Test
+    fun walletAbiFlow_retry_reloads_request_after_error() {
+        val koin = GlobalContext.get()
+        val greenWallet = insertPreviewWallet(koin = koin)
+        val fallbackDriver = FakeWalletAbiFlowDriver()
+        var loadAttempt = 0
+        val driver = FakeWalletAbiFlowDriver { requestId ->
+            if (loadAttempt++ == 0) {
+                "{"
+            } else {
+                fallbackDriver.loadRequestEnvelope(requestId)
+            }
+        }
+
+        composeRule.setContent {
+            GreenPreview {
+                var isFlowVisible by remember { mutableStateOf(false) }
+
+                if (isFlowVisible) {
+                    val viewModel = remember {
+                        WalletAbiFlowRouteViewModel(
+                            greenWallet = greenWallet,
+                            store = koin.get<WalletAbiFlowStore>(),
+                            snapshotRepository = koin.get<WalletAbiFlowSnapshotRepository>(),
+                            driver = driver
+                        )
+                    }
+                    LaunchedEffect(viewModel) {
+                        viewModel.sideEffect.collectLatest { sideEffect ->
+                            if (sideEffect == SideEffects.NavigateBack()) {
+                                isFlowVisible = false
+                            }
+                        }
+                    }
+                    val state by viewModel.state.collectAsStateWithLifecycle()
+                    WalletAbiFlowScreen(
+                        state = state,
+                        onIntent = viewModel::dispatch
+                    )
+                } else {
+                    WalletAbiDevelopmentEntry(
+                        visible = true,
+                        onOpen = { isFlowVisible = true }
+                    )
+                }
+            }
+        }
+
+        composeRule.onNodeWithTag("transact_wallet_abi_entry").assertIsDisplayed()
+        composeRule.onNodeWithTag("transact_wallet_abi_entry").performClick()
+        composeRule.waitUntil(timeoutMillis = 5_000L) {
+            composeRule.onAllNodesWithTag("wallet_abi_flow_error").fetchSemanticsNodes().isNotEmpty()
+        }
+        composeRule.onNodeWithTag("wallet_abi_flow_error")
+            .assertIsDisplayed()
+            .assertTextContains("Wallet ABI request envelope is malformed")
+        composeRule.onNodeWithTag("wallet_abi_flow_retry_action").performClick()
+        composeRule.waitUntil(timeoutMillis = 5_000L) {
+            composeRule.onAllNodesWithTag("wallet_abi_flow_request_title").fetchSemanticsNodes().isNotEmpty()
+        }
+        composeRule.onNodeWithTag("wallet_abi_flow_request_title").assertIsDisplayed()
+        composeRule.onNodeWithTag("wallet_abi_flow_parsed_request_id").assertIsDisplayed()
+    }
+
     private fun setWalletAbiHappyPathContent(
         koin: Koin,
         greenWallet: GreenWallet
