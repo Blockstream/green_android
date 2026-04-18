@@ -44,6 +44,23 @@ class WalletAbiFlowStoreTest {
         )
     }
 
+    @Test
+    fun start_emits_load_request() = runTest {
+        val store = DefaultWalletAbiFlowStore()
+        val requestContext = WalletAbiStartRequestContext(
+            requestId = "request-id",
+            walletId = "wallet-id"
+        )
+        val output = async(start = CoroutineStart.UNDISPATCHED) { store.outputs.first() }
+
+        store.dispatch(WalletAbiFlowIntent.Start(requestContext))
+
+        assertEquals(
+            WalletAbiFlowOutput.LoadRequest(requestContext),
+            output.await()
+        )
+    }
+
     private val resolvedReview = review.copy(
         message = "Resolved request",
         selectedAccountId = "account-id-2"
@@ -353,12 +370,17 @@ class WalletAbiFlowStoreTest {
                 WalletAbiExecutionEvent.Failed(failedError)
             )
         )
+        val output = async(start = CoroutineStart.UNDISPATCHED) { store.outputs.first() }
 
         store.dispatch(WalletAbiFlowIntent.Retry)
 
         assertEquals(
             WalletAbiFlowState.Loading(review.requestContext),
             store.state.value
+        )
+        assertEquals(
+            WalletAbiFlowOutput.LoadRequest(review.requestContext),
+            output.await()
         )
     }
 

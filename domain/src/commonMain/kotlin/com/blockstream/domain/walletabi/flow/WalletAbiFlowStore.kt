@@ -39,9 +39,12 @@ class DefaultWalletAbiFlowStore : WalletAbiFlowStore {
         }
     }
 
-    private fun handleStart(intent: WalletAbiFlowIntent.Start) {
+    private suspend fun handleStart(intent: WalletAbiFlowIntent.Start) {
         lastRequestContext = intent.requestContext
         mutableState.value = WalletAbiFlowState.Loading(intent.requestContext)
+        mutableOutputs.emit(
+            WalletAbiFlowOutput.LoadRequest(intent.requestContext)
+        )
     }
 
     private suspend fun handleExecutionEvent(event: WalletAbiExecutionEvent) {
@@ -245,10 +248,13 @@ class DefaultWalletAbiFlowStore : WalletAbiFlowStore {
         }
     }
 
-    private fun handleRetry() {
+    private suspend fun handleRetry() {
         if (mutableState.value !is WalletAbiFlowState.Error) return
         val requestContext = lastRequestContext ?: return
         mutableState.value = WalletAbiFlowState.Loading(requestContext)
+        mutableOutputs.emit(
+            WalletAbiFlowOutput.LoadRequest(requestContext)
+        )
     }
 
     private suspend fun handleCancelResume() {
@@ -421,6 +427,10 @@ sealed interface WalletAbiFlowIntent {
 sealed interface WalletAbiFlowOutput {
     data class PersistSnapshot(
         val snapshot: WalletAbiResumeSnapshot?
+    ) : WalletAbiFlowOutput
+
+    data class LoadRequest(
+        val requestContext: WalletAbiStartRequestContext
     ) : WalletAbiFlowOutput
 
     data class StartResolution(
