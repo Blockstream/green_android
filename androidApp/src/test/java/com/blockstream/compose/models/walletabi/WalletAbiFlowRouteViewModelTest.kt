@@ -4,7 +4,6 @@ import com.blockstream.compose.extensions.previewWallet
 import com.blockstream.data.CountlyBase
 import com.blockstream.data.banner.Banner
 import com.blockstream.data.config.AppInfo
-import com.blockstream.data.data.GreenWallet
 import com.blockstream.data.database.Database
 import com.blockstream.data.gdk.GdkSession
 import com.blockstream.data.managers.PromoManager
@@ -12,15 +11,22 @@ import com.blockstream.data.managers.SessionManager
 import com.blockstream.data.managers.SettingsManager
 import com.blockstream.domain.banner.GetBannerUseCase
 import com.blockstream.domain.promo.GetPromoUseCase
+import com.blockstream.domain.walletabi.flow.WalletAbiAccountOption
+import com.blockstream.domain.walletabi.flow.WalletAbiApprovalTarget
 import com.blockstream.domain.walletabi.flow.WalletAbiFlowIntent
 import com.blockstream.domain.walletabi.flow.WalletAbiFlowOutput
+import com.blockstream.domain.walletabi.flow.WalletAbiFlowReview
+import com.blockstream.domain.walletabi.flow.WalletAbiFlowSnapshotRepository
+import com.blockstream.domain.walletabi.flow.WalletAbiResumePhase
+import com.blockstream.domain.walletabi.flow.WalletAbiResumeSnapshot
 import com.blockstream.domain.walletabi.flow.WalletAbiFlowState
 import com.blockstream.domain.walletabi.flow.WalletAbiFlowStore
+import com.blockstream.domain.walletabi.flow.WalletAbiStartRequestContext
+import io.mockk.coVerify
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.flow.MutableStateFlow
-import kotlinx.coroutines.flow.emptyFlow
 import kotlinx.coroutines.flow.flowOf
 import kotlinx.coroutines.test.StandardTestDispatcher
 import kotlinx.coroutines.test.advanceUntilIdle
@@ -41,6 +47,7 @@ class WalletAbiFlowRouteViewModelTest {
     private val dispatcher = StandardTestDispatcher()
     private val greenWallet = previewWallet()
     private val store = FakeWalletAbiFlowStore()
+    private val snapshotRepository = mockk<WalletAbiFlowSnapshotRepository>(relaxed = true)
 
     @Before
     fun setUp() {
@@ -94,7 +101,8 @@ class WalletAbiFlowRouteViewModelTest {
     fun init_dispatches_start_for_demo_request() = runTest(dispatcher) {
         WalletAbiFlowRouteViewModel(
             greenWallet = greenWallet,
-            store = store
+            store = store,
+            snapshotRepository = snapshotRepository
         )
 
         advanceUntilIdle()
@@ -116,7 +124,8 @@ class WalletAbiFlowRouteViewModelTest {
     fun state_exposes_store_state() {
         val viewModel = WalletAbiFlowRouteViewModel(
             greenWallet = greenWallet,
-            store = store
+            store = store,
+            snapshotRepository = snapshotRepository
         )
 
         assertEquals(
@@ -125,9 +134,54 @@ class WalletAbiFlowRouteViewModelTest {
         )
     }
 
+    @Test
+    fun persistSnapshot_output_is_forwarded_to_repository() = runTest(dispatcher) {
+        WalletAbiFlowRouteViewModel(
+            greenWallet = greenWallet,
+            store = store,
+            snapshotRepository = snapshotRepository
+        )
+
+        advanceUntilIdle()
+
+        store.mutableOutputs.emit(
+            WalletAbiFlowOutput.PersistSnapshot(
+                WalletAbiResumeSnapshot(
+                    review = WalletAbiFlowReview(
+                        requestContext = WalletAbiStartRequestContext(
+                            requestId = "wallet-abi-demo-request",
+                            walletId = greenWallet.id
+                        ),
+                        title = "Demo payment",
+                        message = "Approve a fake Wallet ABI request",
+                        accounts = listOf(
+                            WalletAbiAccountOption(
+                                accountId = "fake-account-1",
+                                name = "Main account"
+                            )
+                        ),
+                        selectedAccountId = "fake-account-1",
+                        approvalTarget = WalletAbiApprovalTarget.Software
+                    ),
+                    phase = WalletAbiResumePhase.REQUEST_LOADED
+                )
+            )
+        )
+
+        advanceUntilIdle()
+
+        coVerify(exactly = 1) {
+            snapshotRepository.save(
+                walletId = greenWallet.id,
+                snapshot = any()
+            )
+        }
+    }
+
     private class FakeWalletAbiFlowStore : WalletAbiFlowStore {
         override val state = MutableStateFlow<WalletAbiFlowState>(WalletAbiFlowState.Idle)
-        override val outputs: Flow<WalletAbiFlowOutput> = emptyFlow()
+        val mutableOutputs = MutableSharedFlow<WalletAbiFlowOutput>()
+        override val outputs: Flow<WalletAbiFlowOutput> = mutableOutputs
         val intents = mutableListOf<WalletAbiFlowIntent>()
 
         override suspend fun dispatch(intent: WalletAbiFlowIntent) {
