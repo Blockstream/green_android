@@ -25,6 +25,8 @@ import com.blockstream.domain.walletabi.flow.WalletAbiResolutionCommand
 import com.blockstream.domain.walletabi.flow.WalletAbiFlowState
 import com.blockstream.domain.walletabi.flow.WalletAbiFlowStore
 import com.blockstream.domain.walletabi.flow.WalletAbiStartRequestContext
+import com.blockstream.domain.walletabi.flow.WalletAbiSubmissionCommand
+import com.blockstream.domain.walletabi.flow.WalletAbiSuccessResult
 import io.mockk.coVerify
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.Flow
@@ -271,6 +273,48 @@ class WalletAbiFlowRouteViewModelTest {
                 )
             ),
             store.intents.last()
+        )
+    }
+
+    @Test
+    fun startSubmission_output_dispatches_success_sequence() = runTest(dispatcher) {
+        WalletAbiFlowRouteViewModel(
+            greenWallet = greenWallet,
+            store = store,
+            snapshotRepository = snapshotRepository,
+            driver = driver
+        )
+
+        advanceUntilIdle()
+
+        store.mutableOutputs.emit(
+            WalletAbiFlowOutput.StartSubmission(
+                WalletAbiSubmissionCommand(
+                    requestContext = WalletAbiStartRequestContext(
+                        requestId = WalletAbiFlowRouteViewModel.DEMO_REQUEST_ID,
+                        walletId = greenWallet.id
+                    ),
+                    selectedAccountId = "fake-account-1"
+                )
+            )
+        )
+
+        advanceUntilIdle()
+
+        assertEquals(
+            listOf(
+                WalletAbiFlowIntent.OnExecutionEvent(WalletAbiExecutionEvent.Submitted),
+                WalletAbiFlowIntent.OnExecutionEvent(WalletAbiExecutionEvent.Broadcasted),
+                WalletAbiFlowIntent.OnExecutionEvent(
+                    WalletAbiExecutionEvent.RemoteResponseSent(
+                        result = WalletAbiSuccessResult(
+                            requestId = WalletAbiFlowRouteViewModel.DEMO_REQUEST_ID,
+                            responseId = "wallet-abi-demo-response"
+                        )
+                    )
+                )
+            ),
+            store.intents.takeLast(3)
         )
     }
 

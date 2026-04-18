@@ -5,6 +5,7 @@ import com.blockstream.compose.models.GreenViewModel
 import com.blockstream.compose.navigation.NavData
 import com.blockstream.data.data.GreenWallet
 import com.blockstream.data.walletabi.flow.FakeWalletAbiFlowDriver
+import com.blockstream.data.walletabi.flow.FakeWalletAbiSubmissionEvent
 import com.blockstream.data.walletabi.flow.WalletAbiAccountOptionPayload
 import com.blockstream.data.walletabi.flow.WalletAbiApprovalTargetPayload
 import com.blockstream.data.walletabi.flow.WalletAbiFlowReviewPayload
@@ -18,6 +19,8 @@ import com.blockstream.domain.walletabi.flow.WalletAbiFlowSnapshotRepository
 import com.blockstream.domain.walletabi.flow.WalletAbiFlowState
 import com.blockstream.domain.walletabi.flow.WalletAbiFlowStore
 import com.blockstream.domain.walletabi.flow.WalletAbiStartRequestContext
+import com.blockstream.domain.walletabi.flow.WalletAbiSuccessResult
+import kotlinx.coroutines.flow.collect
 import kotlinx.coroutines.flow.launchIn
 import kotlinx.coroutines.flow.onEach
 import kotlinx.coroutines.flow.StateFlow
@@ -82,6 +85,26 @@ class WalletAbiFlowRouteViewModel(
                         )
                     )
                 )
+            } else if (output is WalletAbiFlowOutput.StartSubmission) {
+                driver.submitRequest(
+                    requestId = output.command.requestContext.requestId
+                ).collect { event ->
+                    store.dispatch(
+                        WalletAbiFlowIntent.OnExecutionEvent(
+                            when (event) {
+                                FakeWalletAbiSubmissionEvent.Broadcasted -> WalletAbiExecutionEvent.Broadcasted
+                                is FakeWalletAbiSubmissionEvent.RemoteResponseSent -> WalletAbiExecutionEvent.RemoteResponseSent(
+                                    result = WalletAbiSuccessResult(
+                                        requestId = event.result.requestId,
+                                        responseId = event.result.responseId
+                                    )
+                                )
+
+                                FakeWalletAbiSubmissionEvent.Submitted -> WalletAbiExecutionEvent.Submitted
+                            }
+                        )
+                    )
+                }
             }
         }.launchIn(viewModelScope)
         startFlow(greenWallet = greenWallet)
