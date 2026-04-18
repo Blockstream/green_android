@@ -6,6 +6,7 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.test.assertIsDisplayed
+import androidx.compose.ui.test.assertTextContains
 import androidx.compose.ui.test.onAllNodesWithTag
 import androidx.compose.ui.test.junit4.createAndroidComposeRule
 import androidx.compose.ui.test.onNodeWithTag
@@ -57,6 +58,64 @@ class WalletAbiHappyPathTest {
         repeat(2) {
             completeSuccessfulApproval()
         }
+    }
+
+    @Test
+    fun walletAbiFlow_shows_error_for_unsupported_request() {
+        val koin = GlobalContext.get()
+        val greenWallet = insertPreviewWallet(koin = koin)
+        val driver = FakeWalletAbiFlowDriver { _ ->
+            """
+                {
+                  "jsonrpc": "2.0",
+                  "id": "wallet-abi-demo-envelope",
+                  "method": "wallet_abi_get_account"
+                }
+            """.trimIndent()
+        }
+
+        composeRule.setContent {
+            GreenPreview {
+                var isFlowVisible by remember { mutableStateOf(false) }
+
+                if (isFlowVisible) {
+                    val viewModel = remember {
+                        WalletAbiFlowRouteViewModel(
+                            greenWallet = greenWallet,
+                            store = koin.get<WalletAbiFlowStore>(),
+                            snapshotRepository = koin.get<WalletAbiFlowSnapshotRepository>(),
+                            driver = driver
+                        )
+                    }
+                    LaunchedEffect(viewModel) {
+                        viewModel.sideEffect.collectLatest { sideEffect ->
+                            if (sideEffect == SideEffects.NavigateBack()) {
+                                isFlowVisible = false
+                            }
+                        }
+                    }
+                    val state by viewModel.state.collectAsStateWithLifecycle()
+                    WalletAbiFlowScreen(
+                        state = state,
+                        onIntent = viewModel::dispatch
+                    )
+                } else {
+                    WalletAbiDevelopmentEntry(
+                        visible = true,
+                        onOpen = { isFlowVisible = true }
+                    )
+                }
+            }
+        }
+
+        composeRule.onNodeWithTag("transact_wallet_abi_entry").assertIsDisplayed()
+        composeRule.onNodeWithTag("transact_wallet_abi_entry").performClick()
+        composeRule.waitUntil(timeoutMillis = 5_000L) {
+            composeRule.onAllNodesWithTag("wallet_abi_flow_error").fetchSemanticsNodes().isNotEmpty()
+        }
+        composeRule.onNodeWithTag("wallet_abi_flow_error")
+            .assertIsDisplayed()
+            .assertTextContains("Unsupported Wallet ABI method 'wallet_abi_get_account'")
     }
 
     private fun setWalletAbiHappyPathContent(

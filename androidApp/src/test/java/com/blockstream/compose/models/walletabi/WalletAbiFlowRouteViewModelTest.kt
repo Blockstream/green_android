@@ -117,8 +117,11 @@ class WalletAbiFlowRouteViewModelTest {
             viewModel.viewModelScope.cancel()
         }
         createdViewModels.clear()
-        Dispatchers.resetMain()
+        kotlinx.coroutines.test.runTest(dispatcher) {
+            advanceUntilIdle()
+        }
         stopKoin()
+        Dispatchers.resetMain()
     }
 
     @Test
@@ -222,6 +225,48 @@ class WalletAbiFlowRouteViewModelTest {
             WalletAbiFlowIntent.OnExecutionEvent(
                 WalletAbiExecutionEvent.Failed(
                     WalletAbiFlowError("Wallet ABI request envelope is malformed")
+                )
+            ),
+            store.intents.last()
+        )
+    }
+
+    @Test
+    fun loadRequest_output_dispatches_error_for_unsupported_request() = runTest(dispatcher) {
+        driver = FakeWalletAbiFlowDriver { _ ->
+            """
+                {
+                  "jsonrpc": "2.0",
+                  "id": "wallet-abi-demo-envelope",
+                  "method": "wallet_abi_get_account"
+                }
+            """.trimIndent()
+        }
+
+        createViewModel(
+            greenWallet = greenWallet,
+            store = store,
+            snapshotRepository = snapshotRepository,
+            driver = driver
+        )
+
+        advanceUntilIdle()
+
+        store.mutableOutputs.emit(
+            WalletAbiFlowOutput.LoadRequest(
+                WalletAbiStartRequestContext(
+                    requestId = WalletAbiFlowRouteViewModel.DEMO_REQUEST_ID,
+                    walletId = greenWallet.id
+                )
+            )
+        )
+
+        advanceUntilIdle()
+
+        assertEquals(
+            WalletAbiFlowIntent.OnExecutionEvent(
+                WalletAbiExecutionEvent.Failed(
+                    WalletAbiFlowError("Unsupported Wallet ABI method 'wallet_abi_get_account'")
                 )
             ),
             store.intents.last()
