@@ -4,7 +4,12 @@ import androidx.lifecycle.viewModelScope
 import com.blockstream.compose.models.GreenViewModel
 import com.blockstream.compose.navigation.NavData
 import com.blockstream.data.data.GreenWallet
+import com.blockstream.data.walletabi.flow.FakeWalletAbiFlowDriver
 import com.blockstream.domain.walletabi.flow.WalletAbiFlowIntent
+import com.blockstream.domain.walletabi.flow.WalletAbiAccountOption
+import com.blockstream.domain.walletabi.flow.WalletAbiApprovalTarget
+import com.blockstream.domain.walletabi.flow.WalletAbiExecutionEvent
+import com.blockstream.domain.walletabi.flow.WalletAbiFlowReview
 import com.blockstream.domain.walletabi.flow.WalletAbiFlowOutput
 import com.blockstream.domain.walletabi.flow.WalletAbiFlowSnapshotRepository
 import com.blockstream.domain.walletabi.flow.WalletAbiFlowState
@@ -18,7 +23,8 @@ import kotlinx.coroutines.launch
 class WalletAbiFlowRouteViewModel(
     greenWallet: GreenWallet,
     private val store: WalletAbiFlowStore,
-    private val snapshotRepository: WalletAbiFlowSnapshotRepository
+    private val snapshotRepository: WalletAbiFlowSnapshotRepository,
+    private val driver: FakeWalletAbiFlowDriver
 ) : GreenViewModel(greenWalletOrNull = greenWallet) {
     override fun screenName(): String = "WalletAbiFlow"
     override val isLoginRequired: Boolean = false
@@ -51,14 +57,47 @@ class WalletAbiFlowRouteViewModel(
     }
 
     private fun startFlow(greenWallet: GreenWallet) {
-        dispatch(
-            WalletAbiFlowIntent.Start(
-                requestContext = WalletAbiStartRequestContext(
-                    requestId = DEMO_REQUEST_ID,
-                    walletId = greenWallet.id
+        viewModelScope.launch {
+            val requestContext = WalletAbiStartRequestContext(
+                requestId = DEMO_REQUEST_ID,
+                walletId = greenWallet.id
+            )
+            store.dispatch(
+                WalletAbiFlowIntent.Start(
+                    requestContext = requestContext
                 )
             )
-        )
+            val reviewPayload = driver.loadRequest(
+                requestId = requestContext.requestId,
+                walletId = requestContext.walletId
+            )
+            store.dispatch(
+                WalletAbiFlowIntent.OnExecutionEvent(
+                    WalletAbiExecutionEvent.RequestLoaded(
+                        review = WalletAbiFlowReview(
+                            requestContext = requestContext,
+                            title = reviewPayload.title,
+                            message = reviewPayload.message,
+                            accounts = reviewPayload.accounts.map { account ->
+                                WalletAbiAccountOption(
+                                    accountId = account.accountId,
+                                    name = account.name
+                                )
+                            },
+                            selectedAccountId = reviewPayload.selectedAccountId,
+                            approvalTarget = when (reviewPayload.approvalTarget.kind) {
+                                "jade" -> WalletAbiApprovalTarget.Jade(
+                                    deviceName = reviewPayload.approvalTarget.deviceName,
+                                    deviceId = reviewPayload.approvalTarget.deviceId
+                                )
+
+                                else -> WalletAbiApprovalTarget.Software
+                            }
+                        )
+                    )
+                )
+            )
+        }
     }
 
     companion object {

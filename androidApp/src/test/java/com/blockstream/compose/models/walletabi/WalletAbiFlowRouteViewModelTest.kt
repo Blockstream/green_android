@@ -9,10 +9,12 @@ import com.blockstream.data.gdk.GdkSession
 import com.blockstream.data.managers.PromoManager
 import com.blockstream.data.managers.SessionManager
 import com.blockstream.data.managers.SettingsManager
+import com.blockstream.data.walletabi.flow.FakeWalletAbiFlowDriver
 import com.blockstream.domain.banner.GetBannerUseCase
 import com.blockstream.domain.promo.GetPromoUseCase
 import com.blockstream.domain.walletabi.flow.WalletAbiAccountOption
 import com.blockstream.domain.walletabi.flow.WalletAbiApprovalTarget
+import com.blockstream.domain.walletabi.flow.WalletAbiExecutionEvent
 import com.blockstream.domain.walletabi.flow.WalletAbiFlowIntent
 import com.blockstream.domain.walletabi.flow.WalletAbiFlowOutput
 import com.blockstream.domain.walletabi.flow.WalletAbiFlowReview
@@ -48,6 +50,7 @@ class WalletAbiFlowRouteViewModelTest {
     private val greenWallet = previewWallet()
     private val store = FakeWalletAbiFlowStore()
     private val snapshotRepository = mockk<WalletAbiFlowSnapshotRepository>(relaxed = true)
+    private val driver = FakeWalletAbiFlowDriver()
 
     @Before
     fun setUp() {
@@ -102,7 +105,8 @@ class WalletAbiFlowRouteViewModelTest {
         WalletAbiFlowRouteViewModel(
             greenWallet = greenWallet,
             store = store,
-            snapshotRepository = snapshotRepository
+            snapshotRepository = snapshotRepository,
+            driver = driver
         )
 
         advanceUntilIdle()
@@ -113,6 +117,26 @@ class WalletAbiFlowRouteViewModelTest {
                     requestContext = com.blockstream.domain.walletabi.flow.WalletAbiStartRequestContext(
                         requestId = WalletAbiFlowRouteViewModel.DEMO_REQUEST_ID,
                         walletId = greenWallet.id
+                    )
+                ),
+                WalletAbiFlowIntent.OnExecutionEvent(
+                    WalletAbiExecutionEvent.RequestLoaded(
+                        review = WalletAbiFlowReview(
+                            requestContext = WalletAbiStartRequestContext(
+                                requestId = WalletAbiFlowRouteViewModel.DEMO_REQUEST_ID,
+                                walletId = greenWallet.id
+                            ),
+                            title = "Demo payment",
+                            message = "Approve a fake Wallet ABI request",
+                            accounts = listOf(
+                                WalletAbiAccountOption(
+                                    accountId = "fake-account-1",
+                                    name = "Main account"
+                                )
+                            ),
+                            selectedAccountId = "fake-account-1",
+                            approvalTarget = WalletAbiApprovalTarget.Software
+                        )
                     )
                 )
             ),
@@ -125,7 +149,8 @@ class WalletAbiFlowRouteViewModelTest {
         val viewModel = WalletAbiFlowRouteViewModel(
             greenWallet = greenWallet,
             store = store,
-            snapshotRepository = snapshotRepository
+            snapshotRepository = snapshotRepository,
+            driver = driver
         )
 
         assertEquals(
@@ -139,7 +164,8 @@ class WalletAbiFlowRouteViewModelTest {
         WalletAbiFlowRouteViewModel(
             greenWallet = greenWallet,
             store = store,
-            snapshotRepository = snapshotRepository
+            snapshotRepository = snapshotRepository,
+            driver = driver
         )
 
         advanceUntilIdle()
