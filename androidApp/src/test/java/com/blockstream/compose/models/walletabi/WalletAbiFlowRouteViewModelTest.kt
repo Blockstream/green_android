@@ -21,6 +21,7 @@ import com.blockstream.domain.walletabi.flow.WalletAbiFlowReview
 import com.blockstream.domain.walletabi.flow.WalletAbiFlowSnapshotRepository
 import com.blockstream.domain.walletabi.flow.WalletAbiResumePhase
 import com.blockstream.domain.walletabi.flow.WalletAbiResumeSnapshot
+import com.blockstream.domain.walletabi.flow.WalletAbiResolutionCommand
 import com.blockstream.domain.walletabi.flow.WalletAbiFlowState
 import com.blockstream.domain.walletabi.flow.WalletAbiFlowStore
 import com.blockstream.domain.walletabi.flow.WalletAbiStartRequestContext
@@ -202,6 +203,75 @@ class WalletAbiFlowRouteViewModelTest {
                 snapshot = any()
             )
         }
+    }
+
+    @Test
+    fun startResolution_output_dispatches_resolved_review() = runTest(dispatcher) {
+        store.state.value = WalletAbiFlowState.RequestLoaded(
+            WalletAbiFlowReview(
+                requestContext = WalletAbiStartRequestContext(
+                    requestId = WalletAbiFlowRouteViewModel.DEMO_REQUEST_ID,
+                    walletId = greenWallet.id
+                ),
+                title = "Demo payment",
+                message = "Approve a fake Wallet ABI request",
+                accounts = listOf(
+                    WalletAbiAccountOption(
+                        accountId = "fake-account-1",
+                        name = "Main account"
+                    )
+                ),
+                selectedAccountId = "fake-account-1",
+                approvalTarget = WalletAbiApprovalTarget.Software
+            )
+        )
+
+        WalletAbiFlowRouteViewModel(
+            greenWallet = greenWallet,
+            store = store,
+            snapshotRepository = snapshotRepository,
+            driver = driver
+        )
+
+        advanceUntilIdle()
+
+        store.mutableOutputs.emit(
+            WalletAbiFlowOutput.StartResolution(
+                WalletAbiResolutionCommand(
+                    requestContext = WalletAbiStartRequestContext(
+                        requestId = WalletAbiFlowRouteViewModel.DEMO_REQUEST_ID,
+                        walletId = greenWallet.id
+                    ),
+                    selectedAccountId = "fake-account-1"
+                )
+            )
+        )
+
+        advanceUntilIdle()
+
+        assertEquals(
+            WalletAbiFlowIntent.OnExecutionEvent(
+                WalletAbiExecutionEvent.Resolved(
+                    review = WalletAbiFlowReview(
+                        requestContext = WalletAbiStartRequestContext(
+                            requestId = WalletAbiFlowRouteViewModel.DEMO_REQUEST_ID,
+                            walletId = greenWallet.id
+                        ),
+                        title = "Demo payment",
+                        message = "Approve a fake Wallet ABI request",
+                        accounts = listOf(
+                            WalletAbiAccountOption(
+                                accountId = "fake-account-1",
+                                name = "Main account"
+                            )
+                        ),
+                        selectedAccountId = "fake-account-1",
+                        approvalTarget = WalletAbiApprovalTarget.Software
+                    )
+                )
+            ),
+            store.intents.last()
+        )
     }
 
     private class FakeWalletAbiFlowStore : WalletAbiFlowStore {

@@ -5,6 +5,9 @@ import com.blockstream.compose.models.GreenViewModel
 import com.blockstream.compose.navigation.NavData
 import com.blockstream.data.data.GreenWallet
 import com.blockstream.data.walletabi.flow.FakeWalletAbiFlowDriver
+import com.blockstream.data.walletabi.flow.WalletAbiAccountOptionPayload
+import com.blockstream.data.walletabi.flow.WalletAbiApprovalTargetPayload
+import com.blockstream.data.walletabi.flow.WalletAbiFlowReviewPayload
 import com.blockstream.domain.walletabi.flow.WalletAbiFlowIntent
 import com.blockstream.domain.walletabi.flow.WalletAbiAccountOption
 import com.blockstream.domain.walletabi.flow.WalletAbiApprovalTarget
@@ -44,6 +47,41 @@ class WalletAbiFlowRouteViewModel(
                 } else {
                     snapshotRepository.save(greenWallet.id, snapshot)
                 }
+            } else if (output is WalletAbiFlowOutput.StartResolution) {
+                val review = (store.state.value as? WalletAbiFlowState.RequestLoaded)?.review ?: return@onEach
+                val resolvedPayload = driver.resolveRequest(
+                    review = WalletAbiFlowReviewPayload(
+                        requestId = output.command.requestContext.requestId,
+                        walletId = output.command.requestContext.walletId,
+                        title = review.title,
+                        message = review.message,
+                        accounts = review.accounts.map { account ->
+                            WalletAbiAccountOptionPayload(
+                                accountId = account.accountId,
+                                name = account.name
+                            )
+                        },
+                        selectedAccountId = output.command.selectedAccountId,
+                        approvalTarget = when (val approvalTarget = review.approvalTarget) {
+                            is WalletAbiApprovalTarget.Jade -> WalletAbiApprovalTargetPayload(
+                                kind = "jade",
+                                deviceName = approvalTarget.deviceName,
+                                deviceId = approvalTarget.deviceId
+                            )
+
+                            WalletAbiApprovalTarget.Software -> WalletAbiApprovalTargetPayload(
+                                kind = "software"
+                            )
+                        }
+                    )
+                )
+                store.dispatch(
+                    WalletAbiFlowIntent.OnExecutionEvent(
+                        WalletAbiExecutionEvent.Resolved(
+                            review = resolvedPayload.toDomainReview(output.command.requestContext)
+                        )
+                    )
+                )
             }
         }.launchIn(viewModelScope)
         startFlow(greenWallet = greenWallet)
@@ -74,26 +112,7 @@ class WalletAbiFlowRouteViewModel(
             store.dispatch(
                 WalletAbiFlowIntent.OnExecutionEvent(
                     WalletAbiExecutionEvent.RequestLoaded(
-                        review = WalletAbiFlowReview(
-                            requestContext = requestContext,
-                            title = reviewPayload.title,
-                            message = reviewPayload.message,
-                            accounts = reviewPayload.accounts.map { account ->
-                                WalletAbiAccountOption(
-                                    accountId = account.accountId,
-                                    name = account.name
-                                )
-                            },
-                            selectedAccountId = reviewPayload.selectedAccountId,
-                            approvalTarget = when (reviewPayload.approvalTarget.kind) {
-                                "jade" -> WalletAbiApprovalTarget.Jade(
-                                    deviceName = reviewPayload.approvalTarget.deviceName,
-                                    deviceId = reviewPayload.approvalTarget.deviceId
-                                )
-
-                                else -> WalletAbiApprovalTarget.Software
-                            }
-                        )
+                        review = reviewPayload.toDomainReview(requestContext)
                     )
                 )
             )
@@ -103,4 +122,29 @@ class WalletAbiFlowRouteViewModel(
     companion object {
         const val DEMO_REQUEST_ID = "wallet-abi-demo-request"
     }
+}
+
+private fun WalletAbiFlowReviewPayload.toDomainReview(
+    requestContext: WalletAbiStartRequestContext
+): WalletAbiFlowReview {
+    return WalletAbiFlowReview(
+        requestContext = requestContext,
+        title = title,
+        message = message,
+        accounts = accounts.map { account ->
+            WalletAbiAccountOption(
+                accountId = account.accountId,
+                name = account.name
+            )
+        },
+        selectedAccountId = selectedAccountId,
+        approvalTarget = when (approvalTarget.kind) {
+            "jade" -> WalletAbiApprovalTarget.Jade(
+                deviceName = approvalTarget.deviceName,
+                deviceId = approvalTarget.deviceId
+            )
+
+            else -> WalletAbiApprovalTarget.Software
+        }
+    )
 }
