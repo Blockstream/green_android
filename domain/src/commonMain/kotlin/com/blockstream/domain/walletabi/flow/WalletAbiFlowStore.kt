@@ -23,6 +23,7 @@ class DefaultWalletAbiFlowStore : WalletAbiFlowStore {
 
     override suspend fun dispatch(intent: WalletAbiFlowIntent) {
         when (intent) {
+            WalletAbiFlowIntent.Approve -> handleApprove()
             is WalletAbiFlowIntent.Start -> handleStart(intent)
             is WalletAbiFlowIntent.ResolveRequest -> handleResolveRequest()
             is WalletAbiFlowIntent.SelectAccount -> handleSelectAccount(intent)
@@ -74,6 +75,19 @@ class DefaultWalletAbiFlowStore : WalletAbiFlowStore {
             )
         )
     }
+
+    private suspend fun handleApprove() {
+        val currentState = mutableState.value as? WalletAbiFlowState.RequestLoaded ?: return
+        mutableState.value = WalletAbiFlowState.Submitting(currentState.review.requestContext)
+        mutableOutputs.emit(
+            WalletAbiFlowOutput.StartSubmission(
+                WalletAbiSubmissionCommand(
+                    requestContext = currentState.review.requestContext,
+                    selectedAccountId = currentState.review.selectedAccountId
+                )
+            )
+        )
+    }
 }
 
 data class WalletAbiStartRequestContext(
@@ -90,9 +104,15 @@ sealed interface WalletAbiFlowState {
     data class RequestLoaded(
         val review: WalletAbiFlowReview
     ) : WalletAbiFlowState
+
+    data class Submitting(
+        val requestContext: WalletAbiStartRequestContext
+    ) : WalletAbiFlowState
 }
 
 sealed interface WalletAbiFlowIntent {
+    data object Approve : WalletAbiFlowIntent
+
     data class Start(
         val requestContext: WalletAbiStartRequestContext
     ) : WalletAbiFlowIntent
@@ -116,6 +136,10 @@ sealed interface WalletAbiFlowOutput {
     data class StartResolution(
         val command: WalletAbiResolutionCommand
     ) : WalletAbiFlowOutput
+
+    data class StartSubmission(
+        val command: WalletAbiSubmissionCommand
+    ) : WalletAbiFlowOutput
 }
 
 data class WalletAbiResumeSnapshot(
@@ -124,6 +148,11 @@ data class WalletAbiResumeSnapshot(
 )
 
 data class WalletAbiResolutionCommand(
+    val requestContext: WalletAbiStartRequestContext,
+    val selectedAccountId: String?
+)
+
+data class WalletAbiSubmissionCommand(
     val requestContext: WalletAbiStartRequestContext,
     val selectedAccountId: String?
 )

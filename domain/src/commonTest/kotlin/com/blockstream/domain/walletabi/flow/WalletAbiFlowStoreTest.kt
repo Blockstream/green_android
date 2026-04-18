@@ -135,4 +135,32 @@ class WalletAbiFlowStoreTest {
             store.state.value
         )
     }
+
+    @Test
+    fun software_approve_starts_submitting() = runTest {
+        val store = DefaultWalletAbiFlowStore()
+        store.dispatch(WalletAbiFlowIntent.Start(review.requestContext))
+        store.dispatch(
+            WalletAbiFlowIntent.OnExecutionEvent(
+                WalletAbiExecutionEvent.RequestLoaded(review)
+            )
+        )
+        val output = async(start = CoroutineStart.UNDISPATCHED) { store.outputs.first() }
+
+        store.dispatch(WalletAbiFlowIntent.Approve)
+
+        assertEquals(
+            WalletAbiFlowState.Submitting(review.requestContext),
+            store.state.value
+        )
+        assertEquals(
+            WalletAbiFlowOutput.StartSubmission(
+                WalletAbiSubmissionCommand(
+                    requestContext = review.requestContext,
+                    selectedAccountId = review.selectedAccountId
+                )
+            ),
+            output.await()
+        )
+    }
 }
