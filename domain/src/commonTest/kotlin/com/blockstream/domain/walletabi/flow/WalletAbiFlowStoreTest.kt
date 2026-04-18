@@ -71,6 +71,8 @@ class WalletAbiFlowStoreTest {
             )
         )
 
+        val output = async(start = CoroutineStart.UNDISPATCHED) { store.outputs.first() }
+
         store.dispatch(
             WalletAbiFlowIntent.OnExecutionEvent(
                 WalletAbiExecutionEvent.RequestLoaded(review)
@@ -80,6 +82,15 @@ class WalletAbiFlowStoreTest {
         assertEquals(
             WalletAbiFlowState.RequestLoaded(review),
             store.state.value
+        )
+        assertEquals(
+            WalletAbiFlowOutput.PersistSnapshot(
+                WalletAbiResumeSnapshot(
+                    review = review,
+                    phase = WalletAbiResumePhase.REQUEST_LOADED
+                )
+            ),
+            output.await()
         )
     }
 
