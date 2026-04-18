@@ -34,6 +34,7 @@ import com.blockstream.data.gdk.data.AccountAssetBalance
 import com.blockstream.data.gdk.data.CreateTransaction
 import com.blockstream.data.gdk.data.Network
 import com.blockstream.data.gdk.data.ProcessedTransactionDetails
+import com.blockstream.data.gdk.executeSoftwareTransaction
 import com.blockstream.data.gdk.params.BroadcastTransactionParams
 import com.blockstream.data.gdk.params.CreateTransactionParams
 import com.blockstream.data.utils.ifNotNull
@@ -55,9 +56,6 @@ import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.sync.Mutex
 import kotlinx.serialization.Serializable
-import kotlinx.serialization.json.JsonObject
-import kotlinx.serialization.json.JsonPrimitive
-import kotlinx.serialization.json.jsonObject
 import org.jetbrains.compose.resources.getString
 import org.koin.core.component.inject
 
@@ -427,22 +425,11 @@ abstract class CreateTransactionViewModelAbstract(
                             )
                         )
                     } else {
-
-                        // Set memo without recreating the transaction
-                        val signedTransaction =
-                            JsonObject(transaction.jsonElement!!.jsonObject.toMutableMap().apply {
-                                this["memo"] =
-                                    JsonPrimitive(
-                                        note.value.takeIf { it.isNotBlank() }?.trim()
-                                            ?: ""
-                                    )
-                            })
-
-                        session.sendTransaction(
+                        executeSoftwareTransaction(
+                            session = session,
                             account = account,
-                            signedTransaction = signedTransaction,
-                            isSendAll = transaction.isSendAll,
-                            isBump = transaction.isBump(),
+                            transaction = transaction,
+                            memo = note.value,
                             twoFactorResolver = this
                         ).also {
                             params.swap?.swapId?.also { swapId ->
