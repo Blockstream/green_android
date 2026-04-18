@@ -254,7 +254,9 @@ class WalletAbiFlowStoreTest {
     @Test
     fun reject_ends_cancelled() = runTest {
         val store = DefaultWalletAbiFlowStore()
-        val output = async(start = CoroutineStart.UNDISPATCHED) { store.outputs.first() }
+        val outputs = async(start = CoroutineStart.UNDISPATCHED) {
+            store.outputs.take(2).toList()
+        }
 
         store.dispatch(WalletAbiFlowIntent.Reject)
 
@@ -263,10 +265,13 @@ class WalletAbiFlowStoreTest {
             store.state.value
         )
         assertEquals(
-            WalletAbiFlowOutput.Complete(
-                WalletAbiFlowTerminalResult.Cancelled(WalletAbiCancelledReason.UserRejected)
+            listOf(
+                WalletAbiFlowOutput.PersistSnapshot(null),
+                WalletAbiFlowOutput.Complete(
+                    WalletAbiFlowTerminalResult.Cancelled(WalletAbiCancelledReason.UserRejected)
+                )
             ),
-            output.await()
+            outputs.await()
         )
     }
 
