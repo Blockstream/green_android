@@ -3,6 +3,8 @@ plugins {
     alias(libs.plugins.android.kotlin.multiplatform.library)
 }
 
+val appleTargetsEnabled = rootProject.extra["appleTargetsEnabled"] as Boolean
+
 kotlin {
     compilerOptions {
         freeCompilerArgs.add("-Xskip-prerelease-check")
@@ -26,8 +28,10 @@ kotlin {
     }
 
     jvm()
-    iosArm64()
-    iosSimulatorArm64()
+    if (appleTargetsEnabled) {
+        iosArm64()
+        iosSimulatorArm64()
+    }
 
     sourceSets {
         commonMain.dependencies {

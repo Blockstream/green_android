@@ -5,7 +5,13 @@ plugins {
     alias(libs.plugins.android.kotlin.multiplatform.library)
     alias(libs.plugins.kotlinxSerialization)
     alias(libs.plugins.app.cash.sqldelight)
-    alias(libs.plugins.nativeCocoapods)
+    alias(libs.plugins.nativeCocoapods) apply false
+}
+
+val appleTargetsEnabled = rootProject.extra["appleTargetsEnabled"] as Boolean
+
+if (appleTargetsEnabled) {
+    apply(plugin = "org.jetbrains.kotlin.native.cocoapods")
 }
 
 sqldelight {
@@ -59,43 +65,45 @@ kotlin {
 
     jvm()
 
-    val xcf = XCFramework()
-    listOf(
-        iosArm64(), iosSimulatorArm64()
-    ).forEach {
-        it.binaries.framework {
-            baseName = "common"
-            xcf.add(this)
-            isStatic = true
-        }
-
-        val platform = when (it.targetName) {
-            "iosX64" -> "ios_simulator_x86"
-            "iosSimulatorArm64" -> "ios_simulator_arm64"
-            "iosArm64" -> "ios_arm64"
-            else -> error("Unsupported target $name")
-        }
-
-        it.compilations["main"].cinterops {
-            create("gdkCInterop") {
-                defFile(project.file("src/nativeInterop/cinterop/gdk.def"))
-                includeDirs(project.file("src/include"), project.file("src/libs/$platform"))
-            }
-        }
-    }
-
-    cocoapods {
-        version = "2.0"
-        ios.deploymentTarget = "15.3"
-
-        pod("Countly") {
-            source = git("https://github.com/angelix/countly-sdk-ios") {
-                commit = "1892410d13fceccd7cf91f803f06f110efc215b3"
+    if (appleTargetsEnabled) {
+        val xcf = XCFramework()
+        listOf(
+            iosArm64(), iosSimulatorArm64()
+        ).forEach {
+            it.binaries.framework {
+                baseName = "common"
+                xcf.add(this)
+                isStatic = true
             }
 
-            // Support for Objective-C headers with @import directives
-            // https://kotlinlang.org/docs/native-cocoapods-libraries.html#support-for-objective-c-headers-with-import-directives
-            extraOpts += listOf("-compiler-option", "-fmodules")
+            val platform = when (it.targetName) {
+                "iosX64" -> "ios_simulator_x86"
+                "iosSimulatorArm64" -> "ios_simulator_arm64"
+                "iosArm64" -> "ios_arm64"
+                else -> error("Unsupported target $name")
+            }
+
+            it.compilations["main"].cinterops {
+                create("gdkCInterop") {
+                    defFile(project.file("src/nativeInterop/cinterop/gdk.def"))
+                    includeDirs(project.file("src/include"), project.file("src/libs/$platform"))
+                }
+            }
+        }
+
+        extensions.configure<org.jetbrains.kotlin.gradle.plugin.cocoapods.CocoapodsExtension>("cocoapods") {
+            version = "2.0"
+            ios.deploymentTarget = "15.3"
+
+            pod("Countly") {
+                source = git("https://github.com/angelix/countly-sdk-ios") {
+                    commit = "1892410d13fceccd7cf91f803f06f110efc215b3"
+                }
+
+                // Support for Objective-C headers with @import directives
+                // https://kotlinlang.org/docs/native-cocoapods-libraries.html#support-for-objective-c-headers-with-import-directives
+                extraOpts += listOf("-compiler-option", "-fmodules")
+            }
         }
     }
 
@@ -209,8 +217,10 @@ kotlin {
             implementation(libs.mockk)
         }
 
-        iosMain.dependencies {
-            implementation(libs.sqldelight.native.driver)
+        if (appleTargetsEnabled) {
+            iosMain.dependencies {
+                implementation(libs.sqldelight.native.driver)
+            }
         }
     }
 }

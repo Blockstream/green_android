@@ -3,6 +3,8 @@ plugins {
     alias(libs.plugins.android.kotlin.multiplatform.library)
 }
 
+val appleTargetsEnabled = rootProject.extra["appleTargetsEnabled"] as Boolean
+
 kotlin {
     jvmToolchain(libs.versions.jvm.get().toInt())
 
@@ -13,8 +15,10 @@ kotlin {
     }
 
     jvm()
-    iosArm64()
-    iosSimulatorArm64()
+    if (appleTargetsEnabled) {
+        iosArm64()
+        iosSimulatorArm64()
+    }
 
     sourceSets {
         commonMain.dependencies {

@@ -8,6 +8,8 @@ plugins {
     alias(libs.plugins.kotlinxSerialization)
 }
 
+val appleTargetsEnabled = rootProject.extra["appleTargetsEnabled"] as Boolean
+
 compose.resources {
     packageOfResClass = "blockstream_green.common.generated.resources" // Keep the same package name
     publicResClass = true
@@ -27,15 +29,17 @@ kotlin {
 
     jvm("desktop")
 
-    val xcf = XCFramework()
-    listOf(
-        iosArm64(),
-        iosSimulatorArm64()
-    ).forEach { iosTarget ->
-        iosTarget.binaries.framework {
-            baseName = "ComposeApp"
-            xcf.add(this)
-            isStatic = true
+    if (appleTargetsEnabled) {
+        val xcf = XCFramework()
+        listOf(
+            iosArm64(),
+            iosSimulatorArm64()
+        ).forEach { iosTarget ->
+            iosTarget.binaries.framework {
+                baseName = "ComposeApp"
+                xcf.add(this)
+                isStatic = true
+            }
         }
     }
 
@@ -118,8 +122,10 @@ kotlin {
             implementation(libs.peekaboo.image.picker)
         }
 
-        iosMain.dependencies {
-            implementation(libs.peekaboo.image.picker)
+        if (appleTargetsEnabled) {
+            iosMain.dependencies {
+                implementation(libs.peekaboo.image.picker)
+            }
         }
     }
 }
