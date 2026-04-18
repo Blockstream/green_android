@@ -513,6 +513,7 @@ class WalletAbiFlowRouteViewModelTest {
         store.state.value = WalletAbiFlowState.Success(
             WalletAbiSuccessResult(
                 requestId = WalletAbiFlowRouteViewModel.DEMO_REQUEST_ID,
+                txHash = "wallet-abi-demo-tx-hash",
                 responseId = "wallet-abi-demo-response"
             )
         )

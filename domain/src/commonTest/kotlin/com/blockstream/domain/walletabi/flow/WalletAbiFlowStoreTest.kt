@@ -103,6 +103,7 @@ class WalletAbiFlowStoreTest {
     )
     private val successResult = WalletAbiSuccessResult(
         requestId = review.requestContext.requestId,
+        txHash = "tx-hash",
         responseId = "response-id"
     )
     private val failedError = WalletAbiFlowError("Execution failed")

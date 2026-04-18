@@ -254,6 +254,7 @@ class WalletAbiFlowScreenTest {
             WalletAbiFlowState.Success(
                 WalletAbiSuccessResult(
                     requestId = "request-id",
+                    txHash = "tx-hash",
                     responseId = "response-id"
                 )
             ),

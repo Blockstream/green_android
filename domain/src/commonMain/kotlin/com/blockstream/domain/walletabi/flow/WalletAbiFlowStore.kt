@@ -495,7 +495,8 @@ sealed interface WalletAbiFlowTerminalResult {
 
 data class WalletAbiSuccessResult(
     val requestId: String,
-    val responseId: String
+    val txHash: String? = null,
+    val responseId: String? = null
 )
 
 enum class WalletAbiCancelledReason {
