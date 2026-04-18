@@ -157,6 +157,15 @@ class DefaultWalletAbiFlowStore : WalletAbiFlowStore {
             jade = jade
         )
         mutableOutputs.emit(
+            WalletAbiFlowOutput.PersistSnapshot(
+                WalletAbiResumeSnapshot(
+                    review = review,
+                    phase = WalletAbiResumePhase.AWAITING_APPROVAL,
+                    jade = jade
+                )
+            )
+        )
+        mutableOutputs.emit(
             WalletAbiFlowOutput.StartApproval(
                 WalletAbiApprovalCommand(
                     requestContext = review.requestContext,

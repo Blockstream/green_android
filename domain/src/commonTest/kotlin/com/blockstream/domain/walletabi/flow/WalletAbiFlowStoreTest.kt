@@ -3,6 +3,8 @@ package com.blockstream.domain.walletabi.flow
 import kotlinx.coroutines.CoroutineStart
 import kotlinx.coroutines.async
 import kotlinx.coroutines.flow.first
+import kotlinx.coroutines.flow.take
+import kotlinx.coroutines.flow.toList
 import kotlinx.coroutines.test.runTest
 import kotlin.test.Test
 import kotlin.test.assertEquals
@@ -316,7 +318,9 @@ class WalletAbiFlowStoreTest {
                 WalletAbiExecutionEvent.RequestLoaded(jadeReview)
             )
         )
-        val output = async(start = CoroutineStart.UNDISPATCHED) { store.outputs.first() }
+        val outputs = async(start = CoroutineStart.UNDISPATCHED) {
+            store.outputs.take(2).toList()
+        }
         val jadeContext = WalletAbiJadeContext(
             deviceId = "jade-id",
             step = WalletAbiJadeStep.CONNECT,
@@ -335,14 +339,23 @@ class WalletAbiFlowStoreTest {
             store.state.value
         )
         assertEquals(
-            WalletAbiFlowOutput.StartApproval(
-                WalletAbiApprovalCommand(
-                    requestContext = jadeReview.requestContext,
-                    selectedAccountId = jadeReview.selectedAccountId,
-                    jade = jadeContext
+            listOf(
+                WalletAbiFlowOutput.PersistSnapshot(
+                    WalletAbiResumeSnapshot(
+                        review = jadeReview,
+                        phase = WalletAbiResumePhase.AWAITING_APPROVAL,
+                        jade = jadeContext
+                    )
+                ),
+                WalletAbiFlowOutput.StartApproval(
+                    WalletAbiApprovalCommand(
+                        requestContext = jadeReview.requestContext,
+                        selectedAccountId = jadeReview.selectedAccountId,
+                        jade = jadeContext
+                    )
                 )
             ),
-            output.await()
+            outputs.await()
         )
     }
 
