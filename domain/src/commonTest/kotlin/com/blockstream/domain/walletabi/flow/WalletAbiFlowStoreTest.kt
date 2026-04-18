@@ -227,7 +227,9 @@ class WalletAbiFlowStoreTest {
             store.state.value
         )
 
-        val output = async(start = CoroutineStart.UNDISPATCHED) { store.outputs.first() }
+        val outputs = async(start = CoroutineStart.UNDISPATCHED) {
+            store.outputs.take(2).toList()
+        }
         store.dispatch(
             WalletAbiFlowIntent.OnExecutionEvent(
                 WalletAbiExecutionEvent.RemoteResponseSent(successResult)
@@ -239,10 +241,13 @@ class WalletAbiFlowStoreTest {
             store.state.value
         )
         assertEquals(
-            WalletAbiFlowOutput.Complete(
-                WalletAbiFlowTerminalResult.Success(successResult)
+            listOf(
+                WalletAbiFlowOutput.PersistSnapshot(null),
+                WalletAbiFlowOutput.Complete(
+                    WalletAbiFlowTerminalResult.Success(successResult)
+                )
             ),
-            output.await()
+            outputs.await()
         )
     }
 

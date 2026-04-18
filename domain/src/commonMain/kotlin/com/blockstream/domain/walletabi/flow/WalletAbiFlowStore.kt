@@ -91,6 +91,9 @@ class DefaultWalletAbiFlowStore : WalletAbiFlowStore {
     ) {
         mutableState.value = WalletAbiFlowState.Success(event.result)
         mutableOutputs.emit(
+            WalletAbiFlowOutput.PersistSnapshot(null)
+        )
+        mutableOutputs.emit(
             WalletAbiFlowOutput.Complete(
                 WalletAbiFlowTerminalResult.Success(event.result)
             )
@@ -382,7 +385,7 @@ sealed interface WalletAbiFlowIntent {
 
 sealed interface WalletAbiFlowOutput {
     data class PersistSnapshot(
-        val snapshot: WalletAbiResumeSnapshot
+        val snapshot: WalletAbiResumeSnapshot?
     ) : WalletAbiFlowOutput
 
     data class StartResolution(
