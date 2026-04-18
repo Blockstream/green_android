@@ -105,8 +105,8 @@ class WalletAbiFlowStoreTest {
         assertEquals(
             WalletAbiFlowOutput.PersistSnapshot(
                 WalletAbiResumeSnapshot(
-                    requestContext = review.requestContext,
-                    selectedAccountId = "account-id-2"
+                    review = review.copy(selectedAccountId = "account-id-2"),
+                    phase = WalletAbiResumePhase.REQUEST_LOADED
                 )
             ),
             output.await()
@@ -483,6 +483,100 @@ class WalletAbiFlowStoreTest {
         assertEquals(
             WalletAbiFlowOutput.Complete(
                 WalletAbiFlowTerminalResult.Error(WalletAbiFlowError("Jade disconnected"))
+            ),
+            output.await()
+        )
+    }
+
+    @Test
+    fun restore_request_loaded_enters_resumable() = runTest {
+        val store = DefaultWalletAbiFlowStore()
+        val snapshot = WalletAbiResumeSnapshot(
+            review = review,
+            phase = WalletAbiResumePhase.REQUEST_LOADED
+        )
+
+        store.dispatch(WalletAbiFlowIntent.Restore(snapshot))
+
+        assertEquals(
+            WalletAbiFlowState.Resumable(snapshot),
+            store.state.value
+        )
+    }
+
+    @Test
+    fun resume_request_loaded_returns_to_active_state() = runTest {
+        val store = DefaultWalletAbiFlowStore()
+        store.dispatch(
+            WalletAbiFlowIntent.Restore(
+                WalletAbiResumeSnapshot(
+                    review = review,
+                    phase = WalletAbiResumePhase.REQUEST_LOADED
+                )
+            )
+        )
+
+        store.dispatch(WalletAbiFlowIntent.Resume)
+
+        assertEquals(
+            WalletAbiFlowState.RequestLoaded(review),
+            store.state.value
+        )
+    }
+
+    @Test
+    fun resume_awaiting_approval_returns_to_active_state() = runTest {
+        val store = DefaultWalletAbiFlowStore()
+        val jadeContext = WalletAbiJadeContext(
+            deviceId = "jade-id",
+            step = WalletAbiJadeStep.REVIEW,
+            message = null,
+            retryable = false
+        )
+        store.dispatch(
+            WalletAbiFlowIntent.Restore(
+                WalletAbiResumeSnapshot(
+                    review = jadeReview,
+                    phase = WalletAbiResumePhase.AWAITING_APPROVAL,
+                    jade = jadeContext
+                )
+            )
+        )
+
+        store.dispatch(WalletAbiFlowIntent.Resume)
+
+        assertEquals(
+            WalletAbiFlowState.AwaitingApproval(
+                requestContext = jadeReview.requestContext,
+                selectedAccountId = jadeReview.selectedAccountId,
+                jade = jadeContext
+            ),
+            store.state.value
+        )
+    }
+
+    @Test
+    fun cancel_resume_ends_cancelled() = runTest {
+        val store = DefaultWalletAbiFlowStore()
+        val output = async(start = CoroutineStart.UNDISPATCHED) { store.outputs.first() }
+        store.dispatch(
+            WalletAbiFlowIntent.Restore(
+                WalletAbiResumeSnapshot(
+                    review = review,
+                    phase = WalletAbiResumePhase.REQUEST_LOADED
+                )
+            )
+        )
+
+        store.dispatch(WalletAbiFlowIntent.CancelResume)
+
+        assertEquals(
+            WalletAbiFlowState.Cancelled(WalletAbiCancelledReason.ResumableCancelled),
+            store.state.value
+        )
+        assertEquals(
+            WalletAbiFlowOutput.Complete(
+                WalletAbiFlowTerminalResult.Cancelled(WalletAbiCancelledReason.ResumableCancelled)
             ),
             output.await()
         )

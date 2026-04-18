@@ -24,8 +24,11 @@ class DefaultWalletAbiFlowStore : WalletAbiFlowStore {
     override suspend fun dispatch(intent: WalletAbiFlowIntent) {
         when (intent) {
             WalletAbiFlowIntent.Approve -> handleApprove()
+            WalletAbiFlowIntent.CancelResume -> handleCancelResume()
             WalletAbiFlowIntent.Reject -> handleReject()
             is WalletAbiFlowIntent.OnJadeEvent -> handleJadeEvent(intent.event)
+            is WalletAbiFlowIntent.Restore -> handleRestore(intent)
+            WalletAbiFlowIntent.Resume -> handleResume()
             is WalletAbiFlowIntent.Start -> handleStart(intent)
             is WalletAbiFlowIntent.ResolveRequest -> handleResolveRequest()
             is WalletAbiFlowIntent.SelectAccount -> handleSelectAccount(intent)
@@ -85,8 +88,8 @@ class DefaultWalletAbiFlowStore : WalletAbiFlowStore {
         mutableOutputs.emit(
             WalletAbiFlowOutput.PersistSnapshot(
                 WalletAbiResumeSnapshot(
-                    requestContext = updatedReview.requestContext,
-                    selectedAccountId = updatedReview.selectedAccountId
+                    review = updatedReview,
+                    phase = WalletAbiResumePhase.REQUEST_LOADED
                 )
             )
         )
@@ -167,6 +170,41 @@ class DefaultWalletAbiFlowStore : WalletAbiFlowStore {
     private suspend fun handleExecutionFailed(event: WalletAbiExecutionEvent.Failed) {
         val result = WalletAbiFlowTerminalResult.Error(event.error)
         mutableState.value = WalletAbiFlowState.Error(event.error)
+        mutableOutputs.emit(WalletAbiFlowOutput.Complete(result))
+    }
+
+    private fun handleRestore(intent: WalletAbiFlowIntent.Restore) {
+        mutableState.value = WalletAbiFlowState.Resumable(intent.snapshot)
+    }
+
+    private fun handleResume() {
+        val currentState = mutableState.value as? WalletAbiFlowState.Resumable ?: return
+        val snapshot = currentState.snapshot
+        mutableState.value = when (snapshot.phase) {
+            WalletAbiResumePhase.AWAITING_APPROVAL -> WalletAbiFlowState.AwaitingApproval(
+                requestContext = snapshot.review.requestContext,
+                selectedAccountId = snapshot.review.selectedAccountId,
+                jade = snapshot.jade ?: WalletAbiJadeContext(
+                    deviceId = null,
+                    step = WalletAbiJadeStep.CONNECT,
+                    message = null,
+                    retryable = false
+                )
+            )
+
+            WalletAbiResumePhase.REQUEST_LOADED -> WalletAbiFlowState.RequestLoaded(snapshot.review)
+            WalletAbiResumePhase.SUBMITTING -> WalletAbiFlowState.Submitting(
+                requestContext = snapshot.review.requestContext,
+                jade = snapshot.jade
+            )
+        }
+    }
+
+    private suspend fun handleCancelResume() {
+        val result = WalletAbiFlowTerminalResult.Cancelled(
+            WalletAbiCancelledReason.ResumableCancelled
+        )
+        mutableState.value = WalletAbiFlowState.Cancelled(result.reason)
         mutableOutputs.emit(WalletAbiFlowOutput.Complete(result))
     }
 
@@ -268,14 +306,24 @@ sealed interface WalletAbiFlowState {
     data class Error(
         val error: WalletAbiFlowError
     ) : WalletAbiFlowState
+
+    data class Resumable(
+        val snapshot: WalletAbiResumeSnapshot
+    ) : WalletAbiFlowState
 }
 
 sealed interface WalletAbiFlowIntent {
     data object Approve : WalletAbiFlowIntent
+    data object CancelResume : WalletAbiFlowIntent
     data object Reject : WalletAbiFlowIntent
+    data object Resume : WalletAbiFlowIntent
 
     data class OnJadeEvent(
         val event: WalletAbiJadeEvent
+    ) : WalletAbiFlowIntent
+
+    data class Restore(
+        val snapshot: WalletAbiResumeSnapshot
     ) : WalletAbiFlowIntent
 
     data class Start(
@@ -316,9 +364,16 @@ sealed interface WalletAbiFlowOutput {
 }
 
 data class WalletAbiResumeSnapshot(
-    val requestContext: WalletAbiStartRequestContext,
-    val selectedAccountId: String?
+    val review: WalletAbiFlowReview,
+    val phase: WalletAbiResumePhase,
+    val jade: WalletAbiJadeContext? = null
 )
+
+enum class WalletAbiResumePhase {
+    AWAITING_APPROVAL,
+    REQUEST_LOADED,
+    SUBMITTING
+}
 
 data class WalletAbiResolutionCommand(
     val requestContext: WalletAbiStartRequestContext,
@@ -358,6 +413,7 @@ data class WalletAbiSuccessResult(
 enum class WalletAbiCancelledReason {
     JadeCancelled,
     RequestExpired,
+    ResumableCancelled,
     UserRejected
 }
 
