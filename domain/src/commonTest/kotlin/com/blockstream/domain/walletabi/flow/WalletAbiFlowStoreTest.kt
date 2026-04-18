@@ -581,4 +581,23 @@ class WalletAbiFlowStoreTest {
             output.await()
         )
     }
+
+    @Test
+    fun submitting_snapshot_restores_as_error() = runTest {
+        val store = DefaultWalletAbiFlowStore()
+
+        store.dispatch(
+            WalletAbiFlowIntent.Restore(
+                WalletAbiResumeSnapshot(
+                    review = review,
+                    phase = WalletAbiResumePhase.SUBMITTING
+                )
+            )
+        )
+
+        assertEquals(
+            WalletAbiFlowState.Error(WalletAbiFlowError("Execution status uncertain")),
+            store.state.value
+        )
+    }
 }

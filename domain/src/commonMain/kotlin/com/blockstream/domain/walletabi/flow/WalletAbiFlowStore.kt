@@ -174,7 +174,10 @@ class DefaultWalletAbiFlowStore : WalletAbiFlowStore {
     }
 
     private fun handleRestore(intent: WalletAbiFlowIntent.Restore) {
-        mutableState.value = WalletAbiFlowState.Resumable(intent.snapshot)
+        mutableState.value = when (intent.snapshot.phase) {
+            WalletAbiResumePhase.SUBMITTING -> restoreSubmittingAsError()
+            else -> WalletAbiFlowState.Resumable(intent.snapshot)
+        }
     }
 
     private fun handleResume() {
@@ -206,6 +209,12 @@ class DefaultWalletAbiFlowStore : WalletAbiFlowStore {
         )
         mutableState.value = WalletAbiFlowState.Cancelled(result.reason)
         mutableOutputs.emit(WalletAbiFlowOutput.Complete(result))
+    }
+
+    private fun restoreSubmittingAsError(): WalletAbiFlowState.Error {
+        return WalletAbiFlowState.Error(
+            WalletAbiFlowError("Execution status uncertain")
+        )
     }
 
     private suspend fun handleJadeEvent(event: WalletAbiJadeEvent) {
