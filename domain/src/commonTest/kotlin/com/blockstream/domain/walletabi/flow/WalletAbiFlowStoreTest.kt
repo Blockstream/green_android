@@ -466,7 +466,9 @@ class WalletAbiFlowStoreTest {
             )
         )
         store.dispatch(WalletAbiFlowIntent.Approve)
-        val output = async(start = CoroutineStart.UNDISPATCHED) { store.outputs.first() }
+        val outputs = async(start = CoroutineStart.UNDISPATCHED) {
+            store.outputs.take(2).toList()
+        }
 
         store.dispatch(WalletAbiFlowIntent.OnJadeEvent(WalletAbiJadeEvent.Cancelled))
 
@@ -475,10 +477,13 @@ class WalletAbiFlowStoreTest {
             store.state.value
         )
         assertEquals(
-            WalletAbiFlowOutput.Complete(
-                WalletAbiFlowTerminalResult.Cancelled(WalletAbiCancelledReason.JadeCancelled)
+            listOf(
+                WalletAbiFlowOutput.PersistSnapshot(null),
+                WalletAbiFlowOutput.Complete(
+                    WalletAbiFlowTerminalResult.Cancelled(WalletAbiCancelledReason.JadeCancelled)
+                )
             ),
-            output.await()
+            outputs.await()
         )
     }
 

@@ -260,6 +260,7 @@ class DefaultWalletAbiFlowStore : WalletAbiFlowStore {
                     WalletAbiCancelledReason.JadeCancelled
                 )
                 mutableState.value = WalletAbiFlowState.Cancelled(result.reason)
+                mutableOutputs.emit(WalletAbiFlowOutput.PersistSnapshot(null))
                 mutableOutputs.emit(WalletAbiFlowOutput.Complete(result))
             }
 
