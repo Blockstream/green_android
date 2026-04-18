@@ -198,10 +198,15 @@ class DefaultWalletAbiFlowStore : WalletAbiFlowStore {
         mutableOutputs.emit(WalletAbiFlowOutput.Complete(result))
     }
 
-    private fun handleRestore(intent: WalletAbiFlowIntent.Restore) {
+    private suspend fun handleRestore(intent: WalletAbiFlowIntent.Restore) {
         mutableState.value = when (intent.snapshot.phase) {
             WalletAbiResumePhase.SUBMITTING -> restoreSubmittingAsError()
-            else -> WalletAbiFlowState.Resumable(intent.snapshot)
+            else -> {
+                mutableOutputs.emit(
+                    WalletAbiFlowOutput.PersistSnapshot(intent.snapshot)
+                )
+                WalletAbiFlowState.Resumable(intent.snapshot)
+            }
         }
     }
 

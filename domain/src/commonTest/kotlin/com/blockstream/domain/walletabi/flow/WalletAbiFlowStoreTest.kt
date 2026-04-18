@@ -530,12 +530,17 @@ class WalletAbiFlowStoreTest {
             review = review,
             phase = WalletAbiResumePhase.REQUEST_LOADED
         )
+        val output = async(start = CoroutineStart.UNDISPATCHED) { store.outputs.first() }
 
         store.dispatch(WalletAbiFlowIntent.Restore(snapshot))
 
         assertEquals(
             WalletAbiFlowState.Resumable(snapshot),
             store.state.value
+        )
+        assertEquals(
+            WalletAbiFlowOutput.PersistSnapshot(snapshot),
+            output.await()
         )
     }
 
@@ -593,13 +598,16 @@ class WalletAbiFlowStoreTest {
     @Test
     fun cancel_resume_ends_cancelled() = runTest {
         val store = DefaultWalletAbiFlowStore()
-        val output = async(start = CoroutineStart.UNDISPATCHED) { store.outputs.first() }
+        val outputs = async(start = CoroutineStart.UNDISPATCHED) {
+            store.outputs.take(2).toList()
+        }
+        val snapshot = WalletAbiResumeSnapshot(
+            review = review,
+            phase = WalletAbiResumePhase.REQUEST_LOADED
+        )
         store.dispatch(
             WalletAbiFlowIntent.Restore(
-                WalletAbiResumeSnapshot(
-                    review = review,
-                    phase = WalletAbiResumePhase.REQUEST_LOADED
-                )
+                snapshot
             )
         )
 
@@ -610,10 +618,13 @@ class WalletAbiFlowStoreTest {
             store.state.value
         )
         assertEquals(
-            WalletAbiFlowOutput.Complete(
-                WalletAbiFlowTerminalResult.Cancelled(WalletAbiCancelledReason.ResumableCancelled)
+            listOf(
+                WalletAbiFlowOutput.PersistSnapshot(snapshot),
+                WalletAbiFlowOutput.Complete(
+                    WalletAbiFlowTerminalResult.Cancelled(WalletAbiCancelledReason.ResumableCancelled)
+                )
             ),
-            output.await()
+            outputs.await()
         )
     }
 
