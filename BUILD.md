@@ -61,6 +61,22 @@ This will build both release and debug builds.
 
 You can speed up builds by limiting the tasks which run. Use `./gradlew --tasks` to see a list of available tasks.
 
+#### Android-only IDE sync
+
+If you are working only on Android and JetBrains sync is failing on the Apple/CocoaPods setup, set the Gradle property `androidOnly=true` locally and reload the Gradle project.
+
+The simplest local-only option is `~/.gradle/gradle.properties`:
+
+```
+androidOnly=true
+```
+
+When this property is enabled, Gradle skips Apple targets and CocoaPods configuration during sync and build. To switch back to full multiplatform work, remove the property or set it to `false`.
+
+You can also use it from the command line:
+
+`./gradlew :androidApp:assembleDevelopmentDebug -PandroidOnly=true`
+
 #### Building with docker (optional)
 
 If you have docker configured and want to build the app in release mode
