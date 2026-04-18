@@ -5,6 +5,44 @@ import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.flow
 
 class FakeWalletAbiFlowDriver {
+    fun loadRequestEnvelope(requestId: String): String {
+        return """
+            {
+              "jsonrpc": "2.0",
+              "id": "wallet-abi-demo-envelope",
+              "method": "wallet_abi_process_request",
+              "params": {
+                "abi_version": "wallet-abi-0.1",
+                "request_id": "$requestId",
+                "network": "testnet-liquid",
+                "params": {
+                  "inputs": [
+                    {
+                      "id": "input-1",
+                      "utxo_source": { "kind": "wallet" },
+                      "unblinding": { "kind": "known" },
+                      "sequence": 1,
+                      "finalizer": { "kind": "default" }
+                    }
+                  ],
+                  "outputs": [
+                    {
+                      "id": "output-1",
+                      "amount_sat": 1000,
+                      "lock": { "kind": "pkh" },
+                      "asset": { "kind": "btc" },
+                      "blinder": { "kind": "default" }
+                    }
+                  ],
+                  "fee_rate_sat_kvb": 12.5,
+                  "lock_time": 500000
+                },
+                "broadcast": true
+              }
+            }
+        """.trimIndent()
+    }
+
     fun loadRequest(
         requestId: String,
         walletId: String
