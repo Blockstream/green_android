@@ -53,6 +53,9 @@ class DefaultWalletAbiExecutionRunner(
             network = plan.selectedAccount.network,
             params = plan.toCreateTransactionParams(session)
         )
+        transaction.error?.takeIf { it.isNotBlank() }?.let { error ->
+            error(error)
+        }
         val result = softwareTransactionExecutor.execute(
             session = session,
             account = plan.selectedAccount,

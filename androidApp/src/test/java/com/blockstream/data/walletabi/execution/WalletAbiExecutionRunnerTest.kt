@@ -138,6 +138,30 @@ class WalletAbiExecutionRunnerTest {
         assertEquals("Wallet ABI execution did not return a transaction hash", error.message)
     }
 
+    @Test
+    fun execute_surfaces_create_transaction_error() = runTest {
+        val session = mockk<GdkSession>()
+
+        coEvery { session.getUnspentOutputs(account, false, false) } returns UnspentOutputs(emptyMap())
+        coEvery { session.createTransaction(account.network, any()) } returns CreateTransaction(
+            error = "id_nonconfidential_addresses_not"
+        )
+
+        val runner = DefaultWalletAbiExecutionRunner { _, _, _, _, _ ->
+            error("should not execute")
+        }
+
+        val error = assertFailsWith<IllegalStateException> {
+            runner.execute(
+                session = session,
+                plan = plan,
+                twoFactorResolver = TestTwoFactorResolver
+            )
+        }
+
+        assertEquals("id_nonconfidential_addresses_not", error.message)
+    }
+
     private fun liquidAccount(): Account {
         return Account(
             networkInjected = Network(
