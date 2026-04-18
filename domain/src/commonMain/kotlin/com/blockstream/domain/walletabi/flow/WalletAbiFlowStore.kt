@@ -24,6 +24,7 @@ class DefaultWalletAbiFlowStore : WalletAbiFlowStore {
     override suspend fun dispatch(intent: WalletAbiFlowIntent) {
         when (intent) {
             is WalletAbiFlowIntent.Start -> handleStart(intent)
+            is WalletAbiFlowIntent.ResolveRequest -> handleResolveRequest()
             is WalletAbiFlowIntent.SelectAccount -> handleSelectAccount(intent)
             is WalletAbiFlowIntent.OnExecutionEvent -> handleExecutionEvent(intent.event)
         }
@@ -36,10 +37,15 @@ class DefaultWalletAbiFlowStore : WalletAbiFlowStore {
     private fun handleExecutionEvent(event: WalletAbiExecutionEvent) {
         when (event) {
             is WalletAbiExecutionEvent.RequestLoaded -> handleExecutionRequestLoaded(event)
+            is WalletAbiExecutionEvent.Resolved -> handleExecutionResolved(event)
         }
     }
 
     private fun handleExecutionRequestLoaded(event: WalletAbiExecutionEvent.RequestLoaded) {
+        mutableState.value = WalletAbiFlowState.RequestLoaded(event.review)
+    }
+
+    private fun handleExecutionResolved(event: WalletAbiExecutionEvent.Resolved) {
         mutableState.value = WalletAbiFlowState.RequestLoaded(event.review)
     }
 
@@ -52,6 +58,18 @@ class DefaultWalletAbiFlowStore : WalletAbiFlowStore {
                 WalletAbiResumeSnapshot(
                     requestContext = updatedReview.requestContext,
                     selectedAccountId = updatedReview.selectedAccountId
+                )
+            )
+        )
+    }
+
+    private suspend fun handleResolveRequest() {
+        val currentState = mutableState.value as? WalletAbiFlowState.RequestLoaded ?: return
+        mutableOutputs.emit(
+            WalletAbiFlowOutput.StartResolution(
+                WalletAbiResolutionCommand(
+                    requestContext = currentState.review.requestContext,
+                    selectedAccountId = currentState.review.selectedAccountId
                 )
             )
         )
@@ -83,6 +101,8 @@ sealed interface WalletAbiFlowIntent {
         val accountId: String
     ) : WalletAbiFlowIntent
 
+    data object ResolveRequest : WalletAbiFlowIntent
+
     data class OnExecutionEvent(
         val event: WalletAbiExecutionEvent
     ) : WalletAbiFlowIntent
@@ -92,9 +112,18 @@ sealed interface WalletAbiFlowOutput {
     data class PersistSnapshot(
         val snapshot: WalletAbiResumeSnapshot
     ) : WalletAbiFlowOutput
+
+    data class StartResolution(
+        val command: WalletAbiResolutionCommand
+    ) : WalletAbiFlowOutput
 }
 
 data class WalletAbiResumeSnapshot(
+    val requestContext: WalletAbiStartRequestContext,
+    val selectedAccountId: String?
+)
+
+data class WalletAbiResolutionCommand(
     val requestContext: WalletAbiStartRequestContext,
     val selectedAccountId: String?
 )
@@ -119,6 +148,10 @@ sealed interface WalletAbiApprovalTarget {
 
 sealed interface WalletAbiExecutionEvent {
     data class RequestLoaded(
+        val review: WalletAbiFlowReview
+    ) : WalletAbiExecutionEvent
+
+    data class Resolved(
         val review: WalletAbiFlowReview
     ) : WalletAbiExecutionEvent
 }

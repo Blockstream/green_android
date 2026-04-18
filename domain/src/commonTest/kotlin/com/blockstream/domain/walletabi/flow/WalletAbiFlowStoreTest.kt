@@ -42,6 +42,11 @@ class WalletAbiFlowStoreTest {
         )
     }
 
+    private val resolvedReview = review.copy(
+        message = "Resolved request",
+        selectedAccountId = "account-id-2"
+    )
+
     @Test
     fun request_loaded_event_updates_loading_state() = runTest {
         val store = DefaultWalletAbiFlowStore()
@@ -93,6 +98,41 @@ class WalletAbiFlowStoreTest {
                 )
             ),
             output.await()
+        )
+    }
+
+    @Test
+    fun resolved_request_stays_editable() = runTest {
+        val store = DefaultWalletAbiFlowStore()
+        store.dispatch(WalletAbiFlowIntent.Start(review.requestContext))
+        store.dispatch(
+            WalletAbiFlowIntent.OnExecutionEvent(
+                WalletAbiExecutionEvent.RequestLoaded(review)
+            )
+        )
+        val output = async(start = CoroutineStart.UNDISPATCHED) { store.outputs.first() }
+
+        store.dispatch(WalletAbiFlowIntent.ResolveRequest)
+
+        assertEquals(
+            WalletAbiFlowOutput.StartResolution(
+                WalletAbiResolutionCommand(
+                    requestContext = review.requestContext,
+                    selectedAccountId = review.selectedAccountId
+                )
+            ),
+            output.await()
+        )
+
+        store.dispatch(
+            WalletAbiFlowIntent.OnExecutionEvent(
+                WalletAbiExecutionEvent.Resolved(resolvedReview)
+            )
+        )
+
+        assertEquals(
+            WalletAbiFlowState.RequestLoaded(resolvedReview),
+            store.state.value
         )
     }
 }
