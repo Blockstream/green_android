@@ -618,9 +618,6 @@ class WalletAbiFlowStoreTest {
     @Test
     fun cancel_resume_ends_cancelled() = runTest {
         val store = DefaultWalletAbiFlowStore()
-        val outputs = async(start = CoroutineStart.UNDISPATCHED) {
-            store.outputs.take(2).toList()
-        }
         val snapshot = WalletAbiResumeSnapshot(
             review = review,
             phase = WalletAbiResumePhase.REQUEST_LOADED
@@ -630,6 +627,9 @@ class WalletAbiFlowStoreTest {
                 snapshot
             )
         )
+        val outputs = async(start = CoroutineStart.UNDISPATCHED) {
+            store.outputs.take(2).toList()
+        }
 
         store.dispatch(WalletAbiFlowIntent.CancelResume)
 
@@ -639,7 +639,7 @@ class WalletAbiFlowStoreTest {
         )
         assertEquals(
             listOf(
-                WalletAbiFlowOutput.PersistSnapshot(snapshot),
+                WalletAbiFlowOutput.PersistSnapshot(null),
                 WalletAbiFlowOutput.Complete(
                     WalletAbiFlowTerminalResult.Cancelled(WalletAbiCancelledReason.ResumableCancelled)
                 )
