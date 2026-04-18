@@ -381,7 +381,7 @@ class WalletAbiExecutionPlannerTest {
     private companion object {
         const val VALID_SCRIPT = "00146f0279e9ed041c3d710a9f57d0c02928416460c4"
         const val TESTNET_POLICY_ASSET =
-            "6f0279e9ed041c3d710a9f57d0c02928416460c4b722ae3457a11eec381c526d"
+            "144c654344aa716d6f3abcc1ca90e5641e4e2a7f633bc09fe3baf64585819a49"
         const val DIFFERENT_POLICY_ASSET =
             "5ac9f65c0efcc4775e0baec4ec03abdde22473cd3cf33c0419ca290e0751b225"
     }
