@@ -10,6 +10,7 @@ import com.blockstream.data.data.GreenWallet
 import com.blockstream.data.di.commonModule
 import com.blockstream.data.di.commonModules
 import com.blockstream.data.di.platformModule
+import com.blockstream.data.managers.SessionManager
 import com.blockstream.domain.domainModule
 import org.koin.core.KoinApplication
 import org.koin.core.context.startKoin
@@ -34,6 +35,9 @@ fun initKoin(appInfo: AppInfo, appConfig: AppConfig, doOnStartup: () -> Unit = {
                         greenWallet = greenWallet,
                         store = get(),
                         snapshotRepository = get(),
+                        walletSession = get<SessionManager>().getWalletSessionOrCreate(greenWallet),
+                        requestSource = get(),
+                        executionPlanner = get(),
                         driver = get()
                     )
                 }

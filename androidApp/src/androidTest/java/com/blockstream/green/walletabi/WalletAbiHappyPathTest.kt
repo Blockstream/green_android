@@ -18,11 +18,21 @@ import com.blockstream.compose.models.walletabi.WalletAbiFlowRouteViewModel
 import com.blockstream.compose.screens.overview.WalletAbiDevelopmentEntry
 import com.blockstream.compose.screens.walletabi.WalletAbiFlowScreen
 import com.blockstream.compose.sideeffects.SideEffects
+import com.blockstream.data.data.EnrichedAsset
 import com.blockstream.data.data.GreenWallet
 import com.blockstream.data.database.Database
+import com.blockstream.data.gdk.GdkSession
+import com.blockstream.data.gdk.data.Account
+import com.blockstream.data.gdk.data.AccountType
+import com.blockstream.data.gdk.data.Network
+import com.blockstream.data.managers.SessionManager
 import com.blockstream.data.walletabi.flow.FakeWalletAbiFlowDriver
+import com.blockstream.data.walletabi.request.DefaultWalletAbiDemoRequestSource
+import com.blockstream.domain.walletabi.execution.WalletAbiExecutionPlan
+import com.blockstream.domain.walletabi.execution.WalletAbiExecutionPlanner
 import com.blockstream.domain.walletabi.flow.WalletAbiFlowSnapshotRepository
 import com.blockstream.domain.walletabi.flow.WalletAbiFlowStore
+import com.blockstream.domain.walletabi.request.WalletAbiParsedRequest
 import kotlinx.coroutines.runBlocking
 import kotlinx.coroutines.flow.collectLatest
 import org.junit.Rule
@@ -40,7 +50,8 @@ class WalletAbiHappyPathTest {
         val greenWallet = insertPreviewWallet(koin = koin)
         setWalletAbiHappyPathContent(
             koin = koin,
-            greenWallet = greenWallet
+            greenWallet = greenWallet,
+            walletSession = walletSession(koin = koin, greenWallet = greenWallet)
         )
 
         completeSuccessfulApproval()
@@ -52,7 +63,8 @@ class WalletAbiHappyPathTest {
         val greenWallet = insertPreviewWallet(koin = koin)
         setWalletAbiHappyPathContent(
             koin = koin,
-            greenWallet = greenWallet
+            greenWallet = greenWallet,
+            walletSession = walletSession(koin = koin, greenWallet = greenWallet)
         )
 
         repeat(2) {
@@ -64,7 +76,7 @@ class WalletAbiHappyPathTest {
     fun walletAbiFlow_shows_error_for_unsupported_request() {
         val koin = GlobalContext.get()
         val greenWallet = insertPreviewWallet(koin = koin)
-        val driver = FakeWalletAbiFlowDriver { _ ->
+        val requestSource = DefaultWalletAbiDemoRequestSource { _ ->
             """
                 {
                   "jsonrpc": "2.0",
@@ -84,7 +96,10 @@ class WalletAbiHappyPathTest {
                             greenWallet = greenWallet,
                             store = koin.get<WalletAbiFlowStore>(),
                             snapshotRepository = koin.get<WalletAbiFlowSnapshotRepository>(),
-                            driver = driver
+                            walletSession = walletSession(koin = koin, greenWallet = greenWallet),
+                            requestSource = requestSource,
+                            executionPlanner = executionPlanner(),
+                            driver = koin.get<FakeWalletAbiFlowDriver>()
                         )
                     }
                     LaunchedEffect(viewModel) {
@@ -122,7 +137,7 @@ class WalletAbiHappyPathTest {
     fun walletAbiFlow_shows_error_for_malformed_request() {
         val koin = GlobalContext.get()
         val greenWallet = insertPreviewWallet(koin = koin)
-        val driver = FakeWalletAbiFlowDriver { _ -> "{" }
+        val requestSource = DefaultWalletAbiDemoRequestSource { _ -> "{" }
 
         composeRule.setContent {
             GreenPreview {
@@ -134,7 +149,10 @@ class WalletAbiHappyPathTest {
                             greenWallet = greenWallet,
                             store = koin.get<WalletAbiFlowStore>(),
                             snapshotRepository = koin.get<WalletAbiFlowSnapshotRepository>(),
-                            driver = driver
+                            walletSession = walletSession(koin = koin, greenWallet = greenWallet),
+                            requestSource = requestSource,
+                            executionPlanner = executionPlanner(),
+                            driver = koin.get<FakeWalletAbiFlowDriver>()
                         )
                     }
                     LaunchedEffect(viewModel) {
@@ -172,13 +190,13 @@ class WalletAbiHappyPathTest {
     fun walletAbiFlow_retry_reloads_request_after_error() {
         val koin = GlobalContext.get()
         val greenWallet = insertPreviewWallet(koin = koin)
-        val fallbackDriver = FakeWalletAbiFlowDriver()
+        val fallbackSource = DefaultWalletAbiDemoRequestSource()
         var loadAttempt = 0
-        val driver = FakeWalletAbiFlowDriver { requestId ->
+        val requestSource = DefaultWalletAbiDemoRequestSource { requestId ->
             if (loadAttempt++ == 0) {
                 "{"
             } else {
-                fallbackDriver.loadRequestEnvelope(requestId)
+                fallbackSource.loadRequestEnvelope(requestId)
             }
         }
 
@@ -192,7 +210,10 @@ class WalletAbiHappyPathTest {
                             greenWallet = greenWallet,
                             store = koin.get<WalletAbiFlowStore>(),
                             snapshotRepository = koin.get<WalletAbiFlowSnapshotRepository>(),
-                            driver = driver
+                            walletSession = walletSession(koin = koin, greenWallet = greenWallet),
+                            requestSource = requestSource,
+                            executionPlanner = executionPlanner(),
+                            driver = koin.get<FakeWalletAbiFlowDriver>()
                         )
                     }
                     LaunchedEffect(viewModel) {
@@ -234,13 +255,17 @@ class WalletAbiHappyPathTest {
 
     private fun setWalletAbiHappyPathContent(
         koin: Koin,
-        greenWallet: GreenWallet
+        greenWallet: GreenWallet,
+        walletSession: GdkSession
     ) {
         fun createViewModel(): WalletAbiFlowRouteViewModel {
             return WalletAbiFlowRouteViewModel(
                 greenWallet = greenWallet,
                 store = koin.get<WalletAbiFlowStore>(),
                 snapshotRepository = koin.get<WalletAbiFlowSnapshotRepository>(),
+                walletSession = walletSession,
+                requestSource = DefaultWalletAbiDemoRequestSource(),
+                executionPlanner = executionPlanner(),
                 driver = koin.get<FakeWalletAbiFlowDriver>()
             )
         }
@@ -302,5 +327,53 @@ class WalletAbiHappyPathTest {
             koin.get<Database>().insertWallet(greenWallet)
         }
         return greenWallet
+    }
+
+    private fun walletSession(koin: Koin, greenWallet: GreenWallet): GdkSession {
+        return koin.get<SessionManager>().getWalletSessionOrCreate(greenWallet)
+    }
+
+    private fun executionPlanner(): WalletAbiExecutionPlanner {
+        return object : WalletAbiExecutionPlanner {
+            override suspend fun plan(
+                session: GdkSession,
+                request: WalletAbiParsedRequest,
+                selectedAccountId: String?
+            ): WalletAbiExecutionPlan {
+                val account = liquidAccount()
+                val txCreate = request as WalletAbiParsedRequest.TxCreate
+                return WalletAbiExecutionPlan(
+                    request = txCreate,
+                    accounts = listOf(account),
+                    selectedAccount = account.takeIf { selectedAccountId == null || selectedAccountId == account.id } ?: account,
+                    destinationAddress = "tlq1qqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqq3l4q9m",
+                    amountSat = txCreate.request.params.outputs.single().amountSat,
+                    assetId = TESTNET_POLICY_ASSET,
+                    feeRate = 12_000L
+                )
+            }
+        }
+    }
+
+    private fun liquidAccount(): Account {
+        return Account(
+            networkInjected = Network(
+                network = "testnet-liquid",
+                name = "Liquid Testnet",
+                isMainnet = false,
+                isLiquid = true,
+                isDevelopment = false,
+                policyAsset = TESTNET_POLICY_ASSET
+            ),
+            policyAsset = EnrichedAsset.PreviewLBTC,
+            gdkName = "Liquid account",
+            pointer = 0L,
+            type = AccountType.BIP84_SEGWIT
+        )
+    }
+
+    private companion object {
+        const val TESTNET_POLICY_ASSET =
+            "6f0279e9ed041c3d710a9f57d0c02928416460c4b722ae3457a11eec381c526d"
     }
 }

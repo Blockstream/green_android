@@ -5,6 +5,8 @@ import com.blockstream.data.meld.meldModule
 import com.blockstream.data.notifications.notificationsDataModule
 import com.blockstream.data.walletabi.flow.FakeWalletAbiFlowDriver
 import com.blockstream.data.walletabi.flow.WalletAbiFlowSnapshotStore
+import com.blockstream.data.walletabi.request.DefaultWalletAbiDemoRequestSource
+import com.blockstream.data.walletabi.request.WalletAbiDemoRequestSource
 import org.koin.core.module.dsl.singleOf
 import org.koin.dsl.module
 
@@ -15,6 +17,7 @@ val dataModule = module {
     single { DefaultJson }
     singleOf(::WalletAbiFlowSnapshotStore)
     single { FakeWalletAbiFlowDriver() }
+    single<WalletAbiDemoRequestSource> { DefaultWalletAbiDemoRequestSource() }
     includes(meldModule)
     includes(notificationsDataModule)
 

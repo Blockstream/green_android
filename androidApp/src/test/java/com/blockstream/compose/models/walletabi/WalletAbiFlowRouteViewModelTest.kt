@@ -8,12 +8,21 @@ import com.blockstream.data.banner.Banner
 import com.blockstream.data.config.AppInfo
 import com.blockstream.data.database.Database
 import com.blockstream.data.gdk.GdkSession
+import com.blockstream.data.gdk.data.Account
+import com.blockstream.data.gdk.data.AccountType
+import com.blockstream.data.gdk.data.Credentials
+import com.blockstream.data.gdk.data.Network
 import com.blockstream.data.managers.PromoManager
 import com.blockstream.data.managers.SessionManager
 import com.blockstream.data.managers.SettingsManager
 import com.blockstream.data.walletabi.flow.FakeWalletAbiFlowDriver
+import com.blockstream.data.walletabi.request.DefaultWalletAbiDemoRequestSource
+import com.blockstream.data.walletabi.request.WalletAbiDemoRequestSource
 import com.blockstream.domain.banner.GetBannerUseCase
 import com.blockstream.domain.promo.GetPromoUseCase
+import com.blockstream.domain.walletabi.execution.DefaultWalletAbiExecutionPlanner
+import com.blockstream.domain.walletabi.execution.WalletAbiExecutionPlanner
+import com.blockstream.domain.walletabi.execution.WalletAbiOutputAddressResolver
 import com.blockstream.domain.walletabi.flow.WalletAbiAccountOption
 import com.blockstream.domain.walletabi.flow.WalletAbiApprovalTarget
 import com.blockstream.domain.walletabi.flow.WalletAbiExecutionEvent
@@ -33,6 +42,7 @@ import com.blockstream.domain.walletabi.flow.WalletAbiSubmissionCommand
 import com.blockstream.domain.walletabi.flow.WalletAbiSuccessResult
 import com.blockstream.domain.walletabi.request.WalletAbiNetwork
 import com.blockstream.domain.walletabi.request.WalletAbiParsedRequest
+import io.mockk.coEvery
 import io.mockk.coVerify
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.async
@@ -64,6 +74,10 @@ class WalletAbiFlowRouteViewModelTest {
     private lateinit var store: FakeWalletAbiFlowStore
     private lateinit var snapshotRepository: WalletAbiFlowSnapshotRepository
     private lateinit var driver: FakeWalletAbiFlowDriver
+    private lateinit var requestSource: WalletAbiDemoRequestSource
+    private lateinit var executionPlanner: WalletAbiExecutionPlanner
+    private lateinit var walletSession: GdkSession
+    private lateinit var liquidAccount: Account
     private val createdViewModels = mutableListOf<WalletAbiFlowRouteViewModel>()
 
     @Before
@@ -72,6 +86,18 @@ class WalletAbiFlowRouteViewModelTest {
         store = FakeWalletAbiFlowStore()
         snapshotRepository = mockk(relaxed = true)
         driver = FakeWalletAbiFlowDriver()
+        requestSource = DefaultWalletAbiDemoRequestSource()
+        executionPlanner = DefaultWalletAbiExecutionPlanner(
+            outputAddressResolver = WalletAbiOutputAddressResolver { output, _, _ ->
+                val lock = output.lock as? kotlinx.serialization.json.JsonObject ?: return@WalletAbiOutputAddressResolver null
+                when (lock["script"]?.toString()?.trim('"')) {
+                    "00140000000000000000000000000000000000000000" -> "tlq1qqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqq3l4q9m"
+                    else -> null
+                }
+            }
+        )
+        liquidAccount = liquidAccount()
+        walletSession = mockSession(accounts = listOf(liquidAccount), activeAccount = liquidAccount)
 
         val countly = mockk<CountlyBase>(relaxed = true).also {
             every { it.remoteConfigUpdateEvent } returns MutableSharedFlow()
@@ -84,15 +110,9 @@ class WalletAbiFlowRouteViewModelTest {
         val promoManager = mockk<PromoManager>(relaxed = true).also {
             every { it.promos } returns MutableStateFlow(emptyList())
         }
-        val gdkSession = mockk<GdkSession>(relaxed = true).also {
-            every { it.accounts } returns MutableStateFlow(emptyList())
-            every { it.isWatchOnly } returns MutableStateFlow(false)
-            every { it.isConnected } returns false
-            every { it.networkErrors } returns MutableSharedFlow()
-        }
         val sessionManager = mockk<SessionManager>(relaxed = true).also {
-            every { it.getWalletSessionOrNull(greenWallet) } returns gdkSession
-            every { it.getWalletSessionOrCreate(greenWallet) } returns gdkSession
+            every { it.getWalletSessionOrNull(greenWallet) } returns walletSession
+            every { it.getWalletSessionOrCreate(greenWallet) } returns walletSession
         }
 
         startKoin {
@@ -182,29 +202,32 @@ class WalletAbiFlowRouteViewModelTest {
             ),
             review.requestContext
         )
-        assertEquals("Demo payment", review.title)
-        assertEquals("Approve a fake Wallet ABI request", review.message)
-        assertEquals("fake-account-1", review.selectedAccountId)
+        assertEquals("Wallet ABI payment", review.title)
+        assertEquals("Approve a Wallet ABI request", review.message)
+        assertEquals(liquidAccount.id, review.selectedAccountId)
         assertEquals(WalletAbiApprovalTarget.Software, review.approvalTarget)
         assertEquals("wallet-abi-0.1", parsedRequest.abiVersion)
         assertEquals(WalletAbiFlowRouteViewModel.DEMO_REQUEST_ID, parsedRequest.requestId)
         assertEquals(WalletAbiNetwork.TESTNET_LIQUID, parsedRequest.network)
-        assertEquals(1, parsedRequest.params.inputs.size)
+        assertEquals(listOf(liquidAccount.id), review.accounts.map { it.accountId })
+        assertEquals(listOf(liquidAccount.name), review.accounts.map { it.name })
+        assertEquals(0, parsedRequest.params.inputs.size)
         assertEquals(1, parsedRequest.params.outputs.size)
-        assertEquals(12.5f, parsedRequest.params.feeRateSatKvb)
+        assertEquals(12_000f, parsedRequest.params.feeRateSatKvb)
         assertEquals(true, parsedRequest.broadcast)
     }
 
     @Test
     fun loadRequest_output_dispatches_error_for_malformed_request() = runTest(dispatcher) {
-        driver = mockk {
-            every { loadRequestEnvelope(any()) } returns "{"
-        }
+        requestSource = DefaultWalletAbiDemoRequestSource { _ -> "{" }
 
         createViewModel(
             greenWallet = greenWallet,
             store = store,
             snapshotRepository = snapshotRepository,
+            walletSession = walletSession,
+            requestSource = requestSource,
+            executionPlanner = executionPlanner,
             driver = driver
         )
 
@@ -233,7 +256,7 @@ class WalletAbiFlowRouteViewModelTest {
 
     @Test
     fun loadRequest_output_dispatches_error_for_unsupported_request() = runTest(dispatcher) {
-        driver = FakeWalletAbiFlowDriver { _ ->
+        requestSource = DefaultWalletAbiDemoRequestSource { _ ->
             """
                 {
                   "jsonrpc": "2.0",
@@ -247,6 +270,9 @@ class WalletAbiFlowRouteViewModelTest {
             greenWallet = greenWallet,
             store = store,
             snapshotRepository = snapshotRepository,
+            walletSession = walletSession,
+            requestSource = requestSource,
+            executionPlanner = executionPlanner,
             driver = driver
         )
 
@@ -287,7 +313,7 @@ class WalletAbiFlowRouteViewModelTest {
 
         val state = assertIs<WalletAbiFlowState.RequestLoaded>(viewModel.state.value)
         assertEquals(WalletAbiFlowRouteViewModel.DEMO_REQUEST_ID, state.review.requestContext.requestId)
-        assertEquals("fake-account-1", state.review.selectedAccountId)
+        assertEquals(liquidAccount.id, state.review.selectedAccountId)
         assertIs<WalletAbiParsedRequest.TxCreate>(state.review.parsedRequest)
     }
 
@@ -345,15 +371,15 @@ class WalletAbiFlowRouteViewModelTest {
                             requestId = "wallet-abi-demo-request",
                             walletId = greenWallet.id
                         ),
-                        title = "Demo payment",
-                        message = "Approve a fake Wallet ABI request",
+                        title = "Wallet ABI payment",
+                        message = "Approve a Wallet ABI request",
                         accounts = listOf(
                             WalletAbiAccountOption(
-                                accountId = "fake-account-1",
-                                name = "Main account"
+                                accountId = liquidAccount.id,
+                                name = liquidAccount.name
                             )
                         ),
-                        selectedAccountId = "fake-account-1",
+                        selectedAccountId = liquidAccount.id,
                         approvalTarget = WalletAbiApprovalTarget.Software
                     ),
                     phase = WalletAbiResumePhase.REQUEST_LOADED
@@ -379,15 +405,15 @@ class WalletAbiFlowRouteViewModelTest {
                     requestId = WalletAbiFlowRouteViewModel.DEMO_REQUEST_ID,
                     walletId = greenWallet.id
                 ),
-                title = "Demo payment",
-                message = "Approve a fake Wallet ABI request",
+                title = "Wallet ABI payment",
+                message = "Approve a Wallet ABI request",
                 accounts = listOf(
                     WalletAbiAccountOption(
-                        accountId = "fake-account-1",
-                        name = "Main account"
+                        accountId = liquidAccount.id,
+                        name = liquidAccount.name
                     )
                 ),
-                selectedAccountId = "fake-account-1",
+                selectedAccountId = liquidAccount.id,
                 approvalTarget = WalletAbiApprovalTarget.Software
             )
         )
@@ -408,7 +434,7 @@ class WalletAbiFlowRouteViewModelTest {
                         requestId = WalletAbiFlowRouteViewModel.DEMO_REQUEST_ID,
                         walletId = greenWallet.id
                     ),
-                    selectedAccountId = "fake-account-1"
+                    selectedAccountId = liquidAccount.id
                 )
             )
         )
@@ -423,15 +449,15 @@ class WalletAbiFlowRouteViewModelTest {
                             requestId = WalletAbiFlowRouteViewModel.DEMO_REQUEST_ID,
                             walletId = greenWallet.id
                         ),
-                        title = "Demo payment",
-                        message = "Approve a fake Wallet ABI request",
+                        title = "Wallet ABI payment",
+                        message = "Approve a Wallet ABI request",
                         accounts = listOf(
                             WalletAbiAccountOption(
-                                accountId = "fake-account-1",
-                                name = "Main account"
+                                accountId = liquidAccount.id,
+                                name = liquidAccount.name
                             )
                         ),
-                        selectedAccountId = "fake-account-1",
+                        selectedAccountId = liquidAccount.id,
                         approvalTarget = WalletAbiApprovalTarget.Software
                     )
                 )
@@ -458,7 +484,7 @@ class WalletAbiFlowRouteViewModelTest {
                         requestId = WalletAbiFlowRouteViewModel.DEMO_REQUEST_ID,
                         walletId = greenWallet.id
                     ),
-                    selectedAccountId = "fake-account-1"
+                    selectedAccountId = liquidAccount.id
                 )
             )
         )
@@ -534,13 +560,75 @@ class WalletAbiFlowRouteViewModelTest {
         greenWallet: com.blockstream.data.data.GreenWallet = this.greenWallet,
         store: WalletAbiFlowStore = this.store,
         snapshotRepository: WalletAbiFlowSnapshotRepository = this.snapshotRepository,
+        walletSession: GdkSession = this.walletSession,
+        requestSource: WalletAbiDemoRequestSource = this.requestSource,
+        executionPlanner: WalletAbiExecutionPlanner = this.executionPlanner,
         driver: FakeWalletAbiFlowDriver = this.driver
     ): WalletAbiFlowRouteViewModel {
         return WalletAbiFlowRouteViewModel(
             greenWallet = greenWallet,
             store = store,
             snapshotRepository = snapshotRepository,
+            walletSession = walletSession,
+            requestSource = requestSource,
+            executionPlanner = executionPlanner,
             driver = driver
         ).also { createdViewModels += it }
+    }
+
+    private fun liquidAccount(
+        pointer: Long = 0L,
+        name: String = "Liquid account"
+    ): Account {
+        return account(
+            name = name,
+            pointer = pointer,
+            network = Network(
+                network = "testnet-liquid",
+                name = "Liquid Testnet",
+                isMainnet = false,
+                isLiquid = true,
+                isDevelopment = false,
+                policyAsset = TESTNET_POLICY_ASSET
+            )
+        )
+    }
+
+    private fun account(
+        name: String,
+        pointer: Long,
+        network: Network
+    ): Account {
+        val setupSession = mockk<GdkSession>(relaxed = true)
+        return Account(
+            gdkName = name,
+            pointer = pointer,
+            type = AccountType.BIP84_SEGWIT
+        ).apply {
+            setup(session = setupSession, network = network)
+        }
+    }
+
+    private fun mockSession(
+        accounts: List<Account>,
+        activeAccount: Account?,
+        isHardwareWallet: Boolean = false,
+        mnemonic: String? = "abandon abandon abandon abandon abandon abandon abandon abandon abandon abandon abandon about"
+    ): GdkSession {
+        return mockk(relaxed = true) {
+            every { this@mockk.accounts } returns MutableStateFlow(accounts)
+            every { this@mockk.allAccounts } returns MutableStateFlow(accounts)
+            every { this@mockk.activeAccount } returns MutableStateFlow(activeAccount)
+            every { this@mockk.isConnected } returns true
+            every { this@mockk.isHardwareWallet } returns isHardwareWallet
+            every { this@mockk.isWatchOnly } returns MutableStateFlow(false)
+            every { this@mockk.networkErrors } returns MutableSharedFlow()
+            coEvery { this@mockk.getCredentials(any()) } returns Credentials(mnemonic = mnemonic)
+        }
+    }
+
+    private companion object {
+        const val TESTNET_POLICY_ASSET =
+            "6f0279e9ed041c3d710a9f57d0c02928416460c4b722ae3457a11eec381c526d"
     }
 }
