@@ -301,7 +301,9 @@ class WalletAbiFlowStoreTest {
     @Test
     fun expired_event_ends_cancelled() = runTest {
         val store = DefaultWalletAbiFlowStore()
-        val output = async(start = CoroutineStart.UNDISPATCHED) { store.outputs.first() }
+        val outputs = async(start = CoroutineStart.UNDISPATCHED) {
+            store.outputs.take(2).toList()
+        }
 
         store.dispatch(
             WalletAbiFlowIntent.OnExecutionEvent(WalletAbiExecutionEvent.Expired)
@@ -312,10 +314,13 @@ class WalletAbiFlowStoreTest {
             store.state.value
         )
         assertEquals(
-            WalletAbiFlowOutput.Complete(
-                WalletAbiFlowTerminalResult.Cancelled(WalletAbiCancelledReason.RequestExpired)
+            listOf(
+                WalletAbiFlowOutput.PersistSnapshot(null),
+                WalletAbiFlowOutput.Complete(
+                    WalletAbiFlowTerminalResult.Cancelled(WalletAbiCancelledReason.RequestExpired)
+                )
             ),
-            output.await()
+            outputs.await()
         )
     }
 

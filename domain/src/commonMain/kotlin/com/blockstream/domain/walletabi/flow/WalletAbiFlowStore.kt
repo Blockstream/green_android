@@ -193,6 +193,7 @@ class DefaultWalletAbiFlowStore : WalletAbiFlowStore {
             WalletAbiCancelledReason.RequestExpired
         )
         mutableState.value = WalletAbiFlowState.Cancelled(result.reason)
+        mutableOutputs.emit(WalletAbiFlowOutput.PersistSnapshot(null))
         mutableOutputs.emit(WalletAbiFlowOutput.Complete(result))
     }
 
