@@ -1,5 +1,6 @@
 package com.blockstream.domain.walletabi.flow
 
+import com.blockstream.domain.walletabi.request.WalletAbiParsedRequest
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -514,7 +515,8 @@ data class WalletAbiFlowReview(
     val message: String,
     val accounts: List<WalletAbiAccountOption>,
     val selectedAccountId: String?,
-    val approvalTarget: WalletAbiApprovalTarget
+    val approvalTarget: WalletAbiApprovalTarget,
+    val parsedRequest: WalletAbiParsedRequest? = null
 )
 
 data class WalletAbiAccountOption(

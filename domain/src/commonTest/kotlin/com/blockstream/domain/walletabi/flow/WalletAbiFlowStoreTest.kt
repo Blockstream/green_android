@@ -1,15 +1,50 @@
 package com.blockstream.domain.walletabi.flow
 
+import com.blockstream.domain.walletabi.request.WalletAbiInput
+import com.blockstream.domain.walletabi.request.WalletAbiNetwork
+import com.blockstream.domain.walletabi.request.WalletAbiOutput
+import com.blockstream.domain.walletabi.request.WalletAbiParsedRequest
+import com.blockstream.domain.walletabi.request.WalletAbiRuntimeParams
+import com.blockstream.domain.walletabi.request.WalletAbiTxCreateRequest
 import kotlinx.coroutines.CoroutineStart
 import kotlinx.coroutines.async
 import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.flow.take
 import kotlinx.coroutines.flow.toList
 import kotlinx.coroutines.test.runTest
+import kotlinx.serialization.json.JsonPrimitive
 import kotlin.test.Test
 import kotlin.test.assertEquals
 
 class WalletAbiFlowStoreTest {
+    private val parsedRequest = WalletAbiParsedRequest.TxCreate(
+        request = WalletAbiTxCreateRequest(
+            abiVersion = "wallet-abi-0.1",
+            requestId = "request-id",
+            network = WalletAbiNetwork.TESTNET_LIQUID,
+            params = WalletAbiRuntimeParams(
+                inputs = listOf(
+                    WalletAbiInput(
+                        id = "input-1",
+                        utxoSource = JsonPrimitive("utxo-source"),
+                        unblinding = JsonPrimitive("unblinding"),
+                        sequence = 1L,
+                        finalizer = JsonPrimitive("finalizer")
+                    )
+                ),
+                outputs = listOf(
+                    WalletAbiOutput(
+                        id = "output-1",
+                        amountSat = 1_000L,
+                        lock = JsonPrimitive("lock"),
+                        asset = JsonPrimitive("asset"),
+                        blinder = JsonPrimitive("blinder")
+                    )
+                )
+            ),
+            broadcast = true
+        )
+    )
 
     private val review = WalletAbiFlowReview(
         requestContext = WalletAbiStartRequestContext(
@@ -25,7 +60,8 @@ class WalletAbiFlowStoreTest {
             )
         ),
         selectedAccountId = "account-id",
-        approvalTarget = WalletAbiApprovalTarget.Software
+        approvalTarget = WalletAbiApprovalTarget.Software,
+        parsedRequest = parsedRequest
     )
 
     @Test
