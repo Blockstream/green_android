@@ -22,4 +22,10 @@ class FakeWalletAbiFlowDriver {
             )
         )
     }
+
+    fun resolveRequest(review: WalletAbiFlowReviewPayload): WalletAbiFlowReviewPayload {
+        return review.copy(
+            selectedAccountId = review.selectedAccountId
+        )
+    }
 }

@@ -25,4 +25,17 @@ class FakeWalletAbiFlowDriverTest {
         assertEquals("Main account", review.accounts.single().name)
         assertEquals("software", review.approvalTarget.kind)
     }
+
+    @Test
+    fun resolveRequest_keeps_loaded_review_selected_account() {
+        val driver = FakeWalletAbiFlowDriver()
+        val review = driver.loadRequest(
+            requestId = "wallet-abi-demo-request",
+            walletId = "wallet-id"
+        )
+
+        val resolvedReview = driver.resolveRequest(review)
+
+        assertEquals(review, resolvedReview)
+    }
 }
