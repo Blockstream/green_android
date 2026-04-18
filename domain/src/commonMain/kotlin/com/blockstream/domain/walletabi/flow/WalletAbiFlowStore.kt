@@ -17,6 +17,7 @@ interface WalletAbiFlowStore {
 class DefaultWalletAbiFlowStore : WalletAbiFlowStore {
     private val mutableState = MutableStateFlow<WalletAbiFlowState>(WalletAbiFlowState.Idle)
     private val mutableOutputs = MutableSharedFlow<WalletAbiFlowOutput>()
+    private var lastRequestContext: WalletAbiStartRequestContext? = null
 
     override val state: StateFlow<WalletAbiFlowState> = mutableState.asStateFlow()
     override val outputs: Flow<WalletAbiFlowOutput> = mutableOutputs.asSharedFlow()
@@ -29,6 +30,7 @@ class DefaultWalletAbiFlowStore : WalletAbiFlowStore {
             WalletAbiFlowIntent.Reject -> handleReject()
             is WalletAbiFlowIntent.OnJadeEvent -> handleJadeEvent(intent.event)
             is WalletAbiFlowIntent.Restore -> handleRestore(intent)
+            WalletAbiFlowIntent.Retry -> handleRetry()
             WalletAbiFlowIntent.Resume -> handleResume()
             is WalletAbiFlowIntent.Start -> handleStart(intent)
             is WalletAbiFlowIntent.ResolveRequest -> handleResolveRequest()
@@ -38,6 +40,7 @@ class DefaultWalletAbiFlowStore : WalletAbiFlowStore {
     }
 
     private fun handleStart(intent: WalletAbiFlowIntent.Start) {
+        lastRequestContext = intent.requestContext
         mutableState.value = WalletAbiFlowState.Loading(intent.requestContext)
     }
 
@@ -54,6 +57,7 @@ class DefaultWalletAbiFlowStore : WalletAbiFlowStore {
     }
 
     private suspend fun handleExecutionRequestLoaded(event: WalletAbiExecutionEvent.RequestLoaded) {
+        lastRequestContext = event.review.requestContext
         mutableState.value = WalletAbiFlowState.RequestLoaded(event.review)
         mutableOutputs.emit(
             WalletAbiFlowOutput.PersistSnapshot(
@@ -66,6 +70,7 @@ class DefaultWalletAbiFlowStore : WalletAbiFlowStore {
     }
 
     private suspend fun handleExecutionResolved(event: WalletAbiExecutionEvent.Resolved) {
+        lastRequestContext = event.review.requestContext
         mutableState.value = WalletAbiFlowState.RequestLoaded(event.review)
         mutableOutputs.emit(
             WalletAbiFlowOutput.PersistSnapshot(
@@ -205,6 +210,7 @@ class DefaultWalletAbiFlowStore : WalletAbiFlowStore {
     }
 
     private suspend fun handleRestore(intent: WalletAbiFlowIntent.Restore) {
+        lastRequestContext = intent.snapshot.review.requestContext
         mutableState.value = when (intent.snapshot.phase) {
             WalletAbiResumePhase.SUBMITTING -> restoreSubmittingAsError()
             else -> {
@@ -237,6 +243,12 @@ class DefaultWalletAbiFlowStore : WalletAbiFlowStore {
                 jade = snapshot.jade
             )
         }
+    }
+
+    private fun handleRetry() {
+        if (mutableState.value !is WalletAbiFlowState.Error) return
+        val requestContext = lastRequestContext ?: return
+        mutableState.value = WalletAbiFlowState.Loading(requestContext)
     }
 
     private suspend fun handleCancelResume() {
@@ -380,6 +392,7 @@ sealed interface WalletAbiFlowIntent {
     data object CancelResume : WalletAbiFlowIntent
     data object DismissTerminal : WalletAbiFlowIntent
     data object Reject : WalletAbiFlowIntent
+    data object Retry : WalletAbiFlowIntent
     data object Resume : WalletAbiFlowIntent
 
     data class OnJadeEvent(

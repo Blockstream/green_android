@@ -345,6 +345,24 @@ class WalletAbiFlowStoreTest {
     }
 
     @Test
+    fun retry_error_returns_to_loading() = runTest {
+        val store = DefaultWalletAbiFlowStore()
+        store.dispatch(WalletAbiFlowIntent.Start(review.requestContext))
+        store.dispatch(
+            WalletAbiFlowIntent.OnExecutionEvent(
+                WalletAbiExecutionEvent.Failed(failedError)
+            )
+        )
+
+        store.dispatch(WalletAbiFlowIntent.Retry)
+
+        assertEquals(
+            WalletAbiFlowState.Loading(review.requestContext),
+            store.state.value
+        )
+    }
+
+    @Test
     fun expired_event_ends_cancelled() = runTest {
         val store = DefaultWalletAbiFlowStore()
         val outputs = async(start = CoroutineStart.UNDISPATCHED) {
@@ -722,6 +740,27 @@ class WalletAbiFlowStoreTest {
 
         assertEquals(
             WalletAbiFlowState.Error(WalletAbiFlowError("Execution status uncertain")),
+            store.state.value
+        )
+    }
+
+    @Test
+    fun retry_restored_submitting_error_returns_to_loading() = runTest {
+        val store = DefaultWalletAbiFlowStore()
+
+        store.dispatch(
+            WalletAbiFlowIntent.Restore(
+                WalletAbiResumeSnapshot(
+                    review = review,
+                    phase = WalletAbiResumePhase.SUBMITTING
+                )
+            )
+        )
+
+        store.dispatch(WalletAbiFlowIntent.Retry)
+
+        assertEquals(
+            WalletAbiFlowState.Loading(review.requestContext),
             store.state.value
         )
     }
