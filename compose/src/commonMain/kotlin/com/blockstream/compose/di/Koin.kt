@@ -38,7 +38,7 @@ fun initKoin(appInfo: AppInfo, appConfig: AppConfig, doOnStartup: () -> Unit = {
                         walletSession = get<SessionManager>().getWalletSessionOrCreate(greenWallet),
                         requestSource = get(),
                         executionPlanner = get(),
-                        driver = get()
+                        executionRunner = get()
                     )
                 }
             }

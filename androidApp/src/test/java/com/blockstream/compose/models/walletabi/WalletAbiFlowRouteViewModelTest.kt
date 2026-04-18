@@ -21,6 +21,8 @@ import com.blockstream.data.walletabi.request.WalletAbiDemoRequestSource
 import com.blockstream.domain.banner.GetBannerUseCase
 import com.blockstream.domain.promo.GetPromoUseCase
 import com.blockstream.domain.walletabi.execution.DefaultWalletAbiExecutionPlanner
+import com.blockstream.domain.walletabi.execution.WalletAbiExecutionResult
+import com.blockstream.domain.walletabi.execution.WalletAbiExecutionRunner
 import com.blockstream.domain.walletabi.execution.WalletAbiExecutionPlanner
 import com.blockstream.domain.walletabi.execution.WalletAbiOutputAddressResolver
 import com.blockstream.domain.walletabi.flow.WalletAbiAccountOption
@@ -76,6 +78,7 @@ class WalletAbiFlowRouteViewModelTest {
     private lateinit var driver: FakeWalletAbiFlowDriver
     private lateinit var requestSource: WalletAbiDemoRequestSource
     private lateinit var executionPlanner: WalletAbiExecutionPlanner
+    private lateinit var executionRunner: WalletAbiExecutionRunner
     private lateinit var walletSession: GdkSession
     private lateinit var liquidAccount: Account
     private val createdViewModels = mutableListOf<WalletAbiFlowRouteViewModel>()
@@ -96,6 +99,15 @@ class WalletAbiFlowRouteViewModelTest {
                 }
             }
         )
+        executionRunner = object : WalletAbiExecutionRunner {
+            override suspend fun execute(
+                session: GdkSession,
+                plan: com.blockstream.domain.walletabi.execution.WalletAbiExecutionPlan,
+                twoFactorResolver: com.blockstream.data.gdk.TwoFactorResolver
+            ): WalletAbiExecutionResult {
+                return WalletAbiExecutionResult(txHash = "wallet-abi-demo-tx-hash")
+            }
+        }
         liquidAccount = liquidAccount()
         walletSession = mockSession(accounts = listOf(liquidAccount), activeAccount = liquidAccount)
 
@@ -334,7 +346,7 @@ class WalletAbiFlowRouteViewModelTest {
 
         val state = assertIs<WalletAbiFlowState.Success>(viewModel.state.value)
         assertEquals(WalletAbiFlowRouteViewModel.DEMO_REQUEST_ID, state.result.requestId)
-        assertEquals("wallet-abi-demo-response", state.result.responseId)
+        assertEquals("wallet-abi-demo-tx-hash", state.result.txHash)
     }
 
     @Test
@@ -478,6 +490,16 @@ class WalletAbiFlowRouteViewModelTest {
         advanceUntilIdle()
 
         store.mutableOutputs.emit(
+            WalletAbiFlowOutput.LoadRequest(
+                WalletAbiStartRequestContext(
+                    requestId = WalletAbiFlowRouteViewModel.DEMO_REQUEST_ID,
+                    walletId = greenWallet.id
+                )
+            )
+        )
+        advanceUntilIdle()
+
+        store.mutableOutputs.emit(
             WalletAbiFlowOutput.StartSubmission(
                 WalletAbiSubmissionCommand(
                     requestContext = WalletAbiStartRequestContext(
@@ -499,12 +521,68 @@ class WalletAbiFlowRouteViewModelTest {
                     WalletAbiExecutionEvent.RemoteResponseSent(
                         result = WalletAbiSuccessResult(
                             requestId = WalletAbiFlowRouteViewModel.DEMO_REQUEST_ID,
-                            responseId = "wallet-abi-demo-response"
+                            txHash = "wallet-abi-demo-tx-hash"
                         )
                     )
                 )
             ),
             store.intents.takeLast(3)
+        )
+    }
+
+    @Test
+    fun startSubmission_output_dispatches_error_when_execution_fails() = runTest(dispatcher) {
+        val failingRunner = object : WalletAbiExecutionRunner {
+            override suspend fun execute(
+                session: GdkSession,
+                plan: com.blockstream.domain.walletabi.execution.WalletAbiExecutionPlan,
+                twoFactorResolver: com.blockstream.data.gdk.TwoFactorResolver
+            ): WalletAbiExecutionResult {
+                error("send failed")
+            }
+        }
+
+        createViewModel(
+            greenWallet = greenWallet,
+            store = store,
+            snapshotRepository = snapshotRepository,
+            executionRunner = failingRunner,
+            driver = driver
+        )
+
+        advanceUntilIdle()
+
+        store.mutableOutputs.emit(
+            WalletAbiFlowOutput.LoadRequest(
+                WalletAbiStartRequestContext(
+                    requestId = WalletAbiFlowRouteViewModel.DEMO_REQUEST_ID,
+                    walletId = greenWallet.id
+                )
+            )
+        )
+        advanceUntilIdle()
+
+        store.mutableOutputs.emit(
+            WalletAbiFlowOutput.StartSubmission(
+                WalletAbiSubmissionCommand(
+                    requestContext = WalletAbiStartRequestContext(
+                        requestId = WalletAbiFlowRouteViewModel.DEMO_REQUEST_ID,
+                        walletId = greenWallet.id
+                    ),
+                    selectedAccountId = liquidAccount.id
+                )
+            )
+        )
+
+        advanceUntilIdle()
+
+        assertEquals(
+            WalletAbiFlowIntent.OnExecutionEvent(
+                WalletAbiExecutionEvent.Failed(
+                    WalletAbiFlowError("send failed")
+                )
+            ),
+            store.intents.last()
         )
     }
 
@@ -564,6 +642,7 @@ class WalletAbiFlowRouteViewModelTest {
         walletSession: GdkSession = this.walletSession,
         requestSource: WalletAbiDemoRequestSource = this.requestSource,
         executionPlanner: WalletAbiExecutionPlanner = this.executionPlanner,
+        executionRunner: WalletAbiExecutionRunner = this.executionRunner,
         driver: FakeWalletAbiFlowDriver = this.driver
     ): WalletAbiFlowRouteViewModel {
         return WalletAbiFlowRouteViewModel(
@@ -573,7 +652,7 @@ class WalletAbiFlowRouteViewModelTest {
             walletSession = walletSession,
             requestSource = requestSource,
             executionPlanner = executionPlanner,
-            driver = driver
+            executionRunner = executionRunner
         ).also { createdViewModels += it }
     }
 

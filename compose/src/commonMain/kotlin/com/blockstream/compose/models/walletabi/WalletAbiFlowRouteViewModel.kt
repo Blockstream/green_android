@@ -6,13 +6,13 @@ import com.blockstream.compose.navigation.NavData
 import com.blockstream.compose.sideeffects.SideEffects
 import com.blockstream.data.data.GreenWallet
 import com.blockstream.data.gdk.GdkSession
-import com.blockstream.data.walletabi.flow.FakeWalletAbiFlowDriver
-import com.blockstream.data.walletabi.flow.FakeWalletAbiSubmissionEvent
 import com.blockstream.data.walletabi.request.WalletAbiDemoRequestSource
 import com.blockstream.data.walletabi.request.DefaultWalletAbiDemoRequestSource
+import com.blockstream.domain.walletabi.execution.DefaultWalletAbiExecutionRunner
 import com.blockstream.domain.walletabi.execution.DefaultWalletAbiExecutionPlanner
 import com.blockstream.domain.walletabi.execution.WalletAbiExecutionPlan
 import com.blockstream.domain.walletabi.execution.WalletAbiExecutionPlanner
+import com.blockstream.domain.walletabi.execution.WalletAbiExecutionRunner
 import com.blockstream.domain.walletabi.execution.WalletAbiExecutionValidationException
 import com.blockstream.domain.walletabi.flow.WalletAbiFlowIntent
 import com.blockstream.domain.walletabi.flow.WalletAbiAccountOption
@@ -27,10 +27,8 @@ import com.blockstream.domain.walletabi.flow.WalletAbiFlowError
 import com.blockstream.domain.walletabi.flow.WalletAbiStartRequestContext
 import com.blockstream.domain.walletabi.flow.WalletAbiSuccessResult
 import com.blockstream.domain.walletabi.request.DefaultWalletAbiRequestParser
-import com.blockstream.domain.walletabi.request.WalletAbiMethod
 import com.blockstream.domain.walletabi.request.WalletAbiParsedEnvelope
 import com.blockstream.domain.walletabi.request.WalletAbiRequestParseResult
-import kotlinx.coroutines.flow.collect
 import kotlinx.coroutines.flow.launchIn
 import kotlinx.coroutines.flow.onEach
 import kotlinx.coroutines.flow.StateFlow
@@ -43,9 +41,10 @@ class WalletAbiFlowRouteViewModel(
     private val walletSession: GdkSession,
     private val requestSource: WalletAbiDemoRequestSource = DefaultWalletAbiDemoRequestSource(),
     private val executionPlanner: WalletAbiExecutionPlanner = DefaultWalletAbiExecutionPlanner(),
-    private val driver: FakeWalletAbiFlowDriver
+    private val executionRunner: WalletAbiExecutionRunner = DefaultWalletAbiExecutionRunner()
 ) : GreenViewModel(greenWalletOrNull = greenWallet) {
     private val requestParser = DefaultWalletAbiRequestParser()
+    private var activeReview: WalletAbiFlowReview? = null
 
     override fun screenName(): String = "WalletAbiFlow"
     override val isLoginRequired: Boolean = false
@@ -91,6 +90,7 @@ class WalletAbiFlowRouteViewModel(
                             return
                         }
 
+                        activeReview = review
                         store.dispatch(
                             WalletAbiFlowIntent.OnExecutionEvent(
                                 WalletAbiExecutionEvent.RequestLoaded(
@@ -112,37 +112,61 @@ class WalletAbiFlowRouteViewModel(
             }
 
             is WalletAbiFlowOutput.StartResolution -> {
-                val review = (store.state.value as? WalletAbiFlowState.RequestLoaded)?.review ?: return
+                val review = activeReview ?: (store.state.value as? WalletAbiFlowState.RequestLoaded)?.review ?: return
+                val resolvedReview = review.copy(
+                    selectedAccountId = output.command.selectedAccountId ?: review.selectedAccountId
+                )
+                activeReview = resolvedReview
                 store.dispatch(
                     WalletAbiFlowIntent.OnExecutionEvent(
                         WalletAbiExecutionEvent.Resolved(
-                            review = review.copy(
-                                selectedAccountId = output.command.selectedAccountId ?: review.selectedAccountId
-                            )
+                            review = resolvedReview
                         )
                     )
                 )
             }
 
             is WalletAbiFlowOutput.StartSubmission -> {
-                driver.submitRequest(
-                    requestId = output.command.requestContext.requestId
-                ).collect { event ->
+                val parsedRequest = activeReview?.parsedRequest
+                    ?: return dispatchExecutionFailure("Wallet ABI request is not loaded")
+                val executionPlan = runCatching {
+                    executionPlanner.plan(
+                        session = walletSession,
+                        request = parsedRequest,
+                        selectedAccountId = output.command.selectedAccountId
+                    )
+                }.getOrElse { throwable ->
+                    dispatchExecutionFailure(
+                        when (throwable) {
+                            is WalletAbiExecutionValidationException -> throwable.error.message
+                            else -> throwable.message ?: "Wallet ABI request is unsupported"
+                        }
+                    )
+                    return
+                }
+
+                store.dispatch(WalletAbiFlowIntent.OnExecutionEvent(WalletAbiExecutionEvent.Submitted))
+
+                runCatching {
+                    executionRunner.execute(
+                        session = walletSession,
+                        plan = executionPlan,
+                        twoFactorResolver = this
+                    )
+                }.onSuccess { result ->
+                    store.dispatch(WalletAbiFlowIntent.OnExecutionEvent(WalletAbiExecutionEvent.Broadcasted))
                     store.dispatch(
                         WalletAbiFlowIntent.OnExecutionEvent(
-                            when (event) {
-                                FakeWalletAbiSubmissionEvent.Broadcasted -> WalletAbiExecutionEvent.Broadcasted
-                                is FakeWalletAbiSubmissionEvent.RemoteResponseSent -> WalletAbiExecutionEvent.RemoteResponseSent(
-                                    result = WalletAbiSuccessResult(
-                                        requestId = event.result.requestId,
-                                        responseId = event.result.responseId
-                                    )
+                            WalletAbiExecutionEvent.RemoteResponseSent(
+                                result = WalletAbiSuccessResult(
+                                    requestId = executionPlan.request.request.requestId,
+                                    txHash = result.txHash
                                 )
-
-                                FakeWalletAbiSubmissionEvent.Submitted -> WalletAbiExecutionEvent.Submitted
-                            }
+                            )
                         )
                     )
+                }.onFailure { throwable ->
+                    dispatchExecutionFailure(throwable.message ?: "Wallet ABI execution failed")
                 }
             }
 

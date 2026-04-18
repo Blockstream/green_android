@@ -26,13 +26,15 @@ import com.blockstream.data.gdk.data.Account
 import com.blockstream.data.gdk.data.AccountType
 import com.blockstream.data.gdk.data.Network
 import com.blockstream.data.managers.SessionManager
-import com.blockstream.data.walletabi.flow.FakeWalletAbiFlowDriver
 import com.blockstream.data.walletabi.request.DefaultWalletAbiDemoRequestSource
+import com.blockstream.domain.walletabi.execution.WalletAbiExecutionResult
+import com.blockstream.domain.walletabi.execution.WalletAbiExecutionRunner
 import com.blockstream.domain.walletabi.execution.WalletAbiExecutionPlan
 import com.blockstream.domain.walletabi.execution.WalletAbiExecutionPlanner
 import com.blockstream.domain.walletabi.flow.WalletAbiFlowSnapshotRepository
 import com.blockstream.domain.walletabi.flow.WalletAbiFlowStore
 import com.blockstream.domain.walletabi.request.WalletAbiParsedRequest
+import kotlinx.coroutines.delay
 import kotlinx.coroutines.runBlocking
 import kotlinx.coroutines.flow.collectLatest
 import org.junit.Rule
@@ -99,7 +101,7 @@ class WalletAbiHappyPathTest {
                             walletSession = walletSession(koin = koin, greenWallet = greenWallet),
                             requestSource = requestSource,
                             executionPlanner = executionPlanner(),
-                            driver = koin.get<FakeWalletAbiFlowDriver>()
+                            executionRunner = executionRunner()
                         )
                     }
                     LaunchedEffect(viewModel) {
@@ -152,7 +154,7 @@ class WalletAbiHappyPathTest {
                             walletSession = walletSession(koin = koin, greenWallet = greenWallet),
                             requestSource = requestSource,
                             executionPlanner = executionPlanner(),
-                            driver = koin.get<FakeWalletAbiFlowDriver>()
+                            executionRunner = executionRunner()
                         )
                     }
                     LaunchedEffect(viewModel) {
@@ -213,7 +215,7 @@ class WalletAbiHappyPathTest {
                             walletSession = walletSession(koin = koin, greenWallet = greenWallet),
                             requestSource = requestSource,
                             executionPlanner = executionPlanner(),
-                            driver = koin.get<FakeWalletAbiFlowDriver>()
+                            executionRunner = executionRunner()
                         )
                     }
                     LaunchedEffect(viewModel) {
@@ -266,7 +268,7 @@ class WalletAbiHappyPathTest {
                 walletSession = walletSession,
                 requestSource = DefaultWalletAbiDemoRequestSource(),
                 executionPlanner = executionPlanner(),
-                driver = koin.get<FakeWalletAbiFlowDriver>()
+                executionRunner = executionRunner()
             )
         }
 
@@ -351,6 +353,19 @@ class WalletAbiHappyPathTest {
                     assetId = TESTNET_POLICY_ASSET,
                     feeRate = 12_000L
                 )
+            }
+        }
+    }
+
+    private fun executionRunner(): WalletAbiExecutionRunner {
+        return object : WalletAbiExecutionRunner {
+            override suspend fun execute(
+                session: GdkSession,
+                plan: WalletAbiExecutionPlan,
+                twoFactorResolver: com.blockstream.data.gdk.TwoFactorResolver
+            ): WalletAbiExecutionResult {
+                delay(200)
+                return WalletAbiExecutionResult(txHash = "wallet-abi-demo-tx-hash")
             }
         }
     }
