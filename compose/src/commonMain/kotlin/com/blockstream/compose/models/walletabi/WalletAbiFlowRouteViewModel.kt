@@ -18,6 +18,7 @@ import com.blockstream.domain.walletabi.flow.WalletAbiFlowIntent
 import com.blockstream.domain.walletabi.flow.WalletAbiAccountOption
 import com.blockstream.domain.walletabi.flow.WalletAbiApprovalTarget
 import com.blockstream.domain.walletabi.flow.WalletAbiExecutionEvent
+import com.blockstream.domain.walletabi.flow.WalletAbiExecutionDetails
 import com.blockstream.domain.walletabi.flow.WalletAbiFlowReview
 import com.blockstream.domain.walletabi.flow.WalletAbiFlowOutput
 import com.blockstream.domain.walletabi.flow.WalletAbiFlowSnapshotRepository
@@ -234,6 +235,13 @@ private fun WalletAbiParsedEnvelope.toDomainReview(
         },
         selectedAccountId = executionPlan.selectedAccount.id,
         approvalTarget = WalletAbiApprovalTarget.Software,
-        parsedRequest = request
+        parsedRequest = request,
+        executionDetails = WalletAbiExecutionDetails(
+            destinationAddress = executionPlan.destinationAddress,
+            amountSat = executionPlan.amountSat,
+            assetId = executionPlan.assetId,
+            network = executionPlan.request.request.network.wireValue,
+            feeRate = executionPlan.feeRate
+        )
     )
 }

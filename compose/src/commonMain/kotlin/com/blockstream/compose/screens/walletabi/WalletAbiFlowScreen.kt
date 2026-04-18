@@ -68,6 +68,12 @@ fun WalletAbiFlowScreen(
                     Text(state.review.message)
                     Text("Wallet: ${state.review.requestContext.walletId}")
                     Text("Request: ${state.review.requestContext.requestId}")
+                    state.review.accounts.firstOrNull { it.accountId == state.review.selectedAccountId }?.let { account ->
+                        Text(
+                            text = "Account: ${account.name}",
+                            modifier = Modifier.testTag("wallet_abi_flow_selected_account")
+                        )
+                    }
                     when (val parsedRequest = state.review.parsedRequest) {
                         is WalletAbiParsedRequest.TxCreate -> {
                             val request = parsedRequest.request
@@ -79,18 +85,26 @@ fun WalletAbiFlowScreen(
                                 text = "Network: ${request.network.wireValue}",
                                 modifier = Modifier.testTag("wallet_abi_flow_parsed_network")
                             )
-                            Text(
-                                text = "Broadcast: ${if (request.broadcast) "yes" else "no"}",
-                                modifier = Modifier.testTag("wallet_abi_flow_parsed_broadcast")
-                            )
-                            Text(
-                                text = "Inputs: ${request.params.inputs.size}",
-                                modifier = Modifier.testTag("wallet_abi_flow_parsed_input_count")
-                            )
-                            Text(
-                                text = "Outputs: ${request.params.outputs.size}",
-                                modifier = Modifier.testTag("wallet_abi_flow_parsed_output_count")
-                            )
+                            state.review.executionDetails?.also { details ->
+                                Text(
+                                    text = "Destination: ${details.destinationAddress}",
+                                    modifier = Modifier.testTag("wallet_abi_flow_destination")
+                                )
+                                Text(
+                                    text = "Amount: ${details.amountSat}",
+                                    modifier = Modifier.testTag("wallet_abi_flow_amount")
+                                )
+                                Text(
+                                    text = "Asset: ${details.assetId}",
+                                    modifier = Modifier.testTag("wallet_abi_flow_asset")
+                                )
+                                details.feeRate?.also { feeRate ->
+                                    Text(
+                                        text = "Fee rate: $feeRate",
+                                        modifier = Modifier.testTag("wallet_abi_flow_fee_rate")
+                                    )
+                                }
+                            }
                         }
 
                         null -> Unit
@@ -117,14 +131,6 @@ fun WalletAbiFlowScreen(
                             WalletAbiApprovalTarget.Software -> "Approval target: Software"
                         }
                     )
-                    OutlinedButton(
-                        onClick = { onIntent(WalletAbiFlowIntent.ResolveRequest) },
-                        modifier = Modifier
-                            .fillMaxWidth()
-                            .testTag("wallet_abi_flow_resolve_action")
-                    ) {
-                        Text("Resolve request")
-                    }
                     OutlinedButton(
                         onClick = { onIntent(WalletAbiFlowIntent.Reject) },
                         modifier = Modifier
@@ -181,7 +187,10 @@ fun WalletAbiFlowScreen(
                         text = "Request completed",
                         modifier = Modifier.testTag("wallet_abi_flow_success")
                     )
-                    Text("Response: ${state.result.responseId}")
+                    Text(
+                        text = "Transaction: ${state.result.txHash ?: state.result.responseId ?: "unavailable"}",
+                        modifier = Modifier.testTag("wallet_abi_flow_success_tx_hash")
+                    )
                     Button(
                         onClick = { onIntent(WalletAbiFlowIntent.DismissTerminal) },
                         modifier = Modifier

@@ -517,7 +517,16 @@ data class WalletAbiFlowReview(
     val accounts: List<WalletAbiAccountOption>,
     val selectedAccountId: String?,
     val approvalTarget: WalletAbiApprovalTarget,
-    val parsedRequest: WalletAbiParsedRequest? = null
+    val parsedRequest: WalletAbiParsedRequest? = null,
+    val executionDetails: WalletAbiExecutionDetails? = null
+)
+
+data class WalletAbiExecutionDetails(
+    val destinationAddress: String,
+    val amountSat: Long,
+    val assetId: String,
+    val network: String,
+    val feeRate: Long? = null
 )
 
 data class WalletAbiAccountOption(

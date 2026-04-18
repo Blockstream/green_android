@@ -227,6 +227,11 @@ class WalletAbiFlowRouteViewModelTest {
         assertEquals(1, parsedRequest.params.outputs.size)
         assertEquals(12_000f, parsedRequest.params.feeRateSatKvb)
         assertEquals(true, parsedRequest.broadcast)
+        assertEquals("tlq1qqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqq3l4q9m", review.executionDetails?.destinationAddress)
+        assertEquals(1_000L, review.executionDetails?.amountSat)
+        assertEquals(TESTNET_POLICY_ASSET, review.executionDetails?.assetId)
+        assertEquals(WalletAbiNetwork.TESTNET_LIQUID.wireValue, review.executionDetails?.network)
+        assertEquals(12_000L, review.executionDetails?.feeRate)
     }
 
     @Test

@@ -2,6 +2,7 @@ package com.blockstream.domain.walletabi.flow
 
 import com.blockstream.data.walletabi.flow.WalletAbiAccountOptionPayload
 import com.blockstream.data.walletabi.flow.WalletAbiApprovalTargetPayload
+import com.blockstream.data.walletabi.flow.WalletAbiExecutionDetailsPayload
 import com.blockstream.data.walletabi.flow.WalletAbiFlowReviewPayload
 import com.blockstream.data.walletabi.flow.WalletAbiFlowSnapshotPayload
 import com.blockstream.data.walletabi.flow.WalletAbiFlowSnapshotStore
@@ -51,7 +52,18 @@ private fun WalletAbiFlowReview.toPayload(): WalletAbiFlowReviewPayload {
         accounts = accounts.map { it.toPayload() },
         selectedAccountId = selectedAccountId,
         approvalTarget = approvalTarget.toPayload(),
-        parsedRequest = parsedRequest?.toPayload()
+        parsedRequest = parsedRequest?.toPayload(),
+        executionDetails = executionDetails?.toPayload()
+    )
+}
+
+private fun WalletAbiExecutionDetails.toPayload(): WalletAbiExecutionDetailsPayload {
+    return WalletAbiExecutionDetailsPayload(
+        destinationAddress = destinationAddress,
+        amountSat = amountSat,
+        assetId = assetId,
+        network = network,
+        feeRate = feeRate
     )
 }
 
@@ -153,7 +165,18 @@ private fun WalletAbiFlowReviewPayload.toDomain(): WalletAbiFlowReview {
         accounts = accounts.map { it.toDomain() },
         selectedAccountId = selectedAccountId,
         approvalTarget = approvalTarget.toDomain(),
-        parsedRequest = parsedRequest?.toDomain()
+        parsedRequest = parsedRequest?.toDomain(),
+        executionDetails = executionDetails?.toDomain()
+    )
+}
+
+private fun WalletAbiExecutionDetailsPayload.toDomain(): WalletAbiExecutionDetails {
+    return WalletAbiExecutionDetails(
+        destinationAddress = destinationAddress,
+        amountSat = amountSat,
+        assetId = assetId,
+        network = network,
+        feeRate = feeRate
     )
 }
 

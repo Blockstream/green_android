@@ -44,7 +44,17 @@ data class WalletAbiFlowReviewPayload(
     val accounts: List<WalletAbiAccountOptionPayload>,
     val selectedAccountId: String?,
     val approvalTarget: WalletAbiApprovalTargetPayload,
-    val parsedRequest: WalletAbiParsedRequestPayload? = null
+    val parsedRequest: WalletAbiParsedRequestPayload? = null,
+    val executionDetails: WalletAbiExecutionDetailsPayload? = null
+)
+
+@Serializable
+data class WalletAbiExecutionDetailsPayload(
+    val destinationAddress: String,
+    val amountSat: Long,
+    val assetId: String,
+    val network: String,
+    val feeRate: Long? = null
 )
 
 @Serializable

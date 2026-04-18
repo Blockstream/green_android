@@ -8,6 +8,7 @@ import com.blockstream.compose.GreenPreview
 import com.blockstream.compose.screens.walletabi.WalletAbiFlowScreen
 import com.blockstream.domain.walletabi.flow.WalletAbiApprovalTarget
 import com.blockstream.domain.walletabi.flow.WalletAbiCancelledReason
+import com.blockstream.domain.walletabi.flow.WalletAbiExecutionDetails
 import com.blockstream.domain.walletabi.flow.WalletAbiFlowError
 import com.blockstream.domain.walletabi.flow.WalletAbiFlowIntent
 import com.blockstream.domain.walletabi.flow.WalletAbiFlowReview
@@ -48,7 +49,14 @@ class WalletAbiFlowScreenTest {
             com.blockstream.domain.walletabi.flow.WalletAbiAccountOption("account-2", "Savings")
         ),
         selectedAccountId = "account-1",
-        approvalTarget = WalletAbiApprovalTarget.Software
+        approvalTarget = WalletAbiApprovalTarget.Software,
+        executionDetails = WalletAbiExecutionDetails(
+            destinationAddress = "tlq1qqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqq3l4q9m",
+            amountSat = 1_000L,
+            assetId = "asset-id",
+            network = WalletAbiNetwork.TESTNET_LIQUID.wireValue,
+            feeRate = 12_000L
+        )
     )
 
     private val jadeReview = softwareReview.copy(
@@ -78,14 +86,12 @@ class WalletAbiFlowScreenTest {
         setScreen(WalletAbiFlowState.RequestLoaded(softwareReview), intents::add)
 
         composeRule.onNodeWithTag("wallet_abi_flow_account_1").performClick()
-        composeRule.onNodeWithTag("wallet_abi_flow_resolve_action").performClick()
         composeRule.onNodeWithTag("wallet_abi_flow_reject_action").performClick()
         composeRule.onNodeWithTag("wallet_abi_flow_approve_action").performClick()
 
         assertEquals(
             listOf(
                 WalletAbiFlowIntent.SelectAccount("account-2"),
-                WalletAbiFlowIntent.ResolveRequest,
                 WalletAbiFlowIntent.Reject,
                 WalletAbiFlowIntent.Approve
             ),
@@ -129,10 +135,17 @@ class WalletAbiFlowScreenTest {
                                         blinder = kotlinx.serialization.json.buildJsonObject { put("kind", JsonPrimitive("default")) }
                                     )
                                 ),
-                                feeRateSatKvb = 12.5f
+                                feeRateSatKvb = 12_000f
                             ),
                             broadcast = true
                         )
+                    ),
+                    executionDetails = WalletAbiExecutionDetails(
+                        destinationAddress = "tlq1qqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqq3l4q9m",
+                        amountSat = 1_000L,
+                        assetId = "asset-id",
+                        network = WalletAbiNetwork.TESTNET_LIQUID.wireValue,
+                        feeRate = 12_000L
                     )
                 )
             )
@@ -140,9 +153,11 @@ class WalletAbiFlowScreenTest {
 
         composeRule.onNodeWithTag("wallet_abi_flow_parsed_request_id").assertIsDisplayed()
         composeRule.onNodeWithTag("wallet_abi_flow_parsed_network").assertIsDisplayed()
-        composeRule.onNodeWithTag("wallet_abi_flow_parsed_broadcast").assertIsDisplayed()
-        composeRule.onNodeWithTag("wallet_abi_flow_parsed_input_count").assertIsDisplayed()
-        composeRule.onNodeWithTag("wallet_abi_flow_parsed_output_count").assertIsDisplayed()
+        composeRule.onNodeWithTag("wallet_abi_flow_selected_account").assertIsDisplayed()
+        composeRule.onNodeWithTag("wallet_abi_flow_destination").assertIsDisplayed()
+        composeRule.onNodeWithTag("wallet_abi_flow_amount").assertIsDisplayed()
+        composeRule.onNodeWithTag("wallet_abi_flow_asset").assertIsDisplayed()
+        composeRule.onNodeWithTag("wallet_abi_flow_fee_rate").assertIsDisplayed()
     }
 
     @Test
@@ -262,6 +277,7 @@ class WalletAbiFlowScreenTest {
         )
 
         composeRule.onNodeWithTag("wallet_abi_flow_success").assertIsDisplayed()
+        composeRule.onNodeWithTag("wallet_abi_flow_success_tx_hash").assertIsDisplayed()
         composeRule.onNodeWithTag("wallet_abi_flow_terminal_dismiss_action").performClick()
 
         assertEquals(
