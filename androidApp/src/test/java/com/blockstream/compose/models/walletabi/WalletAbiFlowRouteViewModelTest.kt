@@ -20,6 +20,7 @@ import com.blockstream.domain.walletabi.flow.WalletAbiFlowIntent
 import com.blockstream.domain.walletabi.flow.WalletAbiFlowOutput
 import com.blockstream.domain.walletabi.flow.WalletAbiFlowReview
 import com.blockstream.domain.walletabi.flow.WalletAbiFlowSnapshotRepository
+import com.blockstream.domain.walletabi.flow.DefaultWalletAbiFlowStore
 import com.blockstream.domain.walletabi.flow.WalletAbiResumePhase
 import com.blockstream.domain.walletabi.flow.WalletAbiResumeSnapshot
 import com.blockstream.domain.walletabi.flow.WalletAbiResolutionCommand
@@ -50,6 +51,7 @@ import org.koin.core.context.startKoin
 import org.koin.core.context.stopKoin
 import org.koin.dsl.module
 import kotlin.test.assertEquals
+import kotlin.test.assertIs
 
 class WalletAbiFlowRouteViewModelTest {
     private val dispatcher = StandardTestDispatcher()
@@ -148,6 +150,27 @@ class WalletAbiFlowRouteViewModelTest {
             ),
             store.intents
         )
+    }
+
+
+    @Test
+    fun approve_reaches_success_with_real_store() = runTest(dispatcher) {
+        val realStore = DefaultWalletAbiFlowStore()
+        val viewModel = WalletAbiFlowRouteViewModel(
+            greenWallet = greenWallet,
+            store = realStore,
+            snapshotRepository = snapshotRepository,
+            driver = driver
+        )
+
+        advanceUntilIdle()
+
+        viewModel.dispatch(WalletAbiFlowIntent.Approve)
+        advanceUntilIdle()
+
+        val state = assertIs<WalletAbiFlowState.Success>(viewModel.state.value)
+        assertEquals(WalletAbiFlowRouteViewModel.DEMO_REQUEST_ID, state.result.requestId)
+        assertEquals("wallet-abi-demo-response", state.result.responseId)
     }
 
     @Test

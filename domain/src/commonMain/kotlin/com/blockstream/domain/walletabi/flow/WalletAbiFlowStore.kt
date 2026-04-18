@@ -17,7 +17,7 @@ interface WalletAbiFlowStore {
 
 class DefaultWalletAbiFlowStore : WalletAbiFlowStore {
     private val mutableState = MutableStateFlow<WalletAbiFlowState>(WalletAbiFlowState.Idle)
-    private val mutableOutputs = MutableSharedFlow<WalletAbiFlowOutput>()
+    private val mutableOutputs = MutableSharedFlow<WalletAbiFlowOutput>(extraBufferCapacity = 8)
     private var lastRequestContext: WalletAbiStartRequestContext? = null
 
     override val state: StateFlow<WalletAbiFlowState> = mutableState.asStateFlow()
