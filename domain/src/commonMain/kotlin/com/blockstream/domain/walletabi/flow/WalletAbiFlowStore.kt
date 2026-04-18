@@ -24,6 +24,7 @@ class DefaultWalletAbiFlowStore : WalletAbiFlowStore {
     override suspend fun dispatch(intent: WalletAbiFlowIntent) {
         when (intent) {
             WalletAbiFlowIntent.Approve -> handleApprove()
+            WalletAbiFlowIntent.Reject -> handleReject()
             is WalletAbiFlowIntent.Start -> handleStart(intent)
             is WalletAbiFlowIntent.ResolveRequest -> handleResolveRequest()
             is WalletAbiFlowIntent.SelectAccount -> handleSelectAccount(intent)
@@ -38,6 +39,8 @@ class DefaultWalletAbiFlowStore : WalletAbiFlowStore {
     private suspend fun handleExecutionEvent(event: WalletAbiExecutionEvent) {
         when (event) {
             WalletAbiExecutionEvent.Broadcasted -> handleExecutionBroadcasted()
+            is WalletAbiExecutionEvent.Failed -> handleExecutionFailed(event)
+            WalletAbiExecutionEvent.Expired -> handleExecutionExpired()
             is WalletAbiExecutionEvent.RequestLoaded -> handleExecutionRequestLoaded(event)
             is WalletAbiExecutionEvent.Resolved -> handleExecutionResolved(event)
             is WalletAbiExecutionEvent.RemoteResponseSent -> handleExecutionRemoteResponseSent(event)
@@ -112,6 +115,28 @@ class DefaultWalletAbiFlowStore : WalletAbiFlowStore {
             )
         )
     }
+
+    private suspend fun handleReject() {
+        val result = WalletAbiFlowTerminalResult.Cancelled(
+            WalletAbiCancelledReason.UserRejected
+        )
+        mutableState.value = WalletAbiFlowState.Cancelled(result.reason)
+        mutableOutputs.emit(WalletAbiFlowOutput.Complete(result))
+    }
+
+    private suspend fun handleExecutionExpired() {
+        val result = WalletAbiFlowTerminalResult.Cancelled(
+            WalletAbiCancelledReason.RequestExpired
+        )
+        mutableState.value = WalletAbiFlowState.Cancelled(result.reason)
+        mutableOutputs.emit(WalletAbiFlowOutput.Complete(result))
+    }
+
+    private suspend fun handleExecutionFailed(event: WalletAbiExecutionEvent.Failed) {
+        val result = WalletAbiFlowTerminalResult.Error(event.error)
+        mutableState.value = WalletAbiFlowState.Error(event.error)
+        mutableOutputs.emit(WalletAbiFlowOutput.Complete(result))
+    }
 }
 
 data class WalletAbiStartRequestContext(
@@ -136,10 +161,19 @@ sealed interface WalletAbiFlowState {
     data class Success(
         val result: WalletAbiSuccessResult
     ) : WalletAbiFlowState
+
+    data class Cancelled(
+        val reason: WalletAbiCancelledReason
+    ) : WalletAbiFlowState
+
+    data class Error(
+        val error: WalletAbiFlowError
+    ) : WalletAbiFlowState
 }
 
 sealed interface WalletAbiFlowIntent {
     data object Approve : WalletAbiFlowIntent
+    data object Reject : WalletAbiFlowIntent
 
     data class Start(
         val requestContext: WalletAbiStartRequestContext
@@ -193,11 +227,28 @@ sealed interface WalletAbiFlowTerminalResult {
     data class Success(
         val result: WalletAbiSuccessResult
     ) : WalletAbiFlowTerminalResult
+
+    data class Cancelled(
+        val reason: WalletAbiCancelledReason
+    ) : WalletAbiFlowTerminalResult
+
+    data class Error(
+        val error: WalletAbiFlowError
+    ) : WalletAbiFlowTerminalResult
 }
 
 data class WalletAbiSuccessResult(
     val requestId: String,
     val responseId: String
+)
+
+enum class WalletAbiCancelledReason {
+    RequestExpired,
+    UserRejected
+}
+
+data class WalletAbiFlowError(
+    val message: String
 )
 
 data class WalletAbiFlowReview(
@@ -220,6 +271,10 @@ sealed interface WalletAbiApprovalTarget {
 
 sealed interface WalletAbiExecutionEvent {
     data object Broadcasted : WalletAbiExecutionEvent
+    data object Expired : WalletAbiExecutionEvent
+    data class Failed(
+        val error: WalletAbiFlowError
+    ) : WalletAbiExecutionEvent
 
     data class RequestLoaded(
         val review: WalletAbiFlowReview

@@ -50,6 +50,7 @@ class WalletAbiFlowStoreTest {
         requestId = review.requestContext.requestId,
         responseId = "response-id"
     )
+    private val failedError = WalletAbiFlowError("Execution failed")
 
     @Test
     fun request_loaded_event_updates_loading_state() = runTest {
@@ -209,6 +210,69 @@ class WalletAbiFlowStoreTest {
         assertEquals(
             WalletAbiFlowOutput.Complete(
                 WalletAbiFlowTerminalResult.Success(successResult)
+            ),
+            output.await()
+        )
+    }
+
+    @Test
+    fun reject_ends_cancelled() = runTest {
+        val store = DefaultWalletAbiFlowStore()
+        val output = async(start = CoroutineStart.UNDISPATCHED) { store.outputs.first() }
+
+        store.dispatch(WalletAbiFlowIntent.Reject)
+
+        assertEquals(
+            WalletAbiFlowState.Cancelled(WalletAbiCancelledReason.UserRejected),
+            store.state.value
+        )
+        assertEquals(
+            WalletAbiFlowOutput.Complete(
+                WalletAbiFlowTerminalResult.Cancelled(WalletAbiCancelledReason.UserRejected)
+            ),
+            output.await()
+        )
+    }
+
+    @Test
+    fun execution_failure_ends_error() = runTest {
+        val store = DefaultWalletAbiFlowStore()
+        val output = async(start = CoroutineStart.UNDISPATCHED) { store.outputs.first() }
+
+        store.dispatch(
+            WalletAbiFlowIntent.OnExecutionEvent(
+                WalletAbiExecutionEvent.Failed(failedError)
+            )
+        )
+
+        assertEquals(
+            WalletAbiFlowState.Error(failedError),
+            store.state.value
+        )
+        assertEquals(
+            WalletAbiFlowOutput.Complete(
+                WalletAbiFlowTerminalResult.Error(failedError)
+            ),
+            output.await()
+        )
+    }
+
+    @Test
+    fun expired_event_ends_cancelled() = runTest {
+        val store = DefaultWalletAbiFlowStore()
+        val output = async(start = CoroutineStart.UNDISPATCHED) { store.outputs.first() }
+
+        store.dispatch(
+            WalletAbiFlowIntent.OnExecutionEvent(WalletAbiExecutionEvent.Expired)
+        )
+
+        assertEquals(
+            WalletAbiFlowState.Cancelled(WalletAbiCancelledReason.RequestExpired),
+            store.state.value
+        )
+        assertEquals(
+            WalletAbiFlowOutput.Complete(
+                WalletAbiFlowTerminalResult.Cancelled(WalletAbiCancelledReason.RequestExpired)
             ),
             output.await()
         )
