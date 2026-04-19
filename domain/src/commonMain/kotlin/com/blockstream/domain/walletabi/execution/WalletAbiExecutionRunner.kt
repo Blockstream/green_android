@@ -1,56 +1,119 @@
 package com.blockstream.domain.walletabi.execution
 
 import com.blockstream.data.gdk.GdkSession
+import com.blockstream.data.gdk.PreparedSoftwareTransaction
 import com.blockstream.data.gdk.TwoFactorResolver
 import com.blockstream.data.gdk.data.Account
 import com.blockstream.data.gdk.data.CreateTransaction
 import com.blockstream.data.gdk.data.ProcessedTransactionDetails
-import com.blockstream.data.gdk.executeSoftwareTransaction
+import com.blockstream.data.gdk.broadcastPreparedSoftwareTransaction
+import com.blockstream.data.gdk.prepareSoftwareTransactionForBroadcast
 
 interface WalletAbiExecutionRunner {
+    suspend fun prepare(
+        session: GdkSession,
+        preparedExecution: WalletAbiPreparedExecution
+    ): WalletAbiPreparedBroadcast {
+        error("Wallet ABI execution runner does not support staged preparation")
+    }
+
+    suspend fun broadcast(
+        session: GdkSession,
+        preparedBroadcast: WalletAbiPreparedBroadcast,
+        twoFactorResolver: TwoFactorResolver
+    ): WalletAbiExecutionResult {
+        error("Wallet ABI execution runner does not support staged broadcast")
+    }
+
     suspend fun execute(
         session: GdkSession,
         preparedExecution: WalletAbiPreparedExecution,
         twoFactorResolver: TwoFactorResolver
-    ): WalletAbiExecutionResult
+    ): WalletAbiExecutionResult {
+        return broadcast(
+            session = session,
+            preparedBroadcast = prepare(
+                session = session,
+                preparedExecution = preparedExecution
+            ),
+            twoFactorResolver = twoFactorResolver
+        )
+    }
 }
 
 data class WalletAbiExecutionResult(
     val txHash: String
 )
 
-fun interface WalletAbiSoftwareTransactionExecutor {
-    suspend fun execute(
+data class WalletAbiPreparedBroadcast(
+    val preparedExecution: WalletAbiPreparedExecution,
+    val preparedTransaction: PreparedSoftwareTransaction
+)
+
+fun interface WalletAbiSoftwareTransactionPreparer {
+    suspend fun prepare(
         session: GdkSession,
         account: Account,
         transaction: CreateTransaction,
-        memo: String,
+        memo: String
+    ): PreparedSoftwareTransaction
+}
+
+fun interface WalletAbiSoftwareTransactionBroadcaster {
+    suspend fun broadcast(
+        session: GdkSession,
+        account: Account,
+        preparedTransaction: PreparedSoftwareTransaction,
         twoFactorResolver: TwoFactorResolver
     ): ProcessedTransactionDetails
 }
 
 class DefaultWalletAbiExecutionRunner(
-    private val softwareTransactionExecutor: WalletAbiSoftwareTransactionExecutor =
-        WalletAbiSoftwareTransactionExecutor { session, account, transaction, memo, twoFactorResolver ->
-            executeSoftwareTransaction(
+    private val softwareTransactionPreparer: WalletAbiSoftwareTransactionPreparer =
+        WalletAbiSoftwareTransactionPreparer { session, account, transaction, memo ->
+            prepareSoftwareTransactionForBroadcast(
                 session = session,
                 account = account,
                 transaction = transaction,
-                memo = memo,
+                memo = memo
+            )
+        },
+    private val softwareTransactionBroadcaster: WalletAbiSoftwareTransactionBroadcaster =
+        WalletAbiSoftwareTransactionBroadcaster { session, account, preparedTransaction, twoFactorResolver ->
+            broadcastPreparedSoftwareTransaction(
+                session = session,
+                account = account,
+                preparedTransaction = preparedTransaction,
                 twoFactorResolver = twoFactorResolver
             )
         }
 ) : WalletAbiExecutionRunner {
-    override suspend fun execute(
+    override suspend fun prepare(
         session: GdkSession,
-        preparedExecution: WalletAbiPreparedExecution,
-        twoFactorResolver: TwoFactorResolver
-    ): WalletAbiExecutionResult {
-        val result = softwareTransactionExecutor.execute(
+        preparedExecution: WalletAbiPreparedExecution
+    ): WalletAbiPreparedBroadcast {
+        val preparedTransaction = softwareTransactionPreparer.prepare(
             session = session,
             account = preparedExecution.plan.selectedAccount,
             transaction = preparedExecution.transaction,
-            memo = "",
+            memo = ""
+        )
+
+        return WalletAbiPreparedBroadcast(
+            preparedExecution = preparedExecution,
+            preparedTransaction = preparedTransaction
+        )
+    }
+
+    override suspend fun broadcast(
+        session: GdkSession,
+        preparedBroadcast: WalletAbiPreparedBroadcast,
+        twoFactorResolver: TwoFactorResolver
+    ): WalletAbiExecutionResult {
+        val result = softwareTransactionBroadcaster.broadcast(
+            session = session,
+            account = preparedBroadcast.preparedExecution.plan.selectedAccount,
+            preparedTransaction = preparedBroadcast.preparedTransaction,
             twoFactorResolver = twoFactorResolver
         )
 

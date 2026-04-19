@@ -2,6 +2,7 @@ package com.blockstream.domain.walletabi.execution
 
 import com.blockstream.data.data.EnrichedAsset
 import com.blockstream.data.gdk.GdkSession
+import com.blockstream.data.gdk.PreparedSoftwareTransaction
 import com.blockstream.data.gdk.TwoFactorResolver
 import com.blockstream.data.gdk.data.Account
 import com.blockstream.data.gdk.data.AccountType
@@ -84,20 +85,89 @@ class WalletAbiExecutionRunnerTest {
     )
 
     @Test
-    fun execute_uses_prepared_transaction_and_returns_tx_hash() = runTest {
+    fun prepare_uses_prepared_transaction_and_selected_account() = runTest {
         val session = mockk<GdkSession>(relaxed = true)
-        var executedMemo: String? = null
-        var executedAccount: Account? = null
-        var executedTransaction: CreateTransaction? = null
-        var executedResolver: TwoFactorResolver? = null
+        val preparedTransaction = PreparedSoftwareTransaction(
+            transaction = preparedExecution.transaction,
+            signedTransaction = preparedExecution.transaction.toJsonElement()
+        )
+        var preparedAccount: Account? = null
+        var preparedCreateTransaction: CreateTransaction? = null
 
-        val runner = DefaultWalletAbiExecutionRunner { _, runnerAccount, runnerTransaction, memo, runnerResolver ->
-            executedAccount = runnerAccount
-            executedTransaction = runnerTransaction
-            executedMemo = memo
-            executedResolver = runnerResolver
-            ProcessedTransactionDetails(txHash = "wallet-abi-tx-hash")
-        }
+        val runner = DefaultWalletAbiExecutionRunner(
+            softwareTransactionPreparer = WalletAbiSoftwareTransactionPreparer { _, runnerAccount, runnerTransaction, memo ->
+                preparedAccount = runnerAccount
+                preparedCreateTransaction = runnerTransaction
+                assertEquals("", memo)
+                preparedTransaction
+            }
+        )
+
+        val result = runner.prepare(
+            session = session,
+            preparedExecution = preparedExecution
+        )
+
+        assertEquals(preparedExecution, result.preparedExecution)
+        assertEquals(preparedTransaction, result.preparedTransaction)
+        assertEquals(account, preparedAccount)
+        assertEquals(preparedExecution.transaction, preparedCreateTransaction)
+    }
+
+    @Test
+    fun broadcast_returns_tx_hash_from_processed_transaction() = runTest {
+        val session = mockk<GdkSession>(relaxed = true)
+        val preparedBroadcast = WalletAbiPreparedBroadcast(
+            preparedExecution = preparedExecution,
+            preparedTransaction = PreparedSoftwareTransaction(
+                transaction = preparedExecution.transaction,
+                signedTransaction = preparedExecution.transaction.toJsonElement()
+            )
+        )
+        var broadcastAccount: Account? = null
+        var broadcastResolver: TwoFactorResolver? = null
+
+        val runner = DefaultWalletAbiExecutionRunner(
+            softwareTransactionBroadcaster = WalletAbiSoftwareTransactionBroadcaster { _, runnerAccount, runnerPreparedTransaction, runnerResolver ->
+                broadcastAccount = runnerAccount
+                broadcastResolver = runnerResolver
+                assertEquals(preparedBroadcast.preparedTransaction, runnerPreparedTransaction)
+                ProcessedTransactionDetails(txHash = "wallet-abi-tx-hash")
+            }
+        )
+
+        val result = runner.broadcast(
+            session = session,
+            preparedBroadcast = preparedBroadcast,
+            twoFactorResolver = TestTwoFactorResolver
+        )
+
+        assertEquals("wallet-abi-tx-hash", result.txHash)
+        assertEquals(account, broadcastAccount)
+        assertEquals(TestTwoFactorResolver, broadcastResolver)
+    }
+
+    @Test
+    fun execute_keeps_compatibility_wrapper_behavior() = runTest {
+        val session = mockk<GdkSession>(relaxed = true)
+        val preparedTransaction = PreparedSoftwareTransaction(
+            transaction = preparedExecution.transaction,
+            signedTransaction = preparedExecution.transaction.toJsonElement()
+        )
+        var preparedCalled = false
+        var broadcastCalled = false
+
+        val runner = DefaultWalletAbiExecutionRunner(
+            softwareTransactionPreparer = WalletAbiSoftwareTransactionPreparer { _, _, _, _ ->
+                preparedCalled = true
+                preparedTransaction
+            },
+            softwareTransactionBroadcaster = WalletAbiSoftwareTransactionBroadcaster { _, _, runnerPreparedTransaction, _ ->
+                broadcastCalled = true
+                assertEquals(preparedTransaction, runnerPreparedTransaction)
+                ProcessedTransactionDetails(txHash = "wallet-abi-tx-hash")
+            }
+        )
 
         val result = runner.execute(
             session = session,
@@ -106,24 +176,31 @@ class WalletAbiExecutionRunnerTest {
         )
 
         assertEquals("wallet-abi-tx-hash", result.txHash)
-        assertEquals(account, executedAccount)
-        assertEquals(preparedExecution.transaction, executedTransaction)
-        assertEquals("", executedMemo)
-        assertEquals(TestTwoFactorResolver, executedResolver)
+        assertEquals(true, preparedCalled)
+        assertEquals(true, broadcastCalled)
     }
 
     @Test
-    fun execute_requires_tx_hash_from_processed_transaction() = runTest {
+    fun broadcast_requires_tx_hash_from_processed_transaction() = runTest {
         val session = mockk<GdkSession>(relaxed = true)
+        val preparedBroadcast = WalletAbiPreparedBroadcast(
+            preparedExecution = preparedExecution,
+            preparedTransaction = PreparedSoftwareTransaction(
+                transaction = preparedExecution.transaction,
+                signedTransaction = preparedExecution.transaction.toJsonElement()
+            )
+        )
 
-        val runner = DefaultWalletAbiExecutionRunner { _, _, _, _, _ ->
-            ProcessedTransactionDetails()
-        }
+        val runner = DefaultWalletAbiExecutionRunner(
+            softwareTransactionBroadcaster = WalletAbiSoftwareTransactionBroadcaster { _, _, _, _ ->
+                ProcessedTransactionDetails()
+            }
+        )
 
         val error = assertFailsWith<IllegalStateException> {
-            runner.execute(
+            runner.broadcast(
                 session = session,
-                preparedExecution = preparedExecution,
+                preparedBroadcast = preparedBroadcast,
                 twoFactorResolver = TestTwoFactorResolver
             )
         }
