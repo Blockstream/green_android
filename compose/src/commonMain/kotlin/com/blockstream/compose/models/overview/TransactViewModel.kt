@@ -9,6 +9,7 @@ import com.blockstream.compose.extensions.previewWallet
 import com.blockstream.compose.looks.transaction.TransactionLook
 import com.blockstream.compose.navigation.NavData
 import com.blockstream.compose.navigation.NavigateDestinations
+import com.blockstream.compose.navigation.WalletAbiFlowLaunchMode
 import com.blockstream.data.data.DataState
 import com.blockstream.data.data.GreenWallet
 import com.blockstream.data.extensions.ifConnected
@@ -19,6 +20,8 @@ import com.blockstream.domain.base.Result
 import com.blockstream.domain.meld.GetPendingMeldTransactions
 import com.blockstream.domain.swap.IsSwapAvailableUseCase
 import com.blockstream.domain.swap.IsSwapsEnabledUseCase
+import com.blockstream.domain.walletabi.flow.WalletAbiFlowSnapshotRepository
+import com.blockstream.domain.walletabi.flow.WalletAbiResumeSnapshot
 import com.blockstream.utils.Loggable
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.delay
@@ -47,6 +50,8 @@ abstract class TransactViewModelAbstract(
 
     abstract val transactions: StateFlow<DataState<List<TransactionLook>>>
 
+    abstract val pendingWalletAbiResume: StateFlow<WalletAbiResumeSnapshot?>
+
     fun onBuy() {
         postEvent(NavigateDestinations.Buy(greenWallet = greenWallet))
     }
@@ -70,7 +75,21 @@ abstract class TransactViewModelAbstract(
     }
 
     fun openWalletAbiFlow() {
-        postEvent(NavigateDestinations.WalletAbiFlow(greenWallet = greenWallet))
+        postEvent(
+            NavigateDestinations.WalletAbiFlow(
+                greenWallet = greenWallet,
+                launchMode = WalletAbiFlowLaunchMode.Demo
+            )
+        )
+    }
+
+    fun resumePendingWalletAbiFlow() {
+        postEvent(
+            NavigateDestinations.WalletAbiFlow(
+                greenWallet = greenWallet,
+                launchMode = WalletAbiFlowLaunchMode.Resume
+            )
+        )
     }
 }
 
@@ -78,6 +97,7 @@ class TransactViewModel(greenWallet: GreenWallet) : TransactViewModelAbstract(gr
 
     private val isSwapAvailableUseCase: IsSwapAvailableUseCase by inject()
     private val getPendingMeldTransactions: GetPendingMeldTransactions by inject()
+    private val snapshotRepository: WalletAbiFlowSnapshotRepository by inject()
     private var refreshJob: Job? = null
 
     override fun segmentation(): HashMap<String, Any> = countly.sessionSegmentation(session = session)
@@ -85,6 +105,10 @@ class TransactViewModel(greenWallet: GreenWallet) : TransactViewModelAbstract(gr
     override val isSwapAvailable: Boolean = session.ifConnected {
         isSwapAvailableUseCase(wallet = greenWallet, session = session)
     } ?: false
+
+    override val pendingWalletAbiResume: StateFlow<WalletAbiResumeSnapshot?> =
+        snapshotRepository.observe(greenWallet.id)
+            .stateIn(viewModelScope, SharingStarted.WhileSubscribed(5_000L), null)
 
     private val _meldTransactions: StateFlow<List<Transaction>> = greenWallet.xPubHashId.let {
         combine(
@@ -188,7 +212,10 @@ class TransactViewModel(greenWallet: GreenWallet) : TransactViewModelAbstract(gr
     }
 }
 
-class TransactViewModelPreview(val isEmpty: Boolean = false) : TransactViewModelAbstract(greenWallet = previewWallet()) {
+class TransactViewModelPreview(
+    val isEmpty: Boolean = false,
+    pendingWalletAbiResume: WalletAbiResumeSnapshot? = null
+) : TransactViewModelAbstract(greenWallet = previewWallet()) {
 
     override val isSwapAvailable: Boolean = true
 
@@ -211,7 +238,16 @@ class TransactViewModelPreview(val isEmpty: Boolean = false) : TransactViewModel
         )
     )
 
+    override val pendingWalletAbiResume: StateFlow<WalletAbiResumeSnapshot?> =
+        MutableStateFlow(pendingWalletAbiResume)
+
     companion object : Loggable() {
-        fun create(isEmpty: Boolean = false) = TransactViewModelPreview(isEmpty = isEmpty)
+        fun create(
+            isEmpty: Boolean = false,
+            pendingWalletAbiResume: WalletAbiResumeSnapshot? = null
+        ) = TransactViewModelPreview(
+            isEmpty = isEmpty,
+            pendingWalletAbiResume = pendingWalletAbiResume
+        )
     }
 }

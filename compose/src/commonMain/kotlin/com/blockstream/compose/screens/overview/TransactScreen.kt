@@ -38,6 +38,8 @@ import com.blockstream.compose.utils.SwapUtils
 import com.blockstream.compose.utils.bottom
 import com.blockstream.compose.utils.plus
 import com.blockstream.data.data.GreenWallet
+import com.blockstream.domain.walletabi.flow.WalletAbiResumePhase
+import com.blockstream.domain.walletabi.flow.WalletAbiResumeSnapshot
 import org.jetbrains.compose.resources.stringResource
 import org.jetbrains.compose.ui.tooling.preview.Preview
 
@@ -53,6 +55,7 @@ fun TransactScreen(viewModel: TransactViewModelAbstract) {
         val isMainnet = viewModel.greenWallet.isMainnet
         val isSwapAvailable = viewModel.isSwapAvailable
         val transactions by viewModel.transactions.collectAsStateWithLifecycle()
+        val pendingWalletAbiResume by viewModel.pendingWalletAbiResume.collectAsStateWithLifecycle()
         val isMultisigWatchOnly by viewModel.isMultisigWatchOnly.collectAsStateWithLifecycle()
         val innerPadding = LocalInnerPadding.current
         val listState = rememberLazyListState()
@@ -82,9 +85,11 @@ fun TransactScreen(viewModel: TransactViewModelAbstract) {
             }
 
             item(key = "WalletAbiEntry") {
-                WalletAbiDevelopmentEntry(
-                    visible = viewModel.appInfo.isDevelopment,
-                    onOpen = viewModel::openWalletAbiFlow
+                WalletAbiTransactEntry(
+                    isDevelopment = viewModel.appInfo.isDevelopment,
+                    pendingSnapshot = pendingWalletAbiResume,
+                    onOpenDemo = viewModel::openWalletAbiFlow,
+                    onResumePending = viewModel::resumePendingWalletAbiFlow
                 )
             }
 
@@ -120,6 +125,50 @@ fun TransactScreen(viewModel: TransactViewModelAbstract) {
                 }
             }
         }
+    }
+}
+
+@Composable
+fun WalletAbiTransactEntry(
+    isDevelopment: Boolean,
+    pendingSnapshot: WalletAbiResumeSnapshot?,
+    onOpenDemo: () -> Unit,
+    onResumePending: () -> Unit
+) {
+    if (pendingSnapshot != null) {
+        WalletAbiPendingResumeEntry(
+            snapshot = pendingSnapshot,
+            onResume = onResumePending
+        )
+        return
+    }
+
+    WalletAbiDevelopmentEntry(
+        visible = isDevelopment,
+        onOpen = onOpenDemo
+    )
+}
+
+@Composable
+fun WalletAbiPendingResumeEntry(
+    snapshot: WalletAbiResumeSnapshot,
+    onResume: () -> Unit
+) {
+    val label = when (snapshot.phase) {
+        WalletAbiResumePhase.REQUEST_LOADED,
+        WalletAbiResumePhase.AWAITING_APPROVAL -> "Resume Wallet ABI request"
+
+        WalletAbiResumePhase.SUBMITTING -> "Wallet ABI request needs attention"
+    }
+
+    OutlinedButton(
+        onClick = onResume,
+        modifier = Modifier
+            .padding(top = 16.dp)
+            .fillMaxWidth()
+            .testTag("transact_wallet_abi_resume_entry")
+    ) {
+        Text("$label ${snapshot.review.requestContext.requestId}")
     }
 }
 

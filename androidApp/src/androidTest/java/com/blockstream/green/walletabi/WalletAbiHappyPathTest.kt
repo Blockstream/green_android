@@ -13,8 +13,11 @@ import androidx.compose.ui.test.onNodeWithTag
 import androidx.compose.ui.test.performClick
 import com.blockstream.compose.GreenPreview
 import com.blockstream.compose.extensions.previewWallet
+import com.blockstream.compose.navigation.WalletAbiFlowLaunchMode
 import com.blockstream.compose.models.walletabi.WalletAbiFlowRouteViewModel
 import com.blockstream.compose.screens.overview.WalletAbiDevelopmentEntry
+import com.blockstream.compose.screens.overview.WalletAbiPendingResumeEntry
+import com.blockstream.compose.screens.overview.WalletAbiTransactEntry
 import com.blockstream.compose.screens.walletabi.WalletAbiFlowScreen
 import com.blockstream.compose.sideeffects.SideEffects
 import com.blockstream.data.data.EnrichedAsset
@@ -41,9 +44,17 @@ import com.blockstream.domain.walletabi.execution.WalletAbiExecutionRunner
 import com.blockstream.domain.walletabi.execution.WalletAbiExecutionPlan
 import com.blockstream.domain.walletabi.execution.WalletAbiExecutionPlanner
 import com.blockstream.domain.walletabi.execution.WalletAbiReviewPreviewer
+import com.blockstream.domain.walletabi.flow.WalletAbiAccountOption
+import com.blockstream.domain.walletabi.flow.WalletAbiApprovalTarget
+import com.blockstream.domain.walletabi.flow.WalletAbiFlowReview
 import com.blockstream.domain.walletabi.flow.WalletAbiFlowSnapshotRepository
+import com.blockstream.domain.walletabi.flow.WalletAbiResumePhase
+import com.blockstream.domain.walletabi.flow.WalletAbiResumeSnapshot
+import com.blockstream.domain.walletabi.flow.WalletAbiStartRequestContext
 import com.blockstream.domain.walletabi.flow.WalletAbiFlowStore
+import com.blockstream.domain.walletabi.request.DefaultWalletAbiRequestParser
 import com.blockstream.domain.walletabi.request.WalletAbiParsedRequest
+import com.blockstream.domain.walletabi.request.WalletAbiRequestParseResult
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.runBlocking
 import kotlinx.coroutines.flow.collectLatest
@@ -84,6 +95,132 @@ class WalletAbiHappyPathTest {
         repeat(2) {
             completeSuccessfulApproval()
         }
+    }
+
+    @Test
+    fun walletAbiPendingResumeEntry_shows_resume_card_in_non_development_build() {
+        val snapshot = demoResumeSnapshot(
+            greenWallet = previewWallet(),
+            phase = WalletAbiResumePhase.REQUEST_LOADED
+        )
+
+        composeRule.setContent {
+            GreenPreview {
+                WalletAbiTransactEntry(
+                    isDevelopment = false,
+                    pendingSnapshot = snapshot,
+                    onOpenDemo = {},
+                    onResumePending = {}
+                )
+            }
+        }
+
+        composeRule.onNodeWithTag("transact_wallet_abi_resume_entry").assertIsDisplayed()
+        assertEquals(
+            0,
+            composeRule.onAllNodesWithTag("transact_wallet_abi_entry").fetchSemanticsNodes().size
+        )
+    }
+
+    @Test
+    fun walletAbiPendingResumeEntry_shows_attention_copy_for_submitting_snapshot() {
+        val snapshot = demoResumeSnapshot(
+            greenWallet = previewWallet(),
+            phase = WalletAbiResumePhase.SUBMITTING
+        )
+
+        composeRule.setContent {
+            GreenPreview {
+                WalletAbiPendingResumeEntry(
+                    snapshot = snapshot,
+                    onResume = {}
+                )
+            }
+        }
+
+        composeRule.onNodeWithTag("transact_wallet_abi_resume_entry")
+            .assertIsDisplayed()
+            .assertTextContains("Wallet ABI request needs attention wallet-abi-demo-request")
+    }
+
+    @Test
+    fun walletAbiPendingResumeEntry_opens_resumable_flow_and_clears_after_cancel_resume() {
+        val koin = GlobalContext.get()
+        val greenWallet = insertPreviewWallet(koin = koin)
+        val snapshotRepository = koin.get<WalletAbiFlowSnapshotRepository>()
+        val snapshot = demoResumeSnapshot(
+            greenWallet = greenWallet,
+            phase = WalletAbiResumePhase.REQUEST_LOADED
+        )
+        runBlocking {
+            snapshotRepository.save(greenWallet.id, snapshot)
+        }
+        val walletSession = walletSession(koin = koin, greenWallet = greenWallet)
+
+        composeRule.setContent {
+            GreenPreview {
+                var isFlowVisible by remember { mutableStateOf(false) }
+                var pendingSnapshot by remember {
+                    mutableStateOf(runBlocking { snapshotRepository.load(greenWallet.id) })
+                }
+
+                if (isFlowVisible) {
+                    val viewModel = remember {
+                        WalletAbiFlowRouteViewModel(
+                            greenWallet = greenWallet,
+                            launchMode = WalletAbiFlowLaunchMode.Resume,
+                            store = koin.get<WalletAbiFlowStore>(),
+                            snapshotRepository = snapshotRepository,
+                            walletSession = walletSession,
+                            requestSource = DefaultWalletAbiDemoRequestSource(),
+                            executionPlanner = executionPlanner(),
+                            executionRunner = executionRunner(),
+                            reviewPreviewer = reviewPreviewer()
+                        )
+                    }
+                    LaunchedEffect(viewModel) {
+                        viewModel.sideEffect.collectLatest { sideEffect ->
+                            if (sideEffect == SideEffects.NavigateBack()) {
+                                pendingSnapshot = snapshotRepository.load(greenWallet.id)
+                                isFlowVisible = false
+                            }
+                        }
+                    }
+                    WalletAbiFlowScreen(viewModel = viewModel)
+                } else {
+                    WalletAbiTransactEntry(
+                        isDevelopment = true,
+                        pendingSnapshot = pendingSnapshot,
+                        onOpenDemo = {},
+                        onResumePending = { isFlowVisible = true }
+                    )
+                }
+            }
+        }
+
+        composeRule.onNodeWithTag("transact_wallet_abi_resume_entry").assertIsDisplayed()
+        assertEquals(
+            0,
+            composeRule.onAllNodesWithTag("transact_wallet_abi_entry").fetchSemanticsNodes().size
+        )
+
+        composeRule.onNodeWithTag("transact_wallet_abi_resume_entry").performClick()
+        composeRule.waitUntil(timeoutMillis = 5_000L) {
+            composeRule.onAllNodesWithTag("wallet_abi_flow_resumable").fetchSemanticsNodes().isNotEmpty()
+        }
+        composeRule.onNodeWithTag("wallet_abi_flow_cancel_resume_action").performClick()
+        composeRule.waitUntil(timeoutMillis = 5_000L) {
+            composeRule.onAllNodesWithTag("wallet_abi_flow_cancelled").fetchSemanticsNodes().isNotEmpty()
+        }
+        composeRule.onNodeWithTag("wallet_abi_flow_terminal_dismiss_action").performClick()
+        composeRule.waitUntil(timeoutMillis = 5_000L) {
+            composeRule.onAllNodesWithTag("transact_wallet_abi_entry").fetchSemanticsNodes().isNotEmpty()
+        }
+        composeRule.onNodeWithTag("transact_wallet_abi_entry").assertIsDisplayed()
+        assertEquals(
+            0,
+            composeRule.onAllNodesWithTag("transact_wallet_abi_resume_entry").fetchSemanticsNodes().size
+        )
     }
 
     @Test
@@ -439,6 +576,39 @@ class WalletAbiHappyPathTest {
             koin.get<Database>().insertWallet(greenWallet)
         }
         return greenWallet
+    }
+
+    private fun demoResumeSnapshot(
+        greenWallet: GreenWallet,
+        phase: WalletAbiResumePhase
+    ): WalletAbiResumeSnapshot {
+        val account = liquidAccount()
+        val requestSource = DefaultWalletAbiDemoRequestSource()
+        val envelope = (DefaultWalletAbiRequestParser().parse(
+            requestSource.loadRequestEnvelope(WalletAbiFlowRouteViewModel.DEMO_REQUEST_ID)
+        ) as WalletAbiRequestParseResult.Success).envelope
+
+        return WalletAbiResumeSnapshot(
+            review = WalletAbiFlowReview(
+                requestContext = WalletAbiStartRequestContext(
+                    requestId = WalletAbiFlowRouteViewModel.DEMO_REQUEST_ID,
+                    walletId = greenWallet.id
+                ),
+                method = envelope.method.wireValue,
+                title = "Wallet ABI payment",
+                message = "Approve a Wallet ABI request",
+                accounts = listOf(
+                    WalletAbiAccountOption(
+                        accountId = account.id,
+                        name = account.name
+                    )
+                ),
+                selectedAccountId = account.id,
+                approvalTarget = WalletAbiApprovalTarget.Software,
+                parsedRequest = envelope.request
+            ),
+            phase = phase
+        )
     }
 
     private fun walletSession(koin: Koin, greenWallet: GreenWallet): GdkSession {
