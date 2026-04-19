@@ -242,7 +242,9 @@ class WalletAbiFlowStoreTest {
                 WalletAbiExecutionEvent.RequestLoaded(review)
             )
         )
-        val output = async(start = CoroutineStart.UNDISPATCHED) { store.outputs.first() }
+        val outputs = async(start = CoroutineStart.UNDISPATCHED) {
+            store.outputs.take(2).toList()
+        }
 
         store.dispatch(WalletAbiFlowIntent.Approve)
 
@@ -254,13 +256,21 @@ class WalletAbiFlowStoreTest {
             store.state.value
         )
         assertEquals(
-            WalletAbiFlowOutput.StartSubmission(
-                WalletAbiSubmissionCommand(
-                    requestContext = requestContext,
-                    selectedAccountId = review.selectedAccountId
+            listOf(
+                WalletAbiFlowOutput.PersistSnapshot(
+                    WalletAbiResumeSnapshot(
+                        review = review,
+                        phase = WalletAbiResumePhase.SUBMITTING
+                    )
+                ),
+                WalletAbiFlowOutput.StartSubmission(
+                    WalletAbiSubmissionCommand(
+                        requestContext = requestContext,
+                        selectedAccountId = review.selectedAccountId
+                    )
                 )
             ),
-            output.await()
+            outputs.await()
         )
     }
 
@@ -630,7 +640,9 @@ class WalletAbiFlowStoreTest {
         store.dispatch(WalletAbiFlowIntent.OnJadeEvent(WalletAbiJadeEvent.ReviewConfirmed))
         assertEquals(WalletAbiJadeStep.SIGN, (store.state.value as WalletAbiFlowState.AwaitingApproval).jade.step)
 
-        val output = async(start = CoroutineStart.UNDISPATCHED) { store.outputs.first() }
+        val outputs = async(start = CoroutineStart.UNDISPATCHED) {
+            store.outputs.take(2).toList()
+        }
         store.dispatch(WalletAbiFlowIntent.OnJadeEvent(WalletAbiJadeEvent.Signed))
 
         assertEquals(
@@ -647,13 +659,27 @@ class WalletAbiFlowStoreTest {
             store.state.value
         )
         assertEquals(
-            WalletAbiFlowOutput.StartSubmission(
-                WalletAbiSubmissionCommand(
-                    requestContext = requestContext,
-                    selectedAccountId = jadeReview.selectedAccountId
+            listOf(
+                WalletAbiFlowOutput.PersistSnapshot(
+                    WalletAbiResumeSnapshot(
+                        review = jadeReview,
+                        phase = WalletAbiResumePhase.SUBMITTING,
+                        jade = WalletAbiJadeContext(
+                            deviceId = "jade-id",
+                            step = WalletAbiJadeStep.SIGN,
+                            message = null,
+                            retryable = false
+                        )
+                    )
+                ),
+                WalletAbiFlowOutput.StartSubmission(
+                    WalletAbiSubmissionCommand(
+                        requestContext = requestContext,
+                        selectedAccountId = jadeReview.selectedAccountId
+                    )
                 )
             ),
-            output.await()
+            outputs.await()
         )
     }
 

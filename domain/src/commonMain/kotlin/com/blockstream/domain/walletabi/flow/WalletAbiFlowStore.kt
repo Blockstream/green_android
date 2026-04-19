@@ -19,6 +19,7 @@ class DefaultWalletAbiFlowStore : WalletAbiFlowStore {
     private val mutableState = MutableStateFlow<WalletAbiFlowState>(WalletAbiFlowState.Idle)
     private val mutableOutputs = MutableSharedFlow<WalletAbiFlowOutput>(extraBufferCapacity = 8)
     private var lastRequestContext: WalletAbiStartRequestContext? = null
+    private var lastReview: WalletAbiFlowReview? = null
 
     override val state: StateFlow<WalletAbiFlowState> = mutableState.asStateFlow()
     override val outputs: Flow<WalletAbiFlowOutput> = mutableOutputs.asSharedFlow()
@@ -64,6 +65,7 @@ class DefaultWalletAbiFlowStore : WalletAbiFlowStore {
 
     private suspend fun handleExecutionRequestLoaded(event: WalletAbiExecutionEvent.RequestLoaded) {
         lastRequestContext = event.review.requestContext
+        lastReview = event.review
         mutableState.value = WalletAbiFlowState.RequestLoaded(event.review)
         mutableOutputs.emit(
             WalletAbiFlowOutput.PersistSnapshot(
@@ -77,6 +79,7 @@ class DefaultWalletAbiFlowStore : WalletAbiFlowStore {
 
     private suspend fun handleExecutionResolved(event: WalletAbiExecutionEvent.Resolved) {
         lastRequestContext = event.review.requestContext
+        lastReview = event.review
         mutableState.value = WalletAbiFlowState.RequestLoaded(event.review)
         mutableOutputs.emit(
             WalletAbiFlowOutput.PersistSnapshot(
@@ -123,6 +126,7 @@ class DefaultWalletAbiFlowStore : WalletAbiFlowStore {
     private suspend fun handleSelectAccount(intent: WalletAbiFlowIntent.SelectAccount) {
         val currentState = mutableState.value as? WalletAbiFlowState.RequestLoaded ?: return
         val updatedReview = currentState.review.copy(selectedAccountId = intent.accountId)
+        lastReview = updatedReview
         mutableState.value = WalletAbiFlowState.RequestLoaded(updatedReview)
         mutableOutputs.emit(
             WalletAbiFlowOutput.PersistSnapshot(
@@ -154,6 +158,10 @@ class DefaultWalletAbiFlowStore : WalletAbiFlowStore {
                 mutableState.value = WalletAbiFlowState.Submitting(
                     requestContext = currentState.review.requestContext,
                     stage = WalletAbiSubmittingStage.PREPARING
+                )
+                emitSubmittingSnapshot(
+                    review = currentState.review,
+                    jade = null
                 )
                 mutableOutputs.emit(
                     WalletAbiFlowOutput.StartSubmission(
@@ -356,9 +364,14 @@ class DefaultWalletAbiFlowStore : WalletAbiFlowStore {
 
             WalletAbiJadeEvent.Signed -> {
                 val jade = currentState.jade.copy(step = WalletAbiJadeStep.SIGN)
+                val review = lastReview ?: return
                 mutableState.value = WalletAbiFlowState.Submitting(
                     requestContext = currentState.requestContext,
                     stage = WalletAbiSubmittingStage.PREPARING,
+                    jade = jade
+                )
+                emitSubmittingSnapshot(
+                    review = review,
                     jade = jade
                 )
                 mutableOutputs.emit(
@@ -392,6 +405,21 @@ class DefaultWalletAbiFlowStore : WalletAbiFlowStore {
         mutableState.value = WalletAbiFlowState.Error(error)
         mutableOutputs.emit(WalletAbiFlowOutput.PersistSnapshot(null))
         mutableOutputs.emit(WalletAbiFlowOutput.Complete(result))
+    }
+
+    private suspend fun emitSubmittingSnapshot(
+        review: WalletAbiFlowReview,
+        jade: WalletAbiJadeContext?
+    ) {
+        mutableOutputs.emit(
+            WalletAbiFlowOutput.PersistSnapshot(
+                WalletAbiResumeSnapshot(
+                    review = review,
+                    phase = WalletAbiResumePhase.SUBMITTING,
+                    jade = jade
+                )
+            )
+        )
     }
 }
 
