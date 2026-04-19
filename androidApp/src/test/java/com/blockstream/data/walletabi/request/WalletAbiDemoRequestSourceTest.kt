@@ -5,6 +5,29 @@ import kotlin.test.assertEquals
 
 class WalletAbiDemoRequestSourceTest {
     @Test
+    fun loadRequestEnvelope_consumes_override_before_demo_fallback() {
+        val source = DefaultWalletAbiDemoRequestSource(
+            overrideStore = object : WalletAbiDemoRequestOverrideStore {
+                private var requestEnvelope: String? = """{"kind":"override"}"""
+
+                override fun consumeRequestEnvelope(): String? {
+                    return requestEnvelope.also {
+                        requestEnvelope = null
+                    }
+                }
+            }
+        )
+
+        assertEquals("""{"kind":"override"}""", source.loadRequestEnvelope("ignored"))
+        assertEquals(
+            "wallet-abi-demo-request",
+            source.loadRequestEnvelope("wallet-abi-demo-request")
+                .substringAfter("\"request_id\": \"")
+                .substringBefore('"')
+        )
+    }
+
+    @Test
     fun loadRequestEnvelope_returns_real_execution_demo_payload() {
         val source = DefaultWalletAbiDemoRequestSource()
 

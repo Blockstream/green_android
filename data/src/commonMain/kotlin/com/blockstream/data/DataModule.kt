@@ -7,6 +7,7 @@ import com.blockstream.data.walletabi.flow.FakeWalletAbiFlowDriver
 import com.blockstream.data.walletabi.flow.WalletAbiFlowSnapshotStore
 import com.blockstream.data.walletabi.request.DefaultWalletAbiDemoRequestSource
 import com.blockstream.data.walletabi.request.WalletAbiDemoRequestSource
+import com.blockstream.data.walletabi.request.NoOpWalletAbiDemoRequestOverrideStore
 import org.koin.core.module.dsl.singleOf
 import org.koin.dsl.module
 
@@ -17,7 +18,11 @@ val dataModule = module {
     single { DefaultJson }
     singleOf(::WalletAbiFlowSnapshotStore)
     single { FakeWalletAbiFlowDriver() }
-    single<WalletAbiDemoRequestSource> { DefaultWalletAbiDemoRequestSource() }
+    single<WalletAbiDemoRequestSource> {
+        DefaultWalletAbiDemoRequestSource(
+            overrideStore = getOrNull() ?: NoOpWalletAbiDemoRequestOverrideStore
+        )
+    }
     includes(meldModule)
     includes(notificationsDataModule)
 

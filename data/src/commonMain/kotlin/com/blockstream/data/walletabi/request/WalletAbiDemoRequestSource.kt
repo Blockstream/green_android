@@ -1,14 +1,24 @@
 package com.blockstream.data.walletabi.request
 
+interface WalletAbiDemoRequestOverrideStore {
+    fun consumeRequestEnvelope(): String?
+}
+
+data object NoOpWalletAbiDemoRequestOverrideStore : WalletAbiDemoRequestOverrideStore {
+    override fun consumeRequestEnvelope(): String? = null
+}
+
 fun interface WalletAbiDemoRequestSource {
     fun loadRequestEnvelope(requestId: String): String
 }
 
 class DefaultWalletAbiDemoRequestSource(
+    private val overrideStore: WalletAbiDemoRequestOverrideStore = NoOpWalletAbiDemoRequestOverrideStore,
     private val requestEnvelopeLoader: (String) -> String = ::defaultRequestEnvelope
 ) : WalletAbiDemoRequestSource {
     override fun loadRequestEnvelope(requestId: String): String {
-        return requestEnvelopeLoader(requestId)
+        return overrideStore.consumeRequestEnvelope()
+            ?: requestEnvelopeLoader(requestId)
     }
 }
 

@@ -9,6 +9,8 @@ import com.blockstream.data.managers.BluetoothManager
 import com.blockstream.data.managers.LocaleManager
 import com.blockstream.data.managers.SettingsManager
 import com.blockstream.data.utils.AndroidKeystore
+import com.blockstream.data.walletabi.request.WalletAbiAndroidDemoRequestOverrideStore
+import com.blockstream.data.walletabi.request.WalletAbiDemoRequestOverrideStore
 import com.russhwolf.settings.ObservableSettings
 import com.russhwolf.settings.SharedPreferencesSettings
 import org.koin.android.ext.koin.androidContext
@@ -32,6 +34,9 @@ actual val platformModule: Module = module {
             Context.MODE_PRIVATE
         )
         SharedPreferencesSettings(sharedPreferences)
+    }
+    single<WalletAbiDemoRequestOverrideStore> {
+        WalletAbiAndroidDemoRequestOverrideStore(androidContext())
     }
     single {
         AndroidKeystore(androidContext())
