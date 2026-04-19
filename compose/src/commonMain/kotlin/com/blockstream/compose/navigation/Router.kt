@@ -383,7 +383,7 @@ fun Router(
                 val args = it.toRoute<NavigateDestinations.WalletAbiFlow>()
                 val viewModel = viewModel {
                     GlobalContext.get().get<WalletAbiFlowRouteViewModel> {
-                        parametersOf(args.greenWallet)
+                        parametersOf(args.greenWallet, args.launchMode)
                     }
                 }
                 SetupScreen(viewModel = viewModel, withPadding = false, withBottomInsets = false) {

@@ -59,7 +59,10 @@ sealed class NavigateDestinations : NavigateDestination() {
     data class Security(val greenWallet: GreenWallet) : NavigateDestination(unique = true, isBottomNavigation = true)
 
     @Serializable
-    data class WalletAbiFlow(val greenWallet: GreenWallet) : NavigateDestination(unique = true)
+    data class WalletAbiFlow(
+        val greenWallet: GreenWallet,
+        val launchMode: WalletAbiFlowLaunchMode = WalletAbiFlowLaunchMode.Demo
+    ) : NavigateDestination(unique = true)
 
     @Serializable
     data object Home : NavigateDestination(unique = true, makeItRoot = true)
@@ -575,4 +578,10 @@ sealed class NavigateDestinations : NavigateDestination() {
 
     @Serializable
     data object TorWarning : NavigateDestination()
+}
+
+@Serializable
+enum class WalletAbiFlowLaunchMode {
+    Demo,
+    Resume
 }

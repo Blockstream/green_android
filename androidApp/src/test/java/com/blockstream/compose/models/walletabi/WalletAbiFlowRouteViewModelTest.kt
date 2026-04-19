@@ -2,6 +2,7 @@ package com.blockstream.compose.models.walletabi
 
 import androidx.lifecycle.viewModelScope
 import com.blockstream.compose.extensions.previewWallet
+import com.blockstream.compose.navigation.WalletAbiFlowLaunchMode
 import com.blockstream.compose.sideeffects.SideEffects
 import com.blockstream.data.CountlyBase
 import com.blockstream.data.banner.Banner
@@ -57,7 +58,9 @@ import com.blockstream.domain.walletabi.flow.WalletAbiStartRequestContext
 import com.blockstream.domain.walletabi.flow.WalletAbiSubmissionCommand
 import com.blockstream.domain.walletabi.flow.WalletAbiSuccessResult
 import com.blockstream.domain.walletabi.request.WalletAbiNetwork
+import com.blockstream.domain.walletabi.request.DefaultWalletAbiRequestParser
 import com.blockstream.domain.walletabi.request.WalletAbiParsedRequest
+import com.blockstream.domain.walletabi.request.WalletAbiRequestParseResult
 import io.mockk.coEvery
 import io.mockk.coVerify
 import kotlinx.coroutines.Dispatchers
@@ -210,6 +213,136 @@ class WalletAbiFlowRouteViewModelTest {
             ),
             store.intents
         )
+    }
+
+    @Test
+    fun resume_launch_loads_snapshot_instead_of_demo_request() = runTest(dispatcher) {
+        val snapshot = demoResumeSnapshot(phase = WalletAbiResumePhase.REQUEST_LOADED)
+        coEvery { snapshotRepository.load(greenWallet.id) } returns snapshot
+        requestSource = DefaultWalletAbiDemoRequestSource { _ ->
+            error("Resume launch should not read the demo request source")
+        }
+
+        createViewModel(
+            greenWallet = greenWallet,
+            store = store,
+            snapshotRepository = snapshotRepository,
+            requestSource = requestSource,
+            launchMode = WalletAbiFlowLaunchMode.Resume,
+            driver = driver
+        )
+
+        advanceUntilIdle()
+
+        val intent = assertIs<WalletAbiFlowIntent.Restore>(store.intents.single())
+        assertEquals(WalletAbiResumePhase.REQUEST_LOADED, intent.snapshot.phase)
+        assertEquals(greenWallet.id, intent.snapshot.review.requestContext.walletId)
+        assertEquals(WalletAbiFlowRouteViewModel.DEMO_REQUEST_ID, intent.snapshot.review.requestContext.requestId)
+        assertEquals("wallet_abi_process_request", intent.snapshot.review.method)
+    }
+
+    @Test
+    fun resume_request_loaded_snapshot_rebuilds_review_and_enters_resumable() = runTest(dispatcher) {
+        val realStore = DefaultWalletAbiFlowStore()
+        val snapshot = demoResumeSnapshot(phase = WalletAbiResumePhase.REQUEST_LOADED)
+        coEvery { snapshotRepository.load(greenWallet.id) } returns snapshot
+
+        val viewModel = createViewModel(
+            greenWallet = greenWallet,
+            store = realStore,
+            snapshotRepository = snapshotRepository,
+            launchMode = WalletAbiFlowLaunchMode.Resume,
+            driver = driver
+        )
+
+        advanceUntilIdle()
+
+        val state = assertIs<WalletAbiFlowState.Resumable>(viewModel.state.value)
+        assertEquals(WalletAbiResumePhase.REQUEST_LOADED, state.snapshot.phase)
+        assertEquals(greenWallet.id, state.snapshot.review.requestContext.walletId)
+        assertEquals(WalletAbiFlowRouteViewModel.DEMO_REQUEST_ID, state.snapshot.review.requestContext.requestId)
+        assertEquals("wallet_abi_process_request", state.snapshot.review.method)
+        assertEquals(liquidAccount.id, state.snapshot.review.selectedAccountId)
+        assertEquals("tlq1qqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqq3l4q9m", state.snapshot.review.executionDetails?.destinationAddress)
+        assertEquals("wallet_abi_process_request", viewModel.reviewLook.value?.method)
+    }
+
+    @Test
+    fun resume_submitting_snapshot_restores_partial_completion_error() = runTest(dispatcher) {
+        val realStore = DefaultWalletAbiFlowStore()
+        coEvery { snapshotRepository.load(greenWallet.id) } returns demoResumeSnapshot(
+            phase = WalletAbiResumePhase.SUBMITTING
+        )
+
+        val viewModel = createViewModel(
+            greenWallet = greenWallet,
+            store = realStore,
+            snapshotRepository = snapshotRepository,
+            launchMode = WalletAbiFlowLaunchMode.Resume,
+            driver = driver
+        )
+
+        advanceUntilIdle()
+
+        val state = assertIs<WalletAbiFlowState.Error>(viewModel.state.value)
+        assertEquals(WalletAbiFlowErrorKind.PARTIAL_COMPLETION, state.error.kind)
+        assertEquals(WalletAbiFlowPhase.SUBMISSION, state.error.phase)
+        assertEquals(false, state.error.retryable)
+    }
+
+    @Test
+    fun resume_without_snapshot_navigates_back() = runTest(dispatcher) {
+        coEvery { snapshotRepository.load(greenWallet.id) } returns null
+        val viewModel = createViewModel(
+            greenWallet = greenWallet,
+            store = store,
+            snapshotRepository = snapshotRepository,
+            launchMode = WalletAbiFlowLaunchMode.Resume,
+            driver = driver
+        )
+        val sideEffect = async { viewModel.sideEffect.first() }
+
+        advanceUntilIdle()
+
+        assertEquals(SideEffects.NavigateBack(), sideEffect.await())
+        assertEquals(emptyList(), store.intents)
+    }
+
+    @Test
+    fun resume_rebuild_failure_clears_snapshot_and_dispatches_non_retryable_error() = runTest(dispatcher) {
+        val parsedRequest = assertIs<WalletAbiParsedRequest.TxCreate>(
+            demoResumeSnapshot(WalletAbiResumePhase.REQUEST_LOADED).review.parsedRequest
+        )
+        val unsupportedSnapshot = demoResumeSnapshot(
+            phase = WalletAbiResumePhase.REQUEST_LOADED,
+            parsedRequest = parsedRequest.copy(
+                request = parsedRequest.request.copy(
+                    params = parsedRequest.request.params.copy(
+                        outputs = listOf(
+                            parsedRequest.request.params.outputs.first(),
+                            parsedRequest.request.params.outputs.first().copy(id = "output-2")
+                        )
+                    )
+                )
+            )
+        )
+        coEvery { snapshotRepository.load(greenWallet.id) } returns unsupportedSnapshot
+
+        createViewModel(
+            greenWallet = greenWallet,
+            store = store,
+            snapshotRepository = snapshotRepository,
+            launchMode = WalletAbiFlowLaunchMode.Resume,
+            driver = driver
+        )
+
+        advanceUntilIdle()
+
+        coVerify(exactly = 1) { snapshotRepository.clear(greenWallet.id) }
+        val intent = assertIs<WalletAbiFlowIntent.OnExecutionEvent>(store.intents.last())
+        val error = assertIs<WalletAbiExecutionEvent.Failed>(intent.event).error
+        assertEquals(false, error.retryable)
+        assertEquals(WalletAbiFlowPhase.LOADING, error.phase)
     }
 
 
@@ -1218,6 +1351,7 @@ class WalletAbiFlowRouteViewModelTest {
 
     private fun createViewModel(
         greenWallet: com.blockstream.data.data.GreenWallet = this.greenWallet,
+        launchMode: WalletAbiFlowLaunchMode = WalletAbiFlowLaunchMode.Demo,
         store: WalletAbiFlowStore = this.store,
         snapshotRepository: WalletAbiFlowSnapshotRepository = this.snapshotRepository,
         walletSession: GdkSession = this.walletSession,
@@ -1232,6 +1366,7 @@ class WalletAbiFlowRouteViewModelTest {
     ): WalletAbiFlowRouteViewModel {
         return WalletAbiFlowRouteViewModel(
             greenWallet = greenWallet,
+            launchMode = launchMode,
             store = store,
             snapshotRepository = snapshotRepository,
             walletSession = walletSession,
@@ -1243,6 +1378,43 @@ class WalletAbiFlowRouteViewModelTest {
             approvalTimeoutMillis = approvalTimeoutMillis,
             submissionTimeoutMillis = submissionTimeoutMillis
         ).also { createdViewModels += it }
+    }
+
+    private fun demoResumeSnapshot(
+        phase: WalletAbiResumePhase,
+        parsedRequest: WalletAbiParsedRequest = defaultParsedRequest(),
+        method: String = "wallet_abi_process_request"
+    ): WalletAbiResumeSnapshot {
+        return WalletAbiResumeSnapshot(
+            review = WalletAbiFlowReview(
+                requestContext = WalletAbiStartRequestContext(
+                    requestId = WalletAbiFlowRouteViewModel.DEMO_REQUEST_ID,
+                    walletId = greenWallet.id
+                ),
+                method = method,
+                title = "Wallet ABI payment",
+                message = "Approve a Wallet ABI request",
+                accounts = listOf(
+                    WalletAbiAccountOption(
+                        accountId = liquidAccount.id,
+                        name = liquidAccount.name
+                    )
+                ),
+                selectedAccountId = liquidAccount.id,
+                approvalTarget = WalletAbiApprovalTarget.Software,
+                parsedRequest = parsedRequest
+            ),
+            phase = phase
+        )
+    }
+
+    private fun defaultParsedRequest(): WalletAbiParsedRequest {
+        val envelope = assertIs<WalletAbiRequestParseResult.Success>(
+            DefaultWalletAbiRequestParser().parse(
+                requestSource.loadRequestEnvelope(WalletAbiFlowRouteViewModel.DEMO_REQUEST_ID)
+            )
+        ).envelope
+        return envelope.request
     }
 
     private fun preparedExecution(plan: com.blockstream.domain.walletabi.execution.WalletAbiExecutionPlan): WalletAbiPreparedExecution {

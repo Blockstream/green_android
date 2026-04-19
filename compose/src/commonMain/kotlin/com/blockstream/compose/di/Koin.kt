@@ -2,6 +2,7 @@ package com.blockstream.compose.di
 
 import co.touchlab.kermit.Logger
 import com.blockstream.compose.models.walletabi.WalletAbiFlowRouteViewModel
+import com.blockstream.compose.navigation.WalletAbiFlowLaunchMode
 import com.blockstream.compose.navigation.NavigateToWallet
 import com.blockstream.data.btcpricehistory.btcPriceHistoryModule
 import com.blockstream.data.config.AppInfo
@@ -30,9 +31,10 @@ fun initKoin(appInfo: AppInfo, appConfig: AppConfig, doOnStartup: () -> Unit = {
                     doOnStartup
                 }
                 singleOf(::NavigateToWallet)
-                factory { (greenWallet: GreenWallet) ->
+                factory { (greenWallet: GreenWallet, launchMode: WalletAbiFlowLaunchMode) ->
                     WalletAbiFlowRouteViewModel(
                         greenWallet = greenWallet,
+                        launchMode = launchMode,
                         store = get(),
                         snapshotRepository = get(),
                         walletSession = get<SessionManager>().getWalletSessionOrCreate(greenWallet),

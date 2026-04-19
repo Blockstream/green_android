@@ -3,6 +3,7 @@ package com.blockstream.compose.models.walletabi
 import androidx.lifecycle.viewModelScope
 import com.blockstream.compose.models.GreenViewModel
 import com.blockstream.compose.navigation.NavData
+import com.blockstream.compose.navigation.WalletAbiFlowLaunchMode
 import com.blockstream.compose.sideeffects.SideEffects
 import com.blockstream.data.data.GreenWallet
 import com.blockstream.data.gdk.GdkSession
@@ -34,6 +35,8 @@ import com.blockstream.domain.walletabi.flow.WalletAbiFlowError
 import com.blockstream.domain.walletabi.flow.WalletAbiFlowErrorKind
 import com.blockstream.domain.walletabi.flow.WalletAbiFlowPhase
 import com.blockstream.domain.walletabi.flow.WalletAbiJadeEvent
+import com.blockstream.domain.walletabi.flow.WalletAbiResumePhase
+import com.blockstream.domain.walletabi.flow.WalletAbiResumeSnapshot
 import com.blockstream.domain.walletabi.flow.WalletAbiStartRequestContext
 import com.blockstream.domain.walletabi.flow.WalletAbiSuccessResult
 import com.blockstream.domain.walletabi.request.DefaultWalletAbiRequestParser
@@ -59,6 +62,7 @@ import kotlinx.serialization.json.jsonPrimitive
 
 class WalletAbiFlowRouteViewModel(
     greenWallet: GreenWallet,
+    private val launchMode: WalletAbiFlowLaunchMode = WalletAbiFlowLaunchMode.Demo,
     private val store: WalletAbiFlowStore,
     private val snapshotRepository: WalletAbiFlowSnapshotRepository,
     private val walletSession: GdkSession,
@@ -95,7 +99,7 @@ class WalletAbiFlowRouteViewModel(
         store.outputs.onEach { output ->
             handleOutput(output = output, greenWallet = greenWallet)
         }.launchIn(viewModelScope)
-        startFlow(greenWallet = greenWallet)
+        bootstrapFlow(greenWallet = greenWallet)
         bootstrap()
     }
 
@@ -458,16 +462,91 @@ class WalletAbiFlowRouteViewModel(
         }
     }
 
-    private fun startFlow(greenWallet: GreenWallet) {
+    private fun bootstrapFlow(greenWallet: GreenWallet) {
         viewModelScope.launch {
-            store.dispatch(
-                WalletAbiFlowIntent.Start(
-                    requestContext = WalletAbiStartRequestContext(
-                        requestId = DEMO_REQUEST_ID,
-                        walletId = greenWallet.id
+            when (launchMode) {
+                WalletAbiFlowLaunchMode.Demo -> {
+                    store.dispatch(
+                        WalletAbiFlowIntent.Start(
+                            requestContext = WalletAbiStartRequestContext(
+                                requestId = DEMO_REQUEST_ID,
+                                walletId = greenWallet.id
+                            )
+                        )
+                    )
+                }
+
+                WalletAbiFlowLaunchMode.Resume -> {
+                    restoreFlow(greenWallet = greenWallet)
+                }
+            }
+        }
+    }
+
+    private suspend fun restoreFlow(greenWallet: GreenWallet) {
+        val snapshot = snapshotRepository.load(greenWallet.id)
+        if (snapshot == null) {
+            clearPreparedReview()
+            postSideEffect(SideEffects.NavigateBack())
+            return
+        }
+
+        when (snapshot.phase) {
+            WalletAbiResumePhase.REQUEST_LOADED,
+            WalletAbiResumePhase.AWAITING_APPROVAL -> {
+                val parsedRequest = snapshot.review.parsedRequest
+                val method = snapshot.review.method.toWalletAbiMethodOrNull()
+                if (parsedRequest == null || method == null) {
+                    snapshotRepository.clear(greenWallet.id)
+                    clearPreparedReview()
+                    postSideEffect(SideEffects.NavigateBack())
+                    return
+                }
+
+                val preparedReview = try {
+                    val restoredEnvelope = WalletAbiParsedEnvelope(
+                        id = null,
+                        method = method,
+                        request = parsedRequest
+                    )
+                    activeEnvelope = restoredEnvelope
+                    buildPreparedReview(
+                        envelope = restoredEnvelope,
+                        requestContext = snapshot.review.requestContext,
+                        selectedAccountId = snapshot.review.selectedAccountId
+                    )
+                } catch (throwable: Throwable) {
+                    if (throwable is CancellationException) {
+                        throw throwable
+                    }
+                    snapshotRepository.clear(greenWallet.id)
+                    dispatchExecutionFailure(
+                        throwable.toWalletAbiFlowError(
+                            phase = WalletAbiFlowPhase.LOADING,
+                            sessionConnected = walletSession.isConnected
+                        ).copy(retryable = false)
+                    )
+                    return
+                }
+
+                activeReview = preparedReview.review
+                activePreparedExecution = preparedReview.preparedExecution
+                mutableReviewLook.value = preparedReview.reviewLook
+                store.dispatch(
+                    WalletAbiFlowIntent.Restore(
+                        snapshot.copy(
+                            review = preparedReview.review
+                        )
                     )
                 )
-            )
+            }
+
+            WalletAbiResumePhase.SUBMITTING -> {
+                clearPreparedReview()
+                store.dispatch(
+                    WalletAbiFlowIntent.Restore(snapshot)
+                )
+            }
         }
     }
 
@@ -614,6 +693,10 @@ private fun String.isLikelyNetworkFailure(): Boolean {
         "transport" in normalized ||
         "connection" in normalized ||
         "disconnected" in normalized
+}
+
+private fun String?.toWalletAbiMethodOrNull(): WalletAbiMethod? {
+    return WalletAbiMethod.entries.firstOrNull { it.wireValue == this }
 }
 
 private fun WalletAbiPreparedExecution.toReviewLook(
