@@ -8,7 +8,6 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.verticalScroll
-import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.Text
@@ -47,6 +46,7 @@ import com.blockstream.compose.components.GreenColumn
 import com.blockstream.compose.components.GreenConfirmButton
 import com.blockstream.compose.components.GreenDataLayout
 import com.blockstream.compose.components.OnProgressStyle
+import com.blockstream.compose.components.TransactionConfirmationSummary
 import com.blockstream.compose.models.send.CreateTransactionViewModelAbstract
 import com.blockstream.compose.models.send.SendConfirmViewModel
 import com.blockstream.compose.models.send.SendConfirmViewModelAbstract
@@ -57,11 +57,7 @@ import com.blockstream.compose.navigation.bottomsheet.BottomSheetNavigator
 import com.blockstream.compose.navigation.getResult
 import com.blockstream.compose.screens.jade.JadeQRResult
 import com.blockstream.compose.sideeffects.SideEffects
-import com.blockstream.compose.theme.bodyMedium
 import com.blockstream.compose.theme.bodySmall
-import com.blockstream.compose.theme.labelLarge
-import com.blockstream.compose.theme.titleSmall
-import com.blockstream.compose.theme.whiteHigh
 import com.blockstream.compose.theme.whiteMedium
 import com.blockstream.compose.utils.SetupScreen
 import com.blockstream.data.data.GreenWallet
@@ -202,7 +198,7 @@ fun SendConfirmScreen(
                     }
                 }
 
-                FeesAndTotalSection(look) {
+                TransactionConfirmationSummary(look) {
                     viewModel.postEvent(SendConfirmViewModel.LocalEvents.ClickTotalFees)
                 }
             }
@@ -212,103 +208,6 @@ fun SendConfirmScreen(
             }
         }
     }
-}
-
-@Composable
-private fun DataRow(
-    title: String,
-    subtitle: String? = null,
-    value: String,
-    valueSecondary: String? = null,
-    isLarge: Boolean = false,
-    onTitleClick: (() -> Unit)? = null
-) {
-    Row {
-        Column {
-            Row {
-                Text(
-                    text = title, color = whiteMedium, style = if (isLarge) titleSmall else labelLarge
-                )
-
-                if (onTitleClick != null) {
-                    IconButton(
-                        onClick = {
-                            onTitleClick()
-                        }, modifier = Modifier.size(24.dp)
-                    ) {
-                        Icon(
-                            painter = painterResource(Res.drawable.info),
-                            contentDescription = null,
-                            tint = whiteMedium,
-                            modifier = Modifier.size(16.dp)
-                        )
-                    }
-                }
-            }
-            if (subtitle != null) {
-                Text(
-                    text = subtitle, modifier = Modifier.align(Alignment.CenterHorizontally), color = whiteMedium, style = bodySmall
-                )
-            }
-        }
-
-        Column(horizontalAlignment = Alignment.End, modifier = Modifier.weight(1f)) {
-
-            Text(text = value, color = whiteHigh, style = if (isLarge) titleSmall else labelLarge)
-
-            if (valueSecondary != null) {
-                Text(text = valueSecondary, color = whiteMedium, style = if (isLarge) labelLarge else bodyMedium)
-            }
-        }
-    }
-}
-
-@Composable
-private fun FeesAndTotalSection(look: TransactionConfirmation, onTotalFeesClick: () -> Unit) {
-
-    if (look.isLiquidToLightningSwap || look.isSwap) {
-        DataRow(title = stringResource(Res.string.id_total_fees), onTitleClick = onTotalFeesClick, value = look.totalFees ?: "")
-
-        if (look.isSwap) {
-            DataRow(
-                title = stringResource(Res.string.id_total_spent), value = look.total ?: ""
-            )
-        }
-        
-    } else {
-        DataRow(
-            title = stringResource(Res.string.id_network_fee),
-            subtitle = look.feeRate,
-            value = look.fee ?: "",
-            valueSecondary = look.feeFiat
-        )
-    }
-
-    if (look.isSwap || look.total != null || look.totalFiat != null) {
-        HorizontalDivider()
-    }
-
-    if (look.isSwap) {
-        DataRow(
-            title = stringResource(Res.string.id_total_to_receive),
-            value = look.recipientReceives ?: "",
-            valueSecondary = look.recipientReceivesFiat,
-            isLarge = true
-        )
-    } else {
-        val total = look.total
-        val totalFiat = look.totalFiat
-        if (total != null) {
-            DataRow(
-                title = stringResource(Res.string.id_total_spent), value = total, valueSecondary = totalFiat, isLarge = false
-            )
-        } else if (totalFiat != null) {
-            DataRow(
-                title = stringResource(Res.string.id_total_spent), value = totalFiat, isLarge = false
-            )
-        }
-    }
-
 }
 
 @Composable
