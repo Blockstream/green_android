@@ -26,6 +26,7 @@ class DefaultWalletAbiFlowStore : WalletAbiFlowStore {
     override suspend fun dispatch(intent: WalletAbiFlowIntent) {
         when (intent) {
             WalletAbiFlowIntent.Approve -> handleApprove()
+            WalletAbiFlowIntent.Cancel -> handleCancel()
             WalletAbiFlowIntent.CancelResume -> handleCancelResume()
             WalletAbiFlowIntent.DismissTerminal -> handleDismissTerminal()
             WalletAbiFlowIntent.Reject -> handleReject()
@@ -34,7 +35,7 @@ class DefaultWalletAbiFlowStore : WalletAbiFlowStore {
             WalletAbiFlowIntent.Retry -> handleRetry()
             WalletAbiFlowIntent.Resume -> handleResume()
             is WalletAbiFlowIntent.Start -> handleStart(intent)
-            is WalletAbiFlowIntent.ResolveRequest -> handleResolveRequest()
+            WalletAbiFlowIntent.ResolveRequest -> handleResolveRequest()
             is WalletAbiFlowIntent.SelectAccount -> handleSelectAccount(intent)
             is WalletAbiFlowIntent.OnExecutionEvent -> handleExecutionEvent(intent.event)
         }
@@ -51,8 +52,9 @@ class DefaultWalletAbiFlowStore : WalletAbiFlowStore {
     private suspend fun handleExecutionEvent(event: WalletAbiExecutionEvent) {
         when (event) {
             WalletAbiExecutionEvent.Broadcasted -> handleExecutionBroadcasted()
-            is WalletAbiExecutionEvent.Failed -> handleExecutionFailed(event)
+            is WalletAbiExecutionEvent.Cancelled -> handleExecutionCancelled(event)
             WalletAbiExecutionEvent.Expired -> handleExecutionExpired()
+            is WalletAbiExecutionEvent.Failed -> handleExecutionFailed(event)
             is WalletAbiExecutionEvent.RequestLoaded -> handleExecutionRequestLoaded(event)
             is WalletAbiExecutionEvent.Resolved -> handleExecutionResolved(event)
             is WalletAbiExecutionEvent.RemoteResponseSent -> handleExecutionRemoteResponseSent(event)
@@ -88,26 +90,34 @@ class DefaultWalletAbiFlowStore : WalletAbiFlowStore {
 
     private fun handleExecutionSubmitted() {
         val currentState = mutableState.value as? WalletAbiFlowState.Submitting ?: return
-        mutableState.value = currentState
+        mutableState.value = currentState.copy(
+            stage = WalletAbiSubmittingStage.PREPARING,
+            isCancelling = false
+        )
     }
 
     private fun handleExecutionBroadcasted() {
         val currentState = mutableState.value as? WalletAbiFlowState.Submitting ?: return
-        mutableState.value = currentState
+        mutableState.value = currentState.copy(
+            stage = WalletAbiSubmittingStage.BROADCASTING,
+            isCancelling = false
+        )
     }
 
     private suspend fun handleExecutionRemoteResponseSent(
         event: WalletAbiExecutionEvent.RemoteResponseSent
     ) {
         mutableState.value = WalletAbiFlowState.Success(event.result)
-        mutableOutputs.emit(
-            WalletAbiFlowOutput.PersistSnapshot(null)
-        )
+        mutableOutputs.emit(WalletAbiFlowOutput.PersistSnapshot(null))
         mutableOutputs.emit(
             WalletAbiFlowOutput.Complete(
                 WalletAbiFlowTerminalResult.Success(event.result)
             )
         )
+    }
+
+    private suspend fun handleExecutionCancelled(event: WalletAbiExecutionEvent.Cancelled) {
+        emitCancelled(event.reason)
     }
 
     private suspend fun handleSelectAccount(intent: WalletAbiFlowIntent.SelectAccount) {
@@ -141,7 +151,10 @@ class DefaultWalletAbiFlowStore : WalletAbiFlowStore {
         when (val approvalTarget = currentState.review.approvalTarget) {
             is WalletAbiApprovalTarget.Jade -> handleApproveJade(currentState.review, approvalTarget)
             WalletAbiApprovalTarget.Software -> {
-                mutableState.value = WalletAbiFlowState.Submitting(currentState.review.requestContext)
+                mutableState.value = WalletAbiFlowState.Submitting(
+                    requestContext = currentState.review.requestContext,
+                    stage = WalletAbiSubmittingStage.PREPARING
+                )
                 mutableOutputs.emit(
                     WalletAbiFlowOutput.StartSubmission(
                         WalletAbiSubmissionCommand(
@@ -189,39 +202,57 @@ class DefaultWalletAbiFlowStore : WalletAbiFlowStore {
         )
     }
 
+    private suspend fun handleCancel() {
+        when (val currentState = mutableState.value) {
+            is WalletAbiFlowState.Loading -> {
+                if (currentState.isCancelling) return
+                mutableState.value = currentState.copy(isCancelling = true)
+                mutableOutputs.emit(WalletAbiFlowOutput.CancelActiveWork(WalletAbiFlowPhase.LOADING))
+            }
+
+            is WalletAbiFlowState.AwaitingApproval -> {
+                if (currentState.isCancelling) return
+                mutableState.value = currentState.copy(isCancelling = true)
+                mutableOutputs.emit(WalletAbiFlowOutput.CancelActiveWork(WalletAbiFlowPhase.APPROVAL))
+            }
+
+            is WalletAbiFlowState.Submitting -> {
+                if (currentState.isCancelling || currentState.stage == WalletAbiSubmittingStage.BROADCASTING) {
+                    return
+                }
+                mutableState.value = currentState.copy(isCancelling = true)
+                mutableOutputs.emit(WalletAbiFlowOutput.CancelActiveWork(WalletAbiFlowPhase.SUBMISSION))
+            }
+
+            else -> Unit
+        }
+    }
+
     private suspend fun handleReject() {
-        val result = WalletAbiFlowTerminalResult.Cancelled(
-            WalletAbiCancelledReason.UserRejected
-        )
-        mutableState.value = WalletAbiFlowState.Cancelled(result.reason)
-        mutableOutputs.emit(WalletAbiFlowOutput.PersistSnapshot(null))
-        mutableOutputs.emit(WalletAbiFlowOutput.Complete(result))
+        emitCancelled(WalletAbiCancelledReason.UserRejected)
     }
 
     private suspend fun handleExecutionExpired() {
-        val result = WalletAbiFlowTerminalResult.Cancelled(
-            WalletAbiCancelledReason.RequestExpired
-        )
-        mutableState.value = WalletAbiFlowState.Cancelled(result.reason)
-        mutableOutputs.emit(WalletAbiFlowOutput.PersistSnapshot(null))
-        mutableOutputs.emit(WalletAbiFlowOutput.Complete(result))
+        emitCancelled(WalletAbiCancelledReason.RequestExpired)
     }
 
     private suspend fun handleExecutionFailed(event: WalletAbiExecutionEvent.Failed) {
-        val result = WalletAbiFlowTerminalResult.Error(event.error)
-        mutableState.value = WalletAbiFlowState.Error(event.error)
-        mutableOutputs.emit(WalletAbiFlowOutput.Complete(result))
+        emitError(event.error)
     }
 
     private suspend fun handleRestore(intent: WalletAbiFlowIntent.Restore) {
         lastRequestContext = intent.snapshot.review.requestContext
-        mutableState.value = when (intent.snapshot.phase) {
-            WalletAbiResumePhase.SUBMITTING -> restoreSubmittingAsError()
+        when (intent.snapshot.phase) {
+            WalletAbiResumePhase.SUBMITTING -> {
+                mutableState.value = restoreSubmittingAsError()
+                mutableOutputs.emit(WalletAbiFlowOutput.PersistSnapshot(null))
+            }
+
             else -> {
                 mutableOutputs.emit(
                     WalletAbiFlowOutput.PersistSnapshot(intent.snapshot)
                 )
-                WalletAbiFlowState.Resumable(intent.snapshot)
+                mutableState.value = WalletAbiFlowState.Resumable(intent.snapshot)
             }
         }
     }
@@ -244,13 +275,15 @@ class DefaultWalletAbiFlowStore : WalletAbiFlowStore {
             WalletAbiResumePhase.REQUEST_LOADED -> WalletAbiFlowState.RequestLoaded(snapshot.review)
             WalletAbiResumePhase.SUBMITTING -> WalletAbiFlowState.Submitting(
                 requestContext = snapshot.review.requestContext,
+                stage = WalletAbiSubmittingStage.PREPARING,
                 jade = snapshot.jade
             )
         }
     }
 
     private suspend fun handleRetry() {
-        if (mutableState.value !is WalletAbiFlowState.Error) return
+        val currentState = mutableState.value as? WalletAbiFlowState.Error ?: return
+        if (!currentState.error.retryable) return
         val requestContext = lastRequestContext ?: return
         mutableState.value = WalletAbiFlowState.Loading(requestContext)
         mutableOutputs.emit(
@@ -259,23 +292,14 @@ class DefaultWalletAbiFlowStore : WalletAbiFlowStore {
     }
 
     private suspend fun handleCancelResume() {
-        val result = WalletAbiFlowTerminalResult.Cancelled(
-            WalletAbiCancelledReason.ResumableCancelled
-        )
-        mutableState.value = WalletAbiFlowState.Cancelled(result.reason)
-        mutableOutputs.emit(WalletAbiFlowOutput.PersistSnapshot(null))
-        mutableOutputs.emit(WalletAbiFlowOutput.Complete(result))
+        emitCancelled(WalletAbiCancelledReason.ResumableCancelled)
     }
 
     private suspend fun handleDismissTerminal() {
         when (mutableState.value) {
             is WalletAbiFlowState.Cancelled,
+            is WalletAbiFlowState.Error,
             is WalletAbiFlowState.Success -> {
-                mutableState.value = WalletAbiFlowState.Idle
-            }
-
-            is WalletAbiFlowState.Error -> {
-                mutableOutputs.emit(WalletAbiFlowOutput.PersistSnapshot(null))
                 mutableState.value = WalletAbiFlowState.Idle
             }
 
@@ -285,7 +309,12 @@ class DefaultWalletAbiFlowStore : WalletAbiFlowStore {
 
     private fun restoreSubmittingAsError(): WalletAbiFlowState.Error {
         return WalletAbiFlowState.Error(
-            WalletAbiFlowError("Execution status uncertain")
+            WalletAbiFlowError(
+                kind = WalletAbiFlowErrorKind.PARTIAL_COMPLETION,
+                phase = WalletAbiFlowPhase.SUBMISSION,
+                message = "Transaction status may already have changed. Check your wallet activity before retrying.",
+                retryable = false
+            )
         )
     }
 
@@ -293,36 +322,35 @@ class DefaultWalletAbiFlowStore : WalletAbiFlowStore {
         val currentState = mutableState.value as? WalletAbiFlowState.AwaitingApproval ?: return
         when (event) {
             WalletAbiJadeEvent.Cancelled -> {
-                val result = WalletAbiFlowTerminalResult.Cancelled(
-                    WalletAbiCancelledReason.JadeCancelled
-                )
-                mutableState.value = WalletAbiFlowState.Cancelled(result.reason)
-                mutableOutputs.emit(WalletAbiFlowOutput.PersistSnapshot(null))
-                mutableOutputs.emit(WalletAbiFlowOutput.Complete(result))
+                emitCancelled(WalletAbiCancelledReason.JadeCancelled)
             }
 
             WalletAbiJadeEvent.Connected -> {
                 mutableState.value = currentState.copy(
-                    jade = currentState.jade.copy(step = WalletAbiJadeStep.UNLOCK)
+                    jade = currentState.jade.copy(step = WalletAbiJadeStep.UNLOCK),
+                    isCancelling = false
                 )
             }
 
             WalletAbiJadeEvent.Disconnected -> {
-                val error = WalletAbiFlowError("Jade disconnected")
-                val result = WalletAbiFlowTerminalResult.Error(error)
-                mutableState.value = WalletAbiFlowState.Error(error)
-                mutableOutputs.emit(WalletAbiFlowOutput.Complete(result))
+                emitError(
+                    WalletAbiFlowError(
+                        kind = WalletAbiFlowErrorKind.DEVICE_FAILURE,
+                        phase = WalletAbiFlowPhase.APPROVAL,
+                        message = "Jade disconnected",
+                        retryable = true
+                    )
+                )
             }
 
             is WalletAbiJadeEvent.Failed -> {
-                val result = WalletAbiFlowTerminalResult.Error(event.error)
-                mutableState.value = WalletAbiFlowState.Error(event.error)
-                mutableOutputs.emit(WalletAbiFlowOutput.Complete(result))
+                emitError(event.error)
             }
 
             WalletAbiJadeEvent.ReviewConfirmed -> {
                 mutableState.value = currentState.copy(
-                    jade = currentState.jade.copy(step = WalletAbiJadeStep.SIGN)
+                    jade = currentState.jade.copy(step = WalletAbiJadeStep.SIGN),
+                    isCancelling = false
                 )
             }
 
@@ -330,6 +358,7 @@ class DefaultWalletAbiFlowStore : WalletAbiFlowStore {
                 val jade = currentState.jade.copy(step = WalletAbiJadeStep.SIGN)
                 mutableState.value = WalletAbiFlowState.Submitting(
                     requestContext = currentState.requestContext,
+                    stage = WalletAbiSubmittingStage.PREPARING,
                     jade = jade
                 )
                 mutableOutputs.emit(
@@ -344,10 +373,25 @@ class DefaultWalletAbiFlowStore : WalletAbiFlowStore {
 
             WalletAbiJadeEvent.UnlockConfirmed -> {
                 mutableState.value = currentState.copy(
-                    jade = currentState.jade.copy(step = WalletAbiJadeStep.REVIEW)
+                    jade = currentState.jade.copy(step = WalletAbiJadeStep.REVIEW),
+                    isCancelling = false
                 )
             }
         }
+    }
+
+    private suspend fun emitCancelled(reason: WalletAbiCancelledReason) {
+        val result = WalletAbiFlowTerminalResult.Cancelled(reason)
+        mutableState.value = WalletAbiFlowState.Cancelled(result.reason)
+        mutableOutputs.emit(WalletAbiFlowOutput.PersistSnapshot(null))
+        mutableOutputs.emit(WalletAbiFlowOutput.Complete(result))
+    }
+
+    private suspend fun emitError(error: WalletAbiFlowError) {
+        val result = WalletAbiFlowTerminalResult.Error(error)
+        mutableState.value = WalletAbiFlowState.Error(error)
+        mutableOutputs.emit(WalletAbiFlowOutput.PersistSnapshot(null))
+        mutableOutputs.emit(WalletAbiFlowOutput.Complete(result))
     }
 }
 
@@ -358,8 +402,10 @@ data class WalletAbiStartRequestContext(
 
 sealed interface WalletAbiFlowState {
     data object Idle : WalletAbiFlowState
+
     data class Loading(
-        val requestContext: WalletAbiStartRequestContext
+        val requestContext: WalletAbiStartRequestContext,
+        val isCancelling: Boolean = false
     ) : WalletAbiFlowState
 
     data class RequestLoaded(
@@ -369,12 +415,15 @@ sealed interface WalletAbiFlowState {
     data class AwaitingApproval(
         val requestContext: WalletAbiStartRequestContext,
         val selectedAccountId: String?,
-        val jade: WalletAbiJadeContext
+        val jade: WalletAbiJadeContext,
+        val isCancelling: Boolean = false
     ) : WalletAbiFlowState
 
     data class Submitting(
         val requestContext: WalletAbiStartRequestContext,
-        val jade: WalletAbiJadeContext? = null
+        val stage: WalletAbiSubmittingStage,
+        val jade: WalletAbiJadeContext? = null,
+        val isCancelling: Boolean = false
     ) : WalletAbiFlowState
 
     data class Success(
@@ -396,6 +445,7 @@ sealed interface WalletAbiFlowState {
 
 sealed interface WalletAbiFlowIntent {
     data object Approve : WalletAbiFlowIntent
+    data object Cancel : WalletAbiFlowIntent
     data object CancelResume : WalletAbiFlowIntent
     data object DismissTerminal : WalletAbiFlowIntent
     data object Reject : WalletAbiFlowIntent
@@ -434,6 +484,10 @@ sealed interface WalletAbiFlowOutput {
         val requestContext: WalletAbiStartRequestContext
     ) : WalletAbiFlowOutput
 
+    data class CancelActiveWork(
+        val phase: WalletAbiFlowPhase
+    ) : WalletAbiFlowOutput
+
     data class StartResolution(
         val command: WalletAbiResolutionCommand
     ) : WalletAbiFlowOutput
@@ -461,6 +515,27 @@ enum class WalletAbiResumePhase {
     AWAITING_APPROVAL,
     REQUEST_LOADED,
     SUBMITTING
+}
+
+enum class WalletAbiFlowPhase {
+    LOADING,
+    APPROVAL,
+    SUBMISSION
+}
+
+enum class WalletAbiFlowErrorKind {
+    INVALID_REQUEST,
+    UNSUPPORTED_REQUEST,
+    DEVICE_FAILURE,
+    NETWORK_FAILURE,
+    TIMEOUT,
+    PARTIAL_COMPLETION,
+    EXECUTION_FAILURE
+}
+
+enum class WalletAbiSubmittingStage {
+    PREPARING,
+    BROADCASTING
 }
 
 data class WalletAbiResolutionCommand(
@@ -503,11 +578,15 @@ enum class WalletAbiCancelledReason {
     JadeCancelled,
     RequestExpired,
     ResumableCancelled,
+    UserCancelled,
     UserRejected
 }
 
 data class WalletAbiFlowError(
-    val message: String
+    val kind: WalletAbiFlowErrorKind,
+    val phase: WalletAbiFlowPhase,
+    val message: String,
+    val retryable: Boolean
 )
 
 data class WalletAbiFlowReview(
@@ -571,7 +650,13 @@ sealed interface WalletAbiJadeEvent {
 
 sealed interface WalletAbiExecutionEvent {
     data object Broadcasted : WalletAbiExecutionEvent
+
+    data class Cancelled(
+        val reason: WalletAbiCancelledReason
+    ) : WalletAbiExecutionEvent
+
     data object Expired : WalletAbiExecutionEvent
+
     data class Failed(
         val error: WalletAbiFlowError
     ) : WalletAbiExecutionEvent

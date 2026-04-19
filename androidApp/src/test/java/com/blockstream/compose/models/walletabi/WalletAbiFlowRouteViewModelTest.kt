@@ -48,6 +48,8 @@ import com.blockstream.domain.walletabi.flow.WalletAbiResolutionCommand
 import com.blockstream.domain.walletabi.flow.WalletAbiFlowState
 import com.blockstream.domain.walletabi.flow.WalletAbiFlowStore
 import com.blockstream.domain.walletabi.flow.WalletAbiFlowError
+import com.blockstream.domain.walletabi.flow.WalletAbiFlowErrorKind
+import com.blockstream.domain.walletabi.flow.WalletAbiFlowPhase
 import com.blockstream.domain.walletabi.flow.WalletAbiStartRequestContext
 import com.blockstream.domain.walletabi.flow.WalletAbiSubmissionCommand
 import com.blockstream.domain.walletabi.flow.WalletAbiSuccessResult
@@ -282,7 +284,12 @@ class WalletAbiFlowRouteViewModelTest {
         assertEquals(
             WalletAbiFlowIntent.OnExecutionEvent(
                 WalletAbiExecutionEvent.Failed(
-                    WalletAbiFlowError("Wallet ABI request envelope is malformed")
+                    WalletAbiFlowError(
+                        kind = WalletAbiFlowErrorKind.INVALID_REQUEST,
+                        phase = WalletAbiFlowPhase.LOADING,
+                        message = "Wallet ABI request envelope is malformed",
+                        retryable = false
+                    )
                 )
             ),
             store.intents.last()
@@ -327,7 +334,12 @@ class WalletAbiFlowRouteViewModelTest {
         assertEquals(
             WalletAbiFlowIntent.OnExecutionEvent(
                 WalletAbiExecutionEvent.Failed(
-                    WalletAbiFlowError("Unsupported Wallet ABI method 'wallet_abi_get_account'")
+                    WalletAbiFlowError(
+                        kind = WalletAbiFlowErrorKind.UNSUPPORTED_REQUEST,
+                        phase = WalletAbiFlowPhase.LOADING,
+                        message = "Unsupported Wallet ABI method 'wallet_abi_get_account'",
+                        retryable = false
+                    )
                 )
             ),
             store.intents.last()
@@ -594,7 +606,12 @@ class WalletAbiFlowRouteViewModelTest {
         assertEquals(
             WalletAbiFlowIntent.OnExecutionEvent(
                 WalletAbiExecutionEvent.Failed(
-                    WalletAbiFlowError("send failed")
+                    WalletAbiFlowError(
+                        kind = WalletAbiFlowErrorKind.EXECUTION_FAILURE,
+                        phase = WalletAbiFlowPhase.SUBMISSION,
+                        message = "send failed",
+                        retryable = true
+                    )
                 )
             ),
             store.intents.last()

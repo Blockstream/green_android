@@ -46,11 +46,13 @@ class WalletAbiFlowStoreTest {
         )
     )
 
+    private val requestContext = WalletAbiStartRequestContext(
+        requestId = "request-id",
+        walletId = "wallet-id"
+    )
+
     private val review = WalletAbiFlowReview(
-        requestContext = WalletAbiStartRequestContext(
-            requestId = "request-id",
-            walletId = "wallet-id"
-        ),
+        requestContext = requestContext,
         title = "Send",
         message = "Review the request",
         accounts = listOf(
@@ -64,13 +66,48 @@ class WalletAbiFlowStoreTest {
         parsedRequest = parsedRequest
     )
 
+    private val resolvedReview = review.copy(
+        message = "Resolved request",
+        selectedAccountId = "account-id-2"
+    )
+
+    private val successResult = WalletAbiSuccessResult(
+        requestId = review.requestContext.requestId,
+        txHash = "tx-hash",
+        responseId = "response-id"
+    )
+
+    private val retryableExecutionError = WalletAbiFlowError(
+        kind = WalletAbiFlowErrorKind.EXECUTION_FAILURE,
+        phase = WalletAbiFlowPhase.SUBMISSION,
+        message = "Execution failed",
+        retryable = true
+    )
+
+    private val nonRetryableInvalidRequestError = WalletAbiFlowError(
+        kind = WalletAbiFlowErrorKind.INVALID_REQUEST,
+        phase = WalletAbiFlowPhase.LOADING,
+        message = "Request is malformed",
+        retryable = false
+    )
+
+    private val jadeReview = review.copy(
+        approvalTarget = WalletAbiApprovalTarget.Jade(
+            deviceName = "Jade",
+            deviceId = "jade-id"
+        )
+    )
+
+    private val jadeFailedError = WalletAbiFlowError(
+        kind = WalletAbiFlowErrorKind.DEVICE_FAILURE,
+        phase = WalletAbiFlowPhase.APPROVAL,
+        message = "Jade failed",
+        retryable = true
+    )
+
     @Test
     fun start_enters_loading() = runTest {
         val store = DefaultWalletAbiFlowStore()
-        val requestContext = WalletAbiStartRequestContext(
-            requestId = "request-id",
-            walletId = "wallet-id"
-        )
 
         store.dispatch(WalletAbiFlowIntent.Start(requestContext))
 
@@ -83,10 +120,6 @@ class WalletAbiFlowStoreTest {
     @Test
     fun start_emits_load_request() = runTest {
         val store = DefaultWalletAbiFlowStore()
-        val requestContext = WalletAbiStartRequestContext(
-            requestId = "request-id",
-            walletId = "wallet-id"
-        )
         val output = async(start = CoroutineStart.UNDISPATCHED) { store.outputs.first() }
 
         store.dispatch(WalletAbiFlowIntent.Start(requestContext))
@@ -97,36 +130,10 @@ class WalletAbiFlowStoreTest {
         )
     }
 
-    private val resolvedReview = review.copy(
-        message = "Resolved request",
-        selectedAccountId = "account-id-2"
-    )
-    private val successResult = WalletAbiSuccessResult(
-        requestId = review.requestContext.requestId,
-        txHash = "tx-hash",
-        responseId = "response-id"
-    )
-    private val failedError = WalletAbiFlowError("Execution failed")
-    private val jadeReview = review.copy(
-        approvalTarget = WalletAbiApprovalTarget.Jade(
-            deviceName = "Jade",
-            deviceId = "jade-id"
-        )
-    )
-    private val jadeFailedError = WalletAbiFlowError("Jade failed")
-
     @Test
     fun request_loaded_event_updates_loading_state() = runTest {
         val store = DefaultWalletAbiFlowStore()
-        store.dispatch(
-            WalletAbiFlowIntent.Start(
-                WalletAbiStartRequestContext(
-                    requestId = "request-id",
-                    walletId = "wallet-id"
-                )
-            )
-        )
-
+        store.dispatch(WalletAbiFlowIntent.Start(requestContext))
         val output = async(start = CoroutineStart.UNDISPATCHED) { store.outputs.first() }
 
         store.dispatch(
@@ -153,7 +160,7 @@ class WalletAbiFlowStoreTest {
     @Test
     fun select_account_updates_request_loaded() = runTest {
         val store = DefaultWalletAbiFlowStore()
-        store.dispatch(WalletAbiFlowIntent.Start(review.requestContext))
+        store.dispatch(WalletAbiFlowIntent.Start(requestContext))
         store.dispatch(
             WalletAbiFlowIntent.OnExecutionEvent(
                 WalletAbiExecutionEvent.RequestLoaded(review)
@@ -183,7 +190,7 @@ class WalletAbiFlowStoreTest {
     @Test
     fun resolved_request_stays_editable() = runTest {
         val store = DefaultWalletAbiFlowStore()
-        store.dispatch(WalletAbiFlowIntent.Start(review.requestContext))
+        store.dispatch(WalletAbiFlowIntent.Start(requestContext))
         store.dispatch(
             WalletAbiFlowIntent.OnExecutionEvent(
                 WalletAbiExecutionEvent.RequestLoaded(review)
@@ -196,7 +203,7 @@ class WalletAbiFlowStoreTest {
         assertEquals(
             WalletAbiFlowOutput.StartResolution(
                 WalletAbiResolutionCommand(
-                    requestContext = review.requestContext,
+                    requestContext = requestContext,
                     selectedAccountId = review.selectedAccountId
                 )
             ),
@@ -227,9 +234,9 @@ class WalletAbiFlowStoreTest {
     }
 
     @Test
-    fun software_approve_starts_submitting() = runTest {
+    fun software_approve_starts_submitting_preparing() = runTest {
         val store = DefaultWalletAbiFlowStore()
-        store.dispatch(WalletAbiFlowIntent.Start(review.requestContext))
+        store.dispatch(WalletAbiFlowIntent.Start(requestContext))
         store.dispatch(
             WalletAbiFlowIntent.OnExecutionEvent(
                 WalletAbiExecutionEvent.RequestLoaded(review)
@@ -240,13 +247,16 @@ class WalletAbiFlowStoreTest {
         store.dispatch(WalletAbiFlowIntent.Approve)
 
         assertEquals(
-            WalletAbiFlowState.Submitting(review.requestContext, null),
+            WalletAbiFlowState.Submitting(
+                requestContext = requestContext,
+                stage = WalletAbiSubmittingStage.PREPARING
+            ),
             store.state.value
         )
         assertEquals(
             WalletAbiFlowOutput.StartSubmission(
                 WalletAbiSubmissionCommand(
-                    requestContext = review.requestContext,
+                    requestContext = requestContext,
                     selectedAccountId = review.selectedAccountId
                 )
             ),
@@ -255,31 +265,39 @@ class WalletAbiFlowStoreTest {
     }
 
     @Test
-    fun remote_response_sent_completes_success() = runTest {
+    fun submitted_and_broadcasted_update_submission_stage() = runTest {
         val store = DefaultWalletAbiFlowStore()
-        store.dispatch(WalletAbiFlowIntent.Start(review.requestContext))
-        store.dispatch(
-            WalletAbiFlowIntent.OnExecutionEvent(
-                WalletAbiExecutionEvent.RequestLoaded(review)
-            )
-        )
+        store.dispatch(WalletAbiFlowIntent.Start(requestContext))
+        store.dispatch(WalletAbiFlowIntent.OnExecutionEvent(WalletAbiExecutionEvent.RequestLoaded(review)))
         store.dispatch(WalletAbiFlowIntent.Approve)
 
-        store.dispatch(
-            WalletAbiFlowIntent.OnExecutionEvent(WalletAbiExecutionEvent.Submitted)
-        )
+        store.dispatch(WalletAbiFlowIntent.OnExecutionEvent(WalletAbiExecutionEvent.Submitted))
         assertEquals(
-            WalletAbiFlowState.Submitting(review.requestContext, null),
+            WalletAbiFlowState.Submitting(
+                requestContext = requestContext,
+                stage = WalletAbiSubmittingStage.PREPARING
+            ),
             store.state.value
         )
 
-        store.dispatch(
-            WalletAbiFlowIntent.OnExecutionEvent(WalletAbiExecutionEvent.Broadcasted)
-        )
+        store.dispatch(WalletAbiFlowIntent.OnExecutionEvent(WalletAbiExecutionEvent.Broadcasted))
         assertEquals(
-            WalletAbiFlowState.Submitting(review.requestContext),
+            WalletAbiFlowState.Submitting(
+                requestContext = requestContext,
+                stage = WalletAbiSubmittingStage.BROADCASTING
+            ),
             store.state.value
         )
+    }
+
+    @Test
+    fun remote_response_sent_completes_success() = runTest {
+        val store = DefaultWalletAbiFlowStore()
+        store.dispatch(WalletAbiFlowIntent.Start(requestContext))
+        store.dispatch(WalletAbiFlowIntent.OnExecutionEvent(WalletAbiExecutionEvent.RequestLoaded(review)))
+        store.dispatch(WalletAbiFlowIntent.Approve)
+        store.dispatch(WalletAbiFlowIntent.OnExecutionEvent(WalletAbiExecutionEvent.Submitted))
+        store.dispatch(WalletAbiFlowIntent.OnExecutionEvent(WalletAbiExecutionEvent.Broadcasted))
 
         val outputs = async(start = CoroutineStart.UNDISPATCHED) {
             store.outputs.take(2).toList()
@@ -302,30 +320,6 @@ class WalletAbiFlowStoreTest {
                 )
             ),
             outputs.await()
-        )
-    }
-
-    @Test
-    fun dismiss_success_returns_idle() = runTest {
-        val store = DefaultWalletAbiFlowStore()
-        store.dispatch(WalletAbiFlowIntent.Start(review.requestContext))
-        store.dispatch(
-            WalletAbiFlowIntent.OnExecutionEvent(
-                WalletAbiExecutionEvent.RequestLoaded(review)
-            )
-        )
-        store.dispatch(WalletAbiFlowIntent.Approve)
-        store.dispatch(
-            WalletAbiFlowIntent.OnExecutionEvent(
-                WalletAbiExecutionEvent.RemoteResponseSent(successResult)
-            )
-        )
-
-        store.dispatch(WalletAbiFlowIntent.DismissTerminal)
-
-        assertEquals(
-            WalletAbiFlowState.Idle,
-            store.state.value
         )
     }
 
@@ -354,57 +348,162 @@ class WalletAbiFlowStoreTest {
     }
 
     @Test
-    fun execution_failure_ends_error() = runTest {
+    fun cancel_from_loading_emits_cancel_active_work() = runTest {
         val store = DefaultWalletAbiFlowStore()
+        store.dispatch(WalletAbiFlowIntent.Start(requestContext))
         val output = async(start = CoroutineStart.UNDISPATCHED) { store.outputs.first() }
 
-        store.dispatch(
-            WalletAbiFlowIntent.OnExecutionEvent(
-                WalletAbiExecutionEvent.Failed(failedError)
-            )
-        )
+        store.dispatch(WalletAbiFlowIntent.Cancel)
 
         assertEquals(
-            WalletAbiFlowState.Error(failedError),
-            store.state.value
-        )
-        assertEquals(
-            WalletAbiFlowOutput.Complete(
-                WalletAbiFlowTerminalResult.Error(failedError)
+            WalletAbiFlowState.Loading(
+                requestContext = requestContext,
+                isCancelling = true
             ),
-            output.await()
-        )
-    }
-
-    @Test
-    fun dismiss_error_returns_idle() = runTest {
-        val store = DefaultWalletAbiFlowStore()
-        store.dispatch(
-            WalletAbiFlowIntent.OnExecutionEvent(
-                WalletAbiExecutionEvent.Failed(failedError)
-            )
-        )
-        val output = async(start = CoroutineStart.UNDISPATCHED) { store.outputs.first() }
-
-        store.dispatch(WalletAbiFlowIntent.DismissTerminal)
-
-        assertEquals(
-            WalletAbiFlowState.Idle,
             store.state.value
         )
         assertEquals(
-            WalletAbiFlowOutput.PersistSnapshot(null),
+            WalletAbiFlowOutput.CancelActiveWork(WalletAbiFlowPhase.LOADING),
             output.await()
         )
     }
 
     @Test
-    fun retry_error_returns_to_loading() = runTest {
+    fun cancel_from_awaiting_approval_emits_cancel_active_work() = runTest {
         val store = DefaultWalletAbiFlowStore()
-        store.dispatch(WalletAbiFlowIntent.Start(review.requestContext))
+        store.dispatch(WalletAbiFlowIntent.Start(requestContext))
+        store.dispatch(WalletAbiFlowIntent.OnExecutionEvent(WalletAbiExecutionEvent.RequestLoaded(jadeReview)))
+        store.dispatch(WalletAbiFlowIntent.Approve)
+        val output = async(start = CoroutineStart.UNDISPATCHED) { store.outputs.first() }
+
+        store.dispatch(WalletAbiFlowIntent.Cancel)
+
+        assertEquals(
+            WalletAbiFlowState.AwaitingApproval(
+                requestContext = requestContext,
+                selectedAccountId = jadeReview.selectedAccountId,
+                jade = WalletAbiJadeContext(
+                    deviceId = "jade-id",
+                    step = WalletAbiJadeStep.CONNECT,
+                    message = null,
+                    retryable = false
+                ),
+                isCancelling = true
+            ),
+            store.state.value
+        )
+        assertEquals(
+            WalletAbiFlowOutput.CancelActiveWork(WalletAbiFlowPhase.APPROVAL),
+            output.await()
+        )
+    }
+
+    @Test
+    fun cancel_from_submitting_preparing_emits_cancel_active_work() = runTest {
+        val store = DefaultWalletAbiFlowStore()
+        store.dispatch(WalletAbiFlowIntent.Start(requestContext))
+        store.dispatch(WalletAbiFlowIntent.OnExecutionEvent(WalletAbiExecutionEvent.RequestLoaded(review)))
+        store.dispatch(WalletAbiFlowIntent.Approve)
+        val output = async(start = CoroutineStart.UNDISPATCHED) { store.outputs.first() }
+
+        store.dispatch(WalletAbiFlowIntent.Cancel)
+
+        assertEquals(
+            WalletAbiFlowState.Submitting(
+                requestContext = requestContext,
+                stage = WalletAbiSubmittingStage.PREPARING,
+                isCancelling = true
+            ),
+            store.state.value
+        )
+        assertEquals(
+            WalletAbiFlowOutput.CancelActiveWork(WalletAbiFlowPhase.SUBMISSION),
+            output.await()
+        )
+    }
+
+    @Test
+    fun cancel_from_submitting_broadcasting_is_ignored() = runTest {
+        val store = DefaultWalletAbiFlowStore()
+        store.dispatch(WalletAbiFlowIntent.Start(requestContext))
+        store.dispatch(WalletAbiFlowIntent.OnExecutionEvent(WalletAbiExecutionEvent.RequestLoaded(review)))
+        store.dispatch(WalletAbiFlowIntent.Approve)
+        store.dispatch(WalletAbiFlowIntent.OnExecutionEvent(WalletAbiExecutionEvent.Broadcasted))
+
+        store.dispatch(WalletAbiFlowIntent.Cancel)
+
+        assertEquals(
+            WalletAbiFlowState.Submitting(
+                requestContext = requestContext,
+                stage = WalletAbiSubmittingStage.BROADCASTING
+            ),
+            store.state.value
+        )
+    }
+
+    @Test
+    fun execution_cancelled_ends_cancelled() = runTest {
+        val store = DefaultWalletAbiFlowStore()
+        val outputs = async(start = CoroutineStart.UNDISPATCHED) {
+            store.outputs.take(2).toList()
+        }
+
         store.dispatch(
             WalletAbiFlowIntent.OnExecutionEvent(
-                WalletAbiExecutionEvent.Failed(failedError)
+                WalletAbiExecutionEvent.Cancelled(WalletAbiCancelledReason.UserCancelled)
+            )
+        )
+
+        assertEquals(
+            WalletAbiFlowState.Cancelled(WalletAbiCancelledReason.UserCancelled),
+            store.state.value
+        )
+        assertEquals(
+            listOf(
+                WalletAbiFlowOutput.PersistSnapshot(null),
+                WalletAbiFlowOutput.Complete(
+                    WalletAbiFlowTerminalResult.Cancelled(WalletAbiCancelledReason.UserCancelled)
+                )
+            ),
+            outputs.await()
+        )
+    }
+
+    @Test
+    fun execution_failure_ends_error_and_clears_snapshot() = runTest {
+        val store = DefaultWalletAbiFlowStore()
+        val outputs = async(start = CoroutineStart.UNDISPATCHED) {
+            store.outputs.take(2).toList()
+        }
+
+        store.dispatch(
+            WalletAbiFlowIntent.OnExecutionEvent(
+                WalletAbiExecutionEvent.Failed(retryableExecutionError)
+            )
+        )
+
+        assertEquals(
+            WalletAbiFlowState.Error(retryableExecutionError),
+            store.state.value
+        )
+        assertEquals(
+            listOf(
+                WalletAbiFlowOutput.PersistSnapshot(null),
+                WalletAbiFlowOutput.Complete(
+                    WalletAbiFlowTerminalResult.Error(retryableExecutionError)
+                )
+            ),
+            outputs.await()
+        )
+    }
+
+    @Test
+    fun retry_retryable_error_returns_to_loading() = runTest {
+        val store = DefaultWalletAbiFlowStore()
+        store.dispatch(WalletAbiFlowIntent.Start(requestContext))
+        store.dispatch(
+            WalletAbiFlowIntent.OnExecutionEvent(
+                WalletAbiExecutionEvent.Failed(retryableExecutionError)
             )
         )
         val output = async(start = CoroutineStart.UNDISPATCHED) { store.outputs.first() }
@@ -412,12 +511,30 @@ class WalletAbiFlowStoreTest {
         store.dispatch(WalletAbiFlowIntent.Retry)
 
         assertEquals(
-            WalletAbiFlowState.Loading(review.requestContext),
+            WalletAbiFlowState.Loading(requestContext),
             store.state.value
         )
         assertEquals(
-            WalletAbiFlowOutput.LoadRequest(review.requestContext),
+            WalletAbiFlowOutput.LoadRequest(requestContext),
             output.await()
+        )
+    }
+
+    @Test
+    fun retry_non_retryable_error_is_ignored() = runTest {
+        val store = DefaultWalletAbiFlowStore()
+        store.dispatch(WalletAbiFlowIntent.Start(requestContext))
+        store.dispatch(
+            WalletAbiFlowIntent.OnExecutionEvent(
+                WalletAbiExecutionEvent.Failed(nonRetryableInvalidRequestError)
+            )
+        )
+
+        store.dispatch(WalletAbiFlowIntent.Retry)
+
+        assertEquals(
+            WalletAbiFlowState.Error(nonRetryableInvalidRequestError),
+            store.state.value
         )
     }
 
@@ -448,22 +565,9 @@ class WalletAbiFlowStoreTest {
     }
 
     @Test
-    fun dismiss_cancelled_returns_idle() = runTest {
-        val store = DefaultWalletAbiFlowStore()
-
-        store.dispatch(WalletAbiFlowIntent.Reject)
-        store.dispatch(WalletAbiFlowIntent.DismissTerminal)
-
-        assertEquals(
-            WalletAbiFlowState.Idle,
-            store.state.value
-        )
-    }
-
-    @Test
     fun jade_approve_enters_awaiting_approval() = runTest {
         val store = DefaultWalletAbiFlowStore()
-        store.dispatch(WalletAbiFlowIntent.Start(jadeReview.requestContext))
+        store.dispatch(WalletAbiFlowIntent.Start(requestContext))
         store.dispatch(
             WalletAbiFlowIntent.OnExecutionEvent(
                 WalletAbiExecutionEvent.RequestLoaded(jadeReview)
@@ -483,7 +587,7 @@ class WalletAbiFlowStoreTest {
 
         assertEquals(
             WalletAbiFlowState.AwaitingApproval(
-                requestContext = jadeReview.requestContext,
+                requestContext = requestContext,
                 selectedAccountId = jadeReview.selectedAccountId,
                 jade = jadeContext
             ),
@@ -500,7 +604,7 @@ class WalletAbiFlowStoreTest {
                 ),
                 WalletAbiFlowOutput.StartApproval(
                     WalletAbiApprovalCommand(
-                        requestContext = jadeReview.requestContext,
+                        requestContext = requestContext,
                         selectedAccountId = jadeReview.selectedAccountId,
                         jade = jadeContext
                     )
@@ -513,65 +617,26 @@ class WalletAbiFlowStoreTest {
     @Test
     fun jade_events_move_awaiting_approval_to_submitting() = runTest {
         val store = DefaultWalletAbiFlowStore()
-        store.dispatch(WalletAbiFlowIntent.Start(jadeReview.requestContext))
-        store.dispatch(
-            WalletAbiFlowIntent.OnExecutionEvent(
-                WalletAbiExecutionEvent.RequestLoaded(jadeReview)
-            )
-        )
+        store.dispatch(WalletAbiFlowIntent.Start(requestContext))
+        store.dispatch(WalletAbiFlowIntent.OnExecutionEvent(WalletAbiExecutionEvent.RequestLoaded(jadeReview)))
         store.dispatch(WalletAbiFlowIntent.Approve)
 
         store.dispatch(WalletAbiFlowIntent.OnJadeEvent(WalletAbiJadeEvent.Connected))
-        assertEquals(
-            WalletAbiFlowState.AwaitingApproval(
-                requestContext = jadeReview.requestContext,
-                selectedAccountId = jadeReview.selectedAccountId,
-                jade = WalletAbiJadeContext(
-                    deviceId = "jade-id",
-                    step = WalletAbiJadeStep.UNLOCK,
-                    message = null,
-                    retryable = false
-                )
-            ),
-            store.state.value
-        )
+        assertEquals(WalletAbiJadeStep.UNLOCK, (store.state.value as WalletAbiFlowState.AwaitingApproval).jade.step)
 
         store.dispatch(WalletAbiFlowIntent.OnJadeEvent(WalletAbiJadeEvent.UnlockConfirmed))
-        assertEquals(
-            WalletAbiFlowState.AwaitingApproval(
-                requestContext = jadeReview.requestContext,
-                selectedAccountId = jadeReview.selectedAccountId,
-                jade = WalletAbiJadeContext(
-                    deviceId = "jade-id",
-                    step = WalletAbiJadeStep.REVIEW,
-                    message = null,
-                    retryable = false
-                )
-            ),
-            store.state.value
-        )
+        assertEquals(WalletAbiJadeStep.REVIEW, (store.state.value as WalletAbiFlowState.AwaitingApproval).jade.step)
 
         store.dispatch(WalletAbiFlowIntent.OnJadeEvent(WalletAbiJadeEvent.ReviewConfirmed))
-        assertEquals(
-            WalletAbiFlowState.AwaitingApproval(
-                requestContext = jadeReview.requestContext,
-                selectedAccountId = jadeReview.selectedAccountId,
-                jade = WalletAbiJadeContext(
-                    deviceId = "jade-id",
-                    step = WalletAbiJadeStep.SIGN,
-                    message = null,
-                    retryable = false
-                )
-            ),
-            store.state.value
-        )
+        assertEquals(WalletAbiJadeStep.SIGN, (store.state.value as WalletAbiFlowState.AwaitingApproval).jade.step)
 
         val output = async(start = CoroutineStart.UNDISPATCHED) { store.outputs.first() }
         store.dispatch(WalletAbiFlowIntent.OnJadeEvent(WalletAbiJadeEvent.Signed))
 
         assertEquals(
             WalletAbiFlowState.Submitting(
-                requestContext = jadeReview.requestContext,
+                requestContext = requestContext,
+                stage = WalletAbiSubmittingStage.PREPARING,
                 jade = WalletAbiJadeContext(
                     deviceId = "jade-id",
                     step = WalletAbiJadeStep.SIGN,
@@ -584,7 +649,7 @@ class WalletAbiFlowStoreTest {
         assertEquals(
             WalletAbiFlowOutput.StartSubmission(
                 WalletAbiSubmissionCommand(
-                    requestContext = jadeReview.requestContext,
+                    requestContext = requestContext,
                     selectedAccountId = jadeReview.selectedAccountId
                 )
             ),
@@ -593,47 +658,14 @@ class WalletAbiFlowStoreTest {
     }
 
     @Test
-    fun jade_cancel_ends_cancelled() = runTest {
+    fun jade_failure_ends_error() = runTest {
         val store = DefaultWalletAbiFlowStore()
-        store.dispatch(WalletAbiFlowIntent.Start(jadeReview.requestContext))
-        store.dispatch(
-            WalletAbiFlowIntent.OnExecutionEvent(
-                WalletAbiExecutionEvent.RequestLoaded(jadeReview)
-            )
-        )
+        store.dispatch(WalletAbiFlowIntent.Start(requestContext))
+        store.dispatch(WalletAbiFlowIntent.OnExecutionEvent(WalletAbiExecutionEvent.RequestLoaded(jadeReview)))
         store.dispatch(WalletAbiFlowIntent.Approve)
         val outputs = async(start = CoroutineStart.UNDISPATCHED) {
             store.outputs.take(2).toList()
         }
-
-        store.dispatch(WalletAbiFlowIntent.OnJadeEvent(WalletAbiJadeEvent.Cancelled))
-
-        assertEquals(
-            WalletAbiFlowState.Cancelled(WalletAbiCancelledReason.JadeCancelled),
-            store.state.value
-        )
-        assertEquals(
-            listOf(
-                WalletAbiFlowOutput.PersistSnapshot(null),
-                WalletAbiFlowOutput.Complete(
-                    WalletAbiFlowTerminalResult.Cancelled(WalletAbiCancelledReason.JadeCancelled)
-                )
-            ),
-            outputs.await()
-        )
-    }
-
-    @Test
-    fun jade_failure_ends_error() = runTest {
-        val store = DefaultWalletAbiFlowStore()
-        store.dispatch(WalletAbiFlowIntent.Start(jadeReview.requestContext))
-        store.dispatch(
-            WalletAbiFlowIntent.OnExecutionEvent(
-                WalletAbiExecutionEvent.RequestLoaded(jadeReview)
-            )
-        )
-        store.dispatch(WalletAbiFlowIntent.Approve)
-        val output = async(start = CoroutineStart.UNDISPATCHED) { store.outputs.first() }
 
         store.dispatch(
             WalletAbiFlowIntent.OnJadeEvent(
@@ -646,36 +678,46 @@ class WalletAbiFlowStoreTest {
             store.state.value
         )
         assertEquals(
-            WalletAbiFlowOutput.Complete(
-                WalletAbiFlowTerminalResult.Error(jadeFailedError)
+            listOf(
+                WalletAbiFlowOutput.PersistSnapshot(null),
+                WalletAbiFlowOutput.Complete(
+                    WalletAbiFlowTerminalResult.Error(jadeFailedError)
+                )
             ),
-            output.await()
+            outputs.await()
         )
     }
 
     @Test
-    fun jade_disconnect_ends_error() = runTest {
+    fun jade_disconnect_ends_retryable_device_failure() = runTest {
         val store = DefaultWalletAbiFlowStore()
-        store.dispatch(WalletAbiFlowIntent.Start(jadeReview.requestContext))
-        store.dispatch(
-            WalletAbiFlowIntent.OnExecutionEvent(
-                WalletAbiExecutionEvent.RequestLoaded(jadeReview)
-            )
-        )
+        store.dispatch(WalletAbiFlowIntent.Start(requestContext))
+        store.dispatch(WalletAbiFlowIntent.OnExecutionEvent(WalletAbiExecutionEvent.RequestLoaded(jadeReview)))
         store.dispatch(WalletAbiFlowIntent.Approve)
-        val output = async(start = CoroutineStart.UNDISPATCHED) { store.outputs.first() }
+        val outputs = async(start = CoroutineStart.UNDISPATCHED) {
+            store.outputs.take(2).toList()
+        }
 
         store.dispatch(WalletAbiFlowIntent.OnJadeEvent(WalletAbiJadeEvent.Disconnected))
 
+        val error = WalletAbiFlowError(
+            kind = WalletAbiFlowErrorKind.DEVICE_FAILURE,
+            phase = WalletAbiFlowPhase.APPROVAL,
+            message = "Jade disconnected",
+            retryable = true
+        )
         assertEquals(
-            WalletAbiFlowState.Error(WalletAbiFlowError("Jade disconnected")),
+            WalletAbiFlowState.Error(error),
             store.state.value
         )
         assertEquals(
-            WalletAbiFlowOutput.Complete(
-                WalletAbiFlowTerminalResult.Error(WalletAbiFlowError("Jade disconnected"))
+            listOf(
+                WalletAbiFlowOutput.PersistSnapshot(null),
+                WalletAbiFlowOutput.Complete(
+                    WalletAbiFlowTerminalResult.Error(error)
+                )
             ),
-            output.await()
+            outputs.await()
         )
     }
 
@@ -721,46 +763,14 @@ class WalletAbiFlowStoreTest {
     }
 
     @Test
-    fun resume_awaiting_approval_returns_to_active_state() = runTest {
+    fun cancel_resume_ends_cancelled() = runTest {
         val store = DefaultWalletAbiFlowStore()
-        val jadeContext = WalletAbiJadeContext(
-            deviceId = "jade-id",
-            step = WalletAbiJadeStep.REVIEW,
-            message = null,
-            retryable = false
-        )
         store.dispatch(
             WalletAbiFlowIntent.Restore(
                 WalletAbiResumeSnapshot(
-                    review = jadeReview,
-                    phase = WalletAbiResumePhase.AWAITING_APPROVAL,
-                    jade = jadeContext
+                    review = review,
+                    phase = WalletAbiResumePhase.REQUEST_LOADED
                 )
-            )
-        )
-
-        store.dispatch(WalletAbiFlowIntent.Resume)
-
-        assertEquals(
-            WalletAbiFlowState.AwaitingApproval(
-                requestContext = jadeReview.requestContext,
-                selectedAccountId = jadeReview.selectedAccountId,
-                jade = jadeContext
-            ),
-            store.state.value
-        )
-    }
-
-    @Test
-    fun cancel_resume_ends_cancelled() = runTest {
-        val store = DefaultWalletAbiFlowStore()
-        val snapshot = WalletAbiResumeSnapshot(
-            review = review,
-            phase = WalletAbiResumePhase.REQUEST_LOADED
-        )
-        store.dispatch(
-            WalletAbiFlowIntent.Restore(
-                snapshot
             )
         )
         val outputs = async(start = CoroutineStart.UNDISPATCHED) {
@@ -785,7 +795,7 @@ class WalletAbiFlowStoreTest {
     }
 
     @Test
-    fun submitting_snapshot_restores_as_error() = runTest {
+    fun submitting_snapshot_restores_as_partial_completion_error() = runTest {
         val store = DefaultWalletAbiFlowStore()
 
         store.dispatch(
@@ -798,28 +808,14 @@ class WalletAbiFlowStoreTest {
         )
 
         assertEquals(
-            WalletAbiFlowState.Error(WalletAbiFlowError("Execution status uncertain")),
-            store.state.value
-        )
-    }
-
-    @Test
-    fun retry_restored_submitting_error_returns_to_loading() = runTest {
-        val store = DefaultWalletAbiFlowStore()
-
-        store.dispatch(
-            WalletAbiFlowIntent.Restore(
-                WalletAbiResumeSnapshot(
-                    review = review,
-                    phase = WalletAbiResumePhase.SUBMITTING
+            WalletAbiFlowState.Error(
+                WalletAbiFlowError(
+                    kind = WalletAbiFlowErrorKind.PARTIAL_COMPLETION,
+                    phase = WalletAbiFlowPhase.SUBMISSION,
+                    message = "Transaction status may already have changed. Check your wallet activity before retrying.",
+                    retryable = false
                 )
-            )
-        )
-
-        store.dispatch(WalletAbiFlowIntent.Retry)
-
-        assertEquals(
-            WalletAbiFlowState.Loading(review.requestContext),
+            ),
             store.state.value
         )
     }

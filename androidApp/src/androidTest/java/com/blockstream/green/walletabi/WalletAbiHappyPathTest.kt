@@ -49,6 +49,7 @@ import org.junit.Rule
 import org.junit.Test
 import org.koin.core.Koin
 import org.koin.core.context.GlobalContext
+import kotlin.test.assertEquals
 
 class WalletAbiHappyPathTest {
     @get:Rule
@@ -138,6 +139,10 @@ class WalletAbiHappyPathTest {
         composeRule.onNodeWithTag("wallet_abi_flow_error")
             .assertIsDisplayed()
             .assertTextContains("Unsupported Wallet ABI method 'wallet_abi_get_account'")
+        assertEquals(
+            0,
+            composeRule.onAllNodesWithTag("wallet_abi_flow_retry_action").fetchSemanticsNodes().size
+        )
     }
 
     @Test
@@ -188,21 +193,17 @@ class WalletAbiHappyPathTest {
         composeRule.onNodeWithTag("wallet_abi_flow_error")
             .assertIsDisplayed()
             .assertTextContains("Wallet ABI request envelope is malformed")
+        assertEquals(
+            0,
+            composeRule.onAllNodesWithTag("wallet_abi_flow_retry_action").fetchSemanticsNodes().size
+        )
     }
 
     @Test
-    fun walletAbiFlow_retry_reloads_request_after_error() {
+    fun walletAbiFlow_retry_reloads_request_after_retryable_execution_error() {
         val koin = GlobalContext.get()
         val greenWallet = insertPreviewWallet(koin = koin)
-        val fallbackSource = DefaultWalletAbiDemoRequestSource()
-        var loadAttempt = 0
-        val requestSource = DefaultWalletAbiDemoRequestSource { requestId ->
-            if (loadAttempt++ == 0) {
-                "{"
-            } else {
-                fallbackSource.loadRequestEnvelope(requestId)
-            }
-        }
+        var executionAttempt = 0
 
         composeRule.setContent {
             GreenPreview {
@@ -215,9 +216,21 @@ class WalletAbiHappyPathTest {
                             store = koin.get<WalletAbiFlowStore>(),
                             snapshotRepository = koin.get<WalletAbiFlowSnapshotRepository>(),
                             walletSession = walletSession(koin = koin, greenWallet = greenWallet),
-                            requestSource = requestSource,
+                            requestSource = DefaultWalletAbiDemoRequestSource(),
                             executionPlanner = executionPlanner(),
-                            executionRunner = executionRunner(),
+                            executionRunner = object : WalletAbiExecutionRunner {
+                                override suspend fun execute(
+                                    session: GdkSession,
+                                    preparedExecution: WalletAbiPreparedExecution,
+                                    twoFactorResolver: com.blockstream.data.gdk.TwoFactorResolver
+                                ): WalletAbiExecutionResult {
+                                    return if (executionAttempt++ == 0) {
+                                        error("send failed")
+                                    } else {
+                                        WalletAbiExecutionResult(txHash = "wallet-abi-demo-tx-hash")
+                                    }
+                                }
+                            },
                             reviewPreviewer = reviewPreviewer()
                         )
                     }
@@ -241,17 +254,26 @@ class WalletAbiHappyPathTest {
         composeRule.onNodeWithTag("transact_wallet_abi_entry").assertIsDisplayed()
         composeRule.onNodeWithTag("transact_wallet_abi_entry").performClick()
         composeRule.waitUntil(timeoutMillis = 5_000L) {
+            composeRule.onAllNodesWithTag("wallet_abi_flow_request_title").fetchSemanticsNodes().isNotEmpty()
+        }
+        composeRule.onNodeWithTag("wallet_abi_flow_approve_action").performClick()
+        composeRule.waitUntil(timeoutMillis = 5_000L) {
             composeRule.onAllNodesWithTag("wallet_abi_flow_error").fetchSemanticsNodes().isNotEmpty()
         }
         composeRule.onNodeWithTag("wallet_abi_flow_error")
             .assertIsDisplayed()
-            .assertTextContains("Wallet ABI request envelope is malformed")
+            .assertTextContains("send failed")
         composeRule.onNodeWithTag("wallet_abi_flow_retry_action").performClick()
         composeRule.waitUntil(timeoutMillis = 5_000L) {
             composeRule.onAllNodesWithTag("wallet_abi_flow_request_title").fetchSemanticsNodes().isNotEmpty()
         }
         composeRule.onNodeWithTag("wallet_abi_flow_request_title").assertIsDisplayed()
         composeRule.onNodeWithTag("wallet_abi_flow_review_warning").assertIsDisplayed()
+        composeRule.onNodeWithTag("wallet_abi_flow_approve_action").performClick()
+        composeRule.waitUntil(timeoutMillis = 5_000L) {
+            composeRule.onAllNodesWithTag("wallet_abi_flow_success").fetchSemanticsNodes().isNotEmpty()
+        }
+        composeRule.onNodeWithTag("wallet_abi_flow_success").assertIsDisplayed()
     }
 
     private fun setWalletAbiHappyPathContent(

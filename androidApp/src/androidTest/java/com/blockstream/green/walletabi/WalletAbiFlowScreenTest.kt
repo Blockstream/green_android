@@ -1,6 +1,7 @@
 package com.blockstream.green.walletabi
 
 import androidx.compose.ui.test.assertIsDisplayed
+import androidx.compose.ui.test.onAllNodesWithTag
 import androidx.compose.ui.test.junit4.createAndroidComposeRule
 import androidx.compose.ui.test.onNodeWithTag
 import androidx.compose.ui.test.performClick
@@ -11,19 +12,22 @@ import com.blockstream.compose.screens.walletabi.WalletAbiFlowScreen
 import com.blockstream.data.gdk.data.AccountAssetBalance
 import com.blockstream.data.gdk.data.UtxoView
 import com.blockstream.data.transaction.TransactionConfirmation
+import com.blockstream.domain.walletabi.flow.WalletAbiAccountOption
 import com.blockstream.domain.walletabi.flow.WalletAbiApprovalTarget
 import com.blockstream.domain.walletabi.flow.WalletAbiCancelledReason
 import com.blockstream.domain.walletabi.flow.WalletAbiExecutionDetails
 import com.blockstream.domain.walletabi.flow.WalletAbiFlowError
+import com.blockstream.domain.walletabi.flow.WalletAbiFlowErrorKind
 import com.blockstream.domain.walletabi.flow.WalletAbiFlowIntent
 import com.blockstream.domain.walletabi.flow.WalletAbiFlowReview
 import com.blockstream.domain.walletabi.flow.WalletAbiFlowState
+import com.blockstream.domain.walletabi.flow.WalletAbiFlowPhase
 import com.blockstream.domain.walletabi.flow.WalletAbiJadeContext
-import com.blockstream.domain.walletabi.flow.WalletAbiJadeEvent
 import com.blockstream.domain.walletabi.flow.WalletAbiJadeStep
 import com.blockstream.domain.walletabi.flow.WalletAbiResumePhase
 import com.blockstream.domain.walletabi.flow.WalletAbiResumeSnapshot
 import com.blockstream.domain.walletabi.flow.WalletAbiStartRequestContext
+import com.blockstream.domain.walletabi.flow.WalletAbiSubmittingStage
 import com.blockstream.domain.walletabi.flow.WalletAbiSuccessResult
 import com.blockstream.domain.walletabi.request.WalletAbiInput
 import com.blockstream.domain.walletabi.request.WalletAbiNetwork
@@ -50,8 +54,8 @@ class WalletAbiFlowScreenTest {
         title = "Send",
         message = "Review this Wallet ABI request",
         accounts = listOf(
-            com.blockstream.domain.walletabi.flow.WalletAbiAccountOption("account-1", "Main"),
-            com.blockstream.domain.walletabi.flow.WalletAbiAccountOption("account-2", "Savings")
+            WalletAbiAccountOption("account-1", "Main"),
+            WalletAbiAccountOption("account-2", "Savings")
         ),
         selectedAccountId = "account-1",
         approvalTarget = WalletAbiApprovalTarget.Software,
@@ -70,6 +74,7 @@ class WalletAbiFlowScreenTest {
             deviceId = "jade-id"
         )
     )
+
     private val softwareReviewLook = WalletAbiReviewLook(
         accountAssetBalance = AccountAssetBalance(
             account = previewAccountAsset().account,
@@ -114,16 +119,23 @@ class WalletAbiFlowScreenTest {
     }
 
     @Test
-    fun walletAbiFlowScreen_shows_loading_state() {
-        setScreen(WalletAbiFlowState.Loading(requestContext))
+    fun walletAbiFlowScreen_dispatches_loading_cancel() {
+        val intents = mutableListOf<WalletAbiFlowIntent>()
+        setScreen(WalletAbiFlowState.Loading(requestContext), intents::add)
 
         composeRule.onNodeWithTag("wallet_abi_flow_loading").assertIsDisplayed()
+        composeRule.onNodeWithTag("wallet_abi_flow_cancel_action").performClick()
+
+        assertEquals(
+            listOf<WalletAbiFlowIntent>(WalletAbiFlowIntent.Cancel),
+            intents
+        )
     }
 
     @Test
     fun walletAbiFlowScreen_dispatches_software_approval() {
         val intents = mutableListOf<WalletAbiFlowIntent>()
-        setScreen(WalletAbiFlowState.RequestLoaded(softwareReview), intents::add)
+        setScreen(WalletAbiFlowState.RequestLoaded(softwareReview), intents::add, softwareReviewLook)
 
         composeRule.onNodeWithTag("wallet_abi_flow_account_1").performClick()
         composeRule.onNodeWithTag("wallet_abi_flow_reject_action").performClick()
@@ -166,26 +178,12 @@ class WalletAbiFlowScreenTest {
                                         lock = kotlinx.serialization.json.buildJsonObject { put("kind", JsonPrimitive("pkh")) },
                                         asset = kotlinx.serialization.json.buildJsonObject { put("kind", JsonPrimitive("btc")) },
                                         blinder = kotlinx.serialization.json.buildJsonObject { put("kind", JsonPrimitive("default")) }
-                                    ),
-                                    WalletAbiOutput(
-                                        id = "output-2",
-                                        amountSat = 2000L,
-                                        lock = kotlinx.serialization.json.buildJsonObject { put("kind", JsonPrimitive("pkh")) },
-                                        asset = kotlinx.serialization.json.buildJsonObject { put("kind", JsonPrimitive("btc")) },
-                                        blinder = kotlinx.serialization.json.buildJsonObject { put("kind", JsonPrimitive("default")) }
                                     )
                                 ),
                                 feeRateSatKvb = 12_000f
                             ),
                             broadcast = true
                         )
-                    ),
-                    executionDetails = WalletAbiExecutionDetails(
-                        destinationAddress = "tlq1qqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqq3l4q9m",
-                        amountSat = 1_000L,
-                        assetId = "asset-id",
-                        network = WalletAbiNetwork.TESTNET_LIQUID.wireValue,
-                        feeRate = 12_000L
                     )
                 )
             ),
@@ -198,21 +196,7 @@ class WalletAbiFlowScreenTest {
     }
 
     @Test
-    fun walletAbiFlowScreen_shows_jade_request_variant() {
-        val intents = mutableListOf<WalletAbiFlowIntent>()
-        setScreen(WalletAbiFlowState.RequestLoaded(jadeReview), intents::add)
-
-        composeRule.onNodeWithTag("wallet_abi_flow_approve_action").assertIsDisplayed()
-        composeRule.onNodeWithTag("wallet_abi_flow_approve_action").performClick()
-
-        assertEquals(
-            listOf<WalletAbiFlowIntent>(WalletAbiFlowIntent.Approve),
-            intents
-        )
-    }
-
-    @Test
-    fun walletAbiFlowScreen_dispatches_jade_unlock_cancel() {
+    fun walletAbiFlowScreen_dispatches_awaiting_approval_cancel() {
         val intents = mutableListOf<WalletAbiFlowIntent>()
         setScreen(
             WalletAbiFlowState.AwaitingApproval(
@@ -232,46 +216,51 @@ class WalletAbiFlowScreenTest {
         composeRule.onNodeWithTag("wallet_abi_flow_jade_cancel_action").performClick()
 
         assertEquals(
-            listOf<WalletAbiFlowIntent>(
-                WalletAbiFlowIntent.OnJadeEvent(WalletAbiJadeEvent.Cancelled)
-            ),
+            listOf<WalletAbiFlowIntent>(WalletAbiFlowIntent.Cancel),
             intents
         )
     }
 
     @Test
-    fun walletAbiFlowScreen_shows_jade_sign_step() {
-        setScreen(
-            WalletAbiFlowState.AwaitingApproval(
-                requestContext = requestContext,
-                selectedAccountId = "account-1",
-                jade = WalletAbiJadeContext(
-                    deviceId = "jade-id",
-                    step = WalletAbiJadeStep.SIGN,
-                    message = null,
-                    retryable = false
-                )
-            )
-        )
-
-        composeRule.onNodeWithTag("wallet_abi_flow_awaiting_approval").assertIsDisplayed()
-    }
-
-    @Test
-    fun walletAbiFlowScreen_shows_submitting_state() {
+    fun walletAbiFlowScreen_shows_submitting_preparing_cancel() {
+        val intents = mutableListOf<WalletAbiFlowIntent>()
         setScreen(
             WalletAbiFlowState.Submitting(
                 requestContext = requestContext,
+                stage = WalletAbiSubmittingStage.PREPARING,
                 jade = WalletAbiJadeContext(
                     deviceId = "jade-id",
                     step = WalletAbiJadeStep.SIGN,
                     message = null,
                     retryable = false
                 )
+            ),
+            intents::add
+        )
+
+        composeRule.onNodeWithTag("wallet_abi_flow_submitting").assertIsDisplayed()
+        composeRule.onNodeWithTag("wallet_abi_flow_cancel_action").performClick()
+
+        assertEquals(
+            listOf<WalletAbiFlowIntent>(WalletAbiFlowIntent.Cancel),
+            intents
+        )
+    }
+
+    @Test
+    fun walletAbiFlowScreen_hides_cancel_while_broadcasting() {
+        setScreen(
+            WalletAbiFlowState.Submitting(
+                requestContext = requestContext,
+                stage = WalletAbiSubmittingStage.BROADCASTING
             )
         )
 
         composeRule.onNodeWithTag("wallet_abi_flow_submitting").assertIsDisplayed()
+        assertEquals(
+            0,
+            composeRule.onAllNodesWithTag("wallet_abi_flow_cancel_action").fetchSemanticsNodes().size
+        )
     }
 
     @Test
@@ -327,7 +316,7 @@ class WalletAbiFlowScreenTest {
     fun walletAbiFlowScreen_dispatches_cancelled_dismiss() {
         val intents = mutableListOf<WalletAbiFlowIntent>()
         setScreen(
-            WalletAbiFlowState.Cancelled(WalletAbiCancelledReason.UserRejected),
+            WalletAbiFlowState.Cancelled(WalletAbiCancelledReason.UserCancelled),
             intents::add
         )
 
@@ -341,10 +330,17 @@ class WalletAbiFlowScreenTest {
     }
 
     @Test
-    fun walletAbiFlowScreen_dispatches_error_actions() {
+    fun walletAbiFlowScreen_dispatches_retryable_error_actions() {
         val intents = mutableListOf<WalletAbiFlowIntent>()
         setScreen(
-            WalletAbiFlowState.Error(WalletAbiFlowError("Execution failed")),
+            WalletAbiFlowState.Error(
+                WalletAbiFlowError(
+                    kind = WalletAbiFlowErrorKind.NETWORK_FAILURE,
+                    phase = WalletAbiFlowPhase.SUBMISSION,
+                    message = "Network send failed",
+                    retryable = true
+                )
+            ),
             intents::add
         )
 
@@ -357,6 +353,34 @@ class WalletAbiFlowScreenTest {
                 WalletAbiFlowIntent.Retry,
                 WalletAbiFlowIntent.DismissTerminal
             ),
+            intents
+        )
+    }
+
+    @Test
+    fun walletAbiFlowScreen_hides_retry_for_partial_completion() {
+        val intents = mutableListOf<WalletAbiFlowIntent>()
+        setScreen(
+            WalletAbiFlowState.Error(
+                WalletAbiFlowError(
+                    kind = WalletAbiFlowErrorKind.PARTIAL_COMPLETION,
+                    phase = WalletAbiFlowPhase.SUBMISSION,
+                    message = "ignored",
+                    retryable = false
+                )
+            ),
+            intents::add
+        )
+
+        composeRule.onNodeWithTag("wallet_abi_flow_error").assertIsDisplayed()
+        assertEquals(
+            0,
+            composeRule.onAllNodesWithTag("wallet_abi_flow_retry_action").fetchSemanticsNodes().size
+        )
+        composeRule.onNodeWithTag("wallet_abi_flow_terminal_dismiss_action").performClick()
+
+        assertEquals(
+            listOf<WalletAbiFlowIntent>(WalletAbiFlowIntent.DismissTerminal),
             intents
         )
     }

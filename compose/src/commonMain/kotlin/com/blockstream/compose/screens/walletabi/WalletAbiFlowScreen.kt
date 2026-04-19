@@ -47,10 +47,12 @@ import com.blockstream.compose.theme.labelLarge
 import com.blockstream.compose.theme.whiteMedium
 import com.blockstream.domain.walletabi.flow.WalletAbiApprovalTarget
 import com.blockstream.domain.walletabi.flow.WalletAbiCancelledReason
+import com.blockstream.domain.walletabi.flow.WalletAbiFlowError
 import com.blockstream.domain.walletabi.flow.WalletAbiFlowIntent
+import com.blockstream.domain.walletabi.flow.WalletAbiFlowErrorKind
 import com.blockstream.domain.walletabi.flow.WalletAbiFlowState
-import com.blockstream.domain.walletabi.flow.WalletAbiJadeEvent
 import com.blockstream.domain.walletabi.flow.WalletAbiJadeStep
+import com.blockstream.domain.walletabi.flow.WalletAbiSubmittingStage
 import com.blockstream.domain.walletabi.request.WalletAbiParsedRequest
 import org.jetbrains.compose.resources.stringResource
 
@@ -100,9 +102,23 @@ fun WalletAbiFlowScreen(
 
                 is WalletAbiFlowState.Loading -> {
                     Text(
-                        text = "Loading Wallet ABI request ${state.requestContext.requestId}",
+                        text = if (state.isCancelling) {
+                            "Cancelling Wallet ABI request"
+                        } else {
+                            "Loading Wallet ABI request ${state.requestContext.requestId}"
+                        },
                         modifier = Modifier.testTag("wallet_abi_flow_loading")
                     )
+                    GreenButton(
+                        text = "Cancel request",
+                        modifier = Modifier.fillMaxWidth(),
+                        testTag = "wallet_abi_flow_cancel_action",
+                        enabled = !state.isCancelling,
+                        type = GreenButtonType.OUTLINE,
+                        color = GreenButtonColor.WHITE
+                    ) {
+                        onIntent(WalletAbiFlowIntent.Cancel)
+                    }
                 }
 
                 is WalletAbiFlowState.RequestLoaded -> {
@@ -115,28 +131,54 @@ fun WalletAbiFlowScreen(
 
                 is WalletAbiFlowState.AwaitingApproval -> {
                     Text(
-                        text = "Awaiting Jade approval",
+                        text = if (state.isCancelling) {
+                            "Cancelling Wallet ABI approval"
+                        } else {
+                            "Awaiting Jade approval"
+                        },
                         modifier = Modifier.testTag("wallet_abi_flow_awaiting_approval")
                     )
                     Text("Step: ${state.jade.step.name.lowercase()}")
                     GreenButton(
-                        text = "Cancel approval",
+                        text = "Cancel request",
                         modifier = Modifier.fillMaxWidth(),
                         testTag = "wallet_abi_flow_jade_cancel_action"
                     ) {
-                        onIntent(WalletAbiFlowIntent.OnJadeEvent(WalletAbiJadeEvent.Cancelled))
+                        onIntent(WalletAbiFlowIntent.Cancel)
                     }
                 }
 
                 is WalletAbiFlowState.Submitting -> {
                     Text(
-                        text = if (state.jade?.step == WalletAbiJadeStep.SIGN) {
-                            "Submitting Wallet ABI request after Jade signing"
+                        text = if (state.stage == WalletAbiSubmittingStage.BROADCASTING) {
+                            "Broadcasting Wallet ABI transaction"
+                        } else if (state.jade?.step == WalletAbiJadeStep.SIGN) {
+                            if (state.isCancelling) {
+                                "Cancelling Wallet ABI request before broadcast"
+                            } else {
+                                "Preparing Wallet ABI request after Jade signing"
+                            }
                         } else {
-                            "Submitting Wallet ABI request"
+                            if (state.isCancelling) {
+                                "Cancelling Wallet ABI request before broadcast"
+                            } else {
+                                "Preparing Wallet ABI request"
+                            }
                         },
                         modifier = Modifier.testTag("wallet_abi_flow_submitting")
                     )
+                    if (state.stage == WalletAbiSubmittingStage.PREPARING) {
+                        GreenButton(
+                            text = "Cancel request",
+                            modifier = Modifier.fillMaxWidth(),
+                            testTag = "wallet_abi_flow_cancel_action",
+                            enabled = !state.isCancelling,
+                            type = GreenButtonType.OUTLINE,
+                            color = GreenButtonColor.WHITE
+                        ) {
+                            onIntent(WalletAbiFlowIntent.Cancel)
+                        }
+                    }
                 }
 
                 is WalletAbiFlowState.Success -> {
@@ -173,15 +215,21 @@ fun WalletAbiFlowScreen(
 
                 is WalletAbiFlowState.Error -> {
                     Text(
-                        text = state.error.message,
+                        text = state.error.title(),
+                        modifier = Modifier.testTag("wallet_abi_flow_error_title")
+                    )
+                    Text(
+                        text = state.error.body(),
                         modifier = Modifier.testTag("wallet_abi_flow_error")
                     )
-                    GreenButton(
-                        text = "Retry",
-                        modifier = Modifier.fillMaxWidth(),
-                        testTag = "wallet_abi_flow_retry_action"
-                    ) {
-                        onIntent(WalletAbiFlowIntent.Retry)
+                    if (state.error.retryable) {
+                        GreenButton(
+                            text = "Retry",
+                            modifier = Modifier.fillMaxWidth(),
+                            testTag = "wallet_abi_flow_retry_action"
+                        ) {
+                            onIntent(WalletAbiFlowIntent.Retry)
+                        }
                     }
                     GreenButton(
                         text = "Dismiss",
@@ -578,6 +626,26 @@ private fun WalletAbiCancelledReason.label(): String {
         WalletAbiCancelledReason.JadeCancelled -> "Jade approval cancelled"
         WalletAbiCancelledReason.RequestExpired -> "Request expired"
         WalletAbiCancelledReason.ResumableCancelled -> "Resumed request cancelled"
+        WalletAbiCancelledReason.UserCancelled -> "Request cancelled"
         WalletAbiCancelledReason.UserRejected -> "User rejected request"
+    }
+}
+
+private fun WalletAbiFlowError.title(): String {
+    return when (kind) {
+        WalletAbiFlowErrorKind.INVALID_REQUEST -> "Invalid Wallet ABI request"
+        WalletAbiFlowErrorKind.UNSUPPORTED_REQUEST -> "Unsupported Wallet ABI request"
+        WalletAbiFlowErrorKind.DEVICE_FAILURE -> "Device problem"
+        WalletAbiFlowErrorKind.NETWORK_FAILURE -> "Network problem"
+        WalletAbiFlowErrorKind.TIMEOUT -> "Wallet ABI request timed out"
+        WalletAbiFlowErrorKind.PARTIAL_COMPLETION -> "Transaction status uncertain"
+        WalletAbiFlowErrorKind.EXECUTION_FAILURE -> "Wallet ABI execution failed"
+    }
+}
+
+private fun WalletAbiFlowError.body(): String {
+    return when (kind) {
+        WalletAbiFlowErrorKind.PARTIAL_COMPLETION -> "Transaction status may already have changed. The app will not retry automatically."
+        else -> message
     }
 }
