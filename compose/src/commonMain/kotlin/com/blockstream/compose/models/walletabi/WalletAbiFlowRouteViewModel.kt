@@ -141,14 +141,24 @@ class WalletAbiFlowRouteViewModel(
 
                 store.dispatch(WalletAbiFlowIntent.OnExecutionEvent(WalletAbiExecutionEvent.Submitted))
 
-                runCatching {
-                    executionRunner.execute(
+                val preparedBroadcast = try {
+                    executionRunner.prepare(
                         session = walletSession,
-                        preparedExecution = preparedExecution,
+                        preparedExecution = preparedExecution
+                    )
+                } catch (throwable: Throwable) {
+                    dispatchExecutionFailure(throwable.toWalletAbiFlowError(WalletAbiFlowPhase.SUBMISSION))
+                    return
+                }
+
+                store.dispatch(WalletAbiFlowIntent.OnExecutionEvent(WalletAbiExecutionEvent.Broadcasted))
+
+                try {
+                    val result = executionRunner.broadcast(
+                        session = walletSession,
+                        preparedBroadcast = preparedBroadcast,
                         twoFactorResolver = this
                     )
-                }.onSuccess { result ->
-                    store.dispatch(WalletAbiFlowIntent.OnExecutionEvent(WalletAbiExecutionEvent.Broadcasted))
                     store.dispatch(
                         WalletAbiFlowIntent.OnExecutionEvent(
                             WalletAbiExecutionEvent.RemoteResponseSent(
@@ -159,7 +169,7 @@ class WalletAbiFlowRouteViewModel(
                             )
                         )
                     )
-                }.onFailure { throwable ->
+                } catch (throwable: Throwable) {
                     dispatchExecutionFailure(throwable.toWalletAbiFlowError(WalletAbiFlowPhase.SUBMISSION))
                 }
             }

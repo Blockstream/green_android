@@ -8,6 +8,7 @@ import com.blockstream.data.banner.Banner
 import com.blockstream.data.config.AppInfo
 import com.blockstream.data.database.Database
 import com.blockstream.data.gdk.GdkSession
+import com.blockstream.data.gdk.PreparedSoftwareTransaction
 import com.blockstream.data.gdk.data.Account
 import com.blockstream.data.gdk.data.AccountType
 import com.blockstream.data.gdk.data.Credentials
@@ -83,6 +84,7 @@ import org.koin.core.context.stopKoin
 import org.koin.dsl.module
 import kotlin.test.assertEquals
 import kotlin.test.assertIs
+import kotlinx.serialization.json.JsonObject
 
 class WalletAbiFlowRouteViewModelTest {
     private val dispatcher = StandardTestDispatcher()
@@ -118,9 +120,20 @@ class WalletAbiFlowRouteViewModelTest {
             preparedExecution(plan)
         }
         executionRunner = object : WalletAbiExecutionRunner {
-            override suspend fun execute(
+            override suspend fun prepare(
                 session: GdkSession,
-                preparedExecution: WalletAbiPreparedExecution,
+                preparedExecution: WalletAbiPreparedExecution
+            ) = com.blockstream.domain.walletabi.execution.WalletAbiPreparedBroadcast(
+                preparedExecution = preparedExecution,
+                preparedTransaction = PreparedSoftwareTransaction(
+                    transaction = preparedExecution.transaction,
+                    signedTransaction = JsonObject(emptyMap())
+                )
+            )
+
+            override suspend fun broadcast(
+                session: GdkSession,
+                preparedBroadcast: com.blockstream.domain.walletabi.execution.WalletAbiPreparedBroadcast,
                 twoFactorResolver: com.blockstream.data.gdk.TwoFactorResolver
             ): WalletAbiExecutionResult {
                 return WalletAbiExecutionResult(txHash = "wallet-abi-demo-tx-hash")
@@ -706,9 +719,20 @@ class WalletAbiFlowRouteViewModelTest {
     @Test
     fun startSubmission_output_dispatches_error_when_execution_fails() = runTest(dispatcher) {
         val failingRunner = object : WalletAbiExecutionRunner {
-            override suspend fun execute(
+            override suspend fun prepare(
                 session: GdkSession,
-                preparedExecution: WalletAbiPreparedExecution,
+                preparedExecution: WalletAbiPreparedExecution
+            ) = com.blockstream.domain.walletabi.execution.WalletAbiPreparedBroadcast(
+                preparedExecution = preparedExecution,
+                preparedTransaction = PreparedSoftwareTransaction(
+                    transaction = preparedExecution.transaction,
+                    signedTransaction = JsonObject(emptyMap())
+                )
+            )
+
+            override suspend fun broadcast(
+                session: GdkSession,
+                preparedBroadcast: com.blockstream.domain.walletabi.execution.WalletAbiPreparedBroadcast,
                 twoFactorResolver: com.blockstream.data.gdk.TwoFactorResolver
             ): WalletAbiExecutionResult {
                 error("send failed")

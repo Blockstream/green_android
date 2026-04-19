@@ -21,6 +21,7 @@ import com.blockstream.data.data.EnrichedAsset
 import com.blockstream.data.data.GreenWallet
 import com.blockstream.data.database.Database
 import com.blockstream.data.gdk.GdkSession
+import com.blockstream.data.gdk.PreparedSoftwareTransaction
 import com.blockstream.data.gdk.data.Account
 import com.blockstream.data.gdk.data.AccountType
 import com.blockstream.data.gdk.data.CreateTransaction
@@ -34,6 +35,7 @@ import com.blockstream.data.managers.SessionManager
 import com.blockstream.data.transaction.TransactionConfirmation
 import com.blockstream.data.walletabi.request.DefaultWalletAbiDemoRequestSource
 import com.blockstream.domain.walletabi.execution.WalletAbiPreparedExecution
+import com.blockstream.domain.walletabi.execution.WalletAbiPreparedBroadcast
 import com.blockstream.domain.walletabi.execution.WalletAbiExecutionResult
 import com.blockstream.domain.walletabi.execution.WalletAbiExecutionRunner
 import com.blockstream.domain.walletabi.execution.WalletAbiExecutionPlan
@@ -45,6 +47,7 @@ import com.blockstream.domain.walletabi.request.WalletAbiParsedRequest
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.runBlocking
 import kotlinx.coroutines.flow.collectLatest
+import kotlinx.serialization.json.JsonObject
 import org.junit.Rule
 import org.junit.Test
 import org.koin.core.Koin
@@ -219,14 +222,26 @@ class WalletAbiHappyPathTest {
                             requestSource = DefaultWalletAbiDemoRequestSource(),
                             executionPlanner = executionPlanner(),
                             executionRunner = object : WalletAbiExecutionRunner {
-                                override suspend fun execute(
+                                override suspend fun prepare(
                                     session: GdkSession,
-                                    preparedExecution: WalletAbiPreparedExecution,
+                                    preparedExecution: WalletAbiPreparedExecution
+                                ) = WalletAbiPreparedBroadcast(
+                                    preparedExecution = preparedExecution,
+                                    preparedTransaction = PreparedSoftwareTransaction(
+                                        transaction = preparedExecution.transaction,
+                                        signedTransaction = JsonObject(emptyMap())
+                                    )
+                                )
+
+                                override suspend fun broadcast(
+                                    session: GdkSession,
+                                    preparedBroadcast: WalletAbiPreparedBroadcast,
                                     twoFactorResolver: com.blockstream.data.gdk.TwoFactorResolver
                                 ): WalletAbiExecutionResult {
                                     return if (executionAttempt++ == 0) {
                                         error("send failed")
                                     } else {
+                                        delay(200)
                                         WalletAbiExecutionResult(txHash = "wallet-abi-demo-tx-hash")
                                     }
                                 }
@@ -378,9 +393,20 @@ class WalletAbiHappyPathTest {
 
     private fun executionRunner(): WalletAbiExecutionRunner {
         return object : WalletAbiExecutionRunner {
-            override suspend fun execute(
+            override suspend fun prepare(
                 session: GdkSession,
-                preparedExecution: WalletAbiPreparedExecution,
+                preparedExecution: WalletAbiPreparedExecution
+            ) = WalletAbiPreparedBroadcast(
+                preparedExecution = preparedExecution,
+                preparedTransaction = PreparedSoftwareTransaction(
+                    transaction = preparedExecution.transaction,
+                    signedTransaction = JsonObject(emptyMap())
+                )
+            )
+
+            override suspend fun broadcast(
+                session: GdkSession,
+                preparedBroadcast: WalletAbiPreparedBroadcast,
                 twoFactorResolver: com.blockstream.data.gdk.TwoFactorResolver
             ): WalletAbiExecutionResult {
                 delay(200)
