@@ -31,6 +31,7 @@ import com.blockstream.domain.promo.GetPromoUseCase
 import com.blockstream.domain.walletabi.execution.DefaultWalletAbiExecutionPlanner
 import com.blockstream.domain.walletabi.execution.WalletAbiPreparedExecution
 import com.blockstream.domain.walletabi.execution.WalletAbiExecutionResult
+import com.blockstream.domain.walletabi.execution.WalletAbiPreparedBroadcast
 import com.blockstream.domain.walletabi.execution.WalletAbiExecutionRunner
 import com.blockstream.domain.walletabi.execution.WalletAbiExecutionPlanner
 import com.blockstream.domain.walletabi.execution.WalletAbiReviewPreviewer
@@ -785,6 +786,77 @@ class WalletAbiFlowRouteViewModelTest {
                 )
             ),
             store.intents.last()
+        )
+    }
+
+    @Test
+    fun cancelActiveWork_submission_dispatches_user_cancelled_without_broadcast() = runTest(dispatcher) {
+        val prepareGate = CompletableDeferred<Unit>()
+        val blockingRunner = object : WalletAbiExecutionRunner {
+            override suspend fun prepare(
+                session: GdkSession,
+                preparedExecution: WalletAbiPreparedExecution
+            ): WalletAbiPreparedBroadcast {
+                prepareGate.await()
+                return WalletAbiPreparedBroadcast(
+                    preparedExecution = preparedExecution,
+                    preparedTransaction = PreparedSoftwareTransaction(
+                        transaction = preparedExecution.transaction,
+                        signedTransaction = JsonObject(emptyMap())
+                    )
+                )
+            }
+        }
+
+        createViewModel(
+            greenWallet = greenWallet,
+            store = store,
+            snapshotRepository = snapshotRepository,
+            executionRunner = blockingRunner,
+            driver = driver
+        )
+
+        advanceUntilIdle()
+
+        store.mutableOutputs.emit(
+            WalletAbiFlowOutput.LoadRequest(
+                WalletAbiStartRequestContext(
+                    requestId = WalletAbiFlowRouteViewModel.DEMO_REQUEST_ID,
+                    walletId = greenWallet.id
+                )
+            )
+        )
+        advanceUntilIdle()
+
+        store.mutableOutputs.emit(
+            WalletAbiFlowOutput.StartSubmission(
+                WalletAbiSubmissionCommand(
+                    requestContext = WalletAbiStartRequestContext(
+                        requestId = WalletAbiFlowRouteViewModel.DEMO_REQUEST_ID,
+                        walletId = greenWallet.id
+                    ),
+                    selectedAccountId = liquidAccount.id
+                )
+            )
+        )
+        advanceUntilIdle()
+
+        store.mutableOutputs.emit(WalletAbiFlowOutput.CancelActiveWork(WalletAbiFlowPhase.SUBMISSION))
+        advanceUntilIdle()
+
+        assertEquals(
+            WalletAbiExecutionEvent.Cancelled(WalletAbiCancelledReason.UserCancelled),
+            (store.intents.last { intent ->
+                intent is WalletAbiFlowIntent.OnExecutionEvent
+            } as WalletAbiFlowIntent.OnExecutionEvent).event
+        )
+        assertEquals(
+            0,
+            store.intents.count { intent ->
+                intent is WalletAbiFlowIntent.OnExecutionEvent &&
+                    (intent.event == WalletAbiExecutionEvent.Broadcasted ||
+                        intent.event is WalletAbiExecutionEvent.RemoteResponseSent)
+            }
         )
     }
 

@@ -43,11 +43,13 @@ import com.blockstream.domain.walletabi.request.WalletAbiRequestValidationError
 import kotlinx.coroutines.CancellationException
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.TimeoutCancellationException
+import kotlinx.coroutines.ensureActive
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.launchIn
 import kotlinx.coroutines.flow.onEach
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
+import kotlinx.coroutines.currentCoroutineContext
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withTimeout
 import kotlinx.serialization.json.JsonObject
@@ -68,6 +70,7 @@ class WalletAbiFlowRouteViewModel(
     private val mutableReviewLook = MutableStateFlow<WalletAbiReviewLook?>(null)
     private var loadingJob: Job? = null
     private var reviewRefreshJob: Job? = null
+    private var submissionJob: Job? = null
     private var activeEnvelope: WalletAbiParsedEnvelope? = null
     private var activeReview: WalletAbiFlowReview? = null
     private var activePreparedExecution: WalletAbiPreparedExecution? = null
@@ -115,6 +118,14 @@ class WalletAbiFlowRouteViewModel(
                         )
                     )
                 }
+                WalletAbiFlowPhase.SUBMISSION -> {
+                    submissionJob?.cancel()
+                    store.dispatch(
+                        WalletAbiFlowIntent.OnExecutionEvent(
+                            WalletAbiExecutionEvent.Cancelled(WalletAbiCancelledReason.UserCancelled)
+                        )
+                    )
+                }
                 else -> Unit
             }
             is WalletAbiFlowOutput.StartResolution -> {
@@ -139,39 +150,7 @@ class WalletAbiFlowRouteViewModel(
                         )
                     )
 
-                store.dispatch(WalletAbiFlowIntent.OnExecutionEvent(WalletAbiExecutionEvent.Submitted))
-
-                val preparedBroadcast = try {
-                    executionRunner.prepare(
-                        session = walletSession,
-                        preparedExecution = preparedExecution
-                    )
-                } catch (throwable: Throwable) {
-                    dispatchExecutionFailure(throwable.toWalletAbiFlowError(WalletAbiFlowPhase.SUBMISSION))
-                    return
-                }
-
-                store.dispatch(WalletAbiFlowIntent.OnExecutionEvent(WalletAbiExecutionEvent.Broadcasted))
-
-                try {
-                    val result = executionRunner.broadcast(
-                        session = walletSession,
-                        preparedBroadcast = preparedBroadcast,
-                        twoFactorResolver = this
-                    )
-                    store.dispatch(
-                        WalletAbiFlowIntent.OnExecutionEvent(
-                            WalletAbiExecutionEvent.RemoteResponseSent(
-                                result = WalletAbiSuccessResult(
-                                    requestId = preparedExecution.plan.request.request.requestId,
-                                    txHash = result.txHash
-                                )
-                            )
-                        )
-                    )
-                } catch (throwable: Throwable) {
-                    dispatchExecutionFailure(throwable.toWalletAbiFlowError(WalletAbiFlowPhase.SUBMISSION))
-                }
+                launchSubmission(preparedExecution)
             }
 
             is WalletAbiFlowOutput.Complete -> Unit
@@ -211,6 +190,47 @@ class WalletAbiFlowRouteViewModel(
             } finally {
                 if (loadingJob == kotlinx.coroutines.currentCoroutineContext()[Job]) {
                     loadingJob = null
+                }
+            }
+        }
+    }
+
+    private fun launchSubmission(preparedExecution: WalletAbiPreparedExecution) {
+        submissionJob?.cancel()
+        submissionJob = viewModelScope.launch {
+            try {
+                store.dispatch(WalletAbiFlowIntent.OnExecutionEvent(WalletAbiExecutionEvent.Submitted))
+
+                val preparedBroadcast = executionRunner.prepare(
+                    session = walletSession,
+                    preparedExecution = preparedExecution
+                )
+                currentCoroutineContext().ensureActive()
+
+                store.dispatch(WalletAbiFlowIntent.OnExecutionEvent(WalletAbiExecutionEvent.Broadcasted))
+
+                val result = executionRunner.broadcast(
+                    session = walletSession,
+                    preparedBroadcast = preparedBroadcast,
+                    twoFactorResolver = this@WalletAbiFlowRouteViewModel
+                )
+                store.dispatch(
+                    WalletAbiFlowIntent.OnExecutionEvent(
+                        WalletAbiExecutionEvent.RemoteResponseSent(
+                            result = WalletAbiSuccessResult(
+                                requestId = preparedExecution.plan.request.request.requestId,
+                                txHash = result.txHash
+                            )
+                        )
+                    )
+                )
+            } catch (_: CancellationException) {
+                Unit
+            } catch (throwable: Throwable) {
+                dispatchExecutionFailure(throwable.toWalletAbiFlowError(WalletAbiFlowPhase.SUBMISSION))
+            } finally {
+                if (submissionJob == currentCoroutineContext()[Job]) {
+                    submissionJob = null
                 }
             }
         }
