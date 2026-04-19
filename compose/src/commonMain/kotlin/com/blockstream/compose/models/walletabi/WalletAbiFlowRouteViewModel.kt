@@ -704,23 +704,36 @@ private fun WalletAbiPreparedExecution.toReviewLook(
 ): WalletAbiReviewLook {
     val request = plan.request.request
     val selectedAccount = plan.selectedAccount
-    val recipient = confirmation.utxos?.firstOrNull()
+    val recipients = confirmation.utxos.orEmpty().filterNot { it.isChange }
+    val outputs = plan.outputs.mapIndexed { index, output ->
+        val recipient = recipients.getOrNull(index)
+        WalletAbiReviewOutputLook(
+            address = recipient?.address ?: output.destinationAddress,
+            amount = recipient?.amount ?: output.amountSat.toString(),
+            amountFiat = recipient?.amountExchange,
+            assetId = output.assetId,
+            recipientScript = output.recipientScript
+        )
+    }
+    val primaryOutput = outputs.first()
+    val primaryAssetId = plan.outputs.first().assetId
 
     return WalletAbiReviewLook(
         accountAssetBalance = selectedAccount.accountAssetBalance,
-        recipientAddress = recipient?.address ?: plan.destinationAddress,
-        amount = recipient?.amount ?: plan.amountSat.toString(),
-        amountFiat = recipient?.amountExchange,
-        assetName = selectedAccount.accountAsset.asset.name ?: plan.assetId,
+        outputs = outputs,
+        recipientAddress = primaryOutput.address,
+        amount = primaryOutput.amount,
+        amountFiat = primaryOutput.amountFiat,
+        assetName = selectedAccount.accountAsset.asset.name ?: primaryAssetId,
         assetTicker = selectedAccount.accountAsset.asset.ticker,
-        assetId = plan.assetId,
+        assetId = primaryAssetId,
         networkName = selectedAccount.network.name.ifBlank { request.network.wireValue },
         networkWireValue = request.network.wireValue,
         method = method.wireValue,
         abiVersion = request.abiVersion,
         requestId = request.requestId,
         broadcast = request.broadcast,
-        recipientScript = request.params.outputs.singleOrNull()?.scriptHex(),
+        recipientScript = primaryOutput.recipientScript,
         transactionConfirmation = confirmation
     )
 }
@@ -744,9 +757,9 @@ private fun WalletAbiParsedEnvelope.toDomainReview(
         approvalTarget = WalletAbiApprovalTarget.Software,
         parsedRequest = request,
         executionDetails = WalletAbiExecutionDetails(
-            destinationAddress = executionPlan.destinationAddress,
-            amountSat = executionPlan.amountSat,
-            assetId = executionPlan.assetId,
+            destinationAddress = executionPlan.outputs.first().destinationAddress,
+            amountSat = executionPlan.outputs.sumOf { it.amountSat },
+            assetId = executionPlan.outputs.first().assetId,
             network = executionPlan.request.request.network.wireValue,
             feeRate = executionPlan.feeRate
         )

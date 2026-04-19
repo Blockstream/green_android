@@ -28,15 +28,43 @@ fun interface WalletAbiOutputAddressResolver {
     ): String?
 }
 
-data class WalletAbiExecutionPlan(
-    val request: WalletAbiParsedRequest.TxCreate,
-    val accounts: List<Account>,
-    val selectedAccount: Account,
+sealed interface WalletAbiExecutionPlan {
+    val request: WalletAbiParsedRequest.TxCreate
+    val accounts: List<Account>
+    val selectedAccount: Account
+    val feeRate: Long?
+    val outputs: List<WalletAbiPlannedOutput>
+}
+
+data class WalletAbiPlannedOutput(
+    val outputId: String,
     val destinationAddress: String,
     val amountSat: Long,
     val assetId: String,
-    val feeRate: Long?
+    val recipientScript: String?
 )
+
+data class WalletAbiSinglePaymentPlan(
+    override val request: WalletAbiParsedRequest.TxCreate,
+    override val accounts: List<Account>,
+    override val selectedAccount: Account,
+    override val feeRate: Long?,
+    val output: WalletAbiPlannedOutput
+) : WalletAbiExecutionPlan {
+    override val outputs: List<WalletAbiPlannedOutput> = listOf(output)
+}
+
+data class WalletAbiSplitPaymentPlan(
+    override val request: WalletAbiParsedRequest.TxCreate,
+    override val accounts: List<Account>,
+    override val selectedAccount: Account,
+    override val feeRate: Long?,
+    override val outputs: List<WalletAbiPlannedOutput>
+) : WalletAbiExecutionPlan {
+    init {
+        require(outputs.size > 1) { "Split payments require more than one output" }
+    }
+}
 
 sealed interface WalletAbiExecutionValidationError {
     val message: String
@@ -74,7 +102,7 @@ sealed interface WalletAbiExecutionValidationError {
         val count: Int
     ) : WalletAbiExecutionValidationError {
         override val message: String =
-            "Wallet ABI real execution supports exactly one output, got $count"
+            "Wallet ABI real execution requires at least one output, got $count"
     }
 
     data object LockTimeUnsupported : WalletAbiExecutionValidationError {
@@ -153,7 +181,7 @@ class DefaultWalletAbiExecutionPlanner(
                 WalletAbiExecutionValidationError.ExplicitInputsUnsupported(txRequest.params.inputs.size)
             )
         }
-        if (txRequest.params.outputs.size != 1) {
+        if (txRequest.params.outputs.isEmpty()) {
             throw WalletAbiExecutionValidationException(
                 WalletAbiExecutionValidationError.OutputCountUnsupported(txRequest.params.outputs.size)
             )
@@ -181,41 +209,58 @@ class DefaultWalletAbiExecutionPlanner(
             accounts.firstOrNull { it.id == activeAccount.id }
         } ?: accounts.first()
 
-        val output = txRequest.params.outputs.single()
-        if (output.isWalletOwnedOrBurnLike()) {
-            throw WalletAbiExecutionValidationException(
-                WalletAbiExecutionValidationError.WalletOwnedOutputUnsupported
+        val plannedOutputs = txRequest.params.outputs.map { output ->
+            if (output.isWalletOwnedOrBurnLike()) {
+                throw WalletAbiExecutionValidationException(
+                    WalletAbiExecutionValidationError.WalletOwnedOutputUnsupported
+                )
+            }
+
+            val assetId = output.assetIdOrNull()
+                ?: throw WalletAbiExecutionValidationException(
+                    WalletAbiExecutionValidationError.MissingAssetId
+                )
+            if (assetId != selectedAccount.network.policyAsset) {
+                throw WalletAbiExecutionValidationException(
+                    WalletAbiExecutionValidationError.UnsupportedAsset(assetId)
+                )
+            }
+
+            val destinationAddress = outputAddressResolver.resolve(
+                output = output,
+                network = txRequest.network,
+                assetId = assetId
+            )
+                ?: throw WalletAbiExecutionValidationException(
+                    WalletAbiExecutionValidationError.OutputLockUnsupported
+                )
+
+            WalletAbiPlannedOutput(
+                outputId = output.id,
+                destinationAddress = destinationAddress,
+                amountSat = output.amountSat,
+                assetId = assetId,
+                recipientScript = output.scriptHexOrNull()
             )
         }
 
-        val assetId = output.assetIdOrNull()
-            ?: throw WalletAbiExecutionValidationException(
-                WalletAbiExecutionValidationError.MissingAssetId
+        return when (plannedOutputs.size) {
+            1 -> WalletAbiSinglePaymentPlan(
+                request = txCreate,
+                accounts = accounts,
+                selectedAccount = selectedAccount,
+                feeRate = feeRate,
+                output = plannedOutputs.single()
             )
-        if (assetId != selectedAccount.network.policyAsset) {
-            throw WalletAbiExecutionValidationException(
-                WalletAbiExecutionValidationError.UnsupportedAsset(assetId)
+
+            else -> WalletAbiSplitPaymentPlan(
+                request = txCreate,
+                accounts = accounts,
+                selectedAccount = selectedAccount,
+                feeRate = feeRate,
+                outputs = plannedOutputs
             )
         }
-
-        val destinationAddress = outputAddressResolver.resolve(
-            output = output,
-            network = txRequest.network,
-            assetId = assetId
-        )
-            ?: throw WalletAbiExecutionValidationException(
-                WalletAbiExecutionValidationError.OutputLockUnsupported
-            )
-
-        return WalletAbiExecutionPlan(
-            request = txCreate,
-            accounts = accounts,
-            selectedAccount = selectedAccount,
-            destinationAddress = destinationAddress,
-            amountSat = output.amountSat,
-            assetId = assetId,
-            feeRate = feeRate
-        )
     }
 
     private suspend fun requireConnectedSoftwareSession(session: GdkSession) {
@@ -299,6 +344,16 @@ private fun WalletAbiOutput.assetIdOrNull(): String? {
         ?: assetObject["assetId"]?.jsonPrimitive?.content?.trim()?.takeIf { it.isNotBlank() }
 }
 
+private fun WalletAbiOutput.scriptHexOrNull(): String? {
+    val lockObject = lock as? JsonObject ?: return null
+    if (lockObject["type"]?.jsonPrimitive?.content?.trim()?.lowercase() != "script") {
+        return null
+    }
+
+    return lockObject["script"]?.jsonPrimitive?.content?.trim()?.lowercase()
+        ?.takeIf { it.isNotBlank() }
+}
+
 private fun WalletAbiOutput.toAddress(
     network: WalletAbiNetwork,
     assetId: String
@@ -308,8 +363,7 @@ private fun WalletAbiOutput.toAddress(
         return null
     }
 
-    val scriptHex = lockObject["script"]?.jsonPrimitive?.content?.trim()?.lowercase()
-        ?.takeIf { it.isNotBlank() }
+    val scriptHex = scriptHexOrNull()
         ?: return null
 
     return runCatching {

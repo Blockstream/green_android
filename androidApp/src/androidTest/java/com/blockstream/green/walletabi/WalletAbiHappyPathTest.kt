@@ -560,6 +560,11 @@ class WalletAbiHappyPathTest {
         }
         composeRule.onNodeWithTag("wallet_abi_flow_request_title").assertIsDisplayed()
         composeRule.onNodeWithTag("wallet_abi_flow_review_warning").assertIsDisplayed()
+        composeRule.onNodeWithTag("wallet_abi_flow_output_0").assertIsDisplayed()
+        assertEquals(
+            1,
+            composeRule.onAllNodesWithTag("wallet_abi_flow_output_1").fetchSemanticsNodes().size
+        )
         composeRule.onNodeWithTag("wallet_abi_flow_approve_action").performClick()
         composeRule.onNodeWithTag("wallet_abi_flow_submitting").assertIsDisplayed()
         composeRule.waitUntil(timeoutMillis = 5_000L) {
@@ -624,15 +629,37 @@ class WalletAbiHappyPathTest {
             ): WalletAbiExecutionPlan {
                 val account = liquidAccount()
                 val txCreate = request as WalletAbiParsedRequest.TxCreate
-                return WalletAbiExecutionPlan(
-                    request = txCreate,
-                    accounts = listOf(account),
-                    selectedAccount = account.takeIf { selectedAccountId == null || selectedAccountId == account.id } ?: account,
-                    destinationAddress = "tlq1qqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqq3l4q9m",
-                    amountSat = txCreate.request.params.outputs.single().amountSat,
-                    assetId = TESTNET_POLICY_ASSET,
-                    feeRate = 12_000L
-                )
+                val selectedAccount = account.takeIf { selectedAccountId == null || selectedAccountId == account.id } ?: account
+                val outputs = txCreate.request.params.outputs.mapIndexed { index, output ->
+                    com.blockstream.domain.walletabi.execution.WalletAbiPlannedOutput(
+                        outputId = output.id,
+                        destinationAddress = if (index == 0) {
+                            "tlq1qqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqq3l4q9m"
+                        } else {
+                            "tlq1qqd7g4r0n7px6x7m8g7slt0g2j5g6gf8x4v0tpn"
+                        },
+                        amountSat = output.amountSat,
+                        assetId = TESTNET_POLICY_ASSET,
+                        recipientScript = output.lock.toString()
+                    )
+                }
+                return if (outputs.size == 1) {
+                    com.blockstream.domain.walletabi.execution.WalletAbiSinglePaymentPlan(
+                        request = txCreate,
+                        accounts = listOf(account),
+                        selectedAccount = selectedAccount,
+                        feeRate = 12_000L,
+                        output = outputs.single()
+                    )
+                } else {
+                    com.blockstream.domain.walletabi.execution.WalletAbiSplitPaymentPlan(
+                        request = txCreate,
+                        accounts = listOf(account),
+                        selectedAccount = selectedAccount,
+                        feeRate = 12_000L,
+                        outputs = outputs
+                    )
+                }
             }
         }
     }
@@ -667,42 +694,42 @@ class WalletAbiHappyPathTest {
                 plan = plan,
                 params = CreateTransactionParams(
                     from = plan.selectedAccount.accountAsset,
-                    addressees = listOf(
+                    addressees = plan.outputs.map { output ->
                         AddressParams(
-                            address = plan.destinationAddress,
-                            satoshi = plan.amountSat,
-                            assetId = plan.assetId
+                            address = output.destinationAddress,
+                            satoshi = output.amountSat,
+                            assetId = output.assetId
                         )
-                    ).toJsonElement(),
+                    }.toJsonElement(),
                     feeRate = plan.feeRate
                 ),
                 transaction = CreateTransaction(
                     transaction = "rawtx",
                     fee = 100L,
                     feeRate = 12L,
-                    outputs = listOf(
+                    outputs = plan.outputs.map { output ->
                         Output(
-                            address = plan.destinationAddress,
-                            assetId = plan.assetId,
-                            satoshi = plan.amountSat
+                            address = output.destinationAddress,
+                            assetId = output.assetId,
+                            satoshi = output.amountSat
                         )
-                    )
+                    }
                 ),
                 confirmation = TransactionConfirmation(
-                    utxos = listOf(
+                    utxos = plan.outputs.mapIndexed { index, output ->
                         UtxoView(
-                            address = plan.destinationAddress,
-                            assetId = plan.assetId,
-                            satoshi = plan.amountSat,
-                            amount = "1,000 TEST-LBTC",
-                            amountExchange = "0.10 USD"
+                            address = output.destinationAddress,
+                            assetId = output.assetId,
+                            satoshi = output.amountSat,
+                            amount = if (index == 0) "1,000 TEST-LBTC" else "2,000 TEST-LBTC",
+                            amountExchange = if (index == 0) "0.10 USD" else "0.20 USD"
                         )
-                    ),
+                    },
                     fee = "0.01 TEST-LBTC",
                     feeFiat = "0.00 USD",
                     feeRate = "12 sat/vB",
-                    total = "1,000.01 TEST-LBTC",
-                    totalFiat = "0.10 USD"
+                    total = "3,000.01 TEST-LBTC",
+                    totalFiat = "0.30 USD"
                 )
             )
         }

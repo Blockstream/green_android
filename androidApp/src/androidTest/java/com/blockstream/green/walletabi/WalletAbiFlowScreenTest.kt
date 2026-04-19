@@ -8,6 +8,7 @@ import androidx.compose.ui.test.performClick
 import com.blockstream.compose.GreenPreview
 import com.blockstream.compose.extensions.previewAccountAsset
 import com.blockstream.compose.models.walletabi.WalletAbiReviewLook
+import com.blockstream.compose.models.walletabi.WalletAbiReviewOutputLook
 import com.blockstream.compose.screens.walletabi.WalletAbiFlowScreen
 import com.blockstream.data.gdk.data.AccountAssetBalance
 import com.blockstream.data.gdk.data.UtxoView
@@ -61,7 +62,7 @@ class WalletAbiFlowScreenTest {
         approvalTarget = WalletAbiApprovalTarget.Software,
         executionDetails = WalletAbiExecutionDetails(
             destinationAddress = "tlq1qqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqq3l4q9m",
-            amountSat = 1_000L,
+            amountSat = 3_000L,
             assetId = "asset-id",
             network = WalletAbiNetwork.TESTNET_LIQUID.wireValue,
             feeRate = 12_000L
@@ -79,6 +80,22 @@ class WalletAbiFlowScreenTest {
         accountAssetBalance = AccountAssetBalance(
             account = previewAccountAsset().account,
             asset = previewAccountAsset().asset
+        ),
+        outputs = listOf(
+            WalletAbiReviewOutputLook(
+                address = "tlq1qqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqq3l4q9m",
+                amount = "1,000 TEST-LBTC",
+                amountFiat = "0.10 USD",
+                assetId = "asset-id",
+                recipientScript = "00140000000000000000000000000000000000000000"
+            ),
+            WalletAbiReviewOutputLook(
+                address = "tlq1qqd7g4r0n7px6x7m8g7slt0g2j5g6gf8x4v0tpn",
+                amount = "2,000 TEST-LBTC",
+                amountFiat = "0.20 USD",
+                assetId = "asset-id",
+                recipientScript = "00141111111111111111111111111111111111111111"
+            )
         ),
         recipientAddress = "tlq1qqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqq3l4q9m",
         amount = "1,000 TEST-LBTC",
@@ -101,13 +118,20 @@ class WalletAbiFlowScreenTest {
                     satoshi = 1_000L,
                     amount = "1,000 TEST-LBTC",
                     amountExchange = "0.10 USD"
+                ),
+                UtxoView(
+                    address = "tlq1qqd7g4r0n7px6x7m8g7slt0g2j5g6gf8x4v0tpn",
+                    assetId = "asset-id",
+                    satoshi = 2_000L,
+                    amount = "2,000 TEST-LBTC",
+                    amountExchange = "0.20 USD"
                 )
             ),
             fee = "0.01 TEST-LBTC",
             feeFiat = "0.00 USD",
             feeRate = "12 sat/vB",
-            total = "1,000.01 TEST-LBTC",
-            totalFiat = "0.10 USD"
+            total = "3,000.01 TEST-LBTC",
+            totalFiat = "0.30 USD"
         )
     )
 
@@ -192,7 +216,12 @@ class WalletAbiFlowScreenTest {
 
         composeRule.onNodeWithTag("wallet_abi_flow_review_warning").assertIsDisplayed()
         composeRule.onNodeWithTag("wallet_abi_flow_selected_account").assertIsDisplayed()
-        composeRule.onNodeWithTag("wallet_abi_flow_destination").assertIsDisplayed()
+        composeRule.onNodeWithTag("wallet_abi_flow_outputs_summary").assertIsDisplayed()
+        composeRule.onNodeWithTag("wallet_abi_flow_output_0").assertIsDisplayed()
+        assertEquals(
+            1,
+            composeRule.onAllNodesWithTag("wallet_abi_flow_output_1").fetchSemanticsNodes().size
+        )
     }
 
     @Test

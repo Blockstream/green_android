@@ -58,14 +58,18 @@ class WalletAbiExecutionRunnerTest {
             broadcast = true
         )
     )
-    private val plan = WalletAbiExecutionPlan(
+    private val plan = WalletAbiSinglePaymentPlan(
         request = request,
         accounts = listOf(account),
         selectedAccount = account,
-        destinationAddress = "tlq1qqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqq3l4q9m",
-        amountSat = 25_000L,
-        assetId = TESTNET_POLICY_ASSET,
-        feeRate = 12_000L
+        feeRate = 12_000L,
+        output = WalletAbiPlannedOutput(
+            outputId = "output-1",
+            destinationAddress = "tlq1qqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqq3l4q9m",
+            amountSat = 25_000L,
+            assetId = TESTNET_POLICY_ASSET,
+            recipientScript = "00140000000000000000000000000000000000000000"
+        )
     )
     private val preparedExecution = WalletAbiPreparedExecution(
         plan = plan,
@@ -73,9 +77,9 @@ class WalletAbiExecutionRunnerTest {
             from = account.accountAsset,
             addressees = listOf(
                 AddressParams(
-                    address = plan.destinationAddress,
-                    satoshi = plan.amountSat,
-                    assetId = plan.assetId
+                    address = plan.output.destinationAddress,
+                    satoshi = plan.output.amountSat,
+                    assetId = plan.output.assetId
                 )
             ).toJsonElement(),
             feeRate = plan.feeRate

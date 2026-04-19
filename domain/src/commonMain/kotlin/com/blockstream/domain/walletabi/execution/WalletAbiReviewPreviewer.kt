@@ -63,13 +63,13 @@ internal suspend fun WalletAbiExecutionPlan.toCreateTransactionParams(
 ): CreateTransactionParams {
     return CreateTransactionParams(
         from = selectedAccount.accountAsset,
-        addressees = listOf(
+        addressees = outputs.map { output ->
             AddressParams(
-                address = destinationAddress,
-                satoshi = amountSat,
-                assetId = assetId.takeIf { selectedAccount.network.isLiquid }
+                address = output.destinationAddress,
+                satoshi = output.amountSat,
+                assetId = output.assetId.takeIf { selectedAccount.network.isLiquid }
             )
-        ).toJsonElement(),
+        }.toJsonElement(),
         feeRate = feeRate,
         utxos = session.getUnspentOutputs(selectedAccount).unspentOutputs
     )

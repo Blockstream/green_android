@@ -38,6 +38,20 @@ class WalletAbiDemoRequestSourceTest {
                           "blinder": {
                             "type": "rand"
                           }
+                        },
+                        {
+                          "id": "output-2",
+                          "amount_sat": 2000,
+                          "lock": {
+                            "type": "script",
+                            "script": "00141111111111111111111111111111111111111111"
+                          },
+                          "asset": {
+                            "asset_id": "144c654344aa716d6f3abcc1ca90e5641e4e2a7f633bc09fe3baf64585819a49"
+                          },
+                          "blinder": {
+                            "type": "rand"
+                          }
                         }
                       ],
                       "fee_rate_sat_kvb": 12000

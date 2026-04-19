@@ -116,6 +116,7 @@ class WalletAbiFlowRouteViewModelTest {
                 val lock = output.lock as? kotlinx.serialization.json.JsonObject ?: return@WalletAbiOutputAddressResolver null
                 when (lock["script"]?.toString()?.trim('"')) {
                     "00140000000000000000000000000000000000000000" -> "tlq1qqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqq3l4q9m"
+                    "00141111111111111111111111111111111111111111" -> "tlq1qqd7g4r0n7px6x7m8g7slt0g2j5g6gf8x4v0tpn"
                     else -> null
                 }
             }
@@ -264,7 +265,9 @@ class WalletAbiFlowRouteViewModelTest {
         assertEquals("wallet_abi_process_request", state.snapshot.review.method)
         assertEquals(liquidAccount.id, state.snapshot.review.selectedAccountId)
         assertEquals("tlq1qqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqq3l4q9m", state.snapshot.review.executionDetails?.destinationAddress)
+        assertEquals(3_000L, state.snapshot.review.executionDetails?.amountSat)
         assertEquals("wallet_abi_process_request", viewModel.reviewLook.value?.method)
+        assertEquals(2, viewModel.reviewLook.value?.outputs?.size)
     }
 
     @Test
@@ -353,7 +356,11 @@ class WalletAbiFlowRouteViewModelTest {
                     params = parsedRequest.request.params.copy(
                         outputs = listOf(
                             parsedRequest.request.params.outputs.first(),
-                            parsedRequest.request.params.outputs.first().copy(id = "output-2")
+                            parsedRequest.request.params.outputs.last().copy(
+                                asset = kotlinx.serialization.json.buildJsonObject {
+                                    put("asset_id", kotlinx.serialization.json.JsonPrimitive("unsupported-asset"))
+                                }
+                            )
                         )
                     )
                 )
@@ -422,18 +429,19 @@ class WalletAbiFlowRouteViewModelTest {
         assertEquals(listOf(liquidAccount.id), review.accounts.map { it.accountId })
         assertEquals(listOf(liquidAccount.name), review.accounts.map { it.name })
         assertEquals(0, parsedRequest.params.inputs.size)
-        assertEquals(1, parsedRequest.params.outputs.size)
+        assertEquals(2, parsedRequest.params.outputs.size)
         assertEquals(12_000f, parsedRequest.params.feeRateSatKvb)
         assertEquals(true, parsedRequest.broadcast)
         assertEquals("tlq1qqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqq3l4q9m", review.executionDetails?.destinationAddress)
-        assertEquals(1_000L, review.executionDetails?.amountSat)
+        assertEquals(3_000L, review.executionDetails?.amountSat)
         assertEquals(TESTNET_POLICY_ASSET, review.executionDetails?.assetId)
         assertEquals(WalletAbiNetwork.TESTNET_LIQUID.wireValue, review.executionDetails?.network)
         assertEquals(12_000L, review.executionDetails?.feeRate)
 
         assertEquals("wallet_abi_process_request", viewModel.reviewLook.value?.method)
         assertEquals("wallet-abi-0.1", viewModel.reviewLook.value?.abiVersion)
-        assertEquals("1,000 TEST-LBTC", viewModel.reviewLook.value?.amount)
+        assertEquals(2, viewModel.reviewLook.value?.outputs?.size)
+        assertEquals("1,000 TEST-LBTC", viewModel.reviewLook.value?.outputs?.firstOrNull()?.amount)
         assertEquals("0.01 TEST-LBTC", viewModel.reviewLook.value?.transactionConfirmation?.fee)
     }
 
@@ -912,7 +920,7 @@ class WalletAbiFlowRouteViewModelTest {
         assertEquals(WalletAbiFlowRouteViewModel.DEMO_REQUEST_ID, parsedRequest.requestId)
         assertEquals(listOf(liquidAccount.id), review.accounts.map { it.accountId })
         assertEquals("tlq1qqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqq3l4q9m", review.executionDetails?.destinationAddress)
-        assertEquals(1_000L, review.executionDetails?.amountSat)
+        assertEquals(3_000L, review.executionDetails?.amountSat)
         assertEquals(TESTNET_POLICY_ASSET, review.executionDetails?.assetId)
         assertEquals("testnet-liquid", review.executionDetails?.network)
         assertEquals(12_000L, review.executionDetails?.feeRate)
@@ -1455,42 +1463,42 @@ class WalletAbiFlowRouteViewModelTest {
             plan = plan,
             params = CreateTransactionParams(
                 from = plan.selectedAccount.accountAsset,
-                addressees = listOf(
+                addressees = plan.outputs.map { output ->
                     AddressParams(
-                        address = plan.destinationAddress,
-                        satoshi = plan.amountSat,
-                        assetId = plan.assetId
+                        address = output.destinationAddress,
+                        satoshi = output.amountSat,
+                        assetId = output.assetId
                     )
-                ).toJsonElement(),
+                }.toJsonElement(),
                 feeRate = plan.feeRate
             ),
             transaction = CreateTransaction(
                 transaction = "rawtx",
                 fee = 100L,
                 feeRate = 12L,
-                outputs = listOf(
+                outputs = plan.outputs.map { output ->
                     Output(
-                        address = plan.destinationAddress,
-                        assetId = plan.assetId,
-                        satoshi = plan.amountSat
+                        address = output.destinationAddress,
+                        assetId = output.assetId,
+                        satoshi = output.amountSat
                     )
-                )
+                }
             ),
             confirmation = TransactionConfirmation(
-                utxos = listOf(
+                utxos = plan.outputs.mapIndexed { index, output ->
                     UtxoView(
-                        address = plan.destinationAddress,
-                        assetId = plan.assetId,
-                        satoshi = plan.amountSat,
-                        amount = "1,000 TEST-LBTC",
-                        amountExchange = "0.10 USD"
+                        address = output.destinationAddress,
+                        assetId = output.assetId,
+                        satoshi = output.amountSat,
+                        amount = if (index == 0) "1,000 TEST-LBTC" else "2,000 TEST-LBTC",
+                        amountExchange = if (index == 0) "0.10 USD" else "0.20 USD"
                     )
-                ),
+                },
                 fee = "0.01 TEST-LBTC",
                 feeFiat = "0.00 USD",
                 feeRate = "12 sat/vB",
-                total = "1,000.01 TEST-LBTC",
-                totalFiat = "0.10 USD"
+                total = "3,000.01 TEST-LBTC",
+                totalFiat = "0.30 USD"
             )
         )
     }

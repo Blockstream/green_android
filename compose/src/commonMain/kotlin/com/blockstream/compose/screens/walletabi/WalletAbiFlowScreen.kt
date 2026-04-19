@@ -31,7 +31,6 @@ import blockstream_green.common.generated.resources.id_recipient_address
 import blockstream_green.common.generated.resources.id_review
 import com.blockstream.compose.components.GreenAccountAsset
 import com.blockstream.compose.components.GreenAlert
-import com.blockstream.compose.components.GreenAmount
 import com.blockstream.compose.components.GreenButton
 import com.blockstream.compose.components.GreenButtonColor
 import com.blockstream.compose.components.GreenButtonSize
@@ -41,6 +40,7 @@ import com.blockstream.compose.components.TransactionConfirmationSummary
 import com.blockstream.compose.models.walletabi.WalletAbiFlowRouteViewModel
 import com.blockstream.compose.models.walletabi.WalletAbiFlowViewModel
 import com.blockstream.compose.models.walletabi.WalletAbiReviewLook
+import com.blockstream.compose.models.walletabi.WalletAbiReviewOutputLook
 import com.blockstream.compose.theme.bodyMedium
 import com.blockstream.compose.theme.bodySmall
 import com.blockstream.compose.theme.labelLarge
@@ -347,23 +347,25 @@ private fun ColumnScope.RequestLoadedContent(
             }
         }
 
-        GreenAmount(
-            title = stringResource(Res.string.id_recipient_address),
-            amount = reviewLook.amount,
-            amountFiat = reviewLook.amountFiat,
-            address = reviewLook.recipientAddress,
-            modifier = Modifier.testTag("wallet_abi_flow_destination")
-        )
-
         GreenDataLayout(
-            title = stringResource(Res.string.id_amount),
-            testTag = "wallet_abi_flow_amount_summary"
+            title = if (reviewLook.outputs.size == 1) {
+                stringResource(Res.string.id_recipient_address)
+            } else {
+                "Requested outputs"
+            },
+            testTag = "wallet_abi_flow_outputs_summary"
         ) {
-            ReviewValueColumn(
-                primary = reviewLook.amount,
-                secondary = reviewLook.amountFiat,
-                modifier = Modifier.padding(16.dp)
-            )
+            Column(
+                modifier = Modifier.padding(16.dp),
+                verticalArrangement = Arrangement.spacedBy(12.dp)
+            ) {
+                reviewLook.outputs.forEachIndexed { index, output ->
+                    RequestedOutputRow(
+                        index = index,
+                        output = output
+                    )
+                }
+            }
         }
 
         GreenDataLayout(
@@ -446,13 +448,16 @@ private fun ColumnScope.RequestLoadedContent(
                     DetailRow("Request ID", reviewLook.requestId, testTag = "wallet_abi_flow_parsed_request_id")
                     DetailRow("Broadcast", reviewLook.broadcast.toString())
                     DetailRow("Network", reviewLook.networkWireValue, testTag = "wallet_abi_flow_parsed_network")
+                    DetailRow("Requested outputs", reviewLook.outputs.size.toString())
                     DetailRow("Selected account", state.review.selectedAccountId ?: "n/a")
                     DetailRow("Asset ID", reviewLook.assetId, testTag = "wallet_abi_flow_asset")
                     reviewLook.transactionConfirmation.feeRate?.also { feeRate ->
                         DetailRow("Fee rate", feeRate, testTag = "wallet_abi_flow_fee_rate")
                     }
-                    reviewLook.recipientScript?.also { script ->
-                        DetailRow("Recipient script", script)
+                    reviewLook.outputs.forEachIndexed { index, output ->
+                        output.recipientScript?.also { script ->
+                            DetailRow("Output ${index + 1} script", script)
+                        }
                     }
                 }
             }
@@ -478,6 +483,28 @@ private fun ColumnScope.RequestLoadedContent(
         size = GreenButtonSize.LARGE
     ) {
         onIntent(WalletAbiFlowIntent.Approve)
+    }
+}
+
+@Composable
+private fun RequestedOutputRow(
+    index: Int,
+    output: WalletAbiReviewOutputLook
+) {
+    Column(
+        modifier = Modifier
+            .fillMaxWidth()
+            .testTag("wallet_abi_flow_output_$index"),
+        verticalArrangement = Arrangement.spacedBy(6.dp)
+    ) {
+        Text(
+            text = output.address,
+            style = labelLarge
+        )
+        ReviewValueColumn(
+            primary = output.amount,
+            secondary = output.amountFiat
+        )
     }
 }
 

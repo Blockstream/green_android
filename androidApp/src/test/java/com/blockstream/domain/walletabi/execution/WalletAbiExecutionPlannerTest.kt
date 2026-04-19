@@ -23,6 +23,7 @@ import kotlinx.serialization.json.jsonPrimitive
 import kotlinx.serialization.json.put
 import kotlin.test.assertEquals
 import kotlin.test.assertFailsWith
+import kotlin.test.assertIs
 import org.junit.Test
 
 class WalletAbiExecutionPlannerTest {
@@ -35,6 +36,7 @@ class WalletAbiExecutionPlannerTest {
 
             when (lock["script"]?.jsonPrimitive?.content) {
                 VALID_SCRIPT -> "tlq1qqv6w8h0u7a2al4fj8n84g3nqu5mmz3wprw8ks4"
+                SECOND_VALID_SCRIPT -> "tlq1qqd7g4r0n7px6x7m8g7slt0g2j5g6gf8x4v0tpn"
                 else -> null
             }
         }
@@ -50,11 +52,42 @@ class WalletAbiExecutionPlannerTest {
             request = validRequest()
         )
 
-        assertEquals(account.id, plan.selectedAccount.id)
-        assertEquals(TESTNET_POLICY_ASSET, plan.assetId)
-        assertEquals(2_500L, plan.amountSat)
-        assertEquals(12_000L, plan.feeRate)
-        assertEquals(1, plan.accounts.size)
+        val singlePlan = assertIs<WalletAbiSinglePaymentPlan>(plan)
+        assertEquals(account.id, singlePlan.selectedAccount.id)
+        assertEquals(TESTNET_POLICY_ASSET, singlePlan.output.assetId)
+        assertEquals(2_500L, singlePlan.output.amountSat)
+        assertEquals(12_000L, singlePlan.feeRate)
+        assertEquals(1, singlePlan.accounts.size)
+    }
+
+    @Test
+    fun plan_accepts_valid_split_policy_asset_payment() = runTest {
+        val account = liquidAccount()
+        val session = mockSession(accounts = listOf(account), activeAccount = account)
+
+        val plan = planner.plan(
+            session = session,
+            request = validRequest(
+                outputs = listOf(
+                    validOutput(),
+                    validOutput(
+                        id = "output-2",
+                        amountSat = 5_000L,
+                        lock = buildJsonObject {
+                            put("type", "script")
+                            put("script", SECOND_VALID_SCRIPT)
+                        }
+                    )
+                )
+            )
+        )
+
+        val splitPlan = assertIs<WalletAbiSplitPaymentPlan>(plan)
+        assertEquals(2, splitPlan.outputs.size)
+        assertEquals("output-1", splitPlan.outputs[0].outputId)
+        assertEquals("output-2", splitPlan.outputs[1].outputId)
+        assertEquals(5_000L, splitPlan.outputs[1].amountSat)
+        assertEquals(12_000L, splitPlan.feeRate)
     }
 
     @Test
@@ -114,20 +147,18 @@ class WalletAbiExecutionPlannerTest {
     }
 
     @Test
-    fun plan_rejects_multiple_outputs() = runTest {
+    fun plan_rejects_requests_without_outputs() = runTest {
         val account = liquidAccount()
         val session = mockSession(accounts = listOf(account), activeAccount = account)
 
         val error = assertFailsWith<WalletAbiExecutionValidationException> {
             planner.plan(
                 session = session,
-                request = validRequest(
-                    outputs = listOf(validOutput(), validOutput(id = "output-2"))
-                )
+                request = validRequest(outputs = emptyList())
             )
         }.error
 
-        assertEquals(WalletAbiExecutionValidationError.OutputCountUnsupported(2), error)
+        assertEquals(WalletAbiExecutionValidationError.OutputCountUnsupported(0), error)
     }
 
     @Test
@@ -290,6 +321,7 @@ class WalletAbiExecutionPlannerTest {
 
     private fun validOutput(
         id: String = "output-1",
+        amountSat: Long = 2_500L,
         assetId: String = TESTNET_POLICY_ASSET,
         asset: kotlinx.serialization.json.JsonObject = buildJsonObject {
             put("asset_id", assetId)
@@ -304,7 +336,7 @@ class WalletAbiExecutionPlannerTest {
     ): WalletAbiOutput {
         return WalletAbiOutput(
             id = id,
-            amountSat = 2_500L,
+            amountSat = amountSat,
             lock = lock,
             asset = asset,
             blinder = blinder
@@ -380,6 +412,7 @@ class WalletAbiExecutionPlannerTest {
 
     private companion object {
         const val VALID_SCRIPT = "00146f0279e9ed041c3d710a9f57d0c02928416460c4"
+        const val SECOND_VALID_SCRIPT = "0014a2c61f06e62196f2f4d733f0f0f4d265886ea6a4"
         const val TESTNET_POLICY_ASSET =
             "144c654344aa716d6f3abcc1ca90e5641e4e2a7f633bc09fe3baf64585819a49"
         const val DIFFERENT_POLICY_ASSET =
