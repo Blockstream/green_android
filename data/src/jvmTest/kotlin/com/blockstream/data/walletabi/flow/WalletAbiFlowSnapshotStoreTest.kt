@@ -5,6 +5,7 @@ import com.blockstream.data.database.DriverFactory
 import com.blockstream.data.managers.SettingsManager
 import com.blockstream.data.managers.WalletSettingsManager
 import com.russhwolf.settings.PreferencesSettings
+import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.test.runTest
 import java.util.prefs.Preferences
 import java.util.UUID
@@ -67,5 +68,20 @@ class WalletAbiFlowSnapshotStoreTest {
         store.clear(walletId)
 
         assertNull(store.load(walletId))
+    }
+
+    @Test
+    fun observe_emits_saved_snapshot() = runTest {
+        store.save(walletId, snapshot)
+
+        assertEquals(snapshot, store.observe(walletId).first())
+    }
+
+    @Test
+    fun load_clears_invalid_snapshot() = runTest {
+        walletSettingsManager.setWalletAbiFlowSnapshot(walletId = walletId, snapshot = "{")
+
+        assertNull(store.load(walletId))
+        assertNull(walletSettingsManager.getWalletAbiFlowSnapshot(walletId))
     }
 }

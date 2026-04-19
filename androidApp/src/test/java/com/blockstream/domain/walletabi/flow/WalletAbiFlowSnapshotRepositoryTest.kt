@@ -18,11 +18,15 @@ import com.blockstream.domain.walletabi.request.WalletAbiRuntimeParams
 import com.blockstream.domain.walletabi.request.WalletAbiTxCreateRequest
 import io.mockk.coEvery
 import io.mockk.coVerify
+import io.mockk.every
 import io.mockk.mockk
 import io.mockk.slot
+import kotlinx.coroutines.flow.first
+import kotlinx.coroutines.flow.flowOf
 import kotlinx.coroutines.test.runTest
 import kotlinx.serialization.json.JsonPrimitive
 import kotlin.test.assertEquals
+import kotlin.test.assertNull
 import org.junit.Test
 
 class WalletAbiFlowSnapshotRepositoryTest {
@@ -148,5 +152,30 @@ class WalletAbiFlowSnapshotRepositoryTest {
 
         assertEquals(snapshot, repository.load("wallet-id"))
         coVerify(exactly = 1) { store.load("wallet-id") }
+    }
+
+    @Test
+    fun observe_restores_parsed_request() = runTest {
+        every { store.observe("wallet-id") } returns flowOf(payload)
+
+        assertEquals(snapshot, repository.observe("wallet-id").first())
+    }
+
+    @Test
+    fun load_clears_invalid_payload() = runTest {
+        coEvery { store.clear("wallet-id") } returns Unit
+        coEvery {
+            store.load("wallet-id")
+        } returns payload.copy(
+            review = payload.review.copy(
+                parsedRequest = WalletAbiParsedRequestPayload(
+                    kind = "tx_create",
+                    txCreate = payload.review.parsedRequest?.txCreate?.copy(network = "invalid-network")
+                )
+            )
+        )
+
+        assertNull(repository.load("wallet-id"))
+        coVerify(exactly = 1) { store.clear("wallet-id") }
     }
 }

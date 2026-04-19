@@ -2,6 +2,8 @@ package com.blockstream.data.walletabi.flow
 
 import com.blockstream.data.json.DefaultJson
 import com.blockstream.data.managers.WalletSettingsManager
+import kotlinx.coroutines.flow.Flow
+import kotlinx.coroutines.flow.mapLatest
 import kotlinx.serialization.Serializable
 import kotlinx.serialization.decodeFromString
 import kotlinx.serialization.encodeToString
@@ -11,8 +13,12 @@ class WalletAbiFlowSnapshotStore(
     private val walletSettingsManager: WalletSettingsManager
 ) {
     suspend fun load(walletId: String): WalletAbiFlowSnapshotPayload? {
-        return walletSettingsManager.getWalletAbiFlowSnapshot(walletId)?.let { raw ->
-            DefaultJson.decodeFromString<WalletAbiFlowSnapshotPayload>(raw)
+        return walletSettingsManager.getWalletAbiFlowSnapshot(walletId)?.decodeSnapshot(walletId)
+    }
+
+    fun observe(walletId: String): Flow<WalletAbiFlowSnapshotPayload?> {
+        return walletSettingsManager.observeWalletAbiFlowSnapshot(walletId).mapLatest { raw ->
+            raw?.decodeSnapshot(walletId)
         }
     }
 
@@ -25,6 +31,15 @@ class WalletAbiFlowSnapshotStore(
 
     suspend fun clear(walletId: String) {
         walletSettingsManager.clearWalletAbiFlowSnapshot(walletId)
+    }
+
+    private suspend fun String.decodeSnapshot(walletId: String): WalletAbiFlowSnapshotPayload? {
+        return runCatching {
+            DefaultJson.decodeFromString<WalletAbiFlowSnapshotPayload>(this)
+        }.getOrElse {
+            walletSettingsManager.clearWalletAbiFlowSnapshot(walletId)
+            null
+        }
     }
 }
 

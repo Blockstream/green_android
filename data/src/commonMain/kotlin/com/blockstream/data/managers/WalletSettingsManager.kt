@@ -34,6 +34,10 @@ class WalletSettingsManager(
         return getString(walletId = walletId, key = KEY_WALLET_ABI_FLOW_SNAPSHOT)
     }
 
+    fun observeWalletAbiFlowSnapshot(walletId: String): Flow<String?> {
+        return getStringFlow(walletId = walletId, key = KEY_WALLET_ABI_FLOW_SNAPSHOT)
+    }
+
     suspend fun setWalletAbiFlowSnapshot(walletId: String, snapshot: String) {
         setString(walletId = walletId, key = KEY_WALLET_ABI_FLOW_SNAPSHOT, value = snapshot)
     }
@@ -71,6 +75,10 @@ class WalletSettingsManager(
 
     private suspend fun getString(walletId: String, key: String): String? {
         return database.getWalletSetting(walletId = walletId, key = key)?.data_
+    }
+
+    private fun getStringFlow(walletId: String, key: String): Flow<String?> {
+        return database.getWalletSettingFlow(walletId = walletId, key = key).map { it?.data_ }
     }
 
     private suspend fun setString(walletId: String, key: String, value: String) {

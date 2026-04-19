@@ -18,12 +18,20 @@ import com.blockstream.domain.walletabi.request.WalletAbiOutput
 import com.blockstream.domain.walletabi.request.WalletAbiParsedRequest
 import com.blockstream.domain.walletabi.request.WalletAbiRuntimeParams
 import com.blockstream.domain.walletabi.request.WalletAbiTxCreateRequest
+import kotlinx.coroutines.flow.Flow
+import kotlinx.coroutines.flow.mapLatest
 
 class WalletAbiFlowSnapshotRepository(
     private val store: WalletAbiFlowSnapshotStore
 ) {
     suspend fun load(walletId: String): WalletAbiResumeSnapshot? {
-        return store.load(walletId)?.toDomain()
+        return store.load(walletId)?.toDomainOrClear(walletId)
+    }
+
+    fun observe(walletId: String): Flow<WalletAbiResumeSnapshot?> {
+        return store.observe(walletId).mapLatest { payload ->
+            payload?.toDomainOrClear(walletId)
+        }
     }
 
     suspend fun save(walletId: String, snapshot: WalletAbiResumeSnapshot) {
@@ -32,6 +40,15 @@ class WalletAbiFlowSnapshotRepository(
 
     suspend fun clear(walletId: String) {
         store.clear(walletId)
+    }
+
+    private suspend fun WalletAbiFlowSnapshotPayload.toDomainOrClear(walletId: String): WalletAbiResumeSnapshot? {
+        return runCatching {
+            toDomain()
+        }.getOrElse {
+            store.clear(walletId)
+            null
+        }
     }
 }
 
