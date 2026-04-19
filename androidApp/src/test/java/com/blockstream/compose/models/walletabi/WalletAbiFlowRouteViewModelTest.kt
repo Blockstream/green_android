@@ -492,6 +492,45 @@ class WalletAbiFlowRouteViewModelTest {
     }
 
     @Test
+    fun selectAccount_ignores_stale_refresh_completion() = runTest(dispatcher) {
+        val realStore = DefaultWalletAbiFlowStore()
+        val delayedAccount = liquidAccount(pointer = 1L, name = "Second liquid account")
+        walletSession = mockSession(
+            accounts = listOf(liquidAccount, delayedAccount),
+            activeAccount = liquidAccount
+        )
+        val delayedRefreshGate = CompletableDeferred<Unit>()
+        reviewPreviewer = WalletAbiReviewPreviewer { _, plan, _ ->
+            if (plan.selectedAccount.id == delayedAccount.id) {
+                delayedRefreshGate.await()
+            }
+            preparedExecution(plan)
+        }
+        val viewModel = createViewModel(
+            greenWallet = greenWallet,
+            store = realStore,
+            snapshotRepository = snapshotRepository,
+            walletSession = walletSession,
+            reviewPreviewer = reviewPreviewer
+        )
+
+        advanceUntilIdle()
+
+        viewModel.dispatch(WalletAbiFlowIntent.SelectAccount(delayedAccount.id))
+        advanceUntilIdle()
+
+        viewModel.dispatch(WalletAbiFlowIntent.SelectAccount(liquidAccount.id))
+        advanceUntilIdle()
+
+        delayedRefreshGate.complete(Unit)
+        advanceUntilIdle()
+
+        val state = assertIs<WalletAbiFlowState.RequestLoaded>(viewModel.state.value)
+        assertEquals(liquidAccount.id, state.review.selectedAccountId)
+        assertEquals(liquidAccount.accountAssetBalance, viewModel.reviewLook.value?.accountAssetBalance)
+    }
+
+    @Test
     fun state_exposes_store_state() {
         val viewModel = createViewModel(
             greenWallet = greenWallet,

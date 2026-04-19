@@ -67,6 +67,7 @@ class WalletAbiFlowRouteViewModel(
     private val requestParser = DefaultWalletAbiRequestParser()
     private val mutableReviewLook = MutableStateFlow<WalletAbiReviewLook?>(null)
     private var loadingJob: Job? = null
+    private var reviewRefreshJob: Job? = null
     private var activeEnvelope: WalletAbiParsedEnvelope? = null
     private var activeReview: WalletAbiFlowReview? = null
     private var activePreparedExecution: WalletAbiPreparedExecution? = null
@@ -117,7 +118,7 @@ class WalletAbiFlowRouteViewModel(
                 else -> Unit
             }
             is WalletAbiFlowOutput.StartResolution -> {
-                refreshPreparedReview(
+                launchReviewRefresh(
                     requestContext = output.command.requestContext,
                     selectedAccountId = output.command.selectedAccountId
                 )
@@ -170,6 +171,7 @@ class WalletAbiFlowRouteViewModel(
 
     private fun launchLoadingRequest(requestContext: WalletAbiStartRequestContext) {
         loadingJob?.cancel()
+        reviewRefreshJob?.cancel()
         loadingJob = viewModelScope.launch {
             try {
                 withTimeout(loadingTimeoutMillis) {
@@ -199,6 +201,27 @@ class WalletAbiFlowRouteViewModel(
             } finally {
                 if (loadingJob == kotlinx.coroutines.currentCoroutineContext()[Job]) {
                     loadingJob = null
+                }
+            }
+        }
+    }
+
+    private fun launchReviewRefresh(
+        requestContext: WalletAbiStartRequestContext,
+        selectedAccountId: String?
+    ) {
+        reviewRefreshJob?.cancel()
+        reviewRefreshJob = viewModelScope.launch {
+            try {
+                refreshPreparedReview(
+                    requestContext = requestContext,
+                    selectedAccountId = selectedAccountId
+                )
+            } catch (_: CancellationException) {
+                Unit
+            } finally {
+                if (reviewRefreshJob == kotlinx.coroutines.currentCoroutineContext()[Job]) {
+                    reviewRefreshJob = null
                 }
             }
         }
@@ -296,7 +319,7 @@ class WalletAbiFlowRouteViewModel(
                 store.state.value is WalletAbiFlowState.Error
             store.dispatch(intent)
             if (intent is WalletAbiFlowIntent.SelectAccount) {
-                refreshPreparedReview(
+                launchReviewRefresh(
                     requestContext = (store.state.value as? WalletAbiFlowState.RequestLoaded)?.review?.requestContext
                         ?: return@launch,
                     selectedAccountId = intent.accountId
