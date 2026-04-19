@@ -18,7 +18,119 @@ import kotlin.test.assertEquals
 
 class SoftwareTransactionExecutorTest {
     @Test
-    fun executeSoftwareTransaction_blinds_signs_and_sends_liquid_transactions() = runTest {
+    fun prepareSoftwareTransactionForBroadcast_blinds_signs_and_adds_trimmed_memo() = runTest {
+        val account = account(
+            network = Network(
+                network = "testnet-liquid",
+                name = "Liquid Testnet",
+                isMainnet = false,
+                isLiquid = true,
+                isDevelopment = false,
+                policyAsset = TESTNET_POLICY_ASSET
+            )
+        )
+        val originalTransaction = transaction()
+        val blindedTransaction = transaction(transaction = "blinded")
+        val signedTransaction = transaction(transaction = "signed")
+        val session = mockk<GdkSession>(relaxed = true) {
+            coEvery { blindTransaction(account.network, originalTransaction) } returns blindedTransaction
+            coEvery { signTransaction(account.network, blindedTransaction) } returns signedTransaction
+        }
+
+        val result = prepareSoftwareTransactionForBroadcast(
+            session = session,
+            account = account,
+            transaction = originalTransaction,
+            memo = "  wallet abi memo  "
+        )
+
+        assertEquals(signedTransaction, result.transaction)
+        assertEquals("\"wallet abi memo\"", result.signedTransaction.jsonObject["memo"]?.toString())
+        coVerify(exactly = 1) { session.blindTransaction(account.network, originalTransaction) }
+        coVerify(exactly = 1) { session.signTransaction(account.network, blindedTransaction) }
+    }
+
+    @Test
+    fun prepareSoftwareTransactionForBroadcast_skips_blinding_for_bitcoin_transactions() = runTest {
+        val account = account(
+            network = Network(
+                network = "testnet",
+                name = "Bitcoin Testnet",
+                isMainnet = false,
+                isLiquid = false,
+                isDevelopment = false,
+                policyAsset = TESTNET_POLICY_ASSET
+            )
+        )
+        val originalTransaction = transaction()
+        val signedTransaction = transaction(transaction = "signed")
+        val session = mockk<GdkSession>(relaxed = true) {
+            coEvery { signTransaction(account.network, originalTransaction) } returns signedTransaction
+        }
+
+        val result = prepareSoftwareTransactionForBroadcast(
+            session = session,
+            account = account,
+            transaction = originalTransaction
+        )
+
+        assertEquals(signedTransaction, result.transaction)
+        coVerify(exactly = 0) { session.blindTransaction(any(), any()) }
+        coVerify(exactly = 1) { session.signTransaction(account.network, originalTransaction) }
+    }
+
+    @Test
+    fun broadcastPreparedSoftwareTransaction_sends_prepared_payload() = runTest {
+        val account = account(
+            network = Network(
+                network = "testnet-liquid",
+                name = "Liquid Testnet",
+                isMainnet = false,
+                isLiquid = true,
+                isDevelopment = false,
+                policyAsset = TESTNET_POLICY_ASSET
+            )
+        )
+        val transaction = transaction(transaction = "signed")
+        val preparedTransaction = PreparedSoftwareTransaction(
+            transaction = transaction,
+            signedTransaction = transaction.toJsonElement()
+        )
+        val sentTransaction = ProcessedTransactionDetails(txHash = "wallet-abi-demo-tx")
+        val resolver = mockk<TwoFactorResolver>(relaxed = true)
+        val session = mockk<GdkSession>(relaxed = true) {
+            coEvery {
+                sendTransaction(
+                    account = account,
+                    signedTransaction = preparedTransaction.signedTransaction,
+                    isSendAll = false,
+                    isBump = false,
+                    twoFactorResolver = resolver
+                )
+            } returns sentTransaction
+        }
+
+        val result = broadcastPreparedSoftwareTransaction(
+            session = session,
+            account = account,
+            preparedTransaction = preparedTransaction,
+            twoFactorResolver = resolver
+        )
+
+        assertEquals(sentTransaction, result)
+        coVerify(exactly = 1) {
+            session.sendTransaction(
+                account = account,
+                signedTransaction = preparedTransaction.signedTransaction,
+                isSendAll = false,
+                isBump = false,
+                twoFactorResolver = resolver
+            )
+        }
+    }
+
+    @Test
+    fun executeSoftwareTransaction_keeps_compatibility_wrapper_behavior() = runTest {
         val account = account(
             network = Network(
                 network = "testnet-liquid",
@@ -40,7 +152,9 @@ class SoftwareTransactionExecutorTest {
             coEvery {
                 sendTransaction(
                     account = account,
-                    signedTransaction = any(),
+                    signedTransaction = match { signed ->
+                        signed.jsonObject["memo"]?.toString() == "\"wallet abi memo\""
+                    },
                     isSendAll = false,
                     isBump = false,
                     twoFactorResolver = resolver
@@ -57,59 +171,6 @@ class SoftwareTransactionExecutorTest {
         )
 
         assertEquals(sentTransaction, result)
-        coVerify(exactly = 1) { session.blindTransaction(account.network, originalTransaction) }
-        coVerify(exactly = 1) { session.signTransaction(account.network, blindedTransaction) }
-        coVerify(exactly = 1) {
-            session.sendTransaction(
-                account = account,
-                signedTransaction = match { signed ->
-                    signed.jsonObject["memo"]?.toString() == "\"wallet abi memo\""
-                },
-                isSendAll = false,
-                isBump = false,
-                twoFactorResolver = resolver
-            )
-        }
-    }
-
-    @Test
-    fun executeSoftwareTransaction_skips_blinding_for_bitcoin_transactions() = runTest {
-        val account = account(
-            network = Network(
-                network = "testnet",
-                name = "Bitcoin Testnet",
-                isMainnet = false,
-                isLiquid = false,
-                isDevelopment = false,
-                policyAsset = TESTNET_POLICY_ASSET
-            )
-        )
-        val originalTransaction = transaction()
-        val signedTransaction = transaction(transaction = "signed")
-        val sentTransaction = ProcessedTransactionDetails(txHash = "wallet-abi-demo-tx")
-        val resolver = mockk<TwoFactorResolver>(relaxed = true)
-        val session = mockk<GdkSession>(relaxed = true) {
-            coEvery { signTransaction(account.network, originalTransaction) } returns signedTransaction
-            coEvery {
-                sendTransaction(
-                    account = account,
-                    signedTransaction = any(),
-                    isSendAll = false,
-                    isBump = false,
-                    twoFactorResolver = resolver
-                )
-            } returns sentTransaction
-        }
-
-        executeSoftwareTransaction(
-            session = session,
-            account = account,
-            transaction = originalTransaction,
-            twoFactorResolver = resolver
-        )
-
-        coVerify(exactly = 0) { session.blindTransaction(any(), any()) }
-        coVerify(exactly = 1) { session.signTransaction(account.network, originalTransaction) }
     }
 
     private fun transaction(
