@@ -224,11 +224,25 @@ class WalletAbiFlowRouteViewModel(
 
                 store.dispatch(WalletAbiFlowIntent.OnExecutionEvent(WalletAbiExecutionEvent.Broadcasted))
 
-                val result = executionRunner.broadcast(
-                    session = walletSession,
-                    preparedBroadcast = preparedBroadcast,
-                    twoFactorResolver = this@WalletAbiFlowRouteViewModel
-                )
+                val result = try {
+                    withTimeout(submissionTimeoutMillis) {
+                        executionRunner.broadcast(
+                            session = walletSession,
+                            preparedBroadcast = preparedBroadcast,
+                            twoFactorResolver = this@WalletAbiFlowRouteViewModel
+                        )
+                    }
+                } catch (_: TimeoutCancellationException) {
+                    dispatchExecutionFailure(
+                        WalletAbiFlowError(
+                            kind = WalletAbiFlowErrorKind.PARTIAL_COMPLETION,
+                            phase = WalletAbiFlowPhase.SUBMISSION,
+                            message = "Transaction status may already have changed. Check your wallet activity before retrying.",
+                            retryable = false
+                        )
+                    )
+                    return@launch
+                }
                 store.dispatch(
                     WalletAbiFlowIntent.OnExecutionEvent(
                         WalletAbiExecutionEvent.RemoteResponseSent(

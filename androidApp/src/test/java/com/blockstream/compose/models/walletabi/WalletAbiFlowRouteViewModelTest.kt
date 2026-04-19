@@ -860,6 +860,84 @@ class WalletAbiFlowRouteViewModelTest {
     }
 
     @Test
+    fun startSubmission_output_dispatches_partial_completion_when_broadcast_exceeds_deadline() = runTest(dispatcher) {
+        val broadcastGate = CompletableDeferred<Unit>()
+        val blockingRunner = object : WalletAbiExecutionRunner {
+            override suspend fun prepare(
+                session: GdkSession,
+                preparedExecution: WalletAbiPreparedExecution
+            ): WalletAbiPreparedBroadcast {
+                return WalletAbiPreparedBroadcast(
+                    preparedExecution = preparedExecution,
+                    preparedTransaction = PreparedSoftwareTransaction(
+                        transaction = preparedExecution.transaction,
+                        signedTransaction = JsonObject(emptyMap())
+                    )
+                )
+            }
+
+            override suspend fun broadcast(
+                session: GdkSession,
+                preparedBroadcast: WalletAbiPreparedBroadcast,
+                twoFactorResolver: com.blockstream.data.gdk.TwoFactorResolver
+            ): WalletAbiExecutionResult {
+                broadcastGate.await()
+                return WalletAbiExecutionResult(txHash = "wallet-abi-demo-tx-hash")
+            }
+        }
+
+        createViewModel(
+            greenWallet = greenWallet,
+            store = store,
+            snapshotRepository = snapshotRepository,
+            executionRunner = blockingRunner,
+            submissionTimeoutMillis = 1L,
+            driver = driver
+        )
+
+        advanceUntilIdle()
+
+        store.mutableOutputs.emit(
+            WalletAbiFlowOutput.LoadRequest(
+                WalletAbiStartRequestContext(
+                    requestId = WalletAbiFlowRouteViewModel.DEMO_REQUEST_ID,
+                    walletId = greenWallet.id
+                )
+            )
+        )
+        advanceUntilIdle()
+
+        store.mutableOutputs.emit(
+            WalletAbiFlowOutput.StartSubmission(
+                WalletAbiSubmissionCommand(
+                    requestContext = WalletAbiStartRequestContext(
+                        requestId = WalletAbiFlowRouteViewModel.DEMO_REQUEST_ID,
+                        walletId = greenWallet.id
+                    ),
+                    selectedAccountId = liquidAccount.id
+                )
+            )
+        )
+
+        advanceTimeBy(1L)
+        advanceUntilIdle()
+
+        assertEquals(
+            WalletAbiFlowIntent.OnExecutionEvent(
+                WalletAbiExecutionEvent.Failed(
+                    WalletAbiFlowError(
+                        kind = WalletAbiFlowErrorKind.PARTIAL_COMPLETION,
+                        phase = WalletAbiFlowPhase.SUBMISSION,
+                        message = "Transaction status may already have changed. Check your wallet activity before retrying.",
+                        retryable = false
+                    )
+                )
+            ),
+            store.intents.last()
+        )
+    }
+
+    @Test
     fun cancelActiveWork_submission_dispatches_user_cancelled_without_broadcast() = runTest(dispatcher) {
         val prepareGate = CompletableDeferred<Unit>()
         val blockingRunner = object : WalletAbiExecutionRunner {

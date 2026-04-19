@@ -291,6 +291,82 @@ class WalletAbiHappyPathTest {
         composeRule.onNodeWithTag("wallet_abi_flow_success").assertIsDisplayed()
     }
 
+    @Test
+    fun walletAbiFlow_shows_partial_completion_without_retry_when_broadcast_times_out() {
+        val koin = GlobalContext.get()
+        val greenWallet = insertPreviewWallet(koin = koin)
+
+        composeRule.setContent {
+            GreenPreview {
+                var isFlowVisible by remember { mutableStateOf(false) }
+
+                if (isFlowVisible) {
+                    val viewModel = remember {
+                        WalletAbiFlowRouteViewModel(
+                            greenWallet = greenWallet,
+                            store = koin.get<WalletAbiFlowStore>(),
+                            snapshotRepository = koin.get<WalletAbiFlowSnapshotRepository>(),
+                            walletSession = walletSession(koin = koin, greenWallet = greenWallet),
+                            requestSource = DefaultWalletAbiDemoRequestSource(),
+                            executionPlanner = executionPlanner(),
+                            executionRunner = object : WalletAbiExecutionRunner {
+                                override suspend fun prepare(
+                                    session: GdkSession,
+                                    preparedExecution: WalletAbiPreparedExecution
+                                ) = WalletAbiPreparedBroadcast(
+                                    preparedExecution = preparedExecution,
+                                    preparedTransaction = PreparedSoftwareTransaction(
+                                        transaction = preparedExecution.transaction,
+                                        signedTransaction = JsonObject(emptyMap())
+                                    )
+                                )
+
+                                override suspend fun broadcast(
+                                    session: GdkSession,
+                                    preparedBroadcast: WalletAbiPreparedBroadcast,
+                                    twoFactorResolver: com.blockstream.data.gdk.TwoFactorResolver
+                                ): WalletAbiExecutionResult {
+                                    delay(5_000L)
+                                    return WalletAbiExecutionResult(txHash = "wallet-abi-demo-tx-hash")
+                                }
+                            },
+                            reviewPreviewer = reviewPreviewer(),
+                            submissionTimeoutMillis = 1L
+                        )
+                    }
+                    LaunchedEffect(viewModel) {
+                        viewModel.sideEffect.collectLatest { sideEffect ->
+                            if (sideEffect == SideEffects.NavigateBack()) {
+                                isFlowVisible = false
+                            }
+                        }
+                    }
+                    WalletAbiFlowScreen(viewModel = viewModel)
+                } else {
+                    WalletAbiDevelopmentEntry(
+                        visible = true,
+                        onOpen = { isFlowVisible = true }
+                    )
+                }
+            }
+        }
+
+        composeRule.onNodeWithTag("transact_wallet_abi_entry").assertIsDisplayed()
+        composeRule.onNodeWithTag("transact_wallet_abi_entry").performClick()
+        composeRule.waitUntil(timeoutMillis = 5_000L) {
+            composeRule.onAllNodesWithTag("wallet_abi_flow_request_title").fetchSemanticsNodes().isNotEmpty()
+        }
+        composeRule.onNodeWithTag("wallet_abi_flow_approve_action").performClick()
+        composeRule.waitUntil(timeoutMillis = 5_000L) {
+            composeRule.onAllNodesWithTag("wallet_abi_flow_error").fetchSemanticsNodes().isNotEmpty()
+        }
+        composeRule.onNodeWithTag("wallet_abi_flow_error").assertIsDisplayed()
+        assertEquals(
+            0,
+            composeRule.onAllNodesWithTag("wallet_abi_flow_retry_action").fetchSemanticsNodes().size
+        )
+    }
+
     private fun setWalletAbiHappyPathContent(
         koin: Koin,
         greenWallet: GreenWallet,
