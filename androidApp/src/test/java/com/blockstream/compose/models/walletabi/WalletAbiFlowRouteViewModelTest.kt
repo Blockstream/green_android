@@ -36,6 +36,7 @@ import com.blockstream.domain.walletabi.execution.WalletAbiReviewPreviewer
 import com.blockstream.domain.walletabi.execution.WalletAbiOutputAddressResolver
 import com.blockstream.domain.walletabi.flow.WalletAbiAccountOption
 import com.blockstream.domain.walletabi.flow.WalletAbiApprovalTarget
+import com.blockstream.domain.walletabi.flow.WalletAbiCancelledReason
 import com.blockstream.domain.walletabi.flow.WalletAbiExecutionEvent
 import com.blockstream.domain.walletabi.flow.WalletAbiFlowIntent
 import com.blockstream.domain.walletabi.flow.WalletAbiFlowOutput
@@ -58,6 +59,7 @@ import com.blockstream.domain.walletabi.request.WalletAbiParsedRequest
 import io.mockk.coEvery
 import io.mockk.coVerify
 import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.CompletableDeferred
 import kotlinx.coroutines.async
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.first
@@ -252,6 +254,57 @@ class WalletAbiFlowRouteViewModelTest {
         assertEquals("wallet-abi-0.1", viewModel.reviewLook.value?.abiVersion)
         assertEquals("1,000 TEST-LBTC", viewModel.reviewLook.value?.amount)
         assertEquals("0.01 TEST-LBTC", viewModel.reviewLook.value?.transactionConfirmation?.fee)
+    }
+
+    @Test
+    fun cancelActiveWork_loading_dispatches_user_cancelled_without_request_loaded() = runTest(dispatcher) {
+        val reviewGate = CompletableDeferred<Unit>()
+        reviewPreviewer = WalletAbiReviewPreviewer { _, plan, _ ->
+            reviewGate.await()
+            preparedExecution(plan)
+        }
+
+        createViewModel(
+            greenWallet = greenWallet,
+            store = store,
+            snapshotRepository = snapshotRepository,
+            reviewPreviewer = reviewPreviewer
+        )
+
+        store.state.value = WalletAbiFlowState.Loading(
+            WalletAbiStartRequestContext(
+                requestId = WalletAbiFlowRouteViewModel.DEMO_REQUEST_ID,
+                walletId = greenWallet.id
+            ),
+            isCancelling = true
+        )
+        store.mutableOutputs.emit(
+            WalletAbiFlowOutput.LoadRequest(
+                WalletAbiStartRequestContext(
+                    requestId = WalletAbiFlowRouteViewModel.DEMO_REQUEST_ID,
+                    walletId = greenWallet.id
+                )
+            )
+        )
+        advanceUntilIdle()
+
+        store.mutableOutputs.emit(WalletAbiFlowOutput.CancelActiveWork(WalletAbiFlowPhase.LOADING))
+        advanceUntilIdle()
+
+        val cancelled = store.intents.last { intent ->
+            intent is WalletAbiFlowIntent.OnExecutionEvent
+        } as WalletAbiFlowIntent.OnExecutionEvent
+        assertEquals(
+            WalletAbiExecutionEvent.Cancelled(WalletAbiCancelledReason.UserCancelled),
+            cancelled.event
+        )
+        assertEquals(
+            0,
+            store.intents.count { intent ->
+                intent is WalletAbiFlowIntent.OnExecutionEvent &&
+                    intent.event is WalletAbiExecutionEvent.RequestLoaded
+            }
+        )
     }
 
     @Test

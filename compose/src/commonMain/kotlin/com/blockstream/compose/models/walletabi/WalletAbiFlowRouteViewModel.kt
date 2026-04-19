@@ -22,6 +22,7 @@ import com.blockstream.domain.walletabi.execution.WalletAbiExecutionValidationEx
 import com.blockstream.domain.walletabi.flow.WalletAbiFlowIntent
 import com.blockstream.domain.walletabi.flow.WalletAbiAccountOption
 import com.blockstream.domain.walletabi.flow.WalletAbiApprovalTarget
+import com.blockstream.domain.walletabi.flow.WalletAbiCancelledReason
 import com.blockstream.domain.walletabi.flow.WalletAbiExecutionEvent
 import com.blockstream.domain.walletabi.flow.WalletAbiExecutionDetails
 import com.blockstream.domain.walletabi.flow.WalletAbiFlowReview
@@ -39,6 +40,8 @@ import com.blockstream.domain.walletabi.request.WalletAbiMethod
 import com.blockstream.domain.walletabi.request.WalletAbiParsedEnvelope
 import com.blockstream.domain.walletabi.request.WalletAbiRequestParseResult
 import com.blockstream.domain.walletabi.request.WalletAbiRequestValidationError
+import kotlinx.coroutines.CancellationException
+import kotlinx.coroutines.Job
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.launchIn
 import kotlinx.coroutines.flow.onEach
@@ -60,6 +63,7 @@ class WalletAbiFlowRouteViewModel(
 ) : GreenViewModel(greenWalletOrNull = greenWallet) {
     private val requestParser = DefaultWalletAbiRequestParser()
     private val mutableReviewLook = MutableStateFlow<WalletAbiReviewLook?>(null)
+    private var loadingJob: Job? = null
     private var activeEnvelope: WalletAbiParsedEnvelope? = null
     private var activeReview: WalletAbiFlowReview? = null
     private var activePreparedExecution: WalletAbiPreparedExecution? = null
@@ -86,17 +90,7 @@ class WalletAbiFlowRouteViewModel(
     private suspend fun handleOutput(output: WalletAbiFlowOutput, greenWallet: GreenWallet) {
         when (output) {
             is WalletAbiFlowOutput.LoadRequest -> {
-                clearPreparedReview()
-                when (val parseResult = requestParser.parse(requestSource.loadRequestEnvelope(output.requestContext.requestId))) {
-                    is WalletAbiRequestParseResult.Failure -> {
-                        dispatchExecutionFailure(parseResult.error.toFlowError())
-                    }
-
-                    is WalletAbiRequestParseResult.Success -> {
-                        activeEnvelope = parseResult.envelope
-                        loadRequestReview(requestContext = output.requestContext)
-                    }
-                }
+                launchLoadingRequest(output.requestContext)
             }
 
             is WalletAbiFlowOutput.PersistSnapshot -> {
@@ -108,7 +102,17 @@ class WalletAbiFlowRouteViewModel(
                 }
             }
 
-            is WalletAbiFlowOutput.CancelActiveWork -> Unit
+            is WalletAbiFlowOutput.CancelActiveWork -> when (output.phase) {
+                WalletAbiFlowPhase.LOADING -> {
+                    loadingJob?.cancel()
+                    store.dispatch(
+                        WalletAbiFlowIntent.OnExecutionEvent(
+                            WalletAbiExecutionEvent.Cancelled(WalletAbiCancelledReason.UserCancelled)
+                        )
+                    )
+                }
+                else -> Unit
+            }
             is WalletAbiFlowOutput.StartResolution -> {
                 refreshPreparedReview(
                     requestContext = output.command.requestContext,
@@ -161,6 +165,31 @@ class WalletAbiFlowRouteViewModel(
         }
     }
 
+    private fun launchLoadingRequest(requestContext: WalletAbiStartRequestContext) {
+        loadingJob?.cancel()
+        loadingJob = viewModelScope.launch {
+            try {
+                clearPreparedReview()
+                when (val parseResult = requestParser.parse(requestSource.loadRequestEnvelope(requestContext.requestId))) {
+                    is WalletAbiRequestParseResult.Failure -> {
+                        dispatchExecutionFailure(parseResult.error.toFlowError())
+                    }
+
+                    is WalletAbiRequestParseResult.Success -> {
+                        activeEnvelope = parseResult.envelope
+                        loadRequestReview(requestContext = requestContext)
+                    }
+                }
+            } catch (_: CancellationException) {
+                Unit
+            } finally {
+                if (loadingJob == kotlinx.coroutines.currentCoroutineContext()[Job]) {
+                    loadingJob = null
+                }
+            }
+        }
+    }
+
     private suspend fun loadRequestReview(requestContext: WalletAbiStartRequestContext) {
         val envelope = activeEnvelope ?: return dispatchExecutionFailure(
             WalletAbiFlowError(
@@ -170,13 +199,16 @@ class WalletAbiFlowRouteViewModel(
                 retryable = true
             )
         )
-        val preparedReview = runCatching {
+        val preparedReview = try {
             buildPreparedReview(
                 envelope = envelope,
                 requestContext = requestContext,
                 selectedAccountId = null
             )
-        }.getOrElse { throwable ->
+        } catch (throwable: Throwable) {
+            if (throwable is CancellationException) {
+                throw throwable
+            }
             dispatchExecutionFailure(throwable.toWalletAbiFlowError(WalletAbiFlowPhase.LOADING))
             return
         }
@@ -206,13 +238,16 @@ class WalletAbiFlowRouteViewModel(
             )
         )
         markReviewRefreshing(selectedAccountId)
-        val preparedReview = runCatching {
+        val preparedReview = try {
             buildPreparedReview(
                 envelope = envelope,
                 requestContext = requestContext,
                 selectedAccountId = selectedAccountId
             )
-        }.getOrElse { throwable ->
+        } catch (throwable: Throwable) {
+            if (throwable is CancellationException) {
+                throw throwable
+            }
             dispatchExecutionFailure(throwable.toWalletAbiFlowError(WalletAbiFlowPhase.LOADING))
             return
         }
