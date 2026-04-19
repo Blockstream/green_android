@@ -323,6 +323,93 @@ class WalletAbiFlowRouteViewModelTest {
     }
 
     @Test
+    fun startApproval_output_dispatches_timeout_when_approval_exceeds_deadline() = runTest(dispatcher) {
+        createViewModel(
+            greenWallet = greenWallet,
+            store = store,
+            snapshotRepository = snapshotRepository,
+            approvalTimeoutMillis = 1L,
+            driver = driver
+        )
+        advanceUntilIdle()
+
+        store.mutableOutputs.emit(
+            WalletAbiFlowOutput.StartApproval(
+                com.blockstream.domain.walletabi.flow.WalletAbiApprovalCommand(
+                    requestContext = WalletAbiStartRequestContext(
+                        requestId = WalletAbiFlowRouteViewModel.DEMO_REQUEST_ID,
+                        walletId = greenWallet.id
+                    ),
+                    selectedAccountId = liquidAccount.id,
+                    jade = com.blockstream.domain.walletabi.flow.WalletAbiJadeContext(
+                        deviceId = "jade-id",
+                        step = com.blockstream.domain.walletabi.flow.WalletAbiJadeStep.CONNECT,
+                        message = null,
+                        retryable = false
+                    )
+                )
+            )
+        )
+
+        advanceTimeBy(1L)
+        advanceUntilIdle()
+
+        assertEquals(
+            WalletAbiFlowIntent.OnExecutionEvent(
+                WalletAbiExecutionEvent.Failed(
+                    WalletAbiFlowError(
+                        kind = WalletAbiFlowErrorKind.TIMEOUT,
+                        phase = WalletAbiFlowPhase.APPROVAL,
+                        message = "Wallet ABI approval timed out",
+                        retryable = true
+                    )
+                )
+            ),
+            store.intents.last()
+        )
+    }
+
+    @Test
+    fun cancelActiveWork_approval_dispatches_user_cancelled() = runTest(dispatcher) {
+        createViewModel(
+            greenWallet = greenWallet,
+            store = store,
+            snapshotRepository = snapshotRepository,
+            driver = driver
+        )
+        advanceUntilIdle()
+
+        store.mutableOutputs.emit(
+            WalletAbiFlowOutput.StartApproval(
+                com.blockstream.domain.walletabi.flow.WalletAbiApprovalCommand(
+                    requestContext = WalletAbiStartRequestContext(
+                        requestId = WalletAbiFlowRouteViewModel.DEMO_REQUEST_ID,
+                        walletId = greenWallet.id
+                    ),
+                    selectedAccountId = liquidAccount.id,
+                    jade = com.blockstream.domain.walletabi.flow.WalletAbiJadeContext(
+                        deviceId = "jade-id",
+                        step = com.blockstream.domain.walletabi.flow.WalletAbiJadeStep.CONNECT,
+                        message = null,
+                        retryable = false
+                    )
+                )
+            )
+        )
+        advanceUntilIdle()
+
+        store.mutableOutputs.emit(WalletAbiFlowOutput.CancelActiveWork(WalletAbiFlowPhase.APPROVAL))
+        advanceUntilIdle()
+
+        assertEquals(
+            WalletAbiExecutionEvent.Cancelled(WalletAbiCancelledReason.UserCancelled),
+            (store.intents.last { intent ->
+                intent is WalletAbiFlowIntent.OnExecutionEvent
+            } as WalletAbiFlowIntent.OnExecutionEvent).event
+        )
+    }
+
+    @Test
     fun loadRequest_output_dispatches_timeout_when_loading_exceeds_deadline() = runTest(dispatcher) {
         val reviewGate = CompletableDeferred<Unit>()
         reviewPreviewer = WalletAbiReviewPreviewer { _, plan, _ ->
@@ -1139,6 +1226,7 @@ class WalletAbiFlowRouteViewModelTest {
         executionRunner: WalletAbiExecutionRunner = this.executionRunner,
         reviewPreviewer: WalletAbiReviewPreviewer = this.reviewPreviewer,
         loadingTimeoutMillis: Long = 15_000L,
+        approvalTimeoutMillis: Long = 120_000L,
         submissionTimeoutMillis: Long = 60_000L,
         driver: FakeWalletAbiFlowDriver = this.driver
     ): WalletAbiFlowRouteViewModel {
@@ -1152,6 +1240,7 @@ class WalletAbiFlowRouteViewModelTest {
             executionRunner = executionRunner,
             reviewPreviewer = reviewPreviewer,
             loadingTimeoutMillis = loadingTimeoutMillis,
+            approvalTimeoutMillis = approvalTimeoutMillis,
             submissionTimeoutMillis = submissionTimeoutMillis
         ).also { createdViewModels += it }
     }

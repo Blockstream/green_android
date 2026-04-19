@@ -33,6 +33,7 @@ import com.blockstream.domain.walletabi.flow.WalletAbiFlowStore
 import com.blockstream.domain.walletabi.flow.WalletAbiFlowError
 import com.blockstream.domain.walletabi.flow.WalletAbiFlowErrorKind
 import com.blockstream.domain.walletabi.flow.WalletAbiFlowPhase
+import com.blockstream.domain.walletabi.flow.WalletAbiJadeEvent
 import com.blockstream.domain.walletabi.flow.WalletAbiStartRequestContext
 import com.blockstream.domain.walletabi.flow.WalletAbiSuccessResult
 import com.blockstream.domain.walletabi.request.DefaultWalletAbiRequestParser
@@ -43,6 +44,7 @@ import com.blockstream.domain.walletabi.request.WalletAbiRequestValidationError
 import kotlinx.coroutines.CancellationException
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.TimeoutCancellationException
+import kotlinx.coroutines.awaitCancellation
 import kotlinx.coroutines.ensureActive
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.launchIn
@@ -65,11 +67,13 @@ class WalletAbiFlowRouteViewModel(
     private val executionRunner: WalletAbiExecutionRunner = DefaultWalletAbiExecutionRunner(),
     private val reviewPreviewer: WalletAbiReviewPreviewer = DefaultWalletAbiReviewPreviewer(),
     private val loadingTimeoutMillis: Long = 15_000L,
+    private val approvalTimeoutMillis: Long = 120_000L,
     private val submissionTimeoutMillis: Long = 60_000L
 ) : GreenViewModel(greenWalletOrNull = greenWallet) {
     private val requestParser = DefaultWalletAbiRequestParser()
     private val mutableReviewLook = MutableStateFlow<WalletAbiReviewLook?>(null)
     private var loadingJob: Job? = null
+    private var approvalJob: Job? = null
     private var reviewRefreshJob: Job? = null
     private var submissionJob: Job? = null
     private var activeEnvelope: WalletAbiParsedEnvelope? = null
@@ -119,6 +123,14 @@ class WalletAbiFlowRouteViewModel(
                         )
                     )
                 }
+                WalletAbiFlowPhase.APPROVAL -> {
+                    approvalJob?.cancel()
+                    store.dispatch(
+                        WalletAbiFlowIntent.OnExecutionEvent(
+                            WalletAbiExecutionEvent.Cancelled(WalletAbiCancelledReason.UserCancelled)
+                        )
+                    )
+                }
                 WalletAbiFlowPhase.SUBMISSION -> {
                     submissionJob?.cancel()
                     store.dispatch(
@@ -137,6 +149,7 @@ class WalletAbiFlowRouteViewModel(
             }
 
             is WalletAbiFlowOutput.StartSubmission -> {
+                approvalJob?.cancel()
                 val preparedExecution = activePreparedExecution
                     ?.takeIf { prepared ->
                         output.command.selectedAccountId == null ||
@@ -155,7 +168,9 @@ class WalletAbiFlowRouteViewModel(
             }
 
             is WalletAbiFlowOutput.Complete -> Unit
-            is WalletAbiFlowOutput.StartApproval -> Unit
+            is WalletAbiFlowOutput.StartApproval -> {
+                launchApprovalTimeout()
+            }
         }
     }
 
@@ -265,6 +280,32 @@ class WalletAbiFlowRouteViewModel(
             } finally {
                 if (submissionJob == currentCoroutineContext()[Job]) {
                     submissionJob = null
+                }
+            }
+        }
+    }
+
+    private fun launchApprovalTimeout() {
+        approvalJob?.cancel()
+        approvalJob = viewModelScope.launch {
+            try {
+                withTimeout(approvalTimeoutMillis) {
+                    awaitCancellation()
+                }
+            } catch (_: TimeoutCancellationException) {
+                dispatchExecutionFailure(
+                    WalletAbiFlowError(
+                        kind = WalletAbiFlowErrorKind.TIMEOUT,
+                        phase = WalletAbiFlowPhase.APPROVAL,
+                        message = "Wallet ABI approval timed out",
+                        retryable = true
+                    )
+                )
+            } catch (_: CancellationException) {
+                Unit
+            } finally {
+                if (approvalJob == currentCoroutineContext()[Job]) {
+                    approvalJob = null
                 }
             }
         }
@@ -392,6 +433,15 @@ class WalletAbiFlowRouteViewModel(
                 store.state.value is WalletAbiFlowState.Cancelled ||
                 store.state.value is WalletAbiFlowState.Error
             store.dispatch(intent)
+            if (intent is WalletAbiFlowIntent.OnJadeEvent) {
+                when (intent.event) {
+                    WalletAbiJadeEvent.Cancelled,
+                    WalletAbiJadeEvent.Disconnected,
+                    is WalletAbiJadeEvent.Failed,
+                    WalletAbiJadeEvent.Signed -> approvalJob?.cancel()
+                    else -> Unit
+                }
+            }
             if (intent is WalletAbiFlowIntent.SelectAccount) {
                 launchReviewRefresh(
                     requestContext = (store.state.value as? WalletAbiFlowState.RequestLoaded)?.review?.requestContext
