@@ -67,6 +67,7 @@ import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.flowOf
 import kotlinx.coroutines.test.StandardTestDispatcher
+import kotlinx.coroutines.test.advanceTimeBy
 import kotlinx.coroutines.test.advanceUntilIdle
 import kotlinx.coroutines.cancel
 import kotlinx.coroutines.test.resetMain
@@ -297,6 +298,59 @@ class WalletAbiFlowRouteViewModelTest {
         assertEquals(
             WalletAbiExecutionEvent.Cancelled(WalletAbiCancelledReason.UserCancelled),
             cancelled.event
+        )
+        assertEquals(
+            0,
+            store.intents.count { intent ->
+                intent is WalletAbiFlowIntent.OnExecutionEvent &&
+                    intent.event is WalletAbiExecutionEvent.RequestLoaded
+            }
+        )
+    }
+
+    @Test
+    fun loadRequest_output_dispatches_timeout_when_loading_exceeds_deadline() = runTest(dispatcher) {
+        val reviewGate = CompletableDeferred<Unit>()
+        reviewPreviewer = WalletAbiReviewPreviewer { _, plan, _ ->
+            reviewGate.await()
+            preparedExecution(plan)
+        }
+
+        createViewModel(
+            greenWallet = greenWallet,
+            store = store,
+            snapshotRepository = snapshotRepository,
+            reviewPreviewer = reviewPreviewer,
+            loadingTimeoutMillis = 1L
+        )
+        advanceUntilIdle()
+
+        store.mutableOutputs.emit(
+            WalletAbiFlowOutput.LoadRequest(
+                WalletAbiStartRequestContext(
+                    requestId = WalletAbiFlowRouteViewModel.DEMO_REQUEST_ID,
+                    walletId = greenWallet.id
+                )
+            )
+        )
+
+        advanceTimeBy(1L)
+        advanceUntilIdle()
+
+        assertEquals(
+            WalletAbiFlowIntent.OnExecutionEvent(
+                WalletAbiExecutionEvent.Failed(
+                    WalletAbiFlowError(
+                        kind = WalletAbiFlowErrorKind.TIMEOUT,
+                        phase = WalletAbiFlowPhase.LOADING,
+                        message = "Wallet ABI request timed out",
+                        retryable = true
+                    )
+                )
+            ),
+            store.intents.last { intent ->
+                intent is WalletAbiFlowIntent.OnExecutionEvent
+            }
         )
         assertEquals(
             0,
@@ -729,6 +783,7 @@ class WalletAbiFlowRouteViewModelTest {
         executionPlanner: WalletAbiExecutionPlanner = this.executionPlanner,
         executionRunner: WalletAbiExecutionRunner = this.executionRunner,
         reviewPreviewer: WalletAbiReviewPreviewer = this.reviewPreviewer,
+        loadingTimeoutMillis: Long = 15_000L,
         driver: FakeWalletAbiFlowDriver = this.driver
     ): WalletAbiFlowRouteViewModel {
         return WalletAbiFlowRouteViewModel(
@@ -739,7 +794,8 @@ class WalletAbiFlowRouteViewModelTest {
             requestSource = requestSource,
             executionPlanner = executionPlanner,
             executionRunner = executionRunner,
-            reviewPreviewer = reviewPreviewer
+            reviewPreviewer = reviewPreviewer,
+            loadingTimeoutMillis = loadingTimeoutMillis
         ).also { createdViewModels += it }
     }
 

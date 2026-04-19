@@ -42,12 +42,14 @@ import com.blockstream.domain.walletabi.request.WalletAbiRequestParseResult
 import com.blockstream.domain.walletabi.request.WalletAbiRequestValidationError
 import kotlinx.coroutines.CancellationException
 import kotlinx.coroutines.Job
+import kotlinx.coroutines.TimeoutCancellationException
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.launchIn
 import kotlinx.coroutines.flow.onEach
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.launch
+import kotlinx.coroutines.withTimeout
 import kotlinx.serialization.json.JsonObject
 import kotlinx.serialization.json.jsonPrimitive
 
@@ -59,7 +61,8 @@ class WalletAbiFlowRouteViewModel(
     private val requestSource: WalletAbiDemoRequestSource = DefaultWalletAbiDemoRequestSource(),
     private val executionPlanner: WalletAbiExecutionPlanner = DefaultWalletAbiExecutionPlanner(),
     private val executionRunner: WalletAbiExecutionRunner = DefaultWalletAbiExecutionRunner(),
-    private val reviewPreviewer: WalletAbiReviewPreviewer = DefaultWalletAbiReviewPreviewer()
+    private val reviewPreviewer: WalletAbiReviewPreviewer = DefaultWalletAbiReviewPreviewer(),
+    private val loadingTimeoutMillis: Long = 15_000L
 ) : GreenViewModel(greenWalletOrNull = greenWallet) {
     private val requestParser = DefaultWalletAbiRequestParser()
     private val mutableReviewLook = MutableStateFlow<WalletAbiReviewLook?>(null)
@@ -169,17 +172,28 @@ class WalletAbiFlowRouteViewModel(
         loadingJob?.cancel()
         loadingJob = viewModelScope.launch {
             try {
-                clearPreparedReview()
-                when (val parseResult = requestParser.parse(requestSource.loadRequestEnvelope(requestContext.requestId))) {
-                    is WalletAbiRequestParseResult.Failure -> {
-                        dispatchExecutionFailure(parseResult.error.toFlowError())
-                    }
+                withTimeout(loadingTimeoutMillis) {
+                    clearPreparedReview()
+                    when (val parseResult = requestParser.parse(requestSource.loadRequestEnvelope(requestContext.requestId))) {
+                        is WalletAbiRequestParseResult.Failure -> {
+                            dispatchExecutionFailure(parseResult.error.toFlowError())
+                        }
 
-                    is WalletAbiRequestParseResult.Success -> {
-                        activeEnvelope = parseResult.envelope
-                        loadRequestReview(requestContext = requestContext)
+                        is WalletAbiRequestParseResult.Success -> {
+                            activeEnvelope = parseResult.envelope
+                            loadRequestReview(requestContext = requestContext)
+                        }
                     }
                 }
+            } catch (_: TimeoutCancellationException) {
+                dispatchExecutionFailure(
+                    WalletAbiFlowError(
+                        kind = WalletAbiFlowErrorKind.TIMEOUT,
+                        phase = WalletAbiFlowPhase.LOADING,
+                        message = "Wallet ABI request timed out",
+                        retryable = true
+                    )
+                )
             } catch (_: CancellationException) {
                 Unit
             } finally {
