@@ -30,14 +30,24 @@ class WalletAbiExecutionPlannerTest {
     private val planner = DefaultWalletAbiExecutionPlanner(
         outputAddressResolver = WalletAbiOutputAddressResolver { output, _, _ ->
             val lock = output.lock as? kotlinx.serialization.json.JsonObject ?: return@WalletAbiOutputAddressResolver null
-            if (lock["type"]?.jsonPrimitive?.content != "script") {
-                return@WalletAbiOutputAddressResolver null
-            }
+            when (lock["type"]?.jsonPrimitive?.content) {
+                "script" -> {
+                    return@WalletAbiOutputAddressResolver when (lock["script"]?.jsonPrimitive?.content) {
+                        VALID_SCRIPT -> "tlq1qqv6w8h0u7a2al4fj8n84g3nqu5mmz3wprw8ks4"
+                        SECOND_VALID_SCRIPT -> "tlq1qqd7g4r0n7px6x7m8g7slt0g2j5g6gf8x4v0tpn"
+                        else -> null
+                    }
+                }
 
-            when (lock["script"]?.jsonPrimitive?.content) {
-                VALID_SCRIPT -> "tlq1qqv6w8h0u7a2al4fj8n84g3nqu5mmz3wprw8ks4"
-                SECOND_VALID_SCRIPT -> "tlq1qqd7g4r0n7px6x7m8g7slt0g2j5g6gf8x4v0tpn"
-                else -> null
+                "address" -> {
+                    return@WalletAbiOutputAddressResolver lock["address"]?.jsonPrimitive?.content
+                        ?: (lock["recipient"] as? kotlinx.serialization.json.JsonObject)
+                            ?.get("confidential_address")
+                            ?.jsonPrimitive
+                            ?.content
+                }
+
+                else -> return@WalletAbiOutputAddressResolver null
             }
         }
     )
@@ -88,6 +98,35 @@ class WalletAbiExecutionPlannerTest {
         assertEquals("output-2", splitPlan.outputs[1].outputId)
         assertEquals(5_000L, splitPlan.outputs[1].amountSat)
         assertEquals(12_000L, splitPlan.feeRate)
+    }
+
+    @Test
+    fun plan_accepts_confidential_address_locks() = runTest {
+        val account = liquidAccount()
+        val session = mockSession(accounts = listOf(account), activeAccount = account)
+
+        val plan = DefaultWalletAbiExecutionPlanner().plan(
+            session = session,
+            request = validRequest(
+                outputs = listOf(
+                    validOutput(
+                        lock = buildJsonObject {
+                            put("type", "address")
+                            put(
+                                "recipient",
+                                buildJsonObject {
+                                    put("confidential_address", CONFIDENTIAL_TESTNET_ADDRESS)
+                                }
+                            )
+                        }
+                    )
+                )
+            )
+        )
+
+        val singlePlan = assertIs<WalletAbiSinglePaymentPlan>(plan)
+        assertEquals(CONFIDENTIAL_TESTNET_ADDRESS, singlePlan.output.destinationAddress)
+        assertEquals(null, singlePlan.output.recipientScript)
     }
 
     @Test
@@ -413,6 +452,8 @@ class WalletAbiExecutionPlannerTest {
     private companion object {
         const val VALID_SCRIPT = "00146f0279e9ed041c3d710a9f57d0c02928416460c4"
         const val SECOND_VALID_SCRIPT = "0014a2c61f06e62196f2f4d733f0f0f4d265886ea6a4"
+        const val CONFIDENTIAL_TESTNET_ADDRESS =
+            "tlq1qq02egjncr8g4qn890mrw3jhgupwqymekv383lwpmsfghn36hac5ptpmeewtnftluqyaraa56ung7wf47crkn5fjuhk422d68m"
         const val TESTNET_POLICY_ASSET =
             "144c654344aa716d6f3abcc1ca90e5641e4e2a7f633bc09fe3baf64585819a49"
         const val DIFFERENT_POLICY_ASSET =

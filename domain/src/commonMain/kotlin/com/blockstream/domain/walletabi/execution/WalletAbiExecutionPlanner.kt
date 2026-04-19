@@ -6,7 +6,10 @@ import com.blockstream.data.gdk.data.Network
 import com.blockstream.domain.walletabi.request.WalletAbiNetwork
 import com.blockstream.domain.walletabi.request.WalletAbiOutput
 import com.blockstream.domain.walletabi.request.WalletAbiParsedRequest
+import kotlinx.serialization.json.JsonArray
+import kotlinx.serialization.json.JsonElement
 import kotlinx.serialization.json.JsonObject
+import kotlinx.serialization.json.JsonPrimitive
 import kotlinx.serialization.json.jsonPrimitive
 import lwk.Script
 import lwk.TxOut
@@ -147,7 +150,7 @@ sealed interface WalletAbiExecutionValidationError {
 
     data object OutputLockUnsupported : WalletAbiExecutionValidationError {
         override val message: String =
-            "Wallet ABI real execution supports one script output convertible to an address"
+            "Wallet ABI real execution supports external address or script outputs only"
     }
 }
 
@@ -321,15 +324,22 @@ private class LwkWalletAbiOutputAddressResolver : WalletAbiOutputAddressResolver
 
 private fun WalletAbiOutput.isWalletOwnedOrBurnLike(): Boolean {
     val lockObject = lock as? JsonObject ?: return true
-    val type = lockObject["type"]?.jsonPrimitive?.content?.trim()?.lowercase()
-    if (type != "script") {
-        return true
-    }
+    when (lockObject["type"]?.jsonPrimitive?.content?.trim()?.lowercase()) {
+        "script" -> {
+            val script = lockObject["script"]?.jsonPrimitive?.content?.trim()?.lowercase()
+                ?: return true
+            if (script.startsWith("6a")) {
+                return true
+            }
+        }
 
-    val script = lockObject["script"]?.jsonPrimitive?.content?.trim()?.lowercase()
-        ?: return true
-    if (script.startsWith("6a")) {
-        return true
+        "address" -> {
+            if (lockObject.addressCandidateOrNull() == null) {
+                return true
+            }
+        }
+
+        else -> return true
     }
 
     val blinderObject = blinder as? JsonObject
@@ -359,26 +369,65 @@ private fun WalletAbiOutput.toAddress(
     assetId: String
 ): String? {
     val lockObject = lock as? JsonObject ?: return null
-    if (lockObject["type"]?.jsonPrimitive?.content?.trim()?.lowercase() != "script") {
-        return null
+    return when (lockObject["type"]?.jsonPrimitive?.content?.trim()?.lowercase()) {
+        "address" -> lockObject.addressCandidateOrNull()
+
+        "script" -> {
+            val scriptHex = scriptHexOrNull()
+                ?: return null
+
+            runCatching {
+                TxOut.fromExplicit(
+                    scriptPubkey = Script(scriptHex),
+                    assetId = assetId,
+                    satoshi = amountSat.toULong()
+                ).unconfidentialAddress(
+                    network.toLwkNetwork()
+                )?.toString()?.trim()?.takeIf { it.isNotBlank() }
+            }.getOrNull()
+        }
+
+        else -> null
     }
+}
 
-    val scriptHex = scriptHexOrNull()
-        ?: return null
+private fun JsonObject.addressCandidateOrNull(): String? {
+    return sequenceOf(
+        this["address"].jsonStringOrNull(),
+        this["recipient"].nestedAddressCandidateOrNull(),
+        this["recipient_address"].jsonStringOrNull(),
+        this["recipientAddress"].jsonStringOrNull()
+    ).firstOrNull { !it.isNullOrBlank() }?.trim()
+}
 
-    return runCatching {
-        TxOut.fromExplicit(
-            scriptPubkey = Script(scriptHex),
-            assetId = assetId,
-            satoshi = amountSat.toULong()
-        ).unconfidentialAddress(
-            when (network) {
-                WalletAbiNetwork.LIQUID -> LwkNetwork.mainnet()
-                WalletAbiNetwork.TESTNET_LIQUID -> LwkNetwork.testnet()
-                WalletAbiNetwork.LOCALTEST_LIQUID -> LwkNetwork.regtestDefault()
-            }
-        )?.toString()?.trim()?.takeIf { it.isNotBlank() }
-    }.getOrNull()
+private fun JsonElement?.nestedAddressCandidateOrNull(): String? {
+    return when (this) {
+        is JsonObject -> sequenceOf(
+            this["address"].jsonStringOrNull(),
+            this["confidential_address"].jsonStringOrNull(),
+            this["confidentialAddress"].jsonStringOrNull(),
+            this["unconfidential_address"].jsonStringOrNull(),
+            this["unconfidentialAddress"].jsonStringOrNull()
+        ).firstOrNull { !it.isNullOrBlank() }
+
+        is JsonArray -> asSequence()
+            .mapNotNull { it.nestedAddressCandidateOrNull() }
+            .firstOrNull()
+
+        else -> jsonStringOrNull()
+    }?.trim()
+}
+
+private fun JsonElement?.jsonStringOrNull(): String? {
+    return runCatching { (this as? JsonPrimitive)?.content }.getOrNull()?.takeIf { it.isNotBlank() }
+}
+
+private fun WalletAbiNetwork.toLwkNetwork(): LwkNetwork {
+    return when (this) {
+        WalletAbiNetwork.LIQUID -> LwkNetwork.mainnet()
+        WalletAbiNetwork.TESTNET_LIQUID -> LwkNetwork.testnet()
+        WalletAbiNetwork.LOCALTEST_LIQUID -> LwkNetwork.regtestDefault()
+    }
 }
 
 private fun Float.toWholePositiveFeeRate(): Long? {
