@@ -265,27 +265,44 @@ class DefaultWalletAbiFlowStore : WalletAbiFlowStore {
         }
     }
 
-    private fun handleResume() {
+    private suspend fun handleResume() {
         val currentState = mutableState.value as? WalletAbiFlowState.Resumable ?: return
         val snapshot = currentState.snapshot
-        mutableState.value = when (snapshot.phase) {
-            WalletAbiResumePhase.AWAITING_APPROVAL -> WalletAbiFlowState.AwaitingApproval(
-                requestContext = snapshot.review.requestContext,
-                selectedAccountId = snapshot.review.selectedAccountId,
-                jade = snapshot.jade ?: WalletAbiJadeContext(
+        when (snapshot.phase) {
+            WalletAbiResumePhase.AWAITING_APPROVAL -> {
+                val jade = snapshot.jade ?: WalletAbiJadeContext(
                     deviceId = null,
                     step = WalletAbiJadeStep.CONNECT,
                     message = null,
                     retryable = false
                 )
-            )
+                mutableState.value = WalletAbiFlowState.AwaitingApproval(
+                    requestContext = snapshot.review.requestContext,
+                    selectedAccountId = snapshot.review.selectedAccountId,
+                    jade = jade
+                )
+                mutableOutputs.emit(
+                    WalletAbiFlowOutput.StartApproval(
+                        WalletAbiApprovalCommand(
+                            requestContext = snapshot.review.requestContext,
+                            selectedAccountId = snapshot.review.selectedAccountId,
+                            jade = jade
+                        )
+                    )
+                )
+            }
 
-            WalletAbiResumePhase.REQUEST_LOADED -> WalletAbiFlowState.RequestLoaded(snapshot.review)
-            WalletAbiResumePhase.SUBMITTING -> WalletAbiFlowState.Submitting(
-                requestContext = snapshot.review.requestContext,
-                stage = WalletAbiSubmittingStage.PREPARING,
-                jade = snapshot.jade
-            )
+            WalletAbiResumePhase.REQUEST_LOADED -> {
+                mutableState.value = WalletAbiFlowState.RequestLoaded(snapshot.review)
+            }
+
+            WalletAbiResumePhase.SUBMITTING -> {
+                mutableState.value = WalletAbiFlowState.Submitting(
+                    requestContext = snapshot.review.requestContext,
+                    stage = WalletAbiSubmittingStage.PREPARING,
+                    jade = snapshot.jade
+                )
+            }
         }
     }
 

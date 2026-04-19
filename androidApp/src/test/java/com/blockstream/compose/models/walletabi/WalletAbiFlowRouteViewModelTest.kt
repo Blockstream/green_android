@@ -291,6 +291,39 @@ class WalletAbiFlowRouteViewModelTest {
     }
 
     @Test
+    fun resume_awaiting_approval_snapshot_restarts_approval_handling() = runTest(dispatcher) {
+        val realStore = DefaultWalletAbiFlowStore()
+        coEvery { snapshotRepository.load(greenWallet.id) } returns demoResumeSnapshot(
+            phase = WalletAbiResumePhase.AWAITING_APPROVAL
+        ).copy(
+            jade = com.blockstream.domain.walletabi.flow.WalletAbiJadeContext(
+                deviceId = "jade-id",
+                step = com.blockstream.domain.walletabi.flow.WalletAbiJadeStep.CONNECT,
+                message = null,
+                retryable = false
+            )
+        )
+
+        val viewModel = createViewModel(
+            greenWallet = greenWallet,
+            store = realStore,
+            snapshotRepository = snapshotRepository,
+            launchMode = WalletAbiFlowLaunchMode.Resume,
+            approvalTimeoutMillis = 1L,
+            driver = driver
+        )
+
+        advanceUntilIdle()
+        viewModel.dispatch(WalletAbiFlowIntent.Resume)
+        advanceTimeBy(1L)
+        advanceUntilIdle()
+
+        val state = assertIs<WalletAbiFlowState.Error>(viewModel.state.value)
+        assertEquals(WalletAbiFlowErrorKind.TIMEOUT, state.error.kind)
+        assertEquals(WalletAbiFlowPhase.APPROVAL, state.error.phase)
+    }
+
+    @Test
     fun resume_without_snapshot_navigates_back() = runTest(dispatcher) {
         coEvery { snapshotRepository.load(greenWallet.id) } returns null
         val viewModel = createViewModel(

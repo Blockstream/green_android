@@ -789,6 +789,54 @@ class WalletAbiFlowStoreTest {
     }
 
     @Test
+    fun resume_awaiting_approval_restarts_approval() = runTest {
+        val store = DefaultWalletAbiFlowStore()
+        val snapshot = WalletAbiResumeSnapshot(
+            review = jadeReview,
+            phase = WalletAbiResumePhase.AWAITING_APPROVAL,
+            jade = WalletAbiJadeContext(
+                deviceId = "jade-id",
+                step = WalletAbiJadeStep.CONNECT,
+                message = null,
+                retryable = false
+            )
+        )
+        store.dispatch(WalletAbiFlowIntent.Restore(snapshot))
+        val output = async(start = CoroutineStart.UNDISPATCHED) { store.outputs.first() }
+
+        store.dispatch(WalletAbiFlowIntent.Resume)
+
+        assertEquals(
+            WalletAbiFlowState.AwaitingApproval(
+                requestContext = requestContext,
+                selectedAccountId = jadeReview.selectedAccountId,
+                jade = WalletAbiJadeContext(
+                    deviceId = "jade-id",
+                    step = WalletAbiJadeStep.CONNECT,
+                    message = null,
+                    retryable = false
+                )
+            ),
+            store.state.value
+        )
+        assertEquals(
+            WalletAbiFlowOutput.StartApproval(
+                WalletAbiApprovalCommand(
+                    requestContext = requestContext,
+                    selectedAccountId = jadeReview.selectedAccountId,
+                    jade = WalletAbiJadeContext(
+                        deviceId = "jade-id",
+                        step = WalletAbiJadeStep.CONNECT,
+                        message = null,
+                        retryable = false
+                    )
+                )
+            ),
+            output.await()
+        )
+    }
+
+    @Test
     fun cancel_resume_ends_cancelled() = runTest {
         val store = DefaultWalletAbiFlowStore()
         store.dispatch(
