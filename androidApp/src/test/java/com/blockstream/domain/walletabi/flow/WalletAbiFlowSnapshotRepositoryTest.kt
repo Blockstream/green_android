@@ -70,6 +70,7 @@ class WalletAbiFlowSnapshotRepositoryTest {
                 requestId = "request-id",
                 walletId = "wallet-id"
             ),
+            method = "wallet_abi_process_request",
             title = "Demo payment",
             message = "Approve a parsed Wallet ABI request",
             accounts = listOf(
@@ -89,6 +90,7 @@ class WalletAbiFlowSnapshotRepositoryTest {
         review = WalletAbiFlowReviewPayload(
             requestId = "request-id",
             walletId = "wallet-id",
+            method = "wallet_abi_process_request",
             title = "Demo payment",
             message = "Approve a parsed Wallet ABI request",
             accounts = listOf(

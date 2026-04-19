@@ -591,6 +591,7 @@ data class WalletAbiFlowError(
 
 data class WalletAbiFlowReview(
     val requestContext: WalletAbiStartRequestContext,
+    val method: String? = null,
     val title: String,
     val message: String,
     val accounts: List<WalletAbiAccountOption>,

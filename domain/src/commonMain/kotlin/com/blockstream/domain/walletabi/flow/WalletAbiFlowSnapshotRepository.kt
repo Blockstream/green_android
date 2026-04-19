@@ -64,6 +64,7 @@ private fun WalletAbiFlowReview.toPayload(): WalletAbiFlowReviewPayload {
     return WalletAbiFlowReviewPayload(
         requestId = requestContext.requestId,
         walletId = requestContext.walletId,
+        method = method,
         title = title,
         message = message,
         accounts = accounts.map { it.toPayload() },
@@ -177,6 +178,7 @@ private fun WalletAbiFlowReviewPayload.toDomain(): WalletAbiFlowReview {
             requestId = requestId,
             walletId = walletId
         ),
+        method = method,
         title = title,
         message = message,
         accounts = accounts.map { it.toDomain() },

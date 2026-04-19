@@ -648,6 +648,7 @@ private fun WalletAbiParsedEnvelope.toDomainReview(
 ): WalletAbiFlowReview {
     return WalletAbiFlowReview(
         requestContext = requestContext,
+        method = method.wireValue,
         title = "Wallet ABI payment",
         message = "Approve a Wallet ABI request",
         accounts = executionPlan.accounts.map { account ->

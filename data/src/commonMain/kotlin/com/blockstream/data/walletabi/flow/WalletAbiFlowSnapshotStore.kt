@@ -54,6 +54,7 @@ data class WalletAbiFlowSnapshotPayload(
 data class WalletAbiFlowReviewPayload(
     val requestId: String,
     val walletId: String,
+    val method: String? = null,
     val title: String,
     val message: String,
     val accounts: List<WalletAbiAccountOptionPayload>,
