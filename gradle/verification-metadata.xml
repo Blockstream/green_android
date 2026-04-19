@@ -18,6 +18,7 @@
          <trust group="^com[.]rickclephas($|([.].*))" regex="true" reason="Trust rickclephas artifacts"/>
          <trust group="^com[.]russhwolf($|([.].*))" regex="true" reason="Trust all russhwolf artifacts"/>
          <trust group="^io[.]coil-kt($|([.].*))" regex="true" reason="Trust all JUnit artifacts"/>
+         <trust group="^io[.]github[.]kyrylr($|([.].*))" regex="true" reason="Trust kyrylr artifacts"/>
          <trust group="^io[.]github[.]koalaplot($|([.].*))" regex="true" reason="Trust all JUnit artifacts"/>
          <trust group="^io[.]insert-koin($|([.].*))" regex="true" reason="Trust all Koin artifacts"/>
          <trust group="^io[.]ktor($|([.].*))" regex="true" reason="Trust all Ktor artifacts"/>

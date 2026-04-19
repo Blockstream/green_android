@@ -16,7 +16,7 @@ kable = "0.42.0"
 coil = "3.4.0"
 ktor = "3.4.1"
 blockstream-glsdk = "0.2.0"
-blockstream-lwk = "0.16.0"
+blockstream-lwk = "0.16.1"
 phosphorIcon = "1.0.0"
 tuulbox-coroutines = "8.1.0"
 android-gradle-plugin = "9.1.0"
@@ -102,7 +102,7 @@ ktor-client-cio = { module = "io.ktor:ktor-client-cio", version.ref = "ktor" }
 ktor-client-darwin = { module = "io.ktor:ktor-client-darwin", version.ref = "ktor" }
 ktor-client-java = { module = "io.ktor:ktor-client-java", version.ref = "ktor" }
 blockstream-glsdk = { module = "com.blockstream:glsdk", version.ref = "blockstream-glsdk" }
-blockstream-lwk = { module = "com.blockstream:lwk", version.ref = "blockstream-lwk" }
+blockstream-lwk = { module = "io.github.kyrylr:lwk", version.ref = "blockstream-lwk" }
 phosphor-icon = { module = "com.adamglin:phosphor-icon", version.ref = "phosphorIcon" }
 tuulbox-coroutines = { module = "com.juul.tuulbox:coroutines", version.ref = "tuulbox-coroutines" }
 desugar = { module = "com.android.tools:desugar_jdk_libs", version.ref = "desugar" }
