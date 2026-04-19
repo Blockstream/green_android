@@ -790,6 +790,78 @@ class WalletAbiFlowRouteViewModelTest {
     }
 
     @Test
+    fun startSubmission_output_dispatches_network_failure_when_broadcast_transport_fails() = runTest(dispatcher) {
+        val failingRunner = object : WalletAbiExecutionRunner {
+            override suspend fun prepare(
+                session: GdkSession,
+                preparedExecution: WalletAbiPreparedExecution
+            ) = com.blockstream.domain.walletabi.execution.WalletAbiPreparedBroadcast(
+                preparedExecution = preparedExecution,
+                preparedTransaction = PreparedSoftwareTransaction(
+                    transaction = preparedExecution.transaction,
+                    signedTransaction = JsonObject(emptyMap())
+                )
+            )
+
+            override suspend fun broadcast(
+                session: GdkSession,
+                preparedBroadcast: com.blockstream.domain.walletabi.execution.WalletAbiPreparedBroadcast,
+                twoFactorResolver: com.blockstream.data.gdk.TwoFactorResolver
+            ): WalletAbiExecutionResult {
+                error("network transport failed")
+            }
+        }
+
+        createViewModel(
+            greenWallet = greenWallet,
+            store = store,
+            snapshotRepository = snapshotRepository,
+            executionRunner = failingRunner,
+            driver = driver
+        )
+
+        advanceUntilIdle()
+
+        store.mutableOutputs.emit(
+            WalletAbiFlowOutput.LoadRequest(
+                WalletAbiStartRequestContext(
+                    requestId = WalletAbiFlowRouteViewModel.DEMO_REQUEST_ID,
+                    walletId = greenWallet.id
+                )
+            )
+        )
+        advanceUntilIdle()
+
+        store.mutableOutputs.emit(
+            WalletAbiFlowOutput.StartSubmission(
+                WalletAbiSubmissionCommand(
+                    requestContext = WalletAbiStartRequestContext(
+                        requestId = WalletAbiFlowRouteViewModel.DEMO_REQUEST_ID,
+                        walletId = greenWallet.id
+                    ),
+                    selectedAccountId = liquidAccount.id
+                )
+            )
+        )
+
+        advanceUntilIdle()
+
+        assertEquals(
+            WalletAbiFlowIntent.OnExecutionEvent(
+                WalletAbiExecutionEvent.Failed(
+                    WalletAbiFlowError(
+                        kind = WalletAbiFlowErrorKind.NETWORK_FAILURE,
+                        phase = WalletAbiFlowPhase.SUBMISSION,
+                        message = "network transport failed",
+                        retryable = true
+                    )
+                )
+            ),
+            store.intents.last()
+        )
+    }
+
+    @Test
     fun startSubmission_output_dispatches_timeout_when_prepare_exceeds_deadline() = runTest(dispatcher) {
         val prepareGate = CompletableDeferred<Unit>()
         val blockingRunner = object : WalletAbiExecutionRunner {

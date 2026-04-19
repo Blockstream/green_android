@@ -256,7 +256,12 @@ class WalletAbiFlowRouteViewModel(
             } catch (_: CancellationException) {
                 Unit
             } catch (throwable: Throwable) {
-                dispatchExecutionFailure(throwable.toWalletAbiFlowError(WalletAbiFlowPhase.SUBMISSION))
+                dispatchExecutionFailure(
+                    throwable.toWalletAbiFlowError(
+                        phase = WalletAbiFlowPhase.SUBMISSION,
+                        sessionConnected = walletSession.isConnected
+                    )
+                )
             } finally {
                 if (submissionJob == currentCoroutineContext()[Job]) {
                     submissionJob = null
@@ -305,7 +310,12 @@ class WalletAbiFlowRouteViewModel(
             if (throwable is CancellationException) {
                 throw throwable
             }
-            dispatchExecutionFailure(throwable.toWalletAbiFlowError(WalletAbiFlowPhase.LOADING))
+            dispatchExecutionFailure(
+                throwable.toWalletAbiFlowError(
+                    phase = WalletAbiFlowPhase.LOADING,
+                    sessionConnected = walletSession.isConnected
+                )
+            )
             return
         }
 
@@ -344,7 +354,12 @@ class WalletAbiFlowRouteViewModel(
             if (throwable is CancellationException) {
                 throw throwable
             }
-            dispatchExecutionFailure(throwable.toWalletAbiFlowError(WalletAbiFlowPhase.LOADING))
+            dispatchExecutionFailure(
+                throwable.toWalletAbiFlowError(
+                    phase = WalletAbiFlowPhase.LOADING,
+                    sessionConnected = walletSession.isConnected
+                )
+            )
             return
         }
 
@@ -492,7 +507,10 @@ private fun WalletAbiRequestValidationError.toFlowError(): WalletAbiFlowError {
     )
 }
 
-private fun Throwable.toWalletAbiFlowError(phase: WalletAbiFlowPhase): WalletAbiFlowError {
+private fun Throwable.toWalletAbiFlowError(
+    phase: WalletAbiFlowPhase,
+    sessionConnected: Boolean
+): WalletAbiFlowError {
     return when (this) {
         is WalletAbiExecutionValidationException -> {
             val kind = when (error) {
@@ -522,13 +540,30 @@ private fun Throwable.toWalletAbiFlowError(phase: WalletAbiFlowPhase): WalletAbi
             )
         }
 
-        else -> WalletAbiFlowError(
-            kind = WalletAbiFlowErrorKind.EXECUTION_FAILURE,
-            phase = phase,
-            message = message ?: "Wallet ABI execution failed",
-            retryable = true
-        )
+        else -> {
+            val errorMessage = message ?: "Wallet ABI execution failed"
+            val isNetworkFailure = !sessionConnected || errorMessage.isLikelyNetworkFailure()
+
+            WalletAbiFlowError(
+                kind = if (isNetworkFailure) {
+                    WalletAbiFlowErrorKind.NETWORK_FAILURE
+                } else {
+                    WalletAbiFlowErrorKind.EXECUTION_FAILURE
+                },
+                phase = phase,
+                message = errorMessage,
+                retryable = true
+            )
+        }
     }
+}
+
+private fun String.isLikelyNetworkFailure(): Boolean {
+    val normalized = lowercase()
+    return "network" in normalized ||
+        "transport" in normalized ||
+        "connection" in normalized ||
+        "disconnected" in normalized
 }
 
 private fun WalletAbiPreparedExecution.toReviewLook(
