@@ -790,6 +790,76 @@ class WalletAbiFlowRouteViewModelTest {
     }
 
     @Test
+    fun startSubmission_output_dispatches_timeout_when_prepare_exceeds_deadline() = runTest(dispatcher) {
+        val prepareGate = CompletableDeferred<Unit>()
+        val blockingRunner = object : WalletAbiExecutionRunner {
+            override suspend fun prepare(
+                session: GdkSession,
+                preparedExecution: WalletAbiPreparedExecution
+            ): WalletAbiPreparedBroadcast {
+                prepareGate.await()
+                return WalletAbiPreparedBroadcast(
+                    preparedExecution = preparedExecution,
+                    preparedTransaction = PreparedSoftwareTransaction(
+                        transaction = preparedExecution.transaction,
+                        signedTransaction = JsonObject(emptyMap())
+                    )
+                )
+            }
+        }
+
+        createViewModel(
+            greenWallet = greenWallet,
+            store = store,
+            snapshotRepository = snapshotRepository,
+            executionRunner = blockingRunner,
+            submissionTimeoutMillis = 1L,
+            driver = driver
+        )
+
+        advanceUntilIdle()
+
+        store.mutableOutputs.emit(
+            WalletAbiFlowOutput.LoadRequest(
+                WalletAbiStartRequestContext(
+                    requestId = WalletAbiFlowRouteViewModel.DEMO_REQUEST_ID,
+                    walletId = greenWallet.id
+                )
+            )
+        )
+        advanceUntilIdle()
+
+        store.mutableOutputs.emit(
+            WalletAbiFlowOutput.StartSubmission(
+                WalletAbiSubmissionCommand(
+                    requestContext = WalletAbiStartRequestContext(
+                        requestId = WalletAbiFlowRouteViewModel.DEMO_REQUEST_ID,
+                        walletId = greenWallet.id
+                    ),
+                    selectedAccountId = liquidAccount.id
+                )
+            )
+        )
+
+        advanceTimeBy(1L)
+        advanceUntilIdle()
+
+        assertEquals(
+            WalletAbiFlowIntent.OnExecutionEvent(
+                WalletAbiExecutionEvent.Failed(
+                    WalletAbiFlowError(
+                        kind = WalletAbiFlowErrorKind.TIMEOUT,
+                        phase = WalletAbiFlowPhase.SUBMISSION,
+                        message = "Wallet ABI submission timed out",
+                        retryable = true
+                    )
+                )
+            ),
+            store.intents.last()
+        )
+    }
+
+    @Test
     fun cancelActiveWork_submission_dispatches_user_cancelled_without_broadcast() = runTest(dispatcher) {
         val prepareGate = CompletableDeferred<Unit>()
         val blockingRunner = object : WalletAbiExecutionRunner {
@@ -919,6 +989,7 @@ class WalletAbiFlowRouteViewModelTest {
         executionRunner: WalletAbiExecutionRunner = this.executionRunner,
         reviewPreviewer: WalletAbiReviewPreviewer = this.reviewPreviewer,
         loadingTimeoutMillis: Long = 15_000L,
+        submissionTimeoutMillis: Long = 60_000L,
         driver: FakeWalletAbiFlowDriver = this.driver
     ): WalletAbiFlowRouteViewModel {
         return WalletAbiFlowRouteViewModel(
@@ -930,7 +1001,8 @@ class WalletAbiFlowRouteViewModelTest {
             executionPlanner = executionPlanner,
             executionRunner = executionRunner,
             reviewPreviewer = reviewPreviewer,
-            loadingTimeoutMillis = loadingTimeoutMillis
+            loadingTimeoutMillis = loadingTimeoutMillis,
+            submissionTimeoutMillis = submissionTimeoutMillis
         ).also { createdViewModels += it }
     }
 

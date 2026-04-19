@@ -64,7 +64,8 @@ class WalletAbiFlowRouteViewModel(
     private val executionPlanner: WalletAbiExecutionPlanner = DefaultWalletAbiExecutionPlanner(),
     private val executionRunner: WalletAbiExecutionRunner = DefaultWalletAbiExecutionRunner(),
     private val reviewPreviewer: WalletAbiReviewPreviewer = DefaultWalletAbiReviewPreviewer(),
-    private val loadingTimeoutMillis: Long = 15_000L
+    private val loadingTimeoutMillis: Long = 15_000L,
+    private val submissionTimeoutMillis: Long = 60_000L
 ) : GreenViewModel(greenWalletOrNull = greenWallet) {
     private val requestParser = DefaultWalletAbiRequestParser()
     private val mutableReviewLook = MutableStateFlow<WalletAbiReviewLook?>(null)
@@ -201,10 +202,24 @@ class WalletAbiFlowRouteViewModel(
             try {
                 store.dispatch(WalletAbiFlowIntent.OnExecutionEvent(WalletAbiExecutionEvent.Submitted))
 
-                val preparedBroadcast = executionRunner.prepare(
-                    session = walletSession,
-                    preparedExecution = preparedExecution
-                )
+                val preparedBroadcast = try {
+                    withTimeout(submissionTimeoutMillis) {
+                        executionRunner.prepare(
+                            session = walletSession,
+                            preparedExecution = preparedExecution
+                        )
+                    }
+                } catch (_: TimeoutCancellationException) {
+                    dispatchExecutionFailure(
+                        WalletAbiFlowError(
+                            kind = WalletAbiFlowErrorKind.TIMEOUT,
+                            phase = WalletAbiFlowPhase.SUBMISSION,
+                            message = "Wallet ABI submission timed out",
+                            retryable = true
+                        )
+                    )
+                    return@launch
+                }
                 currentCoroutineContext().ensureActive()
 
                 store.dispatch(WalletAbiFlowIntent.OnExecutionEvent(WalletAbiExecutionEvent.Broadcasted))
