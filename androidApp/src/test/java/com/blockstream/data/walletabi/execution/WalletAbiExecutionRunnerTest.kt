@@ -8,18 +8,18 @@ import com.blockstream.data.gdk.data.AccountType
 import com.blockstream.data.gdk.data.CreateTransaction
 import com.blockstream.data.gdk.data.Network
 import com.blockstream.data.gdk.data.ProcessedTransactionDetails
-import com.blockstream.data.gdk.data.UnspentOutputs
+import com.blockstream.data.gdk.params.AddressParams
 import com.blockstream.data.gdk.params.CreateTransactionParams
+import com.blockstream.data.gdk.params.toJsonElement
+import com.blockstream.data.transaction.TransactionConfirmation
 import com.blockstream.domain.walletabi.request.WalletAbiNetwork
 import com.blockstream.domain.walletabi.request.WalletAbiOutput
 import com.blockstream.domain.walletabi.request.WalletAbiParsedRequest
 import com.blockstream.domain.walletabi.request.WalletAbiRuntimeParams
 import com.blockstream.domain.walletabi.request.WalletAbiTxCreateRequest
-import io.mockk.coEvery
 import io.mockk.mockk
 import kotlinx.coroutines.CompletableDeferred
 import kotlinx.coroutines.test.runTest
-import kotlinx.serialization.json.JsonObject
 import kotlinx.serialization.json.JsonPrimitive
 import kotlinx.serialization.json.buildJsonObject
 import org.junit.Test
@@ -66,27 +66,30 @@ class WalletAbiExecutionRunnerTest {
         assetId = TESTNET_POLICY_ASSET,
         feeRate = 12_000L
     )
+    private val preparedExecution = WalletAbiPreparedExecution(
+        plan = plan,
+        params = CreateTransactionParams(
+            from = account.accountAsset,
+            addressees = listOf(
+                AddressParams(
+                    address = plan.destinationAddress,
+                    satoshi = plan.amountSat,
+                    assetId = plan.assetId
+                )
+            ).toJsonElement(),
+            feeRate = plan.feeRate
+        ),
+        transaction = CreateTransaction(transaction = "rawtx"),
+        confirmation = TransactionConfirmation()
+    )
 
     @Test
-    fun execute_builds_create_transaction_params_and_returns_tx_hash() = runTest {
-        val session = mockk<GdkSession>()
-        val transaction = CreateTransaction(transaction = "rawtx")
-        val unspentOutputs = UnspentOutputs(
-            unspentOutputs = mapOf(
-                TESTNET_POLICY_ASSET to listOf<JsonObject>(buildJsonObject { put("txhash", JsonPrimitive("abc")) })
-            )
-        )
-        val captured = mutableListOf<CreateTransactionParams>()
+    fun execute_uses_prepared_transaction_and_returns_tx_hash() = runTest {
+        val session = mockk<GdkSession>(relaxed = true)
         var executedMemo: String? = null
         var executedAccount: Account? = null
         var executedTransaction: CreateTransaction? = null
         var executedResolver: TwoFactorResolver? = null
-
-        coEvery { session.getUnspentOutputs(account, false, false) } returns unspentOutputs
-        coEvery { session.createTransaction(account.network, any()) } answers {
-            captured += arg<CreateTransactionParams>(1)
-            transaction
-        }
 
         val runner = DefaultWalletAbiExecutionRunner { _, runnerAccount, runnerTransaction, memo, runnerResolver ->
             executedAccount = runnerAccount
@@ -98,30 +101,20 @@ class WalletAbiExecutionRunnerTest {
 
         val result = runner.execute(
             session = session,
-            plan = plan,
+            preparedExecution = preparedExecution,
             twoFactorResolver = TestTwoFactorResolver
         )
 
         assertEquals("wallet-abi-tx-hash", result.txHash)
         assertEquals(account, executedAccount)
-        assertEquals(transaction, executedTransaction)
+        assertEquals(preparedExecution.transaction, executedTransaction)
         assertEquals("", executedMemo)
         assertEquals(TestTwoFactorResolver, executedResolver)
-        assertEquals(1, captured.size)
-        assertEquals(account.accountAsset, captured.single().from)
-        assertEquals(12_000L, captured.single().feeRate)
-        assertEquals(unspentOutputs.unspentOutputs, captured.single().utxos)
-        assertEquals(plan.destinationAddress, captured.single().addresseesAsParams?.single()?.address)
-        assertEquals(plan.amountSat, captured.single().addresseesAsParams?.single()?.satoshi)
-        assertEquals(plan.assetId, captured.single().addresseesAsParams?.single()?.assetId)
     }
 
     @Test
     fun execute_requires_tx_hash_from_processed_transaction() = runTest {
-        val session = mockk<GdkSession>()
-
-        coEvery { session.getUnspentOutputs(account, false, false) } returns UnspentOutputs(emptyMap())
-        coEvery { session.createTransaction(account.network, any()) } returns CreateTransaction(transaction = "rawtx")
+        val session = mockk<GdkSession>(relaxed = true)
 
         val runner = DefaultWalletAbiExecutionRunner { _, _, _, _, _ ->
             ProcessedTransactionDetails()
@@ -130,36 +123,12 @@ class WalletAbiExecutionRunnerTest {
         val error = assertFailsWith<IllegalStateException> {
             runner.execute(
                 session = session,
-                plan = plan,
+                preparedExecution = preparedExecution,
                 twoFactorResolver = TestTwoFactorResolver
             )
         }
 
         assertEquals("Wallet ABI execution did not return a transaction hash", error.message)
-    }
-
-    @Test
-    fun execute_surfaces_create_transaction_error() = runTest {
-        val session = mockk<GdkSession>()
-
-        coEvery { session.getUnspentOutputs(account, false, false) } returns UnspentOutputs(emptyMap())
-        coEvery { session.createTransaction(account.network, any()) } returns CreateTransaction(
-            error = "id_nonconfidential_addresses_not"
-        )
-
-        val runner = DefaultWalletAbiExecutionRunner { _, _, _, _, _ ->
-            error("should not execute")
-        }
-
-        val error = assertFailsWith<IllegalStateException> {
-            runner.execute(
-                session = session,
-                plan = plan,
-                twoFactorResolver = TestTwoFactorResolver
-            )
-        }
-
-        assertEquals("id_nonconfidential_addresses_not", error.message)
     }
 
     private fun liquidAccount(): Account {

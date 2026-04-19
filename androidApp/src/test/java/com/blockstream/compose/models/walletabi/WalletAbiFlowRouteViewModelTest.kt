@@ -11,19 +11,28 @@ import com.blockstream.data.gdk.GdkSession
 import com.blockstream.data.gdk.data.Account
 import com.blockstream.data.gdk.data.AccountType
 import com.blockstream.data.gdk.data.Credentials
+import com.blockstream.data.gdk.data.CreateTransaction
 import com.blockstream.data.gdk.data.Network
+import com.blockstream.data.gdk.data.Output
+import com.blockstream.data.gdk.data.UtxoView
+import com.blockstream.data.gdk.params.AddressParams
+import com.blockstream.data.gdk.params.CreateTransactionParams
+import com.blockstream.data.gdk.params.toJsonElement
 import com.blockstream.data.managers.PromoManager
 import com.blockstream.data.managers.SessionManager
 import com.blockstream.data.managers.SettingsManager
 import com.blockstream.data.walletabi.flow.FakeWalletAbiFlowDriver
 import com.blockstream.data.walletabi.request.DefaultWalletAbiDemoRequestSource
 import com.blockstream.data.walletabi.request.WalletAbiDemoRequestSource
+import com.blockstream.data.transaction.TransactionConfirmation
 import com.blockstream.domain.banner.GetBannerUseCase
 import com.blockstream.domain.promo.GetPromoUseCase
 import com.blockstream.domain.walletabi.execution.DefaultWalletAbiExecutionPlanner
+import com.blockstream.domain.walletabi.execution.WalletAbiPreparedExecution
 import com.blockstream.domain.walletabi.execution.WalletAbiExecutionResult
 import com.blockstream.domain.walletabi.execution.WalletAbiExecutionRunner
 import com.blockstream.domain.walletabi.execution.WalletAbiExecutionPlanner
+import com.blockstream.domain.walletabi.execution.WalletAbiReviewPreviewer
 import com.blockstream.domain.walletabi.execution.WalletAbiOutputAddressResolver
 import com.blockstream.domain.walletabi.flow.WalletAbiAccountOption
 import com.blockstream.domain.walletabi.flow.WalletAbiApprovalTarget
@@ -79,6 +88,7 @@ class WalletAbiFlowRouteViewModelTest {
     private lateinit var requestSource: WalletAbiDemoRequestSource
     private lateinit var executionPlanner: WalletAbiExecutionPlanner
     private lateinit var executionRunner: WalletAbiExecutionRunner
+    private lateinit var reviewPreviewer: WalletAbiReviewPreviewer
     private lateinit var walletSession: GdkSession
     private lateinit var liquidAccount: Account
     private val createdViewModels = mutableListOf<WalletAbiFlowRouteViewModel>()
@@ -99,10 +109,13 @@ class WalletAbiFlowRouteViewModelTest {
                 }
             }
         )
+        reviewPreviewer = WalletAbiReviewPreviewer { _, plan, _ ->
+            preparedExecution(plan)
+        }
         executionRunner = object : WalletAbiExecutionRunner {
             override suspend fun execute(
                 session: GdkSession,
-                plan: com.blockstream.domain.walletabi.execution.WalletAbiExecutionPlan,
+                preparedExecution: WalletAbiPreparedExecution,
                 twoFactorResolver: com.blockstream.data.gdk.TwoFactorResolver
             ): WalletAbiExecutionResult {
                 return WalletAbiExecutionResult(txHash = "wallet-abi-demo-tx-hash")
@@ -183,7 +196,7 @@ class WalletAbiFlowRouteViewModelTest {
 
     @Test
     fun loadRequest_output_dispatches_request_loaded_review() = runTest(dispatcher) {
-        createViewModel(
+        val viewModel = createViewModel(
             greenWallet = greenWallet,
             store = store,
             snapshotRepository = snapshotRepository,
@@ -232,6 +245,11 @@ class WalletAbiFlowRouteViewModelTest {
         assertEquals(TESTNET_POLICY_ASSET, review.executionDetails?.assetId)
         assertEquals(WalletAbiNetwork.TESTNET_LIQUID.wireValue, review.executionDetails?.network)
         assertEquals(12_000L, review.executionDetails?.feeRate)
+
+        assertEquals("wallet_abi_process_request", viewModel.reviewLook.value?.method)
+        assertEquals("wallet-abi-0.1", viewModel.reviewLook.value?.abiVersion)
+        assertEquals("1,000 TEST-LBTC", viewModel.reviewLook.value?.amount)
+        assertEquals("0.01 TEST-LBTC", viewModel.reviewLook.value?.transactionConfirmation?.fee)
     }
 
     @Test
@@ -416,30 +434,22 @@ class WalletAbiFlowRouteViewModelTest {
 
     @Test
     fun startResolution_output_dispatches_resolved_review() = runTest(dispatcher) {
-        store.state.value = WalletAbiFlowState.RequestLoaded(
-            WalletAbiFlowReview(
-                requestContext = WalletAbiStartRequestContext(
-                    requestId = WalletAbiFlowRouteViewModel.DEMO_REQUEST_ID,
-                    walletId = greenWallet.id
-                ),
-                title = "Wallet ABI payment",
-                message = "Approve a Wallet ABI request",
-                accounts = listOf(
-                    WalletAbiAccountOption(
-                        accountId = liquidAccount.id,
-                        name = liquidAccount.name
-                    )
-                ),
-                selectedAccountId = liquidAccount.id,
-                approvalTarget = WalletAbiApprovalTarget.Software
-            )
-        )
-
         createViewModel(
             greenWallet = greenWallet,
             store = store,
             snapshotRepository = snapshotRepository,
             driver = driver
+        )
+
+        advanceUntilIdle()
+
+        store.mutableOutputs.emit(
+            WalletAbiFlowOutput.LoadRequest(
+                WalletAbiStartRequestContext(
+                    requestId = WalletAbiFlowRouteViewModel.DEMO_REQUEST_ID,
+                    walletId = greenWallet.id
+                )
+            )
         )
 
         advanceUntilIdle()
@@ -458,29 +468,29 @@ class WalletAbiFlowRouteViewModelTest {
 
         advanceUntilIdle()
 
+        val intent = assertIs<WalletAbiFlowIntent.OnExecutionEvent>(store.intents.last())
+        val review = assertIs<WalletAbiExecutionEvent.Resolved>(intent.event).review
+        val parsedRequest = assertIs<WalletAbiParsedRequest.TxCreate>(review.parsedRequest).request
+
         assertEquals(
-            WalletAbiFlowIntent.OnExecutionEvent(
-                WalletAbiExecutionEvent.Resolved(
-                    review = WalletAbiFlowReview(
-                        requestContext = WalletAbiStartRequestContext(
-                            requestId = WalletAbiFlowRouteViewModel.DEMO_REQUEST_ID,
-                            walletId = greenWallet.id
-                        ),
-                        title = "Wallet ABI payment",
-                        message = "Approve a Wallet ABI request",
-                        accounts = listOf(
-                            WalletAbiAccountOption(
-                                accountId = liquidAccount.id,
-                                name = liquidAccount.name
-                            )
-                        ),
-                        selectedAccountId = liquidAccount.id,
-                        approvalTarget = WalletAbiApprovalTarget.Software
-                    )
-                )
+            WalletAbiStartRequestContext(
+                requestId = WalletAbiFlowRouteViewModel.DEMO_REQUEST_ID,
+                walletId = greenWallet.id
             ),
-            store.intents.last()
+            review.requestContext
         )
+        assertEquals("Wallet ABI payment", review.title)
+        assertEquals("Approve a Wallet ABI request", review.message)
+        assertEquals(liquidAccount.id, review.selectedAccountId)
+        assertEquals(WalletAbiApprovalTarget.Software, review.approvalTarget)
+        assertEquals(WalletAbiNetwork.TESTNET_LIQUID, parsedRequest.network)
+        assertEquals(WalletAbiFlowRouteViewModel.DEMO_REQUEST_ID, parsedRequest.requestId)
+        assertEquals(listOf(liquidAccount.id), review.accounts.map { it.accountId })
+        assertEquals("tlq1qqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqq3l4q9m", review.executionDetails?.destinationAddress)
+        assertEquals(1_000L, review.executionDetails?.amountSat)
+        assertEquals(TESTNET_POLICY_ASSET, review.executionDetails?.assetId)
+        assertEquals("testnet-liquid", review.executionDetails?.network)
+        assertEquals(12_000L, review.executionDetails?.feeRate)
     }
 
     @Test
@@ -540,7 +550,7 @@ class WalletAbiFlowRouteViewModelTest {
         val failingRunner = object : WalletAbiExecutionRunner {
             override suspend fun execute(
                 session: GdkSession,
-                plan: com.blockstream.domain.walletabi.execution.WalletAbiExecutionPlan,
+                preparedExecution: WalletAbiPreparedExecution,
                 twoFactorResolver: com.blockstream.data.gdk.TwoFactorResolver
             ): WalletAbiExecutionResult {
                 error("send failed")
@@ -648,6 +658,7 @@ class WalletAbiFlowRouteViewModelTest {
         requestSource: WalletAbiDemoRequestSource = this.requestSource,
         executionPlanner: WalletAbiExecutionPlanner = this.executionPlanner,
         executionRunner: WalletAbiExecutionRunner = this.executionRunner,
+        reviewPreviewer: WalletAbiReviewPreviewer = this.reviewPreviewer,
         driver: FakeWalletAbiFlowDriver = this.driver
     ): WalletAbiFlowRouteViewModel {
         return WalletAbiFlowRouteViewModel(
@@ -657,8 +668,54 @@ class WalletAbiFlowRouteViewModelTest {
             walletSession = walletSession,
             requestSource = requestSource,
             executionPlanner = executionPlanner,
-            executionRunner = executionRunner
+            executionRunner = executionRunner,
+            reviewPreviewer = reviewPreviewer
         ).also { createdViewModels += it }
+    }
+
+    private fun preparedExecution(plan: com.blockstream.domain.walletabi.execution.WalletAbiExecutionPlan): WalletAbiPreparedExecution {
+        return WalletAbiPreparedExecution(
+            plan = plan,
+            params = CreateTransactionParams(
+                from = plan.selectedAccount.accountAsset,
+                addressees = listOf(
+                    AddressParams(
+                        address = plan.destinationAddress,
+                        satoshi = plan.amountSat,
+                        assetId = plan.assetId
+                    )
+                ).toJsonElement(),
+                feeRate = plan.feeRate
+            ),
+            transaction = CreateTransaction(
+                transaction = "rawtx",
+                fee = 100L,
+                feeRate = 12L,
+                outputs = listOf(
+                    Output(
+                        address = plan.destinationAddress,
+                        assetId = plan.assetId,
+                        satoshi = plan.amountSat
+                    )
+                )
+            ),
+            confirmation = TransactionConfirmation(
+                utxos = listOf(
+                    UtxoView(
+                        address = plan.destinationAddress,
+                        assetId = plan.assetId,
+                        satoshi = plan.amountSat,
+                        amount = "1,000 TEST-LBTC",
+                        amountExchange = "0.10 USD"
+                    )
+                ),
+                fee = "0.01 TEST-LBTC",
+                feeFiat = "0.00 USD",
+                feeRate = "12 sat/vB",
+                total = "1,000.01 TEST-LBTC",
+                totalFiat = "0.10 USD"
+            )
+        )
     }
 
     private fun liquidAccount(

@@ -19,8 +19,10 @@ import com.blockstream.domain.swap.swapModule
 import com.blockstream.domain.wallet.walletModule
 import com.blockstream.domain.walletabi.execution.DefaultWalletAbiExecutionRunner
 import com.blockstream.domain.walletabi.execution.DefaultWalletAbiExecutionPlanner
+import com.blockstream.domain.walletabi.execution.DefaultWalletAbiReviewPreviewer
 import com.blockstream.domain.walletabi.execution.WalletAbiExecutionRunner
 import com.blockstream.domain.walletabi.execution.WalletAbiExecutionPlanner
+import com.blockstream.domain.walletabi.execution.WalletAbiReviewPreviewer
 import com.blockstream.domain.walletabi.flow.DefaultWalletAbiFlowStore
 import com.blockstream.domain.walletabi.flow.WalletAbiFlowSnapshotRepository
 import com.blockstream.domain.walletabi.flow.WalletAbiFlowStore
@@ -72,6 +74,9 @@ val domainModule = module {
     }
     factory<WalletAbiExecutionRunner> {
         DefaultWalletAbiExecutionRunner()
+    }
+    factory<WalletAbiReviewPreviewer> {
+        DefaultWalletAbiReviewPreviewer(get())
     }
     single {
         WalletAbiFlowSnapshotRepository(get())

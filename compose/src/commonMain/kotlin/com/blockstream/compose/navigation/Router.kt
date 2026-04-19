@@ -387,11 +387,7 @@ fun Router(
                     }
                 }
                 SetupScreen(viewModel = viewModel, withPadding = false, withBottomInsets = false) {
-                    val state by viewModel.state.collectAsStateWithLifecycle()
-                    WalletAbiFlowScreen(
-                        state = state,
-                        onIntent = viewModel::dispatch
-                    )
+                    WalletAbiFlowScreen(viewModel = viewModel)
                 }
             }
             appComposable<NavigateDestinations.AccountOverview> {

@@ -6,14 +6,11 @@ import com.blockstream.data.gdk.data.Account
 import com.blockstream.data.gdk.data.CreateTransaction
 import com.blockstream.data.gdk.data.ProcessedTransactionDetails
 import com.blockstream.data.gdk.executeSoftwareTransaction
-import com.blockstream.data.gdk.params.AddressParams
-import com.blockstream.data.gdk.params.CreateTransactionParams
-import com.blockstream.data.gdk.params.toJsonElement
 
 interface WalletAbiExecutionRunner {
     suspend fun execute(
         session: GdkSession,
-        plan: WalletAbiExecutionPlan,
+        preparedExecution: WalletAbiPreparedExecution,
         twoFactorResolver: TwoFactorResolver
     ): WalletAbiExecutionResult
 }
@@ -46,20 +43,13 @@ class DefaultWalletAbiExecutionRunner(
 ) : WalletAbiExecutionRunner {
     override suspend fun execute(
         session: GdkSession,
-        plan: WalletAbiExecutionPlan,
+        preparedExecution: WalletAbiPreparedExecution,
         twoFactorResolver: TwoFactorResolver
     ): WalletAbiExecutionResult {
-        val transaction = session.createTransaction(
-            network = plan.selectedAccount.network,
-            params = plan.toCreateTransactionParams(session)
-        )
-        transaction.error?.takeIf { it.isNotBlank() }?.let { error ->
-            error(error)
-        }
         val result = softwareTransactionExecutor.execute(
             session = session,
-            account = plan.selectedAccount,
-            transaction = transaction,
+            account = preparedExecution.plan.selectedAccount,
+            transaction = preparedExecution.transaction,
             memo = "",
             twoFactorResolver = twoFactorResolver
         )
@@ -69,21 +59,4 @@ class DefaultWalletAbiExecutionRunner(
                 ?: error("Wallet ABI execution did not return a transaction hash")
         )
     }
-}
-
-private suspend fun WalletAbiExecutionPlan.toCreateTransactionParams(
-    session: GdkSession
-): CreateTransactionParams {
-    return CreateTransactionParams(
-        from = selectedAccount.accountAsset,
-        addressees = listOf(
-            AddressParams(
-                address = destinationAddress,
-                satoshi = amountSat,
-                assetId = assetId.takeIf { selectedAccount.network.isLiquid }
-            )
-        ).toJsonElement(),
-        feeRate = feeRate,
-        utxos = session.getUnspentOutputs(selectedAccount).unspentOutputs
-    )
 }

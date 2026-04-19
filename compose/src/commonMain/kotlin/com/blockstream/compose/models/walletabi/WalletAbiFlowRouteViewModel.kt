@@ -6,13 +6,17 @@ import com.blockstream.compose.navigation.NavData
 import com.blockstream.compose.sideeffects.SideEffects
 import com.blockstream.data.data.GreenWallet
 import com.blockstream.data.gdk.GdkSession
+import com.blockstream.data.gdk.data.Account
 import com.blockstream.data.walletabi.request.WalletAbiDemoRequestSource
 import com.blockstream.data.walletabi.request.DefaultWalletAbiDemoRequestSource
 import com.blockstream.domain.walletabi.execution.DefaultWalletAbiExecutionRunner
 import com.blockstream.domain.walletabi.execution.DefaultWalletAbiExecutionPlanner
+import com.blockstream.domain.walletabi.execution.DefaultWalletAbiReviewPreviewer
 import com.blockstream.domain.walletabi.execution.WalletAbiExecutionPlan
 import com.blockstream.domain.walletabi.execution.WalletAbiExecutionPlanner
+import com.blockstream.domain.walletabi.execution.WalletAbiPreparedExecution
 import com.blockstream.domain.walletabi.execution.WalletAbiExecutionRunner
+import com.blockstream.domain.walletabi.execution.WalletAbiReviewPreviewer
 import com.blockstream.domain.walletabi.execution.WalletAbiExecutionValidationException
 import com.blockstream.domain.walletabi.flow.WalletAbiFlowIntent
 import com.blockstream.domain.walletabi.flow.WalletAbiAccountOption
@@ -28,12 +32,17 @@ import com.blockstream.domain.walletabi.flow.WalletAbiFlowError
 import com.blockstream.domain.walletabi.flow.WalletAbiStartRequestContext
 import com.blockstream.domain.walletabi.flow.WalletAbiSuccessResult
 import com.blockstream.domain.walletabi.request.DefaultWalletAbiRequestParser
+import com.blockstream.domain.walletabi.request.WalletAbiMethod
 import com.blockstream.domain.walletabi.request.WalletAbiParsedEnvelope
 import com.blockstream.domain.walletabi.request.WalletAbiRequestParseResult
+import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.launchIn
 import kotlinx.coroutines.flow.onEach
 import kotlinx.coroutines.flow.StateFlow
+import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.launch
+import kotlinx.serialization.json.JsonObject
+import kotlinx.serialization.json.jsonPrimitive
 
 class WalletAbiFlowRouteViewModel(
     greenWallet: GreenWallet,
@@ -42,15 +51,21 @@ class WalletAbiFlowRouteViewModel(
     private val walletSession: GdkSession,
     private val requestSource: WalletAbiDemoRequestSource = DefaultWalletAbiDemoRequestSource(),
     private val executionPlanner: WalletAbiExecutionPlanner = DefaultWalletAbiExecutionPlanner(),
-    private val executionRunner: WalletAbiExecutionRunner = DefaultWalletAbiExecutionRunner()
+    private val executionRunner: WalletAbiExecutionRunner = DefaultWalletAbiExecutionRunner(),
+    private val reviewPreviewer: WalletAbiReviewPreviewer = DefaultWalletAbiReviewPreviewer()
 ) : GreenViewModel(greenWalletOrNull = greenWallet) {
     private val requestParser = DefaultWalletAbiRequestParser()
+    private val mutableReviewLook = MutableStateFlow<WalletAbiReviewLook?>(null)
+    private var activeEnvelope: WalletAbiParsedEnvelope? = null
     private var activeReview: WalletAbiFlowReview? = null
+    private var activePreparedExecution: WalletAbiPreparedExecution? = null
+    private var eligibleAccounts: List<Account> = emptyList()
 
     override fun screenName(): String = "WalletAbiFlow"
     override val isLoginRequired: Boolean = false
 
     val state: StateFlow<WalletAbiFlowState> = store.state
+    val reviewLook: StateFlow<WalletAbiReviewLook?> = mutableReviewLook.asStateFlow()
 
     init {
         _navData.value = NavData(
@@ -67,38 +82,15 @@ class WalletAbiFlowRouteViewModel(
     private suspend fun handleOutput(output: WalletAbiFlowOutput, greenWallet: GreenWallet) {
         when (output) {
             is WalletAbiFlowOutput.LoadRequest -> {
+                clearPreparedReview()
                 when (val parseResult = requestParser.parse(requestSource.loadRequestEnvelope(output.requestContext.requestId))) {
                     is WalletAbiRequestParseResult.Failure -> {
                         dispatchExecutionFailure(parseResult.error.message)
                     }
 
                     is WalletAbiRequestParseResult.Success -> {
-                        val review = runCatching {
-                            parseResult.envelope.toDomainReview(
-                                requestContext = output.requestContext,
-                                executionPlan = executionPlanner.plan(
-                                    session = walletSession,
-                                    request = parseResult.envelope.request
-                                )
-                            )
-                        }.getOrElse { throwable ->
-                            dispatchExecutionFailure(
-                                when (throwable) {
-                                    is WalletAbiExecutionValidationException -> throwable.error.message
-                                    else -> throwable.message ?: "Wallet ABI request is unsupported"
-                                }
-                            )
-                            return
-                        }
-
-                        activeReview = review
-                        store.dispatch(
-                            WalletAbiFlowIntent.OnExecutionEvent(
-                                WalletAbiExecutionEvent.RequestLoaded(
-                                    review = review
-                                )
-                            )
-                        )
+                        activeEnvelope = parseResult.envelope
+                        loadRequestReview(requestContext = output.requestContext)
                     }
                 }
             }
@@ -113,45 +105,26 @@ class WalletAbiFlowRouteViewModel(
             }
 
             is WalletAbiFlowOutput.StartResolution -> {
-                val review = activeReview ?: (store.state.value as? WalletAbiFlowState.RequestLoaded)?.review ?: return
-                val resolvedReview = review.copy(
-                    selectedAccountId = output.command.selectedAccountId ?: review.selectedAccountId
-                )
-                activeReview = resolvedReview
-                store.dispatch(
-                    WalletAbiFlowIntent.OnExecutionEvent(
-                        WalletAbiExecutionEvent.Resolved(
-                            review = resolvedReview
-                        )
-                    )
+                refreshPreparedReview(
+                    requestContext = output.command.requestContext,
+                    selectedAccountId = output.command.selectedAccountId
                 )
             }
 
             is WalletAbiFlowOutput.StartSubmission -> {
-                val parsedRequest = activeReview?.parsedRequest
-                    ?: return dispatchExecutionFailure("Wallet ABI request is not loaded")
-                val executionPlan = runCatching {
-                    executionPlanner.plan(
-                        session = walletSession,
-                        request = parsedRequest,
-                        selectedAccountId = output.command.selectedAccountId
-                    )
-                }.getOrElse { throwable ->
-                    dispatchExecutionFailure(
-                        when (throwable) {
-                            is WalletAbiExecutionValidationException -> throwable.error.message
-                            else -> throwable.message ?: "Wallet ABI request is unsupported"
-                        }
-                    )
-                    return
-                }
+                val preparedExecution = activePreparedExecution
+                    ?.takeIf { prepared ->
+                        output.command.selectedAccountId == null ||
+                            prepared.plan.selectedAccount.id == output.command.selectedAccountId
+                    }
+                    ?: return dispatchExecutionFailure("Wallet ABI review is not ready")
 
                 store.dispatch(WalletAbiFlowIntent.OnExecutionEvent(WalletAbiExecutionEvent.Submitted))
 
                 runCatching {
                     executionRunner.execute(
                         session = walletSession,
-                        plan = executionPlan,
+                        preparedExecution = preparedExecution,
                         twoFactorResolver = this
                     )
                 }.onSuccess { result ->
@@ -160,7 +133,7 @@ class WalletAbiFlowRouteViewModel(
                         WalletAbiFlowIntent.OnExecutionEvent(
                             WalletAbiExecutionEvent.RemoteResponseSent(
                                 result = WalletAbiSuccessResult(
-                                    requestId = executionPlan.request.request.requestId,
+                                    requestId = preparedExecution.plan.request.request.requestId,
                                     txHash = result.txHash
                                 )
                             )
@@ -176,7 +149,62 @@ class WalletAbiFlowRouteViewModel(
         }
     }
 
+    private suspend fun loadRequestReview(requestContext: WalletAbiStartRequestContext) {
+        val envelope = activeEnvelope ?: return dispatchExecutionFailure("Wallet ABI request is not loaded")
+        val preparedReview = runCatching {
+            buildPreparedReview(
+                envelope = envelope,
+                requestContext = requestContext,
+                selectedAccountId = null
+            )
+        }.getOrElse { throwable ->
+            dispatchExecutionFailure(throwable.toWalletAbiErrorMessage())
+            return
+        }
+
+        activeReview = preparedReview.review
+        activePreparedExecution = preparedReview.preparedExecution
+        mutableReviewLook.value = preparedReview.reviewLook
+        store.dispatch(
+            WalletAbiFlowIntent.OnExecutionEvent(
+                WalletAbiExecutionEvent.RequestLoaded(
+                    review = preparedReview.review
+                )
+            )
+        )
+    }
+
+    private suspend fun refreshPreparedReview(
+        requestContext: WalletAbiStartRequestContext,
+        selectedAccountId: String?
+    ) {
+        val envelope = activeEnvelope ?: return dispatchExecutionFailure("Wallet ABI request is not loaded")
+        markReviewRefreshing(selectedAccountId)
+        val preparedReview = runCatching {
+            buildPreparedReview(
+                envelope = envelope,
+                requestContext = requestContext,
+                selectedAccountId = selectedAccountId
+            )
+        }.getOrElse { throwable ->
+            dispatchExecutionFailure(throwable.toWalletAbiErrorMessage())
+            return
+        }
+
+        activeReview = preparedReview.review
+        activePreparedExecution = preparedReview.preparedExecution
+        mutableReviewLook.value = preparedReview.reviewLook
+        store.dispatch(
+            WalletAbiFlowIntent.OnExecutionEvent(
+                WalletAbiExecutionEvent.Resolved(
+                    review = preparedReview.review
+                )
+            )
+        )
+    }
+
     private suspend fun dispatchExecutionFailure(message: String) {
+        clearPreparedReview()
         store.dispatch(
             WalletAbiFlowIntent.OnExecutionEvent(
                 WalletAbiExecutionEvent.Failed(
@@ -192,6 +220,13 @@ class WalletAbiFlowRouteViewModel(
                 store.state.value is WalletAbiFlowState.Cancelled ||
                 store.state.value is WalletAbiFlowState.Error
             store.dispatch(intent)
+            if (intent is WalletAbiFlowIntent.SelectAccount) {
+                refreshPreparedReview(
+                    requestContext = (store.state.value as? WalletAbiFlowState.RequestLoaded)?.review?.requestContext
+                        ?: return@launch,
+                    selectedAccountId = intent.accountId
+                )
+            }
             if (intent == WalletAbiFlowIntent.DismissTerminal &&
                 wasTerminal &&
                 store.state.value == WalletAbiFlowState.Idle
@@ -214,9 +249,96 @@ class WalletAbiFlowRouteViewModel(
         }
     }
 
+    private suspend fun buildPreparedReview(
+        envelope: WalletAbiParsedEnvelope,
+        requestContext: WalletAbiStartRequestContext,
+        selectedAccountId: String?
+    ): PreparedWalletAbiReview {
+        val executionPlan = executionPlanner.plan(
+            session = walletSession,
+            request = envelope.request,
+            selectedAccountId = selectedAccountId
+        )
+        eligibleAccounts = executionPlan.accounts
+        val preparedExecution = reviewPreviewer.prepare(
+            session = walletSession,
+            plan = executionPlan,
+            denomination = denomination.value
+        )
+        val review = envelope.toDomainReview(
+            requestContext = requestContext,
+            executionPlan = preparedExecution.plan
+        )
+
+        return PreparedWalletAbiReview(
+            review = review,
+            reviewLook = preparedExecution.toReviewLook(method = envelope.method),
+            preparedExecution = preparedExecution
+        )
+    }
+
+    private fun markReviewRefreshing(selectedAccountId: String?) {
+        val currentReviewLook = mutableReviewLook.value ?: return
+        activePreparedExecution = null
+        val account = eligibleAccounts.firstOrNull { it.id == selectedAccountId }
+            ?: eligibleAccounts.firstOrNull { it.id == activeReview?.selectedAccountId }
+            ?: return
+        mutableReviewLook.value = currentReviewLook.copy(
+            accountAssetBalance = account.accountAssetBalance,
+            networkName = account.network.name.ifBlank { currentReviewLook.networkName },
+            isRefreshing = true
+        )
+    }
+
+    private fun clearPreparedReview() {
+        activeEnvelope = null
+        activePreparedExecution = null
+        activeReview = null
+        mutableReviewLook.value = null
+    }
+
     companion object {
         const val DEMO_REQUEST_ID = "wallet-abi-demo-request"
     }
+}
+
+private data class PreparedWalletAbiReview(
+    val review: WalletAbiFlowReview,
+    val reviewLook: WalletAbiReviewLook,
+    val preparedExecution: WalletAbiPreparedExecution
+)
+
+private fun Throwable.toWalletAbiErrorMessage(): String {
+    return when (this) {
+        is WalletAbiExecutionValidationException -> error.message
+        else -> message ?: "Wallet ABI request is unsupported"
+    }
+}
+
+private fun WalletAbiPreparedExecution.toReviewLook(
+    method: WalletAbiMethod
+): WalletAbiReviewLook {
+    val request = plan.request.request
+    val selectedAccount = plan.selectedAccount
+    val recipient = confirmation.utxos?.firstOrNull()
+
+    return WalletAbiReviewLook(
+        accountAssetBalance = selectedAccount.accountAssetBalance,
+        recipientAddress = recipient?.address ?: plan.destinationAddress,
+        amount = recipient?.amount ?: plan.amountSat.toString(),
+        amountFiat = recipient?.amountExchange,
+        assetName = selectedAccount.accountAsset.asset.name ?: plan.assetId,
+        assetTicker = selectedAccount.accountAsset.asset.ticker,
+        assetId = plan.assetId,
+        networkName = selectedAccount.network.name.ifBlank { request.network.wireValue },
+        networkWireValue = request.network.wireValue,
+        method = method.wireValue,
+        abiVersion = request.abiVersion,
+        requestId = request.requestId,
+        broadcast = request.broadcast,
+        recipientScript = request.params.outputs.singleOrNull()?.scriptHex(),
+        transactionConfirmation = confirmation
+    )
 }
 
 private fun WalletAbiParsedEnvelope.toDomainReview(
@@ -244,4 +366,13 @@ private fun WalletAbiParsedEnvelope.toDomainReview(
             feeRate = executionPlan.feeRate
         )
     )
+}
+
+private fun com.blockstream.domain.walletabi.request.WalletAbiOutput.scriptHex(): String? {
+    val lockObject = lock as? JsonObject ?: return null
+    if (lockObject["type"]?.jsonPrimitive?.content?.trim()?.lowercase() != "script") {
+        return null
+    }
+
+    return lockObject["script"]?.jsonPrimitive?.content?.trim()?.takeIf { it.isNotBlank() }
 }

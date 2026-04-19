@@ -5,7 +5,12 @@ import androidx.compose.ui.test.junit4.createAndroidComposeRule
 import androidx.compose.ui.test.onNodeWithTag
 import androidx.compose.ui.test.performClick
 import com.blockstream.compose.GreenPreview
+import com.blockstream.compose.extensions.previewAccountAsset
+import com.blockstream.compose.models.walletabi.WalletAbiReviewLook
 import com.blockstream.compose.screens.walletabi.WalletAbiFlowScreen
+import com.blockstream.data.gdk.data.AccountAssetBalance
+import com.blockstream.data.gdk.data.UtxoView
+import com.blockstream.data.transaction.TransactionConfirmation
 import com.blockstream.domain.walletabi.flow.WalletAbiApprovalTarget
 import com.blockstream.domain.walletabi.flow.WalletAbiCancelledReason
 import com.blockstream.domain.walletabi.flow.WalletAbiExecutionDetails
@@ -63,6 +68,41 @@ class WalletAbiFlowScreenTest {
         approvalTarget = WalletAbiApprovalTarget.Jade(
             deviceName = "Jade",
             deviceId = "jade-id"
+        )
+    )
+    private val softwareReviewLook = WalletAbiReviewLook(
+        accountAssetBalance = AccountAssetBalance(
+            account = previewAccountAsset().account,
+            asset = previewAccountAsset().asset
+        ),
+        recipientAddress = "tlq1qqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqq3l4q9m",
+        amount = "1,000 TEST-LBTC",
+        amountFiat = "0.10 USD",
+        assetName = "Testnet Liquid Bitcoin",
+        assetTicker = "TEST-LBTC",
+        assetId = "asset-id",
+        networkName = "Liquid Testnet",
+        networkWireValue = WalletAbiNetwork.TESTNET_LIQUID.wireValue,
+        method = "wallet_abi_process_request",
+        abiVersion = "wallet-abi-0.1",
+        requestId = "parsed-request-id",
+        broadcast = true,
+        recipientScript = "00140000000000000000000000000000000000000000",
+        transactionConfirmation = TransactionConfirmation(
+            utxos = listOf(
+                UtxoView(
+                    address = "tlq1qqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqq3l4q9m",
+                    assetId = "asset-id",
+                    satoshi = 1_000L,
+                    amount = "1,000 TEST-LBTC",
+                    amountExchange = "0.10 USD"
+                )
+            ),
+            fee = "0.01 TEST-LBTC",
+            feeFiat = "0.00 USD",
+            feeRate = "12 sat/vB",
+            total = "1,000.01 TEST-LBTC",
+            totalFiat = "0.10 USD"
         )
     )
 
@@ -148,16 +188,13 @@ class WalletAbiFlowScreenTest {
                         feeRate = 12_000L
                     )
                 )
-            )
+            ),
+            reviewLook = softwareReviewLook
         )
 
-        composeRule.onNodeWithTag("wallet_abi_flow_parsed_request_id").assertIsDisplayed()
-        composeRule.onNodeWithTag("wallet_abi_flow_parsed_network").assertIsDisplayed()
+        composeRule.onNodeWithTag("wallet_abi_flow_review_warning").assertIsDisplayed()
         composeRule.onNodeWithTag("wallet_abi_flow_selected_account").assertIsDisplayed()
         composeRule.onNodeWithTag("wallet_abi_flow_destination").assertIsDisplayed()
-        composeRule.onNodeWithTag("wallet_abi_flow_amount").assertIsDisplayed()
-        composeRule.onNodeWithTag("wallet_abi_flow_asset").assertIsDisplayed()
-        composeRule.onNodeWithTag("wallet_abi_flow_fee_rate").assertIsDisplayed()
     }
 
     @Test
@@ -326,13 +363,15 @@ class WalletAbiFlowScreenTest {
 
     private fun setScreen(
         state: WalletAbiFlowState,
-        onIntent: (WalletAbiFlowIntent) -> Unit = {}
+        onIntent: (WalletAbiFlowIntent) -> Unit = {},
+        reviewLook: WalletAbiReviewLook? = null
     ) {
         composeRule.setContent {
             GreenPreview {
                 WalletAbiFlowScreen(
                     state = state,
-                    onIntent = onIntent
+                    onIntent = onIntent,
+                    reviewLook = reviewLook
                 )
             }
         }

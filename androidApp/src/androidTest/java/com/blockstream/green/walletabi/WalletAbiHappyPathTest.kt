@@ -11,7 +11,6 @@ import androidx.compose.ui.test.onAllNodesWithTag
 import androidx.compose.ui.test.junit4.createAndroidComposeRule
 import androidx.compose.ui.test.onNodeWithTag
 import androidx.compose.ui.test.performClick
-import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.blockstream.compose.GreenPreview
 import com.blockstream.compose.extensions.previewWallet
 import com.blockstream.compose.models.walletabi.WalletAbiFlowRouteViewModel
@@ -24,13 +23,22 @@ import com.blockstream.data.database.Database
 import com.blockstream.data.gdk.GdkSession
 import com.blockstream.data.gdk.data.Account
 import com.blockstream.data.gdk.data.AccountType
+import com.blockstream.data.gdk.data.CreateTransaction
 import com.blockstream.data.gdk.data.Network
+import com.blockstream.data.gdk.data.Output
+import com.blockstream.data.gdk.data.UtxoView
+import com.blockstream.data.gdk.params.AddressParams
+import com.blockstream.data.gdk.params.CreateTransactionParams
+import com.blockstream.data.gdk.params.toJsonElement
 import com.blockstream.data.managers.SessionManager
+import com.blockstream.data.transaction.TransactionConfirmation
 import com.blockstream.data.walletabi.request.DefaultWalletAbiDemoRequestSource
+import com.blockstream.domain.walletabi.execution.WalletAbiPreparedExecution
 import com.blockstream.domain.walletabi.execution.WalletAbiExecutionResult
 import com.blockstream.domain.walletabi.execution.WalletAbiExecutionRunner
 import com.blockstream.domain.walletabi.execution.WalletAbiExecutionPlan
 import com.blockstream.domain.walletabi.execution.WalletAbiExecutionPlanner
+import com.blockstream.domain.walletabi.execution.WalletAbiReviewPreviewer
 import com.blockstream.domain.walletabi.flow.WalletAbiFlowSnapshotRepository
 import com.blockstream.domain.walletabi.flow.WalletAbiFlowStore
 import com.blockstream.domain.walletabi.request.WalletAbiParsedRequest
@@ -101,7 +109,8 @@ class WalletAbiHappyPathTest {
                             walletSession = walletSession(koin = koin, greenWallet = greenWallet),
                             requestSource = requestSource,
                             executionPlanner = executionPlanner(),
-                            executionRunner = executionRunner()
+                            executionRunner = executionRunner(),
+                            reviewPreviewer = reviewPreviewer()
                         )
                     }
                     LaunchedEffect(viewModel) {
@@ -111,11 +120,7 @@ class WalletAbiHappyPathTest {
                             }
                         }
                     }
-                    val state by viewModel.state.collectAsStateWithLifecycle()
-                    WalletAbiFlowScreen(
-                        state = state,
-                        onIntent = viewModel::dispatch
-                    )
+                    WalletAbiFlowScreen(viewModel = viewModel)
                 } else {
                     WalletAbiDevelopmentEntry(
                         visible = true,
@@ -154,7 +159,8 @@ class WalletAbiHappyPathTest {
                             walletSession = walletSession(koin = koin, greenWallet = greenWallet),
                             requestSource = requestSource,
                             executionPlanner = executionPlanner(),
-                            executionRunner = executionRunner()
+                            executionRunner = executionRunner(),
+                            reviewPreviewer = reviewPreviewer()
                         )
                     }
                     LaunchedEffect(viewModel) {
@@ -164,11 +170,7 @@ class WalletAbiHappyPathTest {
                             }
                         }
                     }
-                    val state by viewModel.state.collectAsStateWithLifecycle()
-                    WalletAbiFlowScreen(
-                        state = state,
-                        onIntent = viewModel::dispatch
-                    )
+                    WalletAbiFlowScreen(viewModel = viewModel)
                 } else {
                     WalletAbiDevelopmentEntry(
                         visible = true,
@@ -215,7 +217,8 @@ class WalletAbiHappyPathTest {
                             walletSession = walletSession(koin = koin, greenWallet = greenWallet),
                             requestSource = requestSource,
                             executionPlanner = executionPlanner(),
-                            executionRunner = executionRunner()
+                            executionRunner = executionRunner(),
+                            reviewPreviewer = reviewPreviewer()
                         )
                     }
                     LaunchedEffect(viewModel) {
@@ -225,11 +228,7 @@ class WalletAbiHappyPathTest {
                             }
                         }
                     }
-                    val state by viewModel.state.collectAsStateWithLifecycle()
-                    WalletAbiFlowScreen(
-                        state = state,
-                        onIntent = viewModel::dispatch
-                    )
+                    WalletAbiFlowScreen(viewModel = viewModel)
                 } else {
                     WalletAbiDevelopmentEntry(
                         visible = true,
@@ -252,7 +251,7 @@ class WalletAbiHappyPathTest {
             composeRule.onAllNodesWithTag("wallet_abi_flow_request_title").fetchSemanticsNodes().isNotEmpty()
         }
         composeRule.onNodeWithTag("wallet_abi_flow_request_title").assertIsDisplayed()
-        composeRule.onNodeWithTag("wallet_abi_flow_parsed_request_id").assertIsDisplayed()
+        composeRule.onNodeWithTag("wallet_abi_flow_review_warning").assertIsDisplayed()
     }
 
     private fun setWalletAbiHappyPathContent(
@@ -268,7 +267,8 @@ class WalletAbiHappyPathTest {
                 walletSession = walletSession,
                 requestSource = DefaultWalletAbiDemoRequestSource(),
                 executionPlanner = executionPlanner(),
-                executionRunner = executionRunner()
+                executionRunner = executionRunner(),
+                reviewPreviewer = reviewPreviewer()
             )
         }
 
@@ -288,11 +288,7 @@ class WalletAbiHappyPathTest {
                             }
                         }
                     }
-                    val state by viewModel.state.collectAsStateWithLifecycle()
-                    WalletAbiFlowScreen(
-                        state = state,
-                        onIntent = viewModel::dispatch
-                    )
+                    WalletAbiFlowScreen(viewModel = viewModel)
                 } else {
                     WalletAbiDevelopmentEntry(
                         visible = true,
@@ -313,6 +309,7 @@ class WalletAbiHappyPathTest {
             composeRule.onAllNodesWithTag("wallet_abi_flow_request_title").fetchSemanticsNodes().isNotEmpty()
         }
         composeRule.onNodeWithTag("wallet_abi_flow_request_title").assertIsDisplayed()
+        composeRule.onNodeWithTag("wallet_abi_flow_review_warning").assertIsDisplayed()
         composeRule.onNodeWithTag("wallet_abi_flow_approve_action").performClick()
         composeRule.onNodeWithTag("wallet_abi_flow_submitting").assertIsDisplayed()
         composeRule.waitUntil(timeoutMillis = 5_000L) {
@@ -361,12 +358,59 @@ class WalletAbiHappyPathTest {
         return object : WalletAbiExecutionRunner {
             override suspend fun execute(
                 session: GdkSession,
-                plan: WalletAbiExecutionPlan,
+                preparedExecution: WalletAbiPreparedExecution,
                 twoFactorResolver: com.blockstream.data.gdk.TwoFactorResolver
             ): WalletAbiExecutionResult {
                 delay(200)
                 return WalletAbiExecutionResult(txHash = "wallet-abi-demo-tx-hash")
             }
+        }
+    }
+
+    private fun reviewPreviewer(): WalletAbiReviewPreviewer {
+        return WalletAbiReviewPreviewer { _, plan, _ ->
+            WalletAbiPreparedExecution(
+                plan = plan,
+                params = CreateTransactionParams(
+                    from = plan.selectedAccount.accountAsset,
+                    addressees = listOf(
+                        AddressParams(
+                            address = plan.destinationAddress,
+                            satoshi = plan.amountSat,
+                            assetId = plan.assetId
+                        )
+                    ).toJsonElement(),
+                    feeRate = plan.feeRate
+                ),
+                transaction = CreateTransaction(
+                    transaction = "rawtx",
+                    fee = 100L,
+                    feeRate = 12L,
+                    outputs = listOf(
+                        Output(
+                            address = plan.destinationAddress,
+                            assetId = plan.assetId,
+                            satoshi = plan.amountSat
+                        )
+                    )
+                ),
+                confirmation = TransactionConfirmation(
+                    utxos = listOf(
+                        UtxoView(
+                            address = plan.destinationAddress,
+                            assetId = plan.assetId,
+                            satoshi = plan.amountSat,
+                            amount = "1,000 TEST-LBTC",
+                            amountExchange = "0.10 USD"
+                        )
+                    ),
+                    fee = "0.01 TEST-LBTC",
+                    feeFiat = "0.00 USD",
+                    feeRate = "12 sat/vB",
+                    total = "1,000.01 TEST-LBTC",
+                    totalFiat = "0.10 USD"
+                )
+            )
         }
     }
 
