@@ -81,7 +81,10 @@ private fun WalletAbiExecutionDetails.toPayload(): WalletAbiExecutionDetailsPayl
         amountSat = amountSat,
         assetId = assetId,
         network = network,
-        feeRate = feeRate
+        feeRate = feeRate,
+        requestFamily = requestFamily.name,
+        resolutionState = resolutionState.name,
+        outputCount = outputCount,
     )
 }
 
@@ -195,7 +198,10 @@ private fun WalletAbiExecutionDetailsPayload.toDomain(): WalletAbiExecutionDetai
         amountSat = amountSat,
         assetId = assetId,
         network = network,
-        feeRate = feeRate
+        feeRate = feeRate,
+        requestFamily = WalletAbiRequestFamily.valueOf(requestFamily),
+        resolutionState = WalletAbiResolutionState.valueOf(resolutionState),
+        outputCount = outputCount,
     )
 }
 

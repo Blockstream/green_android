@@ -1,6 +1,7 @@
 package com.blockstream.green.walletabi
 
 import androidx.compose.ui.test.assertIsDisplayed
+import androidx.compose.ui.test.assertTextContains
 import androidx.compose.ui.test.onAllNodesWithTag
 import androidx.compose.ui.test.junit4.createAndroidComposeRule
 import androidx.compose.ui.test.onNodeWithTag
@@ -216,8 +217,14 @@ class WalletAbiFlowScreenTest {
 
         composeRule.onNodeWithTag("wallet_abi_flow_review_warning").assertIsDisplayed()
         composeRule.onNodeWithTag("wallet_abi_flow_selected_account").assertIsDisplayed()
-        composeRule.onNodeWithTag("wallet_abi_flow_outputs_summary").assertIsDisplayed()
-        composeRule.onNodeWithTag("wallet_abi_flow_output_0").assertIsDisplayed()
+        assertEquals(
+            1,
+            composeRule.onAllNodesWithTag("wallet_abi_flow_outputs_summary").fetchSemanticsNodes().size
+        )
+        assertEquals(
+            1,
+            composeRule.onAllNodesWithTag("wallet_abi_flow_output_0").fetchSemanticsNodes().size
+        )
         assertEquals(
             1,
             composeRule.onAllNodesWithTag("wallet_abi_flow_output_1").fetchSemanticsNodes().size
@@ -305,6 +312,7 @@ class WalletAbiFlowScreenTest {
             intents::add
         )
 
+        composeRule.onNodeWithTag("wallet_abi_flow_resume_phase").assertIsDisplayed()
         composeRule.onNodeWithTag("wallet_abi_flow_resume_action").performClick()
         composeRule.onNodeWithTag("wallet_abi_flow_cancel_resume_action").performClick()
 
@@ -402,6 +410,9 @@ class WalletAbiFlowScreenTest {
         )
 
         composeRule.onNodeWithTag("wallet_abi_flow_error").assertIsDisplayed()
+        composeRule.onNodeWithTag("wallet_abi_flow_error_title")
+            .assertIsDisplayed()
+            .assertTextContains("Transaction status uncertain")
         assertEquals(
             0,
             composeRule.onAllNodesWithTag("wallet_abi_flow_retry_action").fetchSemanticsNodes().size

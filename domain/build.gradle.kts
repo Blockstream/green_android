@@ -1,6 +1,7 @@
 plugins {
     alias(libs.plugins.kotlinMultiplatform)
     alias(libs.plugins.android.kotlin.multiplatform.library)
+    alias(libs.plugins.kotlinxSerialization)
 }
 
 val appleTargetsEnabled = rootProject.extra["appleTargetsEnabled"] as Boolean

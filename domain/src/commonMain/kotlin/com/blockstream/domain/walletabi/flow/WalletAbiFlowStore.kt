@@ -651,8 +651,24 @@ data class WalletAbiExecutionDetails(
     val amountSat: Long,
     val assetId: String,
     val network: String,
-    val feeRate: Long? = null
+    val feeRate: Long? = null,
+    val requestFamily: WalletAbiRequestFamily = WalletAbiRequestFamily.PAYMENT,
+    val resolutionState: WalletAbiResolutionState = WalletAbiResolutionState.NOT_REQUIRED,
+    val outputCount: Int = 1,
 )
+
+enum class WalletAbiRequestFamily {
+    PAYMENT,
+    SPLIT,
+    ISSUANCE,
+    REISSUANCE,
+}
+
+enum class WalletAbiResolutionState {
+    NOT_REQUIRED,
+    REQUIRED,
+    READY,
+}
 
 data class WalletAbiAccountOption(
     val accountId: String,

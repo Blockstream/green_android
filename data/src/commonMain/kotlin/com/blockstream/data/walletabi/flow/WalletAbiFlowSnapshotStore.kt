@@ -70,7 +70,10 @@ data class WalletAbiExecutionDetailsPayload(
     val amountSat: Long,
     val assetId: String,
     val network: String,
-    val feeRate: Long? = null
+    val feeRate: Long? = null,
+    val requestFamily: String = "PAYMENT",
+    val resolutionState: String = "NOT_REQUIRED",
+    val outputCount: Int = 1,
 )
 
 @Serializable

@@ -26,6 +26,10 @@ import com.blockstream.domain.walletabi.execution.WalletAbiReviewPreviewer
 import com.blockstream.domain.walletabi.flow.DefaultWalletAbiFlowStore
 import com.blockstream.domain.walletabi.flow.WalletAbiFlowSnapshotRepository
 import com.blockstream.domain.walletabi.flow.WalletAbiFlowStore
+import com.blockstream.domain.walletabi.provider.WalletAbiExecutionContextResolver
+import com.blockstream.domain.walletabi.provider.WalletAbiExecutionContextResolving
+import com.blockstream.domain.walletabi.provider.WalletAbiProviderRunner
+import com.blockstream.domain.walletabi.provider.WalletAbiProviderRunning
 import org.koin.dsl.module
 
 val domainModule = module {
@@ -77,6 +81,12 @@ val domainModule = module {
     }
     factory<WalletAbiReviewPreviewer> {
         DefaultWalletAbiReviewPreviewer(get())
+    }
+    factory<WalletAbiExecutionContextResolving> {
+        WalletAbiExecutionContextResolver()
+    }
+    factory<WalletAbiProviderRunning> {
+        WalletAbiProviderRunner(esploraHttpClient = get())
     }
     single {
         WalletAbiFlowSnapshotRepository(get())

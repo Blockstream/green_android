@@ -2,6 +2,8 @@ package com.blockstream.compose.models.walletabi
 
 import com.blockstream.data.gdk.data.AccountAssetBalance
 import com.blockstream.data.transaction.TransactionConfirmation
+import com.blockstream.domain.walletabi.flow.WalletAbiRequestFamily
+import com.blockstream.domain.walletabi.flow.WalletAbiResolutionState
 
 data class WalletAbiReviewOutputLook(
     val address: String,
@@ -9,6 +11,11 @@ data class WalletAbiReviewOutputLook(
     val amountFiat: String?,
     val assetId: String,
     val recipientScript: String?
+)
+
+data class WalletAbiReviewAssetImpactLook(
+    val assetId: String,
+    val walletDelta: String,
 )
 
 data class WalletAbiReviewLook(
@@ -27,6 +34,13 @@ data class WalletAbiReviewLook(
     val requestId: String,
     val broadcast: Boolean,
     val recipientScript: String?,
-    val transactionConfirmation: TransactionConfirmation,
+    val transactionConfirmation: TransactionConfirmation?,
+    val requestFamily: WalletAbiRequestFamily = WalletAbiRequestFamily.PAYMENT,
+    val resolutionState: WalletAbiResolutionState = WalletAbiResolutionState.NOT_REQUIRED,
+    val statusMessage: String? = null,
+    val warnings: List<String> = emptyList(),
+    val assetImpacts: List<WalletAbiReviewAssetImpactLook> = emptyList(),
+    val canResolve: Boolean = false,
+    val canApprove: Boolean = true,
     val isRefreshing: Boolean = false
 )

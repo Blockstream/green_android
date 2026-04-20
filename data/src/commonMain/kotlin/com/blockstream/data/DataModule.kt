@@ -5,6 +5,7 @@ import com.blockstream.data.meld.meldModule
 import com.blockstream.data.notifications.notificationsDataModule
 import com.blockstream.data.walletabi.flow.FakeWalletAbiFlowDriver
 import com.blockstream.data.walletabi.flow.WalletAbiFlowSnapshotStore
+import com.blockstream.data.walletabi.provider.WalletAbiEsploraHttpClient
 import com.blockstream.data.walletabi.request.DefaultWalletAbiDemoRequestSource
 import com.blockstream.data.walletabi.request.WalletAbiDemoRequestSource
 import com.blockstream.data.walletabi.request.NoOpWalletAbiDemoRequestOverrideStore
@@ -17,6 +18,7 @@ val dataModule = module {
     single { GreenWebhooksHttpClient(get()) }
     single { DefaultJson }
     singleOf(::WalletAbiFlowSnapshotStore)
+    singleOf(::WalletAbiEsploraHttpClient)
     single { FakeWalletAbiFlowDriver() }
     single<WalletAbiDemoRequestSource> {
         DefaultWalletAbiDemoRequestSource(

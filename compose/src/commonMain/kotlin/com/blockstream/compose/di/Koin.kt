@@ -41,7 +41,9 @@ fun initKoin(appInfo: AppInfo, appConfig: AppConfig, doOnStartup: () -> Unit = {
                         requestSource = get(),
                         executionPlanner = get(),
                         executionRunner = get(),
-                        reviewPreviewer = get()
+                        reviewPreviewer = get(),
+                        executionContextResolver = get(),
+                        providerRunner = get(),
                     )
                 }
             }

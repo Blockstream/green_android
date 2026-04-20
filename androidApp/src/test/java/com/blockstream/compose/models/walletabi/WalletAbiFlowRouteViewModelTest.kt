@@ -16,7 +16,9 @@ import com.blockstream.data.gdk.data.Credentials
 import com.blockstream.data.gdk.data.CreateTransaction
 import com.blockstream.data.gdk.data.Network
 import com.blockstream.data.gdk.data.Output
+import com.blockstream.data.gdk.data.ProcessedTransactionDetails
 import com.blockstream.data.gdk.data.UtxoView
+import com.blockstream.data.gdk.params.BroadcastTransactionParams
 import com.blockstream.data.gdk.params.AddressParams
 import com.blockstream.data.gdk.params.CreateTransactionParams
 import com.blockstream.data.gdk.params.toJsonElement
@@ -37,10 +39,13 @@ import com.blockstream.domain.walletabi.execution.WalletAbiExecutionRunner
 import com.blockstream.domain.walletabi.execution.WalletAbiExecutionPlanner
 import com.blockstream.domain.walletabi.execution.WalletAbiReviewPreviewer
 import com.blockstream.domain.walletabi.execution.WalletAbiOutputAddressResolver
+import com.blockstream.domain.walletabi.flow.WalletAbiRequestFamily
+import com.blockstream.domain.walletabi.flow.WalletAbiResolutionState
 import com.blockstream.domain.walletabi.flow.WalletAbiAccountOption
 import com.blockstream.domain.walletabi.flow.WalletAbiApprovalTarget
 import com.blockstream.domain.walletabi.flow.WalletAbiCancelledReason
 import com.blockstream.domain.walletabi.flow.WalletAbiExecutionEvent
+import com.blockstream.domain.walletabi.flow.WalletAbiExecutionDetails
 import com.blockstream.domain.walletabi.flow.WalletAbiFlowIntent
 import com.blockstream.domain.walletabi.flow.WalletAbiFlowOutput
 import com.blockstream.domain.walletabi.flow.WalletAbiFlowReview
@@ -61,6 +66,17 @@ import com.blockstream.domain.walletabi.request.WalletAbiNetwork
 import com.blockstream.domain.walletabi.request.DefaultWalletAbiRequestParser
 import com.blockstream.domain.walletabi.request.WalletAbiParsedRequest
 import com.blockstream.domain.walletabi.request.WalletAbiRequestParseResult
+import com.blockstream.domain.walletabi.provider.WalletAbiExecutionContext
+import com.blockstream.domain.walletabi.provider.WalletAbiExecutionContextResolver
+import com.blockstream.domain.walletabi.provider.WalletAbiExecutionContextResolving
+import com.blockstream.domain.walletabi.provider.WalletAbiProviderPreviewAssetDelta
+import com.blockstream.domain.walletabi.provider.WalletAbiProviderPreviewOutput
+import com.blockstream.domain.walletabi.provider.WalletAbiProviderPreviewOutputKind
+import com.blockstream.domain.walletabi.provider.WalletAbiProviderProcessResponse
+import com.blockstream.domain.walletabi.provider.WalletAbiProviderRequestPreview
+import com.blockstream.domain.walletabi.provider.WalletAbiProviderRunning
+import com.blockstream.domain.walletabi.provider.WalletAbiProviderStatus
+import com.blockstream.domain.walletabi.provider.WalletAbiProviderTransactionInfo
 import io.mockk.coEvery
 import io.mockk.coVerify
 import kotlinx.coroutines.Dispatchers
@@ -80,6 +96,7 @@ import kotlinx.coroutines.test.runTest
 import kotlinx.coroutines.test.setMain
 import io.mockk.every
 import io.mockk.mockk
+import io.mockk.slot
 import org.junit.After
 import org.junit.Before
 import org.junit.Test
@@ -100,6 +117,8 @@ class WalletAbiFlowRouteViewModelTest {
     private lateinit var executionPlanner: WalletAbiExecutionPlanner
     private lateinit var executionRunner: WalletAbiExecutionRunner
     private lateinit var reviewPreviewer: WalletAbiReviewPreviewer
+    private lateinit var executionContextResolver: WalletAbiExecutionContextResolving
+    private lateinit var providerRunner: WalletAbiProviderRunning
     private lateinit var walletSession: GdkSession
     private lateinit var liquidAccount: Account
     private val createdViewModels = mutableListOf<WalletAbiFlowRouteViewModel>()
@@ -123,6 +142,15 @@ class WalletAbiFlowRouteViewModelTest {
         )
         reviewPreviewer = WalletAbiReviewPreviewer { _, plan, _ ->
             preparedExecution(plan)
+        }
+        executionContextResolver = WalletAbiExecutionContextResolver()
+        providerRunner = object : WalletAbiProviderRunning {
+            override suspend fun run(
+                context: WalletAbiExecutionContext,
+                request: com.blockstream.domain.walletabi.request.WalletAbiTxCreateRequest
+            ): com.blockstream.domain.walletabi.provider.WalletAbiProviderRunResult {
+                error("Provider runner not configured for this test")
+            }
         }
         executionRunner = object : WalletAbiExecutionRunner {
             override suspend fun prepare(
@@ -443,6 +471,329 @@ class WalletAbiFlowRouteViewModelTest {
         assertEquals(2, viewModel.reviewLook.value?.outputs?.size)
         assertEquals("1,000 TEST-LBTC", viewModel.reviewLook.value?.outputs?.firstOrNull()?.amount)
         assertEquals("0.01 TEST-LBTC", viewModel.reviewLook.value?.transactionConfirmation?.fee)
+    }
+
+    @Test
+    fun loadRequest_output_dispatches_unresolved_issuance_review() = runTest(dispatcher) {
+        requestSource = WalletAbiDemoRequestSource { issuanceEnvelope(it) }
+
+        val viewModel = createViewModel(
+            greenWallet = greenWallet,
+            store = store,
+            snapshotRepository = snapshotRepository,
+            requestSource = requestSource
+        )
+
+        advanceUntilIdle()
+
+        store.mutableOutputs.emit(
+            WalletAbiFlowOutput.LoadRequest(
+                WalletAbiStartRequestContext(
+                    requestId = WalletAbiFlowRouteViewModel.DEMO_REQUEST_ID,
+                    walletId = greenWallet.id
+                )
+            )
+        )
+
+        advanceUntilIdle()
+
+        val intent = assertIs<WalletAbiFlowIntent.OnExecutionEvent>(store.intents.last())
+        val review = assertIs<WalletAbiExecutionEvent.RequestLoaded>(intent.event).review
+        assertEquals(WalletAbiRequestFamily.ISSUANCE, review.executionDetails?.requestFamily)
+        assertEquals(WalletAbiResolutionState.REQUIRED, review.executionDetails?.resolutionState)
+        assertEquals(2, review.executionDetails?.outputCount)
+        assertEquals("Wallet ABI issuance", review.title)
+        assertEquals(true, viewModel.reviewLook.value?.canResolve)
+        assertEquals(false, viewModel.reviewLook.value?.canApprove)
+        assertEquals(2, viewModel.reviewLook.value?.outputs?.size)
+    }
+
+    @Test
+    fun startResolution_output_dispatches_ready_issuance_review() = runTest(dispatcher) {
+        requestSource = WalletAbiDemoRequestSource { issuanceEnvelope(it) }
+        providerRunner = fakeProviderRunner(
+            requestId = WalletAbiFlowRouteViewModel.DEMO_REQUEST_ID,
+            network = WalletAbiNetwork.TESTNET_LIQUID,
+            preview = issuancePreview(),
+            txHex = "issuance-tx-hex",
+            txid = "issuance-txid"
+        )
+
+        val viewModel = createViewModel(
+            greenWallet = greenWallet,
+            store = store,
+            snapshotRepository = snapshotRepository,
+            requestSource = requestSource,
+            providerRunner = providerRunner
+        )
+
+        advanceUntilIdle()
+
+        val requestContext = WalletAbiStartRequestContext(
+            requestId = WalletAbiFlowRouteViewModel.DEMO_REQUEST_ID,
+            walletId = greenWallet.id
+        )
+        store.mutableOutputs.emit(WalletAbiFlowOutput.LoadRequest(requestContext))
+        advanceUntilIdle()
+        store.mutableOutputs.emit(
+            WalletAbiFlowOutput.StartResolution(
+                WalletAbiResolutionCommand(
+                    requestContext = requestContext,
+                    selectedAccountId = liquidAccount.id
+                )
+            )
+        )
+        advanceUntilIdle()
+
+        val intent = assertIs<WalletAbiFlowIntent.OnExecutionEvent>(store.intents.last())
+        val review = assertIs<WalletAbiExecutionEvent.Resolved>(intent.event).review
+        assertEquals(WalletAbiRequestFamily.ISSUANCE, review.executionDetails?.requestFamily)
+        assertEquals(WalletAbiResolutionState.READY, review.executionDetails?.resolutionState)
+        assertEquals(false, viewModel.reviewLook.value?.canResolve)
+        assertEquals(true, viewModel.reviewLook.value?.canApprove)
+        assertEquals(3, viewModel.reviewLook.value?.assetImpacts?.size)
+        assertEquals("issuance_asset_id", viewModel.reviewLook.value?.outputs?.firstOrNull()?.assetId)
+    }
+
+    @Test
+    fun approve_after_resolving_issuance_broadcasts_provider_transaction() = runTest(dispatcher) {
+        requestSource = WalletAbiDemoRequestSource { issuanceEnvelope(it) }
+        providerRunner = fakeProviderRunner(
+            requestId = WalletAbiFlowRouteViewModel.DEMO_REQUEST_ID,
+            network = WalletAbiNetwork.TESTNET_LIQUID,
+            preview = issuancePreview(),
+            txHex = "provider-issuance-tx-hex",
+            txid = "provider-issuance-txid"
+        )
+        val realStore = DefaultWalletAbiFlowStore()
+        val broadcastParams = slot<BroadcastTransactionParams>()
+        coEvery {
+            walletSession.broadcastTransaction(any(), capture(broadcastParams))
+        } returns ProcessedTransactionDetails(txHash = "provider-issuance-broadcast")
+
+        val viewModel = createViewModel(
+            greenWallet = greenWallet,
+            launchMode = WalletAbiFlowLaunchMode.Demo,
+            store = realStore,
+            snapshotRepository = snapshotRepository,
+            walletSession = walletSession,
+            requestSource = requestSource,
+            executionPlanner = executionPlanner,
+            executionRunner = executionRunner,
+            reviewPreviewer = reviewPreviewer,
+            executionContextResolver = executionContextResolver,
+            providerRunner = providerRunner
+        )
+
+        advanceUntilIdle()
+
+        assertIs<WalletAbiFlowState.RequestLoaded>(viewModel.state.value)
+        viewModel.dispatch(WalletAbiFlowIntent.ResolveRequest)
+        advanceUntilIdle()
+        viewModel.dispatch(WalletAbiFlowIntent.Approve)
+        advanceUntilIdle()
+
+        val success = assertIs<WalletAbiFlowState.Success>(viewModel.state.value)
+        assertEquals("provider-issuance-broadcast", success.result.txHash)
+        assertEquals("provider-issuance-tx-hex", broadcastParams.captured.transaction)
+    }
+
+    @Test
+    fun loadRequest_output_dispatches_unresolved_reissuance_review() = runTest(dispatcher) {
+        requestSource = WalletAbiDemoRequestSource {
+            reissuanceEnvelope(
+                requestId = it,
+                tokenAssetId = "reissuance_token_asset"
+            )
+        }
+
+        createViewModel(
+            greenWallet = greenWallet,
+            store = store,
+            snapshotRepository = snapshotRepository,
+            requestSource = requestSource
+        )
+
+        advanceUntilIdle()
+
+        store.mutableOutputs.emit(
+            WalletAbiFlowOutput.LoadRequest(
+                WalletAbiStartRequestContext(
+                    requestId = WalletAbiFlowRouteViewModel.DEMO_REQUEST_ID,
+                    walletId = greenWallet.id
+                )
+            )
+        )
+
+        advanceUntilIdle()
+
+        val intent = assertIs<WalletAbiFlowIntent.OnExecutionEvent>(store.intents.last())
+        val review = assertIs<WalletAbiExecutionEvent.RequestLoaded>(intent.event).review
+        assertEquals(WalletAbiRequestFamily.REISSUANCE, review.executionDetails?.requestFamily)
+        assertEquals(WalletAbiResolutionState.REQUIRED, review.executionDetails?.resolutionState)
+        assertEquals(true, viewModelOrCreateLatest().reviewLook.value?.warnings?.any {
+            it.contains("reissuance", ignoreCase = true) || it.contains("token asset", ignoreCase = true)
+        })
+    }
+
+    @Test
+    fun startResolution_output_dispatches_ready_reissuance_review() = runTest(dispatcher) {
+        requestSource = WalletAbiDemoRequestSource {
+            reissuanceEnvelope(
+                requestId = it,
+                tokenAssetId = "reissuance_token_asset"
+            )
+        }
+        providerRunner = fakeProviderRunner(
+            requestId = WalletAbiFlowRouteViewModel.DEMO_REQUEST_ID,
+            network = WalletAbiNetwork.TESTNET_LIQUID,
+            preview = reissuancePreview(),
+            txHex = "reissuance-tx-hex",
+            txid = "reissuance-txid"
+        )
+
+        val viewModel = createViewModel(
+            greenWallet = greenWallet,
+            store = store,
+            snapshotRepository = snapshotRepository,
+            requestSource = requestSource,
+            providerRunner = providerRunner
+        )
+
+        advanceUntilIdle()
+
+        val requestContext = WalletAbiStartRequestContext(
+            requestId = WalletAbiFlowRouteViewModel.DEMO_REQUEST_ID,
+            walletId = greenWallet.id
+        )
+        store.mutableOutputs.emit(WalletAbiFlowOutput.LoadRequest(requestContext))
+        advanceUntilIdle()
+
+        store.mutableOutputs.emit(
+            WalletAbiFlowOutput.StartResolution(
+                WalletAbiResolutionCommand(
+                    requestContext = requestContext,
+                    selectedAccountId = liquidAccount.id
+                )
+            )
+        )
+        advanceUntilIdle()
+
+        val intent = assertIs<WalletAbiFlowIntent.OnExecutionEvent>(store.intents.last())
+        val review = assertIs<WalletAbiExecutionEvent.Resolved>(intent.event).review
+        assertEquals(WalletAbiRequestFamily.REISSUANCE, review.executionDetails?.requestFamily)
+        assertEquals(WalletAbiResolutionState.READY, review.executionDetails?.resolutionState)
+        assertEquals(false, viewModel.reviewLook.value?.canResolve)
+        assertEquals(true, viewModel.reviewLook.value?.canApprove)
+        assertEquals(2, viewModel.reviewLook.value?.assetImpacts?.size)
+        assertEquals("reissued_asset_id", viewModel.reviewLook.value?.outputs?.firstOrNull()?.assetId)
+    }
+
+    @Test
+    fun approve_after_resolving_reissuance_broadcasts_provider_transaction() = runTest(dispatcher) {
+        requestSource = WalletAbiDemoRequestSource {
+            reissuanceEnvelope(
+                requestId = it,
+                tokenAssetId = "reissuance_token_asset"
+            )
+        }
+        providerRunner = fakeProviderRunner(
+            requestId = WalletAbiFlowRouteViewModel.DEMO_REQUEST_ID,
+            network = WalletAbiNetwork.TESTNET_LIQUID,
+            preview = reissuancePreview(),
+            txHex = "provider-reissuance-tx-hex",
+            txid = "provider-reissuance-txid"
+        )
+        val realStore = DefaultWalletAbiFlowStore()
+        val broadcastParams = slot<BroadcastTransactionParams>()
+        coEvery {
+            walletSession.broadcastTransaction(any(), capture(broadcastParams))
+        } returns ProcessedTransactionDetails(txHash = "provider-reissuance-broadcast")
+
+        val viewModel = createViewModel(
+            greenWallet = greenWallet,
+            launchMode = WalletAbiFlowLaunchMode.Demo,
+            store = realStore,
+            snapshotRepository = snapshotRepository,
+            walletSession = walletSession,
+            requestSource = requestSource,
+            executionPlanner = executionPlanner,
+            executionRunner = executionRunner,
+            reviewPreviewer = reviewPreviewer,
+            executionContextResolver = executionContextResolver,
+            providerRunner = providerRunner
+        )
+
+        advanceUntilIdle()
+
+        assertIs<WalletAbiFlowState.RequestLoaded>(viewModel.state.value)
+        viewModel.dispatch(WalletAbiFlowIntent.ResolveRequest)
+        advanceUntilIdle()
+        viewModel.dispatch(WalletAbiFlowIntent.Approve)
+        advanceUntilIdle()
+
+        val success = assertIs<WalletAbiFlowState.Success>(viewModel.state.value)
+        assertEquals("provider-reissuance-broadcast", success.result.txHash)
+        assertEquals("provider-reissuance-tx-hex", broadcastParams.captured.transaction)
+    }
+
+    @Test
+    fun resume_ready_issuance_snapshot_rebuilds_exact_review() = runTest(dispatcher) {
+        requestSource = WalletAbiDemoRequestSource { error("Resume should not read the demo request source") }
+        providerRunner = fakeProviderRunner(
+            requestId = WalletAbiFlowRouteViewModel.DEMO_REQUEST_ID,
+            network = WalletAbiNetwork.TESTNET_LIQUID,
+            preview = issuancePreview(),
+            txHex = "issuance-ready-tx-hex",
+            txid = "issuance-ready-txid"
+        )
+        val snapshot = demoResumeSnapshot(
+            phase = WalletAbiResumePhase.REQUEST_LOADED,
+            parsedRequest = assertIs<WalletAbiParsedRequest>(
+                assertIs<WalletAbiRequestParseResult.Success>(
+                    DefaultWalletAbiRequestParser().parse(
+                        issuanceEnvelope(WalletAbiFlowRouteViewModel.DEMO_REQUEST_ID)
+                    )
+                ).envelope.request
+            )
+        ).copy(
+            review = demoResumeSnapshot(
+                phase = WalletAbiResumePhase.REQUEST_LOADED,
+                parsedRequest = assertIs<WalletAbiRequestParseResult.Success>(
+                    DefaultWalletAbiRequestParser().parse(
+                        issuanceEnvelope(WalletAbiFlowRouteViewModel.DEMO_REQUEST_ID)
+                    )
+                ).envelope.request
+            ).review.copy(
+                method = "wallet_abi_process_request",
+                executionDetails = WalletAbiExecutionDetails(
+                    destinationAddress = "Issued asset to wallet",
+                    amountSat = 6L,
+                    assetId = "unresolved",
+                    network = WalletAbiNetwork.TESTNET_LIQUID.wireValue,
+                    requestFamily = WalletAbiRequestFamily.ISSUANCE,
+                    resolutionState = WalletAbiResolutionState.READY,
+                    outputCount = 2
+                )
+            )
+        )
+        coEvery { snapshotRepository.load(greenWallet.id) } returns snapshot
+
+        val viewModel = createViewModel(
+            greenWallet = greenWallet,
+            store = DefaultWalletAbiFlowStore(),
+            snapshotRepository = snapshotRepository,
+            requestSource = requestSource,
+            launchMode = WalletAbiFlowLaunchMode.Resume,
+            providerRunner = providerRunner
+        )
+
+        advanceUntilIdle()
+
+        val state = assertIs<WalletAbiFlowState.Resumable>(viewModel.state.value)
+        assertEquals(WalletAbiResolutionState.READY, state.snapshot.review.executionDetails?.resolutionState)
+        assertEquals(true, viewModel.reviewLook.value?.canApprove)
+        assertEquals(false, viewModel.reviewLook.value?.canResolve)
     }
 
     @Test
@@ -1400,6 +1751,8 @@ class WalletAbiFlowRouteViewModelTest {
         executionPlanner: WalletAbiExecutionPlanner = this.executionPlanner,
         executionRunner: WalletAbiExecutionRunner = this.executionRunner,
         reviewPreviewer: WalletAbiReviewPreviewer = this.reviewPreviewer,
+        executionContextResolver: WalletAbiExecutionContextResolving = this.executionContextResolver,
+        providerRunner: WalletAbiProviderRunning = this.providerRunner,
         loadingTimeoutMillis: Long = 15_000L,
         approvalTimeoutMillis: Long = 120_000L,
         submissionTimeoutMillis: Long = 60_000L,
@@ -1415,6 +1768,8 @@ class WalletAbiFlowRouteViewModelTest {
             executionPlanner = executionPlanner,
             executionRunner = executionRunner,
             reviewPreviewer = reviewPreviewer,
+            executionContextResolver = executionContextResolver,
+            providerRunner = providerRunner,
             loadingTimeoutMillis = loadingTimeoutMillis,
             approvalTimeoutMillis = approvalTimeoutMillis,
             submissionTimeoutMillis = submissionTimeoutMillis
@@ -1456,6 +1811,234 @@ class WalletAbiFlowRouteViewModelTest {
             )
         ).envelope
         return envelope.request
+    }
+
+    private fun viewModelOrCreateLatest(): WalletAbiFlowRouteViewModel {
+        return createdViewModels.last()
+    }
+
+    private fun fakeProviderRunner(
+        requestId: String,
+        network: WalletAbiNetwork,
+        preview: WalletAbiProviderRequestPreview,
+        txHex: String,
+        txid: String,
+    ): WalletAbiProviderRunning {
+        return object : WalletAbiProviderRunning {
+            override suspend fun run(
+                context: WalletAbiExecutionContext,
+                request: com.blockstream.domain.walletabi.request.WalletAbiTxCreateRequest
+            ): com.blockstream.domain.walletabi.provider.WalletAbiProviderRunResult {
+                return com.blockstream.domain.walletabi.provider.WalletAbiProviderRunResult(
+                    response = WalletAbiProviderProcessResponse(
+                        abiVersion = "wallet-abi-0.1",
+                        requestId = requestId,
+                        network = network,
+                        status = WalletAbiProviderStatus.OK,
+                        transaction = WalletAbiProviderTransactionInfo(
+                            txHex = txHex,
+                            txid = txid
+                        ),
+                        artifacts = kotlinx.serialization.json.buildJsonObject {
+                            put(
+                                "preview",
+                                com.blockstream.data.json.DefaultJson.encodeToJsonElement(
+                                    WalletAbiProviderRequestPreview.serializer(),
+                                    preview
+                                )
+                            )
+                        }
+                    ),
+                    responseJson = "{}"
+                )
+            }
+        }
+    }
+
+    private fun issuancePreview(): WalletAbiProviderRequestPreview {
+        return WalletAbiProviderRequestPreview(
+            assetDeltas = listOf(
+                WalletAbiProviderPreviewAssetDelta(
+                    assetId = "issuance_asset_id",
+                    walletDeltaSat = 5
+                ),
+                WalletAbiProviderPreviewAssetDelta(
+                    assetId = "reissuance_token_id",
+                    walletDeltaSat = 1
+                ),
+                WalletAbiProviderPreviewAssetDelta(
+                    assetId = TESTNET_POLICY_ASSET,
+                    walletDeltaSat = -333
+                )
+            ),
+            outputs = listOf(
+                WalletAbiProviderPreviewOutput(
+                    kind = WalletAbiProviderPreviewOutputKind.RECEIVE,
+                    assetId = "issuance_asset_id",
+                    amountSat = 5,
+                    scriptPubkey = "0014aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa"
+                ),
+                WalletAbiProviderPreviewOutput(
+                    kind = WalletAbiProviderPreviewOutputKind.RECEIVE,
+                    assetId = "reissuance_token_id",
+                    amountSat = 1,
+                    scriptPubkey = "0014bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb"
+                ),
+                WalletAbiProviderPreviewOutput(
+                    kind = WalletAbiProviderPreviewOutputKind.FEE,
+                    assetId = TESTNET_POLICY_ASSET,
+                    amountSat = 333,
+                    scriptPubkey = "6a"
+                )
+            )
+        )
+    }
+
+    private fun reissuancePreview(): WalletAbiProviderRequestPreview {
+        return WalletAbiProviderRequestPreview(
+            assetDeltas = listOf(
+                WalletAbiProviderPreviewAssetDelta(
+                    assetId = "reissued_asset_id",
+                    walletDeltaSat = 7
+                ),
+                WalletAbiProviderPreviewAssetDelta(
+                    assetId = TESTNET_POLICY_ASSET,
+                    walletDeltaSat = -222
+                )
+            ),
+            outputs = listOf(
+                WalletAbiProviderPreviewOutput(
+                    kind = WalletAbiProviderPreviewOutputKind.RECEIVE,
+                    assetId = "reissued_asset_id",
+                    amountSat = 7,
+                    scriptPubkey = "0014cccccccccccccccccccccccccccccccccccccccc"
+                ),
+                WalletAbiProviderPreviewOutput(
+                    kind = WalletAbiProviderPreviewOutputKind.FEE,
+                    assetId = TESTNET_POLICY_ASSET,
+                    amountSat = 222,
+                    scriptPubkey = "6a"
+                )
+            )
+        )
+    }
+
+    private fun issuanceEnvelope(requestId: String): String {
+        return """
+            {
+              "jsonrpc": "2.0",
+              "id": "wallet-abi-issuance-envelope",
+              "method": "wallet_abi_process_request",
+              "params": {
+                "abi_version": "wallet-abi-0.1",
+                "request_id": "$requestId",
+                "network": "testnet-liquid",
+                "broadcast": true,
+                "params": {
+                  "inputs": [
+                    {
+                      "id": "issuance",
+                      "utxo_source": {
+                        "wallet": {
+                          "filter": {
+                            "asset": "none",
+                            "amount": "none",
+                            "lock": "none"
+                          }
+                        }
+                      },
+                      "unblinding": "wallet",
+                      "sequence": 4294967295,
+                      "issuance": {
+                        "kind": "new",
+                        "asset_amount_sat": 5,
+                        "token_amount_sat": 1,
+                        "entropy": [7,7,7,7,7,7,7,7,7,7,7,7,7,7,7,7,7,7,7,7,7,7,7,7,7,7,7,7,7,7,7,7]
+                      },
+                      "finalizer": {
+                        "type": "wallet"
+                      }
+                    }
+                  ],
+                  "outputs": [
+                    {
+                      "id": "issued_asset",
+                      "amount_sat": 5,
+                      "lock": { "type": "wallet" },
+                      "asset": { "type": "new_issuance_asset", "input_index": 0 },
+                      "blinder": "wallet"
+                    },
+                    {
+                      "id": "reissuance_token",
+                      "amount_sat": 1,
+                      "lock": { "type": "wallet" },
+                      "asset": { "type": "new_issuance_token", "input_index": 0 },
+                      "blinder": "wallet"
+                    }
+                  ]
+                }
+              }
+            }
+        """.trimIndent()
+    }
+
+    private fun reissuanceEnvelope(
+        requestId: String,
+        tokenAssetId: String,
+    ): String {
+        return """
+            {
+              "jsonrpc": "2.0",
+              "id": "wallet-abi-reissuance-envelope",
+              "method": "wallet_abi_process_request",
+              "params": {
+                "abi_version": "wallet-abi-0.1",
+                "request_id": "$requestId",
+                "network": "testnet-liquid",
+                "broadcast": true,
+                "params": {
+                  "inputs": [
+                    {
+                      "id": "reissuance",
+                      "utxo_source": {
+                        "wallet": {
+                          "filter": {
+                            "asset": {
+                              "exact": {
+                                "asset_id": "$tokenAssetId"
+                              }
+                            },
+                            "amount": "none",
+                            "lock": "none"
+                          }
+                        }
+                      },
+                      "unblinding": "wallet",
+                      "sequence": 4294967295,
+                      "issuance": {
+                        "kind": "reissue",
+                        "asset_amount_sat": 7,
+                        "token_amount_sat": 0,
+                        "entropy": [8,8,8,8,8,8,8,8,8,8,8,8,8,8,8,8,8,8,8,8,8,8,8,8,8,8,8,8,8,8,8,8]
+                      },
+                      "finalizer": {
+                        "type": "wallet"
+                      }
+                    }
+                  ],
+                  "outputs": [
+                    {
+                      "id": "reissued_asset",
+                      "amount_sat": 7,
+                      "lock": { "type": "wallet" },
+                      "asset": { "type": "re_issuance_asset", "input_index": 0 },
+                      "blinder": "wallet"
+                    }
+                  ]
+                }
+              }
+            }
+        """.trimIndent()
     }
 
     private fun preparedExecution(plan: com.blockstream.domain.walletabi.execution.WalletAbiExecutionPlan): WalletAbiPreparedExecution {
