@@ -412,7 +412,7 @@ class LightningSdk constructor(
                 "NodeId: ${nodeInfoStateFlow.value.id}",
                 "Timestamp: ${Clock.System.now().epochSeconds}",
             ).joinToString("\n"),
-            exception.cause
+            exception
         )
 
     private suspend fun <T> withExceptionHandler(
