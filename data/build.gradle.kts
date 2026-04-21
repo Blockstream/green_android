@@ -186,8 +186,19 @@ kotlin {
         }
 
         androidMain.dependencies {
+            val reownAndroidCore = project.dependencies.create(libs.reown.android.core.get()).apply {
+                (this as org.gradle.api.artifacts.ExternalModuleDependency)
+                    .exclude(group = "io.github.pandulapeter.beagle", module = "log-okhttp")
+            }
+            val reownWalletKit = project.dependencies.create(libs.reown.walletkit.get()).apply {
+                (this as org.gradle.api.artifacts.ExternalModuleDependency)
+                    .exclude(group = "io.github.pandulapeter.beagle", module = "log-okhttp")
+            }
+
             implementation(project(":gdk"))
             implementation(libs.sqldelight.android.driver)
+            implementation(reownAndroidCore)
+            implementation(reownWalletKit)
             api(libs.koin.android)
             api(libs.androidx.biometric)
 

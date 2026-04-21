@@ -3,6 +3,8 @@ package com.blockstream.data.di
 import com.blockstream.data.database.DriverFactory
 import com.blockstream.data.managers.BluetoothManager
 import com.blockstream.data.managers.LocaleManager
+import com.blockstream.data.walletabi.walletconnect.NoOpWalletAbiWalletConnectBridge
+import com.blockstream.data.walletabi.walletconnect.WalletAbiWalletConnectBridge
 import com.russhwolf.settings.ObservableSettings
 import com.russhwolf.settings.PreferencesSettings
 import org.koin.dsl.module
@@ -19,6 +21,6 @@ actual val platformModule = module {
         val preferences: Preferences = Preferences.userRoot()
         PreferencesSettings(preferences)
     }
+    single<WalletAbiWalletConnectBridge> { NoOpWalletAbiWalletConnectBridge() }
     single<BluetoothManager> { BluetoothManager() }
 }
-

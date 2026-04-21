@@ -5,6 +5,8 @@ import com.blockstream.data.CountlyIOS
 import com.blockstream.data.database.DriverFactory
 import com.blockstream.data.managers.BluetoothManager
 import com.blockstream.data.managers.LocaleManager
+import com.blockstream.data.walletabi.walletconnect.NoOpWalletAbiWalletConnectBridge
+import com.blockstream.data.walletabi.walletconnect.WalletAbiWalletConnectBridge
 import com.russhwolf.settings.NSUserDefaultsSettings
 import com.russhwolf.settings.ObservableSettings
 import org.koin.dsl.module
@@ -21,6 +23,7 @@ actual val platformModule = module {
         LocaleManager()
     }
     single<ObservableSettings> { NSUserDefaultsSettings(NSUserDefaults.standardUserDefaults()) }
+    single<WalletAbiWalletConnectBridge> { NoOpWalletAbiWalletConnectBridge() }
 
     single<BluetoothManager> { BluetoothManager() }
 }
