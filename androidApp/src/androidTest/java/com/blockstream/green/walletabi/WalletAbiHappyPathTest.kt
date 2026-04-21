@@ -399,6 +399,10 @@ class WalletAbiHappyPathTest {
             .assertIsDisplayed()
             .assertTextContains("Unsupported Wallet ABI method 'wallet_abi_get_account'")
         assertEquals(
+            1,
+            composeRule.onAllNodesWithTag("wallet_abi_flow_error").fetchSemanticsNodes().size
+        )
+        assertEquals(
             0,
             composeRule.onAllNodesWithTag("wallet_abi_flow_retry_action").fetchSemanticsNodes().size
         )
@@ -452,6 +456,10 @@ class WalletAbiHappyPathTest {
         composeRule.onNodeWithTag("wallet_abi_flow_error")
             .assertIsDisplayed()
             .assertTextContains("Wallet ABI request envelope is malformed")
+        assertEquals(
+            1,
+            composeRule.onAllNodesWithTag("wallet_abi_flow_error").fetchSemanticsNodes().size
+        )
         assertEquals(
             0,
             composeRule.onAllNodesWithTag("wallet_abi_flow_retry_action").fetchSemanticsNodes().size

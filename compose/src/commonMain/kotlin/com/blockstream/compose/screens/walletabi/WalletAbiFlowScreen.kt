@@ -240,6 +240,7 @@ private fun WalletAbiStateHero(
     title: String,
     supporting: String,
     testTag: String? = null,
+    supportingTestTag: String? = null,
 ) {
     Column(verticalArrangement = Arrangement.spacedBy(8.dp)) {
         Text(
@@ -250,7 +251,8 @@ private fun WalletAbiStateHero(
         Text(
             text = supporting,
             style = bodyMedium,
-            color = whiteMedium
+            color = whiteMedium,
+            modifier = if (supportingTestTag != null) Modifier.testTag(supportingTestTag) else Modifier
         )
     }
 }
@@ -516,13 +518,8 @@ private fun ErrorContent(
             WalletAbiStateHero(
                 title = state.error.title(),
                 supporting = state.error.body(),
-                testTag = "wallet_abi_flow_error_title"
-            )
-            Text(
-                text = state.error.body(),
-                style = bodyMedium,
-                color = whiteMedium,
-                modifier = Modifier.testTag("wallet_abi_flow_error")
+                testTag = "wallet_abi_flow_error_title",
+                supportingTestTag = "wallet_abi_flow_error"
             )
             GreenAlert(
                 title = when {
