@@ -40,6 +40,8 @@ import com.blockstream.domain.walletabi.request.WalletAbiTxCreateRequest
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
+import kotlinx.coroutines.flow.debounce
+import kotlinx.coroutines.flow.filterNotNull
 import kotlinx.coroutines.flow.onEach
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.sync.Mutex
@@ -148,6 +150,25 @@ class WalletAbiWalletConnectRouteViewModel(
                 session = session,
             )
         }
+
+        sessionManager.pendingUri
+            .filterNotNull()
+            .debounce(50L)
+            .onEach { uri ->
+                if (!uri.trim().startsWith("wc:")) {
+                    return@onEach
+                }
+                sessionManager.consumePendingUri(uri)?.also { pendingUri ->
+                    runCatching {
+                        walletAbiWalletConnectManager.pair(
+                            greenWallet = greenWallet,
+                            session = session,
+                            input = pendingUri,
+                        )
+                    }
+                }
+            }
+            .launchIn(this)
 
         bootstrap()
     }

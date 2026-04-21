@@ -110,6 +110,7 @@
                 <data android:scheme="liquidnetwork" />
                 <data android:scheme="liquidtestnet" />
                 <data android:scheme="lightning" />
+                <data android:scheme="wc" />
             </intent-filter>
 
             <intent-filter>
