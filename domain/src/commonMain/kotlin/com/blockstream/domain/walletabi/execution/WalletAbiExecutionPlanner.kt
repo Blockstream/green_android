@@ -77,7 +77,7 @@ sealed interface WalletAbiExecutionValidationError {
     }
 
     data object HardwareWalletUnsupported : WalletAbiExecutionValidationError {
-        override val message: String = "Wallet ABI real execution currently supports software wallets only"
+        override val message: String = "Wallet ABI real execution currently supports mnemonic-backed wallets and Jade"
     }
 
     data object MissingMnemonic : WalletAbiExecutionValidationError {
@@ -123,7 +123,7 @@ sealed interface WalletAbiExecutionValidationError {
         val network: String
     ) : WalletAbiExecutionValidationError {
         override val message: String =
-            "Wallet ABI found no eligible software Liquid account for '$network'"
+            "Wallet ABI found no eligible Liquid account for '$network'"
     }
 
     data class SelectedAccountUnavailable(
@@ -166,7 +166,7 @@ class DefaultWalletAbiExecutionPlanner(
         request: WalletAbiParsedRequest,
         selectedAccountId: String?
     ): WalletAbiExecutionPlan {
-        requireConnectedSoftwareSession(session)
+        requireConnectedSigningSession(session)
 
         val txCreate = request as? WalletAbiParsedRequest.TxCreate
             ?: throw WalletAbiExecutionValidationException(
@@ -266,16 +266,19 @@ class DefaultWalletAbiExecutionPlanner(
         }
     }
 
-    private suspend fun requireConnectedSoftwareSession(session: GdkSession) {
+    private suspend fun requireConnectedSigningSession(session: GdkSession) {
         if (!session.isConnected) {
             throw WalletAbiExecutionValidationException(
                 WalletAbiExecutionValidationError.SessionNotConnected
             )
         }
         if (session.isHardwareWallet) {
-            throw WalletAbiExecutionValidationException(
-                WalletAbiExecutionValidationError.HardwareWalletUnsupported
-            )
+            if (session.device?.isJade != true) {
+                throw WalletAbiExecutionValidationException(
+                    WalletAbiExecutionValidationError.HardwareWalletUnsupported
+                )
+            }
+            return
         }
 
         val mnemonic = runCatching { session.getCredentials().mnemonic }.getOrNull()

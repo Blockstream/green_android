@@ -9,7 +9,17 @@ data class WalletAbiExecutionContext(
     val requestNetwork: WalletAbiNetwork,
     val accounts: List<Account>,
     val primaryAccount: Account,
+    val signerBackend: WalletAbiSignerBackend,
 )
+
+sealed interface WalletAbiSignerBackend {
+    data object Software : WalletAbiSignerBackend
+
+    data class Jade(
+        val deviceId: String,
+        val deviceName: String,
+    ) : WalletAbiSignerBackend
+}
 
 class WalletAbiExecutionContextException(
     message: String,

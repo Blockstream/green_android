@@ -19,7 +19,7 @@ class WalletAbiExecutionContextResolver : WalletAbiExecutionContextResolving {
         requestNetwork: WalletAbiNetwork,
         preferredAccountId: String?,
     ): WalletAbiExecutionContext {
-        requireSoftwareSigner(session)
+        val signerBackend = resolveSignerBackend(session)
 
         fun currentAccounts() = (session.accounts.value + session.allAccounts.value)
             .distinctBy { it.id }
@@ -51,16 +51,26 @@ class WalletAbiExecutionContextResolver : WalletAbiExecutionContextResolving {
             requestNetwork = requestNetwork,
             accounts = accounts,
             primaryAccount = primaryAccount,
+            signerBackend = signerBackend,
         )
     }
 }
 
-suspend fun requireSoftwareSigner(session: GdkSession) {
+private suspend fun resolveSignerBackend(session: GdkSession): WalletAbiSignerBackend {
     if (!session.isConnected) {
         throw WalletAbiExecutionContextException("Wallet ABI requires a connected session")
     }
+
     if (session.isHardwareWallet) {
-        throw WalletAbiExecutionContextException("Wallet ABI v1 supports only mnemonic-backed wallets")
+        val device = session.device
+            ?: throw WalletAbiExecutionContextException("Wallet ABI hardware session has no connected device")
+        if (!device.isJade) {
+            throw WalletAbiExecutionContextException("Wallet ABI hardware support currently requires Jade")
+        }
+        return WalletAbiSignerBackend.Jade(
+            deviceId = device.connectionIdentifier,
+            deviceName = device.name,
+        )
     }
 
     val mnemonic = try {
@@ -75,6 +85,8 @@ suspend fun requireSoftwareSigner(session: GdkSession) {
     if (mnemonic.isNullOrBlank()) {
         throw WalletAbiExecutionContextException("Wallet ABI requires mnemonic credentials")
     }
+
+    return WalletAbiSignerBackend.Software
 }
 
 fun Account.walletAbiAccountIndex(): UInt {
