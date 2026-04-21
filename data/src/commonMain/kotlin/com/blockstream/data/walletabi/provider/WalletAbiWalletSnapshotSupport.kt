@@ -1,5 +1,6 @@
 package com.blockstream.data.walletabi.provider
 
+import co.touchlab.kermit.Logger
 import com.blockstream.data.gdk.GdkSession
 import com.blockstream.data.gdk.GreenJson
 import com.blockstream.data.gdk.data.Account
@@ -9,9 +10,15 @@ import com.blockstream.data.gdk.params.BroadcastTransactionParams
 import com.blockstream.data.gdk.params.TransactionParams
 import com.blockstream.data.jade.JadeHWWallet
 import com.blockstream.network.NetworkResponse
+import kotlinx.coroutines.async
+import kotlinx.coroutines.awaitAll
+import kotlinx.coroutines.coroutineScope
 import kotlinx.coroutines.runBlocking
+import kotlinx.coroutines.sync.Semaphore
+import kotlinx.coroutines.sync.withPermit
 import kotlinx.serialization.json.JsonElement
 import kotlinx.serialization.json.decodeFromJsonElement
+import kotlin.time.Clock
 import lwk.Address
 import lwk.AssetBlindingFactor
 import lwk.Chain
@@ -53,6 +60,11 @@ private const val WALLET_ABI_BASE58_RADIX = 58
 private const val WALLET_ABI_BASE58_ZERO_CHAR = '1'
 private const val WALLET_ABI_BASE58_ALPHABET =
     "123456789ABCDEFGHJKLMNPQRSTUVWXYZabcdefghijkmnopqrstuvwxyz"
+private const val WALLET_ABI_CHAIN_LOOKUP_CONCURRENCY = 4
+private const val WALLET_ABI_CHAIN_LOOKUP_CACHE_TTL_MS = 30_000L
+private const val WALLET_ABI_SLOW_CHAIN_LOOKUP_MS = 1_000L
+
+private val walletAbiSnapshotLogger = Logger.withTag("WalletAbiWalletSnapshotSupport")
 
 data class WalletAbiIndexedUtxo(
     val account: Account,
@@ -81,6 +93,56 @@ class WalletAbiUtxoIndex {
         loaded
     }
 }
+
+internal class WalletAbiOutspendsCache(
+    private val ttlMs: Long = WALLET_ABI_CHAIN_LOOKUP_CACHE_TTL_MS,
+    private val nowMs: () -> Long = { walletAbiNowMs() },
+) {
+    private val lock = Any()
+    private val entries = mutableMapOf<String, WalletAbiOutspendsCacheEntry>()
+
+    fun get(apiBaseUrl: String, txid: String): List<WalletAbiEsploraOutspend>? {
+        val key = cacheKey(apiBaseUrl, txid)
+        val now = nowMs()
+        return synchronized(lock) {
+            val entry = entries[key] ?: return@synchronized null
+            if (now - entry.createdAtMs > ttlMs) {
+                entries.remove(key)
+                null
+            } else {
+                entry.outspends
+            }
+        }
+    }
+
+    fun put(
+        apiBaseUrl: String,
+        txid: String,
+        outspends: List<WalletAbiEsploraOutspend>,
+    ) {
+        val key = cacheKey(apiBaseUrl, txid)
+        synchronized(lock) {
+            entries[key] = WalletAbiOutspendsCacheEntry(
+                createdAtMs = nowMs(),
+                outspends = outspends,
+            )
+        }
+    }
+
+    private fun cacheKey(apiBaseUrl: String, txid: String): String {
+        return "${apiBaseUrl.trim().trimEnd('/')}/$txid"
+    }
+}
+
+private data class WalletAbiOutspendsCacheEntry(
+    val createdAtMs: Long,
+    val outspends: List<WalletAbiEsploraOutspend>,
+)
+
+private data class WalletAbiOutspendsLookup(
+    val txid: String,
+    val apiBaseUrls: List<String>,
+)
 
 interface WalletAbiWalletSignerSupport {
     val maxWeightToSatisfy: UInt
@@ -209,6 +271,7 @@ class WalletAbiWalletSnapshotSupport(
     WalletAbiBroadcasterCallbacks {
     private val txOutCacheLock = Any()
     private val txOutCache = mutableMapOf<String, TxOut>()
+    private val outspendsCache = WalletAbiOutspendsCache()
     private val lightweightSessionLock = Any()
     private var lightweightSessionCount = 0
 
@@ -219,10 +282,16 @@ class WalletAbiWalletSnapshotSupport(
     }
 
     override fun openWalletRequestSession(): WalletAbiRequestSession {
-        val spendableUtxos = if (consumeLightweightRequestSession()) {
+        val startMs = walletAbiNowMs()
+        val useLightweightSession = consumeLightweightRequestSession()
+        val spendableUtxos = if (useLightweightSession) {
             emptyList()
         } else {
             runBlocking { buildSpendableUtxos() }
+        }
+        walletAbiSnapshotLogger.i {
+            "openWalletRequestSession lightweight=$useLightweightSession " +
+                "spendableUtxos=${spendableUtxos.size} elapsedMs=${walletAbiElapsedMs(startMs)}"
         }
         return WalletAbiRequestSession(
             sessionId = walletAbiGenerateRequestId(),
@@ -254,9 +323,7 @@ class WalletAbiWalletSnapshotSupport(
     override fun getTxOut(outpoint: OutPoint): TxOut {
         val outpointKey = outpoint.cacheKey()
 
-        synchronized(txOutCacheLock) {
-            txOutCache[outpointKey]?.let { return it }
-        }
+        cachedTxOut(outpointKey)?.let { return it }
 
         val resolvedTxOut = runBlocking {
             indexedUtxoOrNull(outpoint)?.let { indexed ->
@@ -264,10 +331,7 @@ class WalletAbiWalletSnapshotSupport(
             } ?: fetchTxOutFromEsplora(outpoint)
         } ?: throw LwkException.Generic("Wallet ABI txout not found for outpoint $outpointKey")
 
-        synchronized(txOutCacheLock) {
-            txOutCache[outpointKey] = resolvedTxOut
-        }
-        return resolvedTxOut
+        return rememberTxOut(outpointKey, resolvedTxOut)
     }
 
     override fun getWalletOutputTemplate(
@@ -312,13 +376,42 @@ class WalletAbiWalletSnapshotSupport(
         return utxoIndex.get(outpointKey)
     }
 
-    private suspend fun buildSpendableUtxos(): List<ExternalUtxo> {
-        return refreshIndexedUtxos().values.map { indexed ->
-            indexed.toExternalUtxo(
-                txOut = resolveTxOut(indexed),
-                maxWeightToSatisfy = signerSupport.maxWeightToSatisfy,
-            )
+    private fun cachedTxOut(outpointKey: String): TxOut? {
+        return synchronized(txOutCacheLock) {
+            txOutCache[outpointKey]
         }
+    }
+
+    private fun rememberTxOut(
+        outpointKey: String,
+        txOut: TxOut,
+    ): TxOut {
+        synchronized(txOutCacheLock) {
+            txOutCache[outpointKey] = txOut
+        }
+        return txOut
+    }
+
+    private suspend fun buildSpendableUtxos(): List<ExternalUtxo> = coroutineScope {
+        val startMs = walletAbiNowMs()
+        val indexedUtxos = refreshIndexedUtxos().values.toList()
+        val chainLookupSemaphore = Semaphore(WALLET_ABI_CHAIN_LOOKUP_CONCURRENCY)
+        val spendableUtxos = indexedUtxos.map { indexed ->
+            async {
+                chainLookupSemaphore.withPermit {
+                    indexed.toExternalUtxo(
+                        txOut = resolveTxOut(indexed),
+                        maxWeightToSatisfy = signerSupport.maxWeightToSatisfy,
+                    )
+                }
+            }
+        }.awaitAll()
+
+        walletAbiSnapshotLogger.i {
+            "buildSpendableUtxos indexedUtxos=${indexedUtxos.size} " +
+                "spendableUtxos=${spendableUtxos.size} elapsedMs=${walletAbiElapsedMs(startMs)}"
+        }
+        spendableUtxos
     }
 
     private fun consumeLightweightRequestSession(): Boolean {
@@ -333,57 +426,103 @@ class WalletAbiWalletSnapshotSupport(
     }
 
     private suspend fun refreshIndexedUtxos(): Map<String, WalletAbiIndexedUtxo> {
-        val outspendsCache = mutableMapOf<String, NetworkResponse<List<WalletAbiEsploraOutspend>>>()
-        val nextEntries = buildMap {
+        val startMs = walletAbiNowMs()
+        var rawUtxoCount = 0
+        val indexedUtxos = buildList {
             snapshotAccounts.forEach { account ->
+                val accountStartMs = walletAbiNowMs()
                 val unspentOutputs = session.getUnspentOutputs(account)
-                unspentOutputs.unspentOutputs.values.flatten().forEach { entry ->
+                val accountEntries = unspentOutputs.unspentOutputs.values.flatten()
+                rawUtxoCount += accountEntries.size
+                walletAbiSnapshotLogger.i {
+                    "getUnspentOutputs accountId=${account.id} utxos=${accountEntries.size} " +
+                        "elapsedMs=${walletAbiElapsedMs(accountStartMs)}"
+                }
+                accountEntries.forEach { entry ->
                     val io = decode<InputOutput>(entry)
                     val utxo = decode<Utxo>(entry)
-                    val indexed = WalletAbiIndexedUtxo(
-                        account = account,
-                        io = io.normalizeWalletAbi(account),
-                        utxo = utxo,
+                    add(
+                        WalletAbiIndexedUtxo(
+                            account = account,
+                            io = io.normalizeWalletAbi(account),
+                            utxo = utxo,
+                        ),
                     )
-                    if (isChainSpendable(indexed, outspendsCache)) {
-                        put(indexed.outpoint().cacheKey(), indexed)
-                    }
                 }
             }
         }
+        val spendableUtxos = filterSpendableIndexedUtxos(indexedUtxos)
+        val nextEntries = spendableUtxos.associateBy { indexed ->
+            indexed.outpoint().cacheKey()
+        }
 
         utxoIndex.replace(nextEntries)
+        walletAbiSnapshotLogger.i {
+            "refreshIndexedUtxos accounts=${snapshotAccounts.size} rawUtxos=$rawUtxoCount " +
+                "uniqueTxids=${indexedUtxos.mapNotNull { it.outpoint().txidHexOrNull() }.distinct().size} " +
+                "spendableUtxos=${nextEntries.size} elapsedMs=${walletAbiElapsedMs(startMs)}"
+        }
         return nextEntries
     }
 
-    private suspend fun isChainSpendable(
-        indexed: WalletAbiIndexedUtxo,
-        outspendsCache: MutableMap<String, NetworkResponse<List<WalletAbiEsploraOutspend>>>,
-    ): Boolean {
-        if (indexed.io.isSpent == true) {
-            return false
+    private suspend fun filterSpendableIndexedUtxos(
+        indexedUtxos: List<WalletAbiIndexedUtxo>,
+    ): List<WalletAbiIndexedUtxo> = coroutineScope {
+        val chainCandidates = indexedUtxos.filter { indexed ->
+            indexed.io.isSpent != true
         }
-
-        val txid = indexed.outpoint().txidHexOrNull() ?: return true
-        val vout = indexed.outpoint().vout().toInt()
-
-        indexed.account.network.walletAbiEsploraApiBaseUrls().forEach { apiBaseUrl ->
-            val cacheKey = "${apiBaseUrl.trim().trimEnd('/')}/$txid"
-            val response = outspendsCache.getOrPut(cacheKey) {
-                esploraHttpClient.getTransactionOutspends(apiBaseUrl, txid)
+        val lookups = chainCandidates.mapNotNull { indexed ->
+            val txid = indexed.outpoint().txidHexOrNull() ?: return@mapNotNull null
+            WalletAbiOutspendsLookup(
+                txid = txid,
+                apiBaseUrls = indexed.account.network.walletAbiEsploraApiBaseUrls(),
+            )
+        }.distinct()
+        val chainLookupSemaphore = Semaphore(WALLET_ABI_CHAIN_LOOKUP_CONCURRENCY)
+        val outspendsByLookup = lookups.map { lookup ->
+            async {
+                chainLookupSemaphore.withPermit {
+                    lookup to fetchTransactionOutspends(lookup)
+                }
             }
+        }.awaitAll().toMap()
+
+        chainCandidates.filter { indexed ->
+            val txid = indexed.outpoint().txidHexOrNull() ?: return@filter true
+            val lookup = WalletAbiOutspendsLookup(
+                txid = txid,
+                apiBaseUrls = indexed.account.network.walletAbiEsploraApiBaseUrls(),
+            )
+            val outspends = outspendsByLookup[lookup] ?: return@filter true
+            !walletAbiOutspendIsSpent(outspends, indexed.outpoint().vout().toInt())
+        }
+    }
+
+    private suspend fun fetchTransactionOutspends(
+        lookup: WalletAbiOutspendsLookup,
+    ): List<WalletAbiEsploraOutspend>? {
+        lookup.apiBaseUrls.forEach { apiBaseUrl ->
+            outspendsCache.get(apiBaseUrl, lookup.txid)?.let { return it }
+
+            val startMs = walletAbiNowMs()
+            val response = esploraHttpClient.getTransactionOutspends(apiBaseUrl, lookup.txid)
+            val elapsedMs = walletAbiElapsedMs(startMs)
+            logSlowChainLookup(
+                kind = "outspends",
+                apiBaseUrl = apiBaseUrl,
+                txid = lookup.txid,
+                elapsedMs = elapsedMs,
+            )
             when (response) {
                 is NetworkResponse.Success -> {
-                    if (walletAbiOutspendIsSpent(response.data, vout)) {
-                        return false
-                    }
+                    outspendsCache.put(apiBaseUrl, lookup.txid, response.data)
+                    return response.data
                 }
 
                 is NetworkResponse.Error -> Unit
             }
         }
-
-        return true
+        return null
     }
 
     private inline fun <reified T> decode(entry: JsonElement): T {
@@ -395,6 +534,9 @@ class WalletAbiWalletSnapshotSupport(
     }
 
     private suspend fun fetchTxOutFromEsplora(outpoint: OutPoint): TxOut? {
+        val outpointKey = outpoint.cacheKey()
+        cachedTxOut(outpointKey)?.let { return it }
+
         val txid = outpoint.txidHexOrNull() ?: return null
         val vout = outpoint.vout()
 
@@ -403,14 +545,24 @@ class WalletAbiWalletSnapshotSupport(
             .distinctBy { it.id }
             .forEach { network ->
                 network.walletAbiEsploraApiBaseUrls().forEach { apiBaseUrl ->
+                    val startMs = walletAbiNowMs()
                     val transactionHex = when (val response = esploraHttpClient.getTransactionHex(apiBaseUrl, txid)) {
                         is NetworkResponse.Success -> response.data.trim()
                         is NetworkResponse.Error -> null
+                    }.also {
+                        logSlowChainLookup(
+                            kind = "txhex",
+                            apiBaseUrl = apiBaseUrl,
+                            txid = txid,
+                            elapsedMs = walletAbiElapsedMs(startMs),
+                        )
                     } ?: return@forEach
 
                     val transaction = runCatching { Transaction.fromString(transactionHex) }.getOrNull()
                         ?: return@forEach
-                    transaction.outputs().getOrNull(vout.toInt())?.let { return it }
+                    transaction.outputs().getOrNull(vout.toInt())?.let { txOut ->
+                        return rememberTxOut(outpointKey, txOut)
+                    }
                 }
             }
 
@@ -433,20 +585,54 @@ class WalletAbiWalletSnapshotSupport(
     }
 
     private suspend fun resolveTxOut(indexed: WalletAbiIndexedUtxo): TxOut {
+        val outpoint = indexed.outpoint()
+        val outpointKey = outpoint.cacheKey()
+        cachedTxOut(outpointKey)?.let { return it }
+
         if (signerSupport.prefersChainTxOut) {
-            val outpointKey = indexed.outpoint().cacheKey()
+            if (!indexed.io.hasUnblindingData()) {
+                indexed.toWalletAbiExplicitTxOutOrNull()?.let { txOut ->
+                    return rememberTxOut(outpointKey, txOut)
+                }
+            }
             return walletAbiRequireJadeChainTxOut(
                 outpointKey = outpointKey,
-                txOut = fetchTxOutFromEsplora(indexed.outpoint()),
+                txOut = fetchTxOutFromEsplora(outpoint),
             )
         }
         if (!indexed.io.hasUnblindingData()) {
-            indexed.toWalletAbiExplicitTxOutOrNull()?.let { return it }
-            fetchTxOutFromWalletTransactions(indexed)?.let { return it }
+            indexed.toWalletAbiExplicitTxOutOrNull()?.let { txOut ->
+                return rememberTxOut(outpointKey, txOut)
+            }
+            fetchTxOutFromWalletTransactions(indexed)?.let { txOut ->
+                return rememberTxOut(outpointKey, txOut)
+            }
         }
-        fetchTxOutFromEsplora(indexed.outpoint())?.let { return it }
-        throw LwkException.Generic("Wallet ABI txout not found for outpoint ${indexed.outpoint().cacheKey()}")
+        fetchTxOutFromEsplora(outpoint)?.let { return it }
+        throw LwkException.Generic("Wallet ABI txout not found for outpoint $outpointKey")
     }
+
+    private fun logSlowChainLookup(
+        kind: String,
+        apiBaseUrl: String,
+        txid: String,
+        elapsedMs: Long,
+    ) {
+        if (elapsedMs >= WALLET_ABI_SLOW_CHAIN_LOOKUP_MS) {
+            walletAbiSnapshotLogger.w {
+                "slow $kind lookup base=${apiBaseUrl.trim().trimEnd('/')} " +
+                    "txid=${txid.take(12)} elapsedMs=$elapsedMs"
+            }
+        }
+    }
+}
+
+private fun walletAbiNowMs(): Long {
+    return Clock.System.now().toEpochMilliseconds().coerceAtLeast(0L)
+}
+
+private fun walletAbiElapsedMs(startMs: Long): Long {
+    return (walletAbiNowMs() - startMs).coerceAtLeast(0L)
 }
 
 internal fun walletAbiResolveTxOutFromTransactions(
@@ -612,7 +798,11 @@ private fun WalletAbiIndexedUtxo.outpoint(): OutPoint {
     return OutPoint.fromParts(Txid(txid), vout.toUInt())
 }
 
-private fun WalletAbiIndexedUtxo.toWalletAbiExplicitTxOutOrNull(): TxOut? {
+internal fun WalletAbiIndexedUtxo.toWalletAbiExplicitTxOutOrNull(): TxOut? {
+    if (io.isBlinded == true || io.isConfidential == true) {
+        return null
+    }
+
     val normalizedIo = io.copy(
         satoshi = io.satoshi ?: utxo.satoshi,
         assetId = io.assetId?.ifBlank { null } ?: utxo.assetId.ifBlank { null } ?: account.network.policyAsset,
