@@ -210,8 +210,8 @@ class WalletAbiWalletSnapshotSupport(
         )
     }
 
-    override fun getBip32DerivationPair(outpoint: OutPoint): WalletAbiBip32DerivationPair {
-        val indexed = runBlocking { indexedUtxo(outpoint) }
+    override fun getBip32DerivationPair(outpoint: OutPoint): WalletAbiBip32DerivationPair? {
+        val indexed = runBlocking { indexedUtxoOrNull(outpoint) } ?: return null
         val derivationPath = walletAbiDerivationPath(
             accountDerivationPath = indexed.account.derivationPath,
             io = indexed.io,
