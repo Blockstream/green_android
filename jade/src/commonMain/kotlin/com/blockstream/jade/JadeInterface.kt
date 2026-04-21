@@ -54,6 +54,12 @@ class JadeInterface internal constructor(private val connection: JadeConnection)
         return connection.drain()
     }
 
+    suspend fun <T> withRawTransport(block: suspend (JadeRawTransport) -> T): T = mutex.withLock {
+        val drained = drain()
+        logger.d { "Discarded ${drained.size} bytes before raw transport session" }
+        block(JadeRawTransport(connection))
+    }
+
     @Throws(Exception::class)
     suspend fun <R : Response<*, P>, P> makeRpcCall(
         request: Request<*, *>,

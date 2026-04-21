@@ -115,6 +115,10 @@ class JadeAPI internal constructor(
         jade.disconnect()
     }
 
+    suspend fun <T> withRawTransport(block: suspend (JadeRawTransport) -> T): T {
+        return jade.withRawTransport(block)
+    }
+
     @Throws(JadeError::class)
     private fun <T, P> resultOrThrow(
         request: Request<*, *>,

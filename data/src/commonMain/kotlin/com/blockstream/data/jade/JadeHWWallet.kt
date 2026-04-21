@@ -15,6 +15,7 @@ import com.blockstream.data.gdk.device.HwWalletLogin
 import com.blockstream.data.gdk.device.SignMessageResult
 import com.blockstream.data.gdk.device.SignTransactionResult
 import com.blockstream.jade.JadeAPI
+import com.blockstream.jade.JadeRawTransport
 import com.blockstream.jade.api.TxInput
 import com.blockstream.jade.api.VersionInfo
 import com.blockstream.jade.data.ChangeOutput
@@ -99,6 +100,12 @@ class JadeHWWallet constructor(
             mutex.withLock {
                 jade.disconnect()
             }
+        }
+    }
+
+    suspend fun <T> withWalletAbiRawTransport(block: suspend (JadeRawTransport) -> T): T {
+        return mutex.withLock {
+            jade.withRawTransport(block)
         }
     }
 
