@@ -145,7 +145,8 @@ class TransactViewModel(greenWallet: GreenWallet) : TransactViewModelAbstract(gr
     override val hasPendingWalletAbiWalletConnectRequest: StateFlow<Boolean> =
         walletAbiWalletConnectState
             .map { state ->
-                state.uiState.currentOverlay?.kind == WalletAbiWalletConnectOverlayKind.TRANSACTION_APPROVAL
+                state.preparingRequest != null ||
+                    state.uiState.currentOverlay?.kind == WalletAbiWalletConnectOverlayKind.TRANSACTION_APPROVAL
             }
             .stateIn(viewModelScope, SharingStarted.WhileSubscribed(5_000L), false)
 
@@ -389,6 +390,23 @@ private fun WalletAbiWalletConnectState.toCardLook(): WalletAbiWalletConnectCard
                 )
             }
         }
+    }
+
+    preparingRequest?.let { preparingRequest ->
+        val session = uiState.activeSessions.firstOrNull { it.topic == preparingRequest.topic }
+        return WalletAbiWalletConnectCardLook(
+            title = "Wallet ABI request",
+            subtitle = session?.peerName ?: preparingRequest.method,
+            body = buildString {
+                append("Preparing Wallet ABI review")
+                session?.peerName?.takeIf { it.isNotBlank() }?.let { peerName ->
+                    append(" from ")
+                    append(peerName)
+                }
+                append(".")
+            },
+            statusLabel = "Preparing",
+        )
     }
 
     val activeSession = uiState.activeSessions.firstOrNull() ?: return null
