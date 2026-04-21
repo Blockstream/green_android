@@ -17,6 +17,8 @@ import com.blockstream.jade.api.HandshakeInitRequest
 import com.blockstream.jade.api.HandshakeInitRequestParams
 import com.blockstream.jade.api.HttpRequest
 import com.blockstream.jade.api.HttpRequestResponseResult
+import com.blockstream.jade.api.IdentitySharedKeyRequest
+import com.blockstream.jade.api.IdentitySharedKeyRequestParams
 import com.blockstream.jade.api.JadeSerializer.Companion.jadeId
 import com.blockstream.jade.api.LogoutRequest
 import com.blockstream.jade.api.MasterBlindingKeyRequest
@@ -229,6 +231,24 @@ class JadeAPI internal constructor(
     @Throws(Exception::class)
     suspend fun getSharedNonce(script: ByteArray, pubkey: ByteArray): ByteArray {
         val request = SharedNonceRequest(params = SharedNonceRequestParams(script = script, theirPubKey = pubkey))
+        return jadeRpc(request, ByteArrayResponse.serializer())
+    }
+
+    @Throws(Exception::class)
+    suspend fun getIdentitySharedKey(
+        identity: String,
+        theirPubKey: ByteArray,
+        curve: String = "nist256p1",
+        index: Long? = null,
+    ): ByteArray {
+        val request = IdentitySharedKeyRequest(
+            params = IdentitySharedKeyRequestParams(
+                identity = identity,
+                curve = curve,
+                theirPubKey = theirPubKey,
+                index = index,
+            ),
+        )
         return jadeRpc(request, ByteArrayResponse.serializer())
     }
 
