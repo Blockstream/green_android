@@ -7,6 +7,7 @@ import com.blockstream.data.gdk.data.InputOutput
 import com.blockstream.data.gdk.data.Utxo
 import com.blockstream.data.gdk.params.BroadcastTransactionParams
 import com.blockstream.data.gdk.params.TransactionParams
+import com.blockstream.data.jade.JadeHWWallet
 import com.blockstream.network.NetworkResponse
 import kotlinx.coroutines.runBlocking
 import kotlinx.serialization.json.JsonElement
@@ -19,6 +20,7 @@ import lwk.LwkException
 import lwk.Mnemonic
 import lwk.OutPoint
 import lwk.Script
+import lwk.SecretKey
 import lwk.Signer
 import lwk.Transaction
 import lwk.TxOut
@@ -43,6 +45,14 @@ import lwk.Network as LwkNetwork
 import com.blockstream.data.gdk.data.Transaction as GdkTransaction
 
 private const val WALLET_ABI_HARDENED_BIT_LONG = 0x8000_0000L
+private const val WALLET_ABI_HARDENED_BIT_UINT = 0x8000_0000u
+private const val WALLET_ABI_XPUB_PAYLOAD_LENGTH = 78
+private const val WALLET_ABI_XPUB_PUBLIC_KEY_OFFSET = 45
+private const val WALLET_ABI_BASE58_CHECKSUM_LENGTH = 4
+private const val WALLET_ABI_BASE58_RADIX = 58
+private const val WALLET_ABI_BASE58_ZERO_CHAR = '1'
+private const val WALLET_ABI_BASE58_ALPHABET =
+    "123456789ABCDEFGHJKLMNPQRSTUVWXYZabcdefghijkmnopqrstuvwxyz"
 
 data class WalletAbiIndexedUtxo(
     val account: Account,
@@ -66,21 +76,25 @@ class WalletAbiUtxoIndex {
     }
 }
 
-class WalletAbiWalletSnapshotSupport(
-    private val session: GdkSession,
-    private val primaryAccount: Account,
-    private val snapshotAccounts: List<Account>,
-    private val lwkNetwork: LwkNetwork,
-    private val esploraHttpClient: WalletAbiEsploraHttpClient,
-    private val utxoIndex: WalletAbiUtxoIndex = WalletAbiUtxoIndex(),
-) : WalletAbiSessionFactoryCallbacks,
-    WalletAbiPrevoutResolverCallbacks,
-    WalletAbiOutputAllocatorCallbacks,
-    WalletAbiReceiveAddressProviderCallbacks,
-    WalletAbiBroadcasterCallbacks {
-    private val txOutCacheLock = Any()
-    private val txOutCache = mutableMapOf<String, TxOut>()
+interface WalletAbiWalletSignerSupport {
+    val maxWeightToSatisfy: UInt
 
+    fun getBip32DerivationPair(
+        account: Account,
+        io: InputOutput,
+        derivationPath: List<UInt>,
+    ): WalletAbiBip32DerivationPair
+
+    fun unblind(
+        txOut: TxOut,
+        policyAsset: String,
+    ): TxOutSecrets
+}
+
+private class WalletAbiSoftwareWalletSignerSupport(
+    session: GdkSession,
+    lwkNetwork: LwkNetwork,
+) : WalletAbiWalletSignerSupport {
     private val signer: Signer by lazy {
         val mnemonic = runBlocking {
             session.getCredentials().mnemonic
@@ -90,16 +104,102 @@ class WalletAbiWalletSnapshotSupport(
         Signer(Mnemonic(mnemonic), lwkNetwork)
     }
 
-    private val descriptor by lazy {
+    private val descriptor: WolletDescriptor by lazy {
         signer.wpkhSlip77Descriptor()
     }
 
-    private val maxWeightToSatisfy: UInt by lazy {
+    override val maxWeightToSatisfy: UInt by lazy {
         walletAbiMaxWeightToSatisfy(
             network = lwkNetwork,
             descriptor = descriptor,
         )
     }
+
+    override fun getBip32DerivationPair(
+        account: Account,
+        io: InputOutput,
+        derivationPath: List<UInt>,
+    ): WalletAbiBip32DerivationPair {
+        return walletAbiBip32DerivationPairFromSigner(signer, derivationPath)
+    }
+
+    override fun unblind(
+        txOut: TxOut,
+        policyAsset: String,
+    ): TxOutSecrets {
+        if (!txOut.isPartiallyBlinded()) {
+            return txOut.toWalletAbiExplicitSecrets(policyAsset)
+        }
+
+        val blindingKey = descriptor.deriveBlindingKey(txOut.scriptPubkey())
+            ?: throw LwkException.Generic("Wallet ABI failed to derive blinding key for txout")
+        return txOut.unblind(blindingKey)
+    }
+}
+
+class WalletAbiJadeWalletSignerSupport(
+    private val jadeWallet: JadeHWWallet,
+) : WalletAbiWalletSignerSupport {
+    override val maxWeightToSatisfy: UInt = 107u
+
+    override fun getBip32DerivationPair(
+        account: Account,
+        io: InputOutput,
+        derivationPath: List<UInt>,
+    ): WalletAbiBip32DerivationPair {
+        val masterXpub = jadeWallet.getXpubs(
+            network = account.network,
+            paths = listOf(emptyList()),
+            hwInteraction = null,
+        ).single()
+        val derivedXpub = jadeWallet.getXpubs(
+            network = account.network,
+            paths = listOf(derivationPath.map { it.toInt() }),
+            hwInteraction = null,
+        ).single()
+        val fingerprint = jadeWallet.wally.bip32Fingerprint(masterXpub)
+            ?: throw LwkException.Generic("Wallet ABI failed to derive Jade master fingerprint")
+
+        return WalletAbiBip32DerivationPair(
+            pubkey = derivedXpub.walletAbiXpubPublicKeyHex(),
+            keySource = "[$fingerprint]${derivationPath.walletAbiDerivationPathString()}",
+        )
+    }
+
+    override fun unblind(
+        txOut: TxOut,
+        policyAsset: String,
+    ): TxOutSecrets {
+        if (!txOut.isPartiallyBlinded()) {
+            return txOut.toWalletAbiExplicitSecrets(policyAsset)
+        }
+
+        val blindingKey = SecretKey.fromBytes(
+            jadeWallet.getBlindingKey(
+                scriptHex = txOut.scriptPubkey().toString(),
+                hwInteraction = null,
+            ).hexToByteArray(),
+        )
+        return txOut.unblind(blindingKey)
+    }
+}
+
+class WalletAbiWalletSnapshotSupport(
+    private val session: GdkSession,
+    private val primaryAccount: Account,
+    private val snapshotAccounts: List<Account>,
+    private val lwkNetwork: LwkNetwork,
+    private val esploraHttpClient: WalletAbiEsploraHttpClient,
+    private val utxoIndex: WalletAbiUtxoIndex = WalletAbiUtxoIndex(),
+    private val signerSupport: WalletAbiWalletSignerSupport =
+        WalletAbiSoftwareWalletSignerSupport(session, lwkNetwork),
+) : WalletAbiSessionFactoryCallbacks,
+    WalletAbiPrevoutResolverCallbacks,
+    WalletAbiOutputAllocatorCallbacks,
+    WalletAbiReceiveAddressProviderCallbacks,
+    WalletAbiBroadcasterCallbacks {
+    private val txOutCacheLock = Any()
+    private val txOutCache = mutableMapOf<String, TxOut>()
 
     override fun openWalletRequestSession(): WalletAbiRequestSession {
         val spendableUtxos = runBlocking { buildSpendableUtxos() }
@@ -119,17 +219,15 @@ class WalletAbiWalletSnapshotSupport(
             "Wallet ABI derivation path unavailable for outpoint ${outpoint.cacheKey()}",
         )
 
-        return walletAbiBip32DerivationPairFromSigner(signer, derivationPath)
+        return signerSupport.getBip32DerivationPair(
+            account = indexed.account,
+            io = indexed.io,
+            derivationPath = derivationPath,
+        )
     }
 
     override fun unblind(txOut: TxOut): TxOutSecrets {
-        if (!txOut.isPartiallyBlinded()) {
-            return txOut.toWalletAbiExplicitSecrets(primaryAccount.network.policyAsset)
-        }
-
-        val blindingKey = descriptor.deriveBlindingKey(txOut.scriptPubkey())
-            ?: throw LwkException.Generic("Wallet ABI failed to derive blinding key for txout")
-        return txOut.unblind(blindingKey)
+        return signerSupport.unblind(txOut, primaryAccount.network.policyAsset)
     }
 
     override fun getTxOut(outpoint: OutPoint): TxOut {
@@ -194,7 +292,7 @@ class WalletAbiWalletSnapshotSupport(
         return refreshIndexedUtxos().values.map { indexed ->
             indexed.toExternalUtxo(
                 txOut = resolveTxOut(indexed),
-                maxWeightToSatisfy = maxWeightToSatisfy,
+                maxWeightToSatisfy = signerSupport.maxWeightToSatisfy,
             )
         }
     }
@@ -522,6 +620,63 @@ private fun WalletAbiIndexedUtxo.toExternalUtxo(
         toTxOutSecrets(),
         maxWeightToSatisfy,
     )
+}
+
+private fun String.walletAbiXpubPublicKeyHex(): String {
+    val payload = walletAbiBase58CheckDecode()
+    if (payload.size != WALLET_ABI_XPUB_PAYLOAD_LENGTH) {
+        throw LwkException.Generic("Wallet ABI invalid xpub payload length ${payload.size}")
+    }
+    return payload.copyOfRange(
+        WALLET_ABI_XPUB_PUBLIC_KEY_OFFSET,
+        WALLET_ABI_XPUB_PAYLOAD_LENGTH,
+    ).toHexString()
+}
+
+private fun List<UInt>.walletAbiDerivationPathString(): String {
+    return joinToString("/") { child ->
+        val hardened = child >= WALLET_ABI_HARDENED_BIT_UINT
+        val index = if (hardened) {
+            child - WALLET_ABI_HARDENED_BIT_UINT
+        } else {
+            child
+        }
+        if (hardened) {
+            "$index'"
+        } else {
+            index.toString()
+        }
+    }
+}
+
+private fun String.walletAbiBase58CheckDecode(): ByteArray {
+    val raw = walletAbiBase58Decode()
+    if (raw.size < WALLET_ABI_BASE58_CHECKSUM_LENGTH) {
+        throw LwkException.Generic("Wallet ABI invalid base58check payload")
+    }
+    return raw.copyOf(raw.size - WALLET_ABI_BASE58_CHECKSUM_LENGTH)
+}
+
+private fun String.walletAbiBase58Decode(): ByteArray {
+    var output = byteArrayOf()
+    for (char in this) {
+        var carry = WALLET_ABI_BASE58_ALPHABET.indexOf(char)
+        if (carry < 0) {
+            throw LwkException.Generic("Wallet ABI invalid base58 character '$char'")
+        }
+        for (index in output.indices.reversed()) {
+            val value = (output[index].toInt() and 0xff) * WALLET_ABI_BASE58_RADIX + carry
+            output[index] = value.toByte()
+            carry = value shr 8
+        }
+        while (carry > 0) {
+            output = byteArrayOf((carry and 0xff).toByte()) + output
+            carry = carry shr 8
+        }
+    }
+
+    val leadingZeros = takeWhile { it == WALLET_ABI_BASE58_ZERO_CHAR }.length
+    return ByteArray(leadingZeros) + output.dropWhile { it == 0.toByte() }.toByteArray()
 }
 
 private fun TxOut.toWalletAbiExplicitSecrets(policyAsset: String): TxOutSecrets {
