@@ -53,7 +53,7 @@ fun SettingsItem(
             if (it.isNotBlank()) {
                 Text(
                     text = it,
-                    style = MaterialTheme.typography.bodyLarge,
+                    style = MaterialTheme.typography.bodyMedium,
                     color = bodyColor,
                     maxLines = subtitleMaxLines,
                     overflow = TextOverflow.Ellipsis,

@@ -32,7 +32,10 @@ fun PersonalElectrumServerSection(
     viewModel: AppSettingsViewModelAbstract,
     testnetEnabled: Boolean,
     autoSaveOnBooleanChange: (MutableStateFlow<Boolean>) -> (Boolean) -> Unit,
-    autoSaveOnStringChange: (MutableStateFlow<String>) -> (String) -> Unit,
+    autoSaveOnStringChange: (
+        MutableStateFlow<String>,
+        errorStateFlow: MutableStateFlow<String?>?
+    ) -> (String) -> Unit,
 ) {
     val focusManager = LocalFocusManager.current
 
@@ -41,7 +44,12 @@ fun PersonalElectrumServerSection(
     val personalLiquidElectrumServer by viewModel.personalLiquidElectrumServer.collectAsStateWithLifecycle()
     val personalTestnetElectrumServer by viewModel.personalTestnetElectrumServer.collectAsStateWithLifecycle()
     val personalTestnetLiquidElectrumServer by viewModel.personalTestnetLiquidElectrumServer.collectAsStateWithLifecycle()
-    
+    val bitcoinError by viewModel.personalBitcoinElectrumServerError.collectAsStateWithLifecycle()
+    val liquidError by viewModel.personalLiquidElectrumServerError.collectAsStateWithLifecycle()
+
+    val testnetBitcoinError by viewModel.personalTestnetElectrumServerError.collectAsStateWithLifecycle()
+    val testnetLiquidError by viewModel.personalTestnetLiquidElectrumServerError.collectAsStateWithLifecycle()
+
     Card(
         colors = CardDefaults.cardColors(
             containerColor = MaterialTheme.colorScheme.outline
@@ -65,10 +73,17 @@ fun PersonalElectrumServerSection(
                 content = {
                     OutlinedTextField(
                         value = personalBitcoinElectrumServer,
-                        onValueChange = autoSaveOnStringChange(viewModel.personalBitcoinElectrumServer),
+                        onValueChange = autoSaveOnStringChange(
+                            viewModel.personalBitcoinElectrumServer,
+                            viewModel.personalBitcoinElectrumServerError
+                        ),
                         modifier = Modifier.fillMaxWidth().appTestTag("bitcoin_electrum_server_textfield"),
                         placeholder = { Text(AppSettingsViewModelAbstract.DEFAULT_BITCOIN_ELECTRUM_URL) },
                         singleLine = true,
+                        isError = bitcoinError != null,
+                        supportingText = {
+                            if (bitcoinError != null) Text(bitcoinError!!)
+                        },
                         keyboardOptions = KeyboardOptions.Default.copy(
                             imeAction = ImeAction.Done
                         ),
@@ -80,7 +95,10 @@ fun PersonalElectrumServerSection(
                         trailingIcon = {
                             TextInputPaste(
                                 state = viewModel.personalBitcoinElectrumServer,
-                                onValueChange = autoSaveOnStringChange(viewModel.personalBitcoinElectrumServer)
+                                onValueChange = autoSaveOnStringChange(
+                                    viewModel.personalBitcoinElectrumServer,
+                                    viewModel.personalBitcoinElectrumServerError
+                                )
                             )
                         }
                     )
@@ -92,10 +110,17 @@ fun PersonalElectrumServerSection(
                 content = {
                     OutlinedTextField(
                         value = personalLiquidElectrumServer,
-                        onValueChange = autoSaveOnStringChange(viewModel.personalLiquidElectrumServer),
+                        onValueChange = autoSaveOnStringChange(
+                            viewModel.personalLiquidElectrumServer,
+                            viewModel.personalLiquidElectrumServerError
+                        ),
                         modifier = Modifier.fillMaxWidth().appTestTag("liquid_electrum_server_textfield"),
                         placeholder = { Text(AppSettingsViewModelAbstract.DEFAULT_LIQUID_ELECTRUM_URL) },
                         singleLine = true,
+                        isError = liquidError != null,
+                        supportingText = {
+                            if (liquidError != null) Text(liquidError!!)
+                        },
                         keyboardOptions = KeyboardOptions.Default.copy(
                             imeAction = ImeAction.Done
                         ),
@@ -107,7 +132,10 @@ fun PersonalElectrumServerSection(
                         trailingIcon = {
                             TextInputPaste(
                                 state = viewModel.personalLiquidElectrumServer,
-                                onValueChange = autoSaveOnStringChange(viewModel.personalLiquidElectrumServer)
+                                onValueChange = autoSaveOnStringChange(
+                                    viewModel.personalLiquidElectrumServer,
+                                    viewModel.personalLiquidElectrumServerError
+                                )
                             )
                         }
                     )
@@ -120,7 +148,16 @@ fun PersonalElectrumServerSection(
                     content = {
                         OutlinedTextField(
                             value = personalTestnetElectrumServer,
-                            onValueChange = autoSaveOnStringChange(viewModel.personalTestnetElectrumServer),
+                            onValueChange = autoSaveOnStringChange(
+                                viewModel.personalTestnetElectrumServer,
+                                viewModel.personalTestnetElectrumServerError
+                            ),
+                            isError = testnetBitcoinError != null,
+                            supportingText = {
+                                if (testnetBitcoinError != null) {
+                                    Text(testnetBitcoinError!!)
+                                }
+                            },
                             modifier = Modifier.fillMaxWidth().appTestTag("bitcoin_testnet_electrum_server_textfield"),
                             placeholder = { Text(AppSettingsViewModelAbstract.DEFAULT_TESTNET_ELECTRUM_URL) },
                             singleLine = true,
@@ -135,7 +172,10 @@ fun PersonalElectrumServerSection(
                             trailingIcon = {
                                 TextInputPaste(
                                     state = viewModel.personalTestnetElectrumServer,
-                                    onValueChange = autoSaveOnStringChange(viewModel.personalTestnetElectrumServer)
+                                    onValueChange = autoSaveOnStringChange(
+                                        viewModel.personalTestnetElectrumServer,
+                                        viewModel.personalTestnetElectrumServerError
+                                    )
                                 )
                             }
                         )
@@ -147,7 +187,16 @@ fun PersonalElectrumServerSection(
                     content = {
                         OutlinedTextField(
                             value = personalTestnetLiquidElectrumServer,
-                            onValueChange = autoSaveOnStringChange(viewModel.personalTestnetLiquidElectrumServer),
+                            onValueChange = autoSaveOnStringChange(
+                                viewModel.personalTestnetLiquidElectrumServer,
+                                viewModel.personalTestnetLiquidElectrumServerError
+                            ),
+                            isError = testnetLiquidError != null,
+                            supportingText = {
+                                if (testnetLiquidError != null) {
+                                    Text(testnetLiquidError!!)
+                                }
+                            },
                             modifier = Modifier.fillMaxWidth().appTestTag("liquid_testnet_electrum_server_textfield"),
                             placeholder = { Text(AppSettingsViewModelAbstract.DEFAULT_TESTNET_LIQUID_ELECTRUM_URL) },
                             singleLine = true,
@@ -162,7 +211,10 @@ fun PersonalElectrumServerSection(
                             trailingIcon = {
                                 TextInputPaste(
                                     state = viewModel.personalTestnetLiquidElectrumServer,
-                                    onValueChange = autoSaveOnStringChange(viewModel.personalTestnetLiquidElectrumServer)
+                                    onValueChange = autoSaveOnStringChange(
+                                        viewModel.personalTestnetLiquidElectrumServer,
+                                        viewModel.personalTestnetLiquidElectrumServerError
+                                    )
                                 )
                             }
                         )

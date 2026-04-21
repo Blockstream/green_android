@@ -3,6 +3,10 @@ package com.blockstream.compose.models.settings
 import androidx.lifecycle.viewModelScope
 import blockstream_green.common.generated.resources.Res
 import blockstream_green.common.generated.resources.id_app_settings
+import blockstream_green.common.generated.resources.id_applies_to_every_wallet
+import blockstream_green.common.generated.resources.id_enter_a_valid_proxy_addres
+import blockstream_green.common.generated.resources.id_invalid_gap_limit
+import blockstream_green.common.generated.resources.id_invalid_server_address_format
 import com.blockstream.compose.events.Event
 import com.blockstream.compose.events.Events
 import com.blockstream.compose.models.GreenViewModel
@@ -12,15 +16,21 @@ import com.blockstream.compose.sideeffects.SideEffect
 import com.blockstream.compose.sideeffects.SideEffects
 import com.blockstream.data.data.ApplicationSettings
 import com.blockstream.data.data.ScreenLockSetting
+import com.blockstream.data.extensions.isHostPortUrlValid
 import com.blockstream.data.extensions.isNotBlank
 import com.blockstream.data.gdk.events.GenericEvent
 import com.blockstream.data.managers.LocaleManager
 import com.blockstream.data.managers.Locales
 import com.blockstream.utils.Loggable
+import kotlinx.coroutines.FlowPreview
+import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.combine
+import kotlinx.coroutines.flow.debounce
 import kotlinx.coroutines.flow.launchIn
+import kotlinx.coroutines.flow.onEach
 import kotlinx.coroutines.launch
+import org.jetbrains.compose.resources.StringResource
 import org.jetbrains.compose.resources.getString
 import org.koin.core.component.inject
 
@@ -38,6 +48,7 @@ abstract class AppSettingsViewModelAbstract() :
     abstract val torEnabled: MutableStateFlow<Boolean>
     abstract val proxyEnabled: MutableStateFlow<Boolean>
     abstract val proxyUrl: MutableStateFlow<String>
+    abstract val proxyUrlError: MutableStateFlow<String?>
     abstract val rememberHardwareDevices: MutableStateFlow<Boolean>
     abstract val testnetEnabled: MutableStateFlow<Boolean>
     abstract val experimentalFeaturesEnabled: MutableStateFlow<Boolean>
@@ -45,18 +56,32 @@ abstract class AppSettingsViewModelAbstract() :
     abstract val electrumNodeEnabled: MutableStateFlow<Boolean>
     abstract val personalElectrumServerTlsEnabled: MutableStateFlow<Boolean>
     abstract val personalBitcoinElectrumServer: MutableStateFlow<String>
+    abstract val personalBitcoinElectrumServerError: MutableStateFlow<String?>
     abstract val personalLiquidElectrumServer: MutableStateFlow<String>
+    abstract val personalLiquidElectrumServerError: MutableStateFlow<String?>
     abstract val personalTestnetElectrumServer: MutableStateFlow<String>
+    abstract val personalTestnetElectrumServerError: MutableStateFlow<String?>
     abstract val personalTestnetLiquidElectrumServer: MutableStateFlow<String>
+    abstract val personalTestnetLiquidElectrumServerError: MutableStateFlow<String?>
     abstract val electrumServerGapLimit: MutableStateFlow<String>
+    abstract val electrumServerGapLimitError: MutableStateFlow<String?>
     abstract val locales: MutableStateFlow<Map<String?, String?>>
     abstract val locale: MutableStateFlow<String?>
 
+    abstract fun onResetProxySettings()
+    abstract fun onResetElectrumServerSettings()
+    abstract fun onResetGapLimit()
+
     companion object {
+        const val SCAN_GAP_LIMIT_MIN = 1
+        const val SCAN_GAP_LIMIT_MAX = 1000
+        const val DEFAULT_SCAN_GAP_LIMIT = "20"
         const val DEFAULT_BITCOIN_ELECTRUM_URL = "blockstream.info:700"
         const val DEFAULT_LIQUID_ELECTRUM_URL = "blockstream.info:995"
         const val DEFAULT_TESTNET_ELECTRUM_URL = "blockstream.info:993"
         const val DEFAULT_TESTNET_LIQUID_ELECTRUM_URL = "blockstream.info:465"
+
+        const val DEFAULT_IP_AND_PORT = "192.168.1.10:9050"
 
         const val DEFAULT_MULTI_SPV_BITCOIN_URL = "electrum.blockstream.info:50002"
         const val DEFAULT_MULTI_SPV_LIQUID_URL = "blockstream.info:995"
@@ -80,6 +105,7 @@ class AppSettingsViewModel : AppSettingsViewModelAbstract() {
     override val torEnabled = MutableStateFlow(appSettings.tor)
     override val proxyEnabled = MutableStateFlow(appSettings.proxyUrl.isNotBlank())
     override val proxyUrl = MutableStateFlow(appSettings.proxyUrl ?: "")
+    override val proxyUrlError = MutableStateFlow<String?>(null)
     override val rememberHardwareDevices = MutableStateFlow(appSettings.rememberHardwareDevices)
     override val testnetEnabled = MutableStateFlow(appSettings.testnet)
     override val experimentalFeaturesEnabled = MutableStateFlow(appSettings.experimentalFeatures)
@@ -90,15 +116,21 @@ class AppSettingsViewModel : AppSettingsViewModelAbstract() {
         MutableStateFlow(appSettings.personalElectrumServerTls)
     override val personalBitcoinElectrumServer: MutableStateFlow<String> =
         MutableStateFlow(appSettings.personalBitcoinElectrumServer ?: "")
+    override val personalBitcoinElectrumServerError = MutableStateFlow<String?>(null)
+
     override val personalLiquidElectrumServer: MutableStateFlow<String> =
         MutableStateFlow(appSettings.personalLiquidElectrumServer ?: "")
+    override val personalLiquidElectrumServerError = MutableStateFlow<String?>(null)
+    override val personalTestnetElectrumServerError = MutableStateFlow<String?>(null)
     override val personalTestnetElectrumServer: MutableStateFlow<String> =
         MutableStateFlow(appSettings.personalTestnetElectrumServer ?: "")
     override val personalTestnetLiquidElectrumServer: MutableStateFlow<String> =
         MutableStateFlow(appSettings.personalTestnetLiquidElectrumServer ?: "")
+    override val personalTestnetLiquidElectrumServerError = MutableStateFlow<String?>(null)
 
     override val electrumServerGapLimit: MutableStateFlow<String> =
-        MutableStateFlow("${appSettings.electrumServerGapLimit ?: "20"}")
+        MutableStateFlow("${appSettings.electrumServerGapLimit ?: DEFAULT_SCAN_GAP_LIMIT}")
+    override val electrumServerGapLimitError: MutableStateFlow<String?> = MutableStateFlow(null)
     override val locales = MutableStateFlow(Locales)
     override val locale: MutableStateFlow<String?> = MutableStateFlow(localeManager.getLocale())
 
@@ -113,10 +145,20 @@ class AppSettingsViewModel : AppSettingsViewModelAbstract() {
         object UnsavedAppSettings : SideEffect
     }
 
+    private data class HostPortUrlField(
+        val url: MutableStateFlow<String>,
+        val errorState: MutableStateFlow<String?>,
+        val errorRes: StringResource
+    )
+
     init {
 
         viewModelScope.launch {
-            _navData.value = NavData(title = getString(Res.string.id_app_settings))
+            _navData.value = NavData(
+                title = getString(Res.string.id_app_settings),
+                subtitle = getString(Res.string.id_applies_to_every_wallet),
+                isCentered = true,
+            )
             database.insertEvent(GenericEvent(deviceId = settingsManager.getCountlyDeviceId()).sha256(), randomInsert = true)
         }
 
@@ -141,7 +183,97 @@ class AppSettingsViewModel : AppSettingsViewModelAbstract() {
             _navData.value = _navData.value.copy(backHandlerEnabled = areSettingsDirty())
         }.launchIn(viewModelScope)
 
+        setupHostPortUrlValidation(
+            enabled = proxyEnabled,
+            fields = listOf(
+                HostPortUrlField(
+                    proxyUrl,
+                    proxyUrlError,
+                    Res.string.id_enter_a_valid_proxy_addres
+                )
+            )
+        )
+
+        setupHostPortUrlValidation(
+            enabled = electrumNodeEnabled,
+            fields = listOf(
+                HostPortUrlField(
+                    personalBitcoinElectrumServer,
+                    personalBitcoinElectrumServerError,
+                    Res.string.id_invalid_server_address_format
+                ),
+                HostPortUrlField(
+                    personalLiquidElectrumServer,
+                    personalLiquidElectrumServerError,
+                    Res.string.id_invalid_server_address_format
+                )
+            )
+        )
+
+        val testnetServersEnabled = combine(
+            electrumNodeEnabled,
+            testnetEnabled
+        ) { node, testnet -> node && testnet }
+
+        setupHostPortUrlValidation(
+            enabled = testnetServersEnabled,
+            fields = listOf(
+                HostPortUrlField(
+                    personalTestnetElectrumServer,
+                    personalTestnetElectrumServerError,
+                    Res.string.id_invalid_server_address_format
+                ),
+                HostPortUrlField(
+                    personalTestnetLiquidElectrumServer,
+                    personalTestnetLiquidElectrumServerError,
+                    Res.string.id_invalid_server_address_format
+                )
+            )
+        )
+
+        setupGapLimitValidation()
+
         bootstrap()
+    }
+
+    private fun String.isGapLimitValid(): Boolean {
+        if (this.isBlank()) return true
+        val value = this.toIntOrNull()
+        return value != null && value in SCAN_GAP_LIMIT_MIN..SCAN_GAP_LIMIT_MAX
+    }
+
+    @OptIn(FlowPreview::class)
+    private fun setupHostPortUrlValidation(
+        enabled: Flow<Boolean>,
+        fields: List<HostPortUrlField>
+    ) {
+        fields.forEach { field ->
+            combine(enabled, field.url) { isEnabled, text -> isEnabled to text }
+                .debounce(500)
+                .onEach { (isEnabled, text) ->
+                    if (!isEnabled || text.isBlank()) {
+                        field.errorState.value = null
+                        return@onEach
+                    }
+                    val isInvalid = isEnabled && text.isHostPortUrlValid().not()
+                    field.errorState.value = if (isInvalid) getString(field.errorRes) else null
+                }.launchIn(viewModelScope)
+        }
+    }
+
+    @OptIn(FlowPreview::class)
+    private fun setupGapLimitValidation() {
+        electrumServerGapLimit.debounce(500).onEach { limit ->
+            if (limit.isGapLimitValid()) {
+                electrumServerGapLimitError.value = null
+            } else {
+                electrumServerGapLimitError.value = getString(
+                    Res.string.id_invalid_gap_limit,
+                    SCAN_GAP_LIMIT_MIN,
+                    SCAN_GAP_LIMIT_MAX
+                )
+            }
+        }.launchIn(viewModelScope)
     }
 
     override suspend fun handleEvent(event: Event) {
@@ -180,23 +312,84 @@ class AppSettingsViewModel : AppSettingsViewModelAbstract() {
         analytics = analyticsEnabled.value,
         experimentalFeatures = experimentalFeaturesEnabled.value,
         locale = locale.value,
-        proxyUrl = proxyUrl.value.takeIf { it.isNotBlank() && proxyEnabled.value },
         rememberHardwareDevices = rememberHardwareDevices.value,
         electrumNode = electrumNodeEnabled.value,
         tor = torEnabled.value,
-        electrumServerGapLimit = electrumServerGapLimit.value.takeIf { it.isNotBlank() && it != "20" }?.toIntOrNull(),
+        personalElectrumServerTls = personalElectrumServerTlsEnabled.value,
+
+        proxyUrl = if (!proxyEnabled.value) {
+            null
+        } else if (proxyUrl.value.isHostPortUrlValid()) {
+            proxyUrl.value
+        } else {
+            appSettings.proxyUrl
+        },
 
         // use null value as a reset to re-set the default urls and blank as a way to disabled it for a specific network
-        personalBitcoinElectrumServer = personalBitcoinElectrumServer.value.takeIf { electrumNodeEnabled.value },
-        personalLiquidElectrumServer = personalLiquidElectrumServer.value.takeIf { electrumNodeEnabled.value },
-        personalTestnetElectrumServer = personalTestnetElectrumServer.value.takeIf { electrumNodeEnabled.value },
-        personalTestnetLiquidElectrumServer = personalTestnetLiquidElectrumServer.value.takeIf { electrumNodeEnabled.value },
+        electrumServerGapLimit = if (electrumServerGapLimit.value.isGapLimitValid()) {
+            val text = electrumServerGapLimit.value
+            if (text.isBlank() || text == DEFAULT_SCAN_GAP_LIMIT) null else text.toIntOrNull()
+        } else {
+            appSettings.electrumServerGapLimit
+        },
 
-        personalElectrumServerTls = personalElectrumServerTlsEnabled.value,
+        personalBitcoinElectrumServer = if (!electrumNodeEnabled.value) {
+            null
+        } else if (personalBitcoinElectrumServer.value.isHostPortUrlValid()) {
+            personalBitcoinElectrumServer.value
+        } else {
+            appSettings.personalBitcoinElectrumServer
+        },
+
+        personalLiquidElectrumServer = if (!electrumNodeEnabled.value) {
+            null
+        } else if (personalLiquidElectrumServer.value.isHostPortUrlValid()) {
+            personalLiquidElectrumServer.value
+        } else {
+            appSettings.personalLiquidElectrumServer
+        },
+
+        personalTestnetElectrumServer = if (!electrumNodeEnabled.value || !testnetEnabled.value) {
+            null
+        } else if (personalTestnetElectrumServer.value.isHostPortUrlValid()) {
+            personalTestnetElectrumServer.value
+        } else {
+            appSettings.personalTestnetElectrumServer
+        },
+
+        personalTestnetLiquidElectrumServer = if (!electrumNodeEnabled.value || !testnetEnabled.value) {
+            null
+        } else if (personalTestnetLiquidElectrumServer.value.isHostPortUrlValid()) {
+            personalTestnetLiquidElectrumServer.value
+        } else {
+            appSettings.personalTestnetLiquidElectrumServer
+        }
     )
 
     private fun areSettingsDirty(): Boolean {
         return getSettings() != appSettings
+    }
+
+    override fun onResetProxySettings() {
+        proxyUrl.value = ""
+        proxyUrlError.value = null
+    }
+
+    override fun onResetElectrumServerSettings() {
+        personalBitcoinElectrumServer.value = ""
+        personalBitcoinElectrumServerError.value = null
+        personalLiquidElectrumServer.value = ""
+        personalLiquidElectrumServerError.value = null
+        personalTestnetElectrumServer.value = ""
+        personalTestnetElectrumServerError.value = null
+        personalTestnetLiquidElectrumServer.value = ""
+        personalTestnetLiquidElectrumServerError.value = null
+        personalElectrumServerTlsEnabled.value = false
+    }
+
+    override fun onResetGapLimit() {
+        electrumServerGapLimit.value = DEFAULT_SCAN_GAP_LIMIT
+        electrumServerGapLimitError.value = null
     }
 
     companion object : Loggable()
@@ -217,6 +410,7 @@ class AppSettingsViewModelPreview(initValue: Boolean = false) : AppSettingsViewM
     override val torEnabled: MutableStateFlow<Boolean> = MutableStateFlow(initValue)
     override val proxyEnabled: MutableStateFlow<Boolean> = MutableStateFlow(initValue)
     override val proxyUrl: MutableStateFlow<String> = MutableStateFlow("")
+    override val proxyUrlError: MutableStateFlow<String?> = MutableStateFlow(null)
     override val rememberHardwareDevices: MutableStateFlow<Boolean> = MutableStateFlow(true)
     override val testnetEnabled: MutableStateFlow<Boolean> = MutableStateFlow(initValue)
     override val experimentalFeaturesEnabled: MutableStateFlow<Boolean> = MutableStateFlow(initValue)
@@ -224,10 +418,18 @@ class AppSettingsViewModelPreview(initValue: Boolean = false) : AppSettingsViewM
     override val electrumNodeEnabled: MutableStateFlow<Boolean> = MutableStateFlow(initValue)
     override val personalElectrumServerTlsEnabled: MutableStateFlow<Boolean> = MutableStateFlow(initValue)
     override val personalBitcoinElectrumServer: MutableStateFlow<String> = MutableStateFlow("")
+    override val personalBitcoinElectrumServerError: MutableStateFlow<String?> = MutableStateFlow(null)
     override val personalLiquidElectrumServer: MutableStateFlow<String> = MutableStateFlow("")
+    override val personalLiquidElectrumServerError: MutableStateFlow<String?> = MutableStateFlow(null)
     override val personalTestnetElectrumServer: MutableStateFlow<String> = MutableStateFlow("")
+    override val personalTestnetElectrumServerError: MutableStateFlow<String?> = MutableStateFlow(null)
     override val personalTestnetLiquidElectrumServer: MutableStateFlow<String> = MutableStateFlow("")
+    override val personalTestnetLiquidElectrumServerError: MutableStateFlow<String?> = MutableStateFlow(null)
     override val electrumServerGapLimit: MutableStateFlow<String> = MutableStateFlow("")
+    override val electrumServerGapLimitError: MutableStateFlow<String?> = MutableStateFlow(null)
     override val locales: MutableStateFlow<Map<String?, String?>> = MutableStateFlow(mapOf("en" to "English"))
     override val locale: MutableStateFlow<String?> = MutableStateFlow("en")
+    override fun onResetProxySettings() {}
+    override fun onResetElectrumServerSettings() {}
+    override fun onResetGapLimit() {}
 }

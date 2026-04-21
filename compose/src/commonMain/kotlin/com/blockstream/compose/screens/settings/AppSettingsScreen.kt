@@ -3,7 +3,6 @@
 package com.blockstream.compose.screens.settings
 
 import androidx.compose.animation.AnimatedVisibility
-import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxWidth
@@ -13,8 +12,8 @@ import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.text.KeyboardActions
 import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.foundation.verticalScroll
-import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.Clear
+import androidx.compose.material3.Card
+import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.DropdownMenuItem
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.ExposedDropdownMenuBox
@@ -46,28 +45,33 @@ import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import blockstream_green.common.generated.resources.Res
+import blockstream_green.common.generated.resources.id_address_scan_limit
 import blockstream_green.common.generated.resources.id_advanced
+import blockstream_green.common.generated.resources.id_allow_tesnet_wallets
+import blockstream_green.common.generated.resources.id_allowed_range
 import blockstream_green.common.generated.resources.id_connect_through_a_proxy
 import blockstream_green.common.generated.resources.id_connect_with_tor
+import blockstream_green.common.generated.resources.id_custom_network_route
+import blockstream_green.common.generated.resources.id_custom_server_gap_limit
 import blockstream_green.common.generated.resources.id_custom_server_settings
-import blockstream_green.common.generated.resources.id_electrum_server_gap_limit
 import blockstream_green.common.generated.resources.id_enable_experimental_features
 import blockstream_green.common.generated.resources.id_enable_limited_usage_data
 import blockstream_green.common.generated.resources.id_enable_testnet
 import blockstream_green.common.generated.resources.id_enhanced_privacy
 import blockstream_green.common.generated.resources.id_experimental_features_might
 import blockstream_green.common.generated.resources.id_help_us_improve
-import blockstream_green.common.generated.resources.id_host_ip
 import blockstream_green.common.generated.resources.id_language
-import blockstream_green.common.generated.resources.id_less_stable_connection
 import blockstream_green.common.generated.resources.id_more_info
-import blockstream_green.common.generated.resources.id_number_of_consecutive_empty
+import blockstream_green.common.generated.resources.id_number_of_unused_addresses_to_scan
 import blockstream_green.common.generated.resources.id_personal_electrum_server
+import blockstream_green.common.generated.resources.id_private_but_less_stable
 import blockstream_green.common.generated.resources.id_remember_hardware_devices
-import blockstream_green.common.generated.resources.id_reset_to_default
 import blockstream_green.common.generated.resources.id_screen_lock
+import blockstream_green.common.generated.resources.id_server_ip_and_port_ipport
 import blockstream_green.common.generated.resources.id_system_default
+import blockstream_green.common.generated.resources.id_use_host_and_port_format
 import blockstream_green.common.generated.resources.id_use_secure_display_and_screen
+import blockstream_green.common.generated.resources.id_use_your_own_server
 import blockstream_green.common.generated.resources.id_your_settings_are_unsavednndo
 import com.adamglin.PhosphorIcons
 import com.adamglin.phosphoricons.Regular
@@ -81,18 +85,21 @@ import com.blockstream.compose.components.RichText
 import com.blockstream.compose.extensions.getStringList
 import com.blockstream.compose.models.settings.AppSettingsViewModel
 import com.blockstream.compose.models.settings.AppSettingsViewModelAbstract
+import com.blockstream.compose.models.settings.AppSettingsViewModelAbstract.Companion.DEFAULT_SCAN_GAP_LIMIT
+import com.blockstream.compose.models.settings.AppSettingsViewModelAbstract.Companion.SCAN_GAP_LIMIT_MAX
+import com.blockstream.compose.models.settings.AppSettingsViewModelAbstract.Companion.SCAN_GAP_LIMIT_MIN
 import com.blockstream.compose.models.settings.AppSettingsViewModelPreview
 import com.blockstream.compose.screens.settings.components.PersonalElectrumServerSection
 import com.blockstream.compose.screens.settings.components.SettingSwitch
 import com.blockstream.compose.screens.settings.components.SettingsItem
 import com.blockstream.compose.sheets.LanguagePickerBottomSheet
 import com.blockstream.compose.sideeffects.OpenDialogData
-import com.blockstream.compose.theme.titleLarge
 import com.blockstream.compose.utils.SetupScreen
 import com.blockstream.compose.utils.StringHolder
 import com.blockstream.compose.utils.TextInputPaste
 import com.blockstream.compose.utils.appTestTag
 import com.blockstream.data.data.ScreenLockSetting
+import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.launch
 import org.jetbrains.compose.resources.stringResource
 import org.jetbrains.compose.ui.tooling.preview.Preview
@@ -103,24 +110,31 @@ fun AppSettingsScreen(
     viewModel: AppSettingsViewModelAbstract
 ) {
     // Helper function to handle value changes and auto-save for Boolean
-    fun autoSaveOnBooleanChange(stateFlow: kotlinx.coroutines.flow.MutableStateFlow<Boolean>): (Boolean) -> Unit = { newValue ->
+    fun autoSaveOnBooleanChange(
+        stateFlow: MutableStateFlow<Boolean>,
+        onReset: (() -> Unit)? = null
+    ): (Boolean) -> Unit = { newValue ->
         stateFlow.value = newValue
+
+        if (!newValue) {
+            onReset?.invoke()
+        }
+
         viewModel.postEvent(AppSettingsViewModel.LocalEvents.AutoSave)
     }
 
     // Helper function to handle value changes and auto-save for String
-    fun autoSaveOnStringChange(stateFlow: kotlinx.coroutines.flow.MutableStateFlow<String>): (String) -> Unit = { newValue ->
-        stateFlow.value = newValue
-        viewModel.postEvent(AppSettingsViewModel.LocalEvents.AutoSave)
-    }
-
-    // Helper function to handle value changes and auto-save for ScreenLockSetting
-    fun autoSaveOnScreenLockChange(stateFlow: kotlinx.coroutines.flow.MutableStateFlow<ScreenLockSetting>): (ScreenLockSetting) -> Unit = { newValue ->
+    fun autoSaveOnStringChange(
+        stateFlow: MutableStateFlow<String>,
+        errorStateFlow: MutableStateFlow<String?>? = null
+    ): (String) -> Unit = { newValue ->
+        errorStateFlow?.value = null
         stateFlow.value = newValue
         viewModel.postEvent(AppSettingsViewModel.LocalEvents.AutoSave)
     }
 
     val dialog = LocalDialog.current
+    val focusManager = LocalFocusManager.current
 
     SetupScreen(viewModel = viewModel, withPadding = false, scrollable = false, sideEffectsHandler = {
         if (it is AppSettingsViewModel.LocalSideEffects.UnsavedAppSettings) {
@@ -158,45 +172,80 @@ fun AppSettingsScreen(
                 val torEnabled by viewModel.torEnabled.collectAsStateWithLifecycle()
                 SettingSwitch(
                     title = stringResource(Res.string.id_connect_with_tor),
-                    subtitle = stringResource(Res.string.id_less_stable_connection),
+                    subtitle = stringResource(Res.string.id_private_but_less_stable),
                     checked = torEnabled,
                     onCheckedChange = autoSaveOnBooleanChange(viewModel.torEnabled),
                     testTag = "tor_switch"
                 )
 
-
                 // Connect through a proxy
-                Column {
-                    val proxyEnabled by viewModel.proxyEnabled.collectAsStateWithLifecycle()
-                    SettingSwitch(
-                        title = stringResource(Res.string.id_connect_through_a_proxy),
-                        checked = proxyEnabled,
-                        onCheckedChange = autoSaveOnBooleanChange(viewModel.proxyEnabled),
-                        testTag = "proxy_switch"
-                    )
+                val proxyEnabled by viewModel.proxyEnabled.collectAsStateWithLifecycle()
+                val proxyUrlError by viewModel.proxyUrlError.collectAsStateWithLifecycle()
 
-                    AnimatedVisibility(visible = proxyEnabled) {
-                        val proxyUrl by viewModel.proxyUrl.collectAsStateWithLifecycle()
-                        OutlinedTextField(
-                            value = proxyUrl,
-                            onValueChange = autoSaveOnStringChange(viewModel.proxyUrl),
-                            modifier = Modifier
-                                .fillMaxWidth()
-                                .padding(top = 8.dp)
-                                .appTestTag("proxy_url_textfield"),
-                            singleLine = true,
-                            supportingText = { Text(stringResource(Res.string.id_host_ip)) },
-                            isError = proxyUrl.isBlank(),
-                            trailingIcon = {
-                                TextInputPaste(
-                                    state = viewModel.proxyUrl,
-                                    onValueChange = autoSaveOnStringChange(viewModel.proxyUrl)
-                                )
-                            }
-                        )
+                SettingSwitch(
+                    title = stringResource(Res.string.id_connect_through_a_proxy),
+                    subtitle = stringResource(Res.string.id_custom_network_route),
+                    checked = proxyEnabled,
+                    onCheckedChange = autoSaveOnBooleanChange(viewModel.proxyEnabled) {
+                        viewModel.onResetProxySettings()
+                    },
+                    testTag = "proxy_switch"
+                )
+
+                AnimatedVisibility(visible = proxyEnabled) {
+                    val proxyUrl by viewModel.proxyUrl.collectAsStateWithLifecycle()
+                    Card(
+                        colors = CardDefaults.cardColors(
+                            containerColor = MaterialTheme.colorScheme.outline
+                        ),
+                        modifier = Modifier.fillMaxWidth()
+                    ) {
+                        GreenColumn(
+                            space = 8,
+                            padding = 16,
+                            modifier = Modifier.fillMaxWidth()
+                        ) {
+                            SettingsItem(
+                                title = stringResource(Res.string.id_server_ip_and_port_ipport),
+                                content = {
+                                    OutlinedTextField(
+                                        value = proxyUrl,
+                                        onValueChange = autoSaveOnStringChange(
+                                            viewModel.proxyUrl,
+                                            viewModel.proxyUrlError
+                                        ),
+                                        modifier = Modifier
+                                            .fillMaxWidth()
+                                            .appTestTag("proxy_url_textfield"),
+                                        placeholder = { Text(AppSettingsViewModelAbstract.DEFAULT_IP_AND_PORT) },
+                                        singleLine = true,
+                                        keyboardOptions = KeyboardOptions.Default.copy(
+                                            imeAction = ImeAction.Done
+                                        ),
+                                        keyboardActions = KeyboardActions(
+                                            onDone = {
+                                                focusManager.clearFocus()
+                                            }
+                                        ),
+                                        supportingText = {
+                                            Text(proxyUrlError ?: stringResource(Res.string.id_use_host_and_port_format))
+                                        },
+                                        isError = proxyUrlError != null,
+                                        trailingIcon = {
+                                            TextInputPaste(
+                                                state = viewModel.proxyUrl,
+                                                onValueChange = autoSaveOnStringChange(
+                                                    viewModel.proxyUrl,
+                                                    viewModel.proxyUrlError
+                                                )
+                                            )
+                                        }
+                                    )
+                                }
+                            )
+                        }
                     }
                 }
-
 
                 // Remember hardware devices
                 val rememberHardwareDevices by viewModel.rememberHardwareDevices.collectAsStateWithLifecycle()
@@ -207,16 +256,28 @@ fun AppSettingsScreen(
                     testTag = "remember_devices_switch"
                 )
 
-
                 // Enable testnet
                 val testnetEnabled by viewModel.testnetEnabled.collectAsStateWithLifecycle()
                 SettingSwitch(
                     title = stringResource(Res.string.id_enable_testnet),
+                    subtitle = stringResource(Res.string.id_allow_tesnet_wallets),
                     checked = testnetEnabled,
                     onCheckedChange = autoSaveOnBooleanChange(viewModel.testnetEnabled),
                     testTag = "enable_testnet_switch"
                 )
 
+                // Experimental features
+                if (viewModel.experimentalFeatureEnabled) {
+                    val experimentalFeaturesEnabled by viewModel.experimentalFeaturesEnabled.collectAsStateWithLifecycle()
+                    SettingSwitch(
+                        title = stringResource(Res.string.id_enable_experimental_features),
+                        subtitle = stringResource(Res.string.id_experimental_features_might),
+                        checked = experimentalFeaturesEnabled,
+                        onCheckedChange = autoSaveOnBooleanChange(viewModel.experimentalFeaturesEnabled),
+                        testTag = "experimental_switch",
+                        subtitleMaxLines = 4
+                    )
+                }
 
                 if (viewModel.analyticsFeatureEnabled) {
                     val analyticsEnabled by viewModel.analyticsEnabled.collectAsStateWithLifecycle()
@@ -236,7 +297,7 @@ fun AppSettingsScreen(
                                         overflow = TextOverflow.Ellipsis,
                                         modifier = Modifier.fillMaxWidth()
                                     )
-                                    
+
                                     RichText(
                                         text = stringResource(Res.string.id_enable_limited_usage_data) + "\n" + stringResource(Res.string.id_more_info),
                                         spans = listOf(
@@ -249,13 +310,13 @@ fun AppSettingsScreen(
                                             )
                                         ),
                                         paragraph = ParagraphStyle(textAlign = TextAlign.Start),
-                                        defaultStyle = MaterialTheme.typography.bodyLarge.copy(
+                                        defaultStyle = MaterialTheme.typography.bodyMedium.copy(
                                             color = MaterialTheme.colorScheme.onSurface.copy(alpha = 0.6f)
                                         ),
                                         modifier = Modifier.fillMaxWidth()
                                     )
                                 }
-                                
+
                                 Switch(
                                     checked = analyticsEnabled,
                                     onCheckedChange = autoSaveOnBooleanChange(viewModel.analyticsEnabled),
@@ -269,19 +330,6 @@ fun AppSettingsScreen(
                             }
                         }
                     }
-                    }
-
-                // Experimental features
-                if (viewModel.experimentalFeatureEnabled) {
-                    val experimentalFeaturesEnabled by viewModel.experimentalFeaturesEnabled.collectAsStateWithLifecycle()
-                    SettingSwitch(
-                        title = stringResource(Res.string.id_enable_experimental_features),
-                        subtitle = stringResource(Res.string.id_experimental_features_might),
-                        checked = experimentalFeaturesEnabled,
-                        onCheckedChange = autoSaveOnBooleanChange(viewModel.experimentalFeaturesEnabled),
-                        testTag = "experimental_switch"
-
-                    )
                 }
 
                 // Language
@@ -304,7 +352,7 @@ fun AppSettingsScreen(
                     },
                     modifier = Modifier.appTestTag("language_button"),
                 )
-                
+
                 if (showLanguagePicker) {
                     LanguagePickerBottomSheet(
                         viewModel = viewModel,
@@ -313,74 +361,6 @@ fun AppSettingsScreen(
                         }
                     )
                 }
-
-
-                // Custom Server Settings section
-                Text(
-                    text = stringResource(Res.string.id_custom_server_settings),
-                    style = titleLarge,
-                    modifier = Modifier
-                        .padding(top = 16.dp, bottom = 8.dp)
-                )
-
-                val electrumNodeEnabled by viewModel.electrumNodeEnabled.collectAsStateWithLifecycle()
-
-                SettingSwitch(
-                    title = stringResource(Res.string.id_personal_electrum_server),
-                    checked = electrumNodeEnabled,
-                    onCheckedChange = autoSaveOnBooleanChange(viewModel.electrumNodeEnabled),
-                    testTag = "electrum_switch"
-                )
-
-                AnimatedVisibility(visible = electrumNodeEnabled) {
-                    PersonalElectrumServerSection(
-                        viewModel = viewModel,
-                        testnetEnabled = testnetEnabled,
-                        autoSaveOnBooleanChange = ::autoSaveOnBooleanChange,
-                        autoSaveOnStringChange = ::autoSaveOnStringChange,
-                    )
-                }
-
-
-                val electrumServerGapLimit by viewModel.electrumServerGapLimit.collectAsStateWithLifecycle()
-                val focusManager = LocalFocusManager.current
-
-                SettingsItem(
-                    title = stringResource(Res.string.id_electrum_server_gap_limit),
-                    subtitle = stringResource(Res.string.id_number_of_consecutive_empty),
-                    content = {
-                        OutlinedTextField(
-                            value = electrumServerGapLimit,
-                            onValueChange = autoSaveOnStringChange(viewModel.electrumServerGapLimit),
-                            modifier = Modifier
-                                .fillMaxWidth()
-                                .appTestTag("gap_limit_textfield"),
-                            singleLine = true,
-                            keyboardOptions = KeyboardOptions.Default.copy(
-                                keyboardType = KeyboardType.Number,
-                                imeAction = ImeAction.Done
-                            ),
-                            keyboardActions = KeyboardActions(
-                                onDone = {
-                                    focusManager.clearFocus()
-                                }
-                            ),
-                            trailingIcon = {
-                                if (electrumServerGapLimit.isNotEmpty() && electrumServerGapLimit != "20") {
-                                    Icon(
-                                        imageVector = Icons.Default.Clear,
-                                        contentDescription = stringResource(Res.string.id_reset_to_default),
-                                        modifier = Modifier.clickable {
-                                            viewModel.electrumServerGapLimit.value = "20"
-                                            viewModel.postEvent(AppSettingsViewModel.LocalEvents.AutoSave)
-                                        }
-                                    )
-                                }
-                            },
-                        )
-                    }
-                )
-
 
                 // Enhanced Privacy (placeholder for SPV verification in the future)
                 val enhancedPrivacyEnabled by viewModel.enhancedPrivacyEnabled.collectAsStateWithLifecycle()
@@ -405,45 +385,160 @@ fun AppSettingsScreen(
                         }
                     }
 
-                    // We want to react on tap/press on TextField to show menu
-                    ExposedDropdownMenuBox(
-                        expanded = screenLockExpanded,
-                        onExpandedChange = { screenLockExpanded = it },
-                        modifier = Modifier
-                            .padding(start = 54.dp, end = 16.dp, bottom = 8.dp)
-                            .fillMaxWidth()
+                    Card(
+                        colors = CardDefaults.cardColors(
+                            containerColor = MaterialTheme.colorScheme.outline
+                        ),
+                        modifier = Modifier.fillMaxWidth()
                     ) {
-                        OutlinedTextField(
-                            // The `menuAnchor` modifier must be passed to the text field for correctness.
-                            modifier = Modifier
-                                .fillMaxWidth()
-                                .appTestTag("screen_lock_selector")
-                                .menuAnchor(),
-                            readOnly = true,
-                            value = selectedOptionText,
-                            onValueChange = {},
-                            label = { Text(stringResource(Res.string.id_screen_lock)) },
-                            trailingIcon = { ExposedDropdownMenuDefaults.TrailingIcon(expanded = screenLockExpanded) },
-                            colors = ExposedDropdownMenuDefaults.textFieldColors(),
-                        )
-                        ExposedDropdownMenu(
-                            expanded = screenLockExpanded,
-                            onDismissRequest = { screenLockExpanded = false },
+                        GreenColumn(
+                            space = 8,
+                            padding = 16,
+                            modifier = Modifier.fillMaxWidth()
                         ) {
-                            screenLockSettings.forEachIndexed { index, selectionOption ->
-                                DropdownMenuItem(
-                                    modifier = Modifier.appTestTag("screen_lock_option_$index"),
-                                    text = { Text(selectionOption) },
-                                    onClick = {
-                                        ScreenLockSetting.byPosition(index).let {
-                                            viewModel.screenLockInSeconds.value = it
-                                            viewModel.postEvent(AppSettingsViewModel.LocalEvents.AutoSave)
+                            SettingsItem(
+                                title = stringResource(Res.string.id_screen_lock),
+                                content = {
+                                    // We want to react on tap/press on TextField to show menu
+                                    ExposedDropdownMenuBox(
+                                        expanded = screenLockExpanded,
+                                        onExpandedChange = { screenLockExpanded = it },
+                                        modifier = Modifier.fillMaxWidth(),
+                                    ) {
+                                        OutlinedTextField(
+                                            // The `menuAnchor` modifier must be passed to the text field for correctness.
+                                            modifier = Modifier
+                                                .fillMaxWidth()
+                                                .appTestTag("screen_lock_selector")
+                                                .menuAnchor(),
+                                            readOnly = true,
+                                            value = selectedOptionText,
+                                            onValueChange = {},
+                                            trailingIcon = { ExposedDropdownMenuDefaults.TrailingIcon(expanded = screenLockExpanded) },
+                                            colors = ExposedDropdownMenuDefaults.outlinedTextFieldColors()
+                                        )
+                                        ExposedDropdownMenu(
+                                            expanded = screenLockExpanded,
+                                            onDismissRequest = { screenLockExpanded = false },
+                                        ) {
+                                            screenLockSettings.forEachIndexed { index, selectionOption ->
+                                                DropdownMenuItem(
+                                                    modifier = Modifier.appTestTag("screen_lock_option_$index"),
+                                                    text = { Text(selectionOption) },
+                                                    onClick = {
+                                                        ScreenLockSetting.byPosition(index).let {
+                                                            viewModel.screenLockInSeconds.value = it
+                                                            viewModel.postEvent(AppSettingsViewModel.LocalEvents.AutoSave)
+                                                        }
+                                                        screenLockExpanded = false
+                                                    },
+                                                    contentPadding = ExposedDropdownMenuDefaults.ItemContentPadding,
+                                                )
+                                            }
                                         }
-                                        screenLockExpanded = false
-                                    },
-                                    contentPadding = ExposedDropdownMenuDefaults.ItemContentPadding,
-                                )
-                            }
+                                    }
+                                }
+                            )
+                        }
+                    }
+                }
+
+                // Custom Server Settings section
+                Text(
+                    text = stringResource(Res.string.id_custom_server_settings),
+                    style = MaterialTheme.typography.labelLarge.copy(
+                        color = MaterialTheme.colorScheme.onSurface.copy(alpha = 0.6f)
+                    ),
+                    modifier = Modifier
+                        .padding(top = 16.dp, bottom = 8.dp)
+                )
+
+                val electrumNodeEnabled by viewModel.electrumNodeEnabled.collectAsStateWithLifecycle()
+
+                SettingSwitch(
+                    title = stringResource(Res.string.id_personal_electrum_server),
+                    subtitle = stringResource(Res.string.id_use_your_own_server),
+                    checked = electrumNodeEnabled,
+                    onCheckedChange = autoSaveOnBooleanChange(viewModel.electrumNodeEnabled) {
+                        viewModel.onResetElectrumServerSettings()
+                    },
+                    testTag = "electrum_switch"
+                )
+
+                AnimatedVisibility(visible = electrumNodeEnabled) {
+                    PersonalElectrumServerSection(
+                        viewModel = viewModel,
+                        testnetEnabled = testnetEnabled,
+                        autoSaveOnBooleanChange = ::autoSaveOnBooleanChange,
+                        autoSaveOnStringChange = ::autoSaveOnStringChange,
+                    )
+                }
+
+                val electrumServerGapLimit by viewModel.electrumServerGapLimit.collectAsStateWithLifecycle()
+                var isGapLimitCustom by remember {
+                    mutableStateOf(electrumServerGapLimit.isNotBlank() && electrumServerGapLimit != DEFAULT_SCAN_GAP_LIMIT)
+                }
+                val electrumServerGapLimitError by viewModel.electrumServerGapLimitError.collectAsStateWithLifecycle()
+
+                SettingSwitch(
+                    title = stringResource(Res.string.id_custom_server_gap_limit),
+                    subtitle = stringResource(Res.string.id_number_of_unused_addresses_to_scan),
+                    checked = isGapLimitCustom,
+                    onCheckedChange = { checked ->
+                        isGapLimitCustom = checked
+                        if (!checked) {
+                            viewModel.onResetGapLimit()
+                        }
+                        viewModel.postEvent(AppSettingsViewModel.LocalEvents.AutoSave)
+                    },
+                    testTag = "gap_limit_switch"
+                )
+
+                AnimatedVisibility(visible = isGapLimitCustom) {
+                    Card(
+                        colors = CardDefaults.cardColors(
+                            containerColor = MaterialTheme.colorScheme.outline
+                        ),
+                        modifier = Modifier.fillMaxWidth()
+                    ) {
+                        GreenColumn(space = 8, padding = 16) {
+                            SettingsItem(
+                                title = stringResource(Res.string.id_address_scan_limit),
+                                content = {
+                                    OutlinedTextField(
+                                        value = electrumServerGapLimit,
+                                        onValueChange = autoSaveOnStringChange(
+                                            viewModel.electrumServerGapLimit,
+                                            viewModel.electrumServerGapLimitError
+                                        ),
+                                        modifier = Modifier
+                                            .fillMaxWidth()
+                                            .appTestTag("gap_limit_textfield"),
+                                        singleLine = true,
+                                        placeholder = { Text(DEFAULT_SCAN_GAP_LIMIT) },
+                                        isError = electrumServerGapLimitError != null,
+                                        supportingText = {
+                                            Text(
+                                                text = electrumServerGapLimitError
+                                                    ?: stringResource(
+                                                        Res.string.id_allowed_range,
+                                                        SCAN_GAP_LIMIT_MIN,
+                                                        SCAN_GAP_LIMIT_MAX
+                                                    )
+                                            )
+                                        },
+                                        keyboardOptions = KeyboardOptions.Default.copy(
+                                            keyboardType = KeyboardType.Number,
+                                            imeAction = ImeAction.Done
+                                        ),
+                                        keyboardActions = KeyboardActions(
+                                            onDone = {
+                                                focusManager.clearFocus()
+                                            }
+                                        ),
+                                    )
+                                }
+                            )
                         }
                     }
                 }

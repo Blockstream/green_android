@@ -144,6 +144,7 @@
     <string name="id_any_wallet_found_will_be">Any wallet found will be displayed here.</string>
     <string name="id_app_access">APP ACCESS</string>
     <string name="id_app_settings">App Settings</string>
+    <string name="id_applies_to_every_wallet">Applies to every wallet</string>
     <string name="id_archive">Archive</string>
     <string name="id_archive_account">Archive account</string>
     <string name="id_archived">Archived</string>
@@ -335,6 +336,7 @@
     <string name="id_connect_jade">Connect Jade</string>
     <string name="id_connect_jade_with_a_usb_cable">Connect Jade with a USB cable to download the latest firmware update</string>
     <string name="id_connect_through_a_proxy">Connect Through a Proxy</string>
+    <string name="id_custom_network_route">Custom network route</string>
     <string name="id_connect_usb_cable_or_enable">Connect USB cable or enable Bluetooth</string>
     <string name="id_connect_using_usb_or_bluetooth">Connect using USB or Bluetooth</string>
     <string name="id_connect_via_qr">Connect via QR (Plus &amp; Classic only)</string>
@@ -493,7 +495,7 @@
     <string name="id_enabling_lightning">Enabling Lightning...</string>
     <string name="id_edit_fee">Edit Fee</string>
     <string name="id_edit_note">Edit Note</string>
-    <string name="id_electrum_server_gap_limit">Electrum Server Gap Limit</string>
+    <string name="id_custom_server_gap_limit">Custom Server Gap Limit</string>
     <string name="id_email">Email</string>
     <string name="id_email_address">email address</string>
     <string name="id_emergency_recovery_phrase">Emergency Recovery Phrase Restore</string>
@@ -524,6 +526,7 @@
     <string name="id_enable_spv">Enable SPV</string>
     <string name="id_enable_spv_and_modify_spv">Enable SPV and modify SPV settings</string>
     <string name="id_enable_testnet">Enable Testnet</string>
+    <string name="id_allow_tesnet_wallets">Allow testnet wallets</string>
     <string name="id_enable_testnet_in_app_settings">Enable testnet in app settings to use Jade</string>
     <string name="id_enable_tls">Enable TLS</string>
     <string name="id_enable_tls_connection">Enable TLS connection</string>
@@ -1111,6 +1114,7 @@
     <string name="id_permanent_2fa_account_ideal_for">Permanent 2FA account, ideal for long term hodling, optionally with 3rd emergency key on hardware wallet.</string>
     <string name="id_permanently_block_this_wallet">Permanently Block This Wallet</string>
     <string name="id_personal_electrum_server">Personal Electrum Server</string>
+    <string name="id_use_your_own_server">Use your own server</string>
     <string name="id_pgp_key">PGP Key</string>
     <string name="id_phone_call">Phone call</string>
     <string name="id_phone_number">phone number</string>
@@ -1358,7 +1362,12 @@
     <string name="id_sensitive_information">Sensitive Information</string>
     <string name="id_sent">Sent</string>
     <string name="id_sent_to">Sent to</string>
-    <string name="id_server_ip_and_port_ipport">Server IP and port (ip:port)</string>
+    <string name="id_server_ip_and_port_ipport">Server IP and port</string>
+    <string name="id_enter_a_valid_proxy_addres">Enter a valid proxy. Use host:port format.</string>
+    <string name="id_use_host_and_port_format">Use host:port format.</string>
+    <string name="id_invalid_gap_limit">Invalid gap limit. Please use a value from %1$d to %2$d</string>
+    <string name="id_allowed_range">Allowed range: from %1$d to %2$d</string>
+    <string name="id_invalid_server_address_format">Invalid format. Use host:port</string>
     <string name="id_service_not_available">Service not available</string>
     <string name="id_set_2fa_expiry">Set 2FA expiry</string>
     <string name="id_set_a_limit_to_spend_without">Set a limit to spend without two-factor authentication</string>
@@ -1880,6 +1889,8 @@
     <string name="id_youve_entered_an_invalid_pin">You&apos;ve entered an invalid PIN too many times.</string>
     <string name="id_your_personal_electrum_server_for_s">Your Personal Electrum Server for %1$s can't be reached. Check your settings or your internet connection.</string>
     <string name="id_number_of_consecutive_empty_addresses">Number of consecutive empty addresses to monitor</string>
+    <string name="id_address_scan_limit">Address scan limit</string>
+    <string name="id_number_of_unused_addresses_to_scan">Number of unused addresses to scan. Default: 20</string>
     <string name="id_you_will_stop_receiving_push_notifications">You will stop receiving push notifications for this lightning account, but they are necessary for your lightning account to receive and send reliably.</string>
     <string name="id_buy_sell">Buy / Sell</string>
     <string name="id_buy">Buy</string>

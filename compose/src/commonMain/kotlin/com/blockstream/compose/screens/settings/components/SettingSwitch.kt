@@ -15,12 +15,14 @@ fun SettingSwitch(
     checked: Boolean,
     onCheckedChange: (Boolean) -> Unit,
     modifier: Modifier = Modifier,
-    testTag: String? = null
+    testTag: String? = null,
+    subtitleMaxLines: Int = 2
 ) {
     SettingsItem(
         title = title,
         subtitle = subtitle,
         modifier = modifier,
+        subtitleMaxLines = subtitleMaxLines,
         rightContent = {
             Switch(
                 checked = checked,
