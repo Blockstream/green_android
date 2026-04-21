@@ -394,6 +394,29 @@ class JadeHWWallet constructor(
         }
     }
 
+    fun getWalletAbiSharedIdentityKey(
+        hwInteraction: HardwareWalletInteraction? = null,
+    ): ByteArray = runBlocking {
+        mutex.withLock {
+            val completable: CompletableDeferred<Boolean> = CompletableDeferred()
+            try {
+                hwInteraction?.interactionRequest(
+                    this@JadeHWWallet,
+                    "id_check_your_device",
+                    false,
+                    completable,
+                )
+                jade.getIdentitySharedKey(
+                    identity = WALLET_ABI_IDENTITY,
+                    theirPubKey = WALLET_ABI_IDENTITY_PEER_PUBKEY.hexToByteArray(),
+                    index = 0,
+                )
+            } finally {
+                completable.complete(true)
+            }
+        }
+    }
+
     override fun getBlindingNonce(
         pubKey: String,
         scriptHex: String,
@@ -592,5 +615,11 @@ class JadeHWWallet constructor(
             }
             return result
         }
+
+        private const val WALLET_ABI_IDENTITY = "ssh://wallet-abi@blockstream.green"
+
+        private const val WALLET_ABI_IDENTITY_PEER_PUBKEY =
+            "046b17d1f2e12c4247f8bce6e563a440f277037d812deb33a0f4a13945d898c296" +
+                "4fe342e2fe1a7f9b8ee7eb4a7c0f9e162bce33576b315ececbb6406837bf51f5"
     }
 }
