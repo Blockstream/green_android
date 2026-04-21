@@ -28,43 +28,57 @@ import com.blockstream.compose.components.GreenDataLayout
 import com.blockstream.compose.models.walletabi.WalletAbiWalletConnectAwaitingTransportLook
 import com.blockstream.compose.models.walletabi.WalletAbiWalletConnectConnectedLook
 import com.blockstream.compose.models.walletabi.WalletAbiWalletConnectConnectionLook
+import com.blockstream.compose.models.walletabi.WalletAbiWalletConnectPreparingLook
 import com.blockstream.compose.models.walletabi.WalletAbiWalletConnectRouteViewModel
+import com.blockstream.compose.models.walletabi.WalletAbiWalletConnectScreenState
 import com.blockstream.compose.theme.bodyMedium
 import com.blockstream.compose.theme.whiteMedium
 import com.blockstream.domain.walletabi.flow.WalletAbiFlowIntent
-import com.blockstream.domain.walletabi.flow.WalletAbiFlowState
 
 @Composable
 fun WalletAbiWalletConnectScreen(
     viewModel: WalletAbiWalletConnectRouteViewModel,
 ) {
-    val flowState by viewModel.flowState.collectAsStateWithLifecycle()
-    val reviewLook by viewModel.reviewLook.collectAsStateWithLifecycle()
-    val connectionApproval by viewModel.connectionApproval.collectAsStateWithLifecycle()
-    val awaitingTransport by viewModel.awaitingTransport.collectAsStateWithLifecycle()
-    val connectedSession by viewModel.connectedSession.collectAsStateWithLifecycle()
+    val screenState by viewModel.screenState.collectAsStateWithLifecycle()
 
-    when {
-        connectionApproval != null -> WalletAbiWalletConnectConnectionApprovalScreen(
-            look = connectionApproval!!,
-            onApprove = { viewModel.dispatch(WalletAbiFlowIntent.Approve) },
-            onReject = { viewModel.dispatch(WalletAbiFlowIntent.Reject) },
+    WalletAbiWalletConnectScreenContent(
+        screenState = screenState,
+        onIntent = viewModel::dispatch,
+    )
+}
+
+@Composable
+fun WalletAbiWalletConnectScreenContent(
+    screenState: WalletAbiWalletConnectScreenState,
+    onIntent: (WalletAbiFlowIntent) -> Unit,
+) {
+    when (screenState) {
+        is WalletAbiWalletConnectScreenState.ConnectionApproval -> WalletAbiWalletConnectConnectionApprovalScreen(
+            look = screenState.look,
+            onApprove = { onIntent(WalletAbiFlowIntent.Approve) },
+            onReject = { onIntent(WalletAbiFlowIntent.Reject) },
         )
 
-        awaitingTransport != null -> WalletAbiWalletConnectAwaitingTransportScreen(look = awaitingTransport!!)
-
-        flowState !is WalletAbiFlowState.Idle -> WalletAbiFlowScreen(
-            state = flowState,
-            onIntent = viewModel::dispatch,
-            reviewLook = reviewLook,
+        is WalletAbiWalletConnectScreenState.Preparing -> WalletAbiWalletConnectPreparingScreen(
+            look = screenState.look,
         )
 
-        connectedSession != null -> WalletAbiWalletConnectConnectedScreen(
-            look = connectedSession!!,
-            onDisconnect = { viewModel.dispatch(WalletAbiFlowIntent.Cancel) },
+        is WalletAbiWalletConnectScreenState.AwaitingTransport -> WalletAbiWalletConnectAwaitingTransportScreen(
+            look = screenState.look,
         )
 
-        else -> WalletAbiWalletConnectEmptyScreen()
+        is WalletAbiWalletConnectScreenState.WalletAbiFlow -> WalletAbiFlowScreen(
+            state = screenState.state,
+            onIntent = onIntent,
+            reviewLook = screenState.reviewLook,
+        )
+
+        is WalletAbiWalletConnectScreenState.Connected -> WalletAbiWalletConnectConnectedScreen(
+            look = screenState.look,
+            onDisconnect = { onIntent(WalletAbiFlowIntent.Cancel) },
+        )
+
+        WalletAbiWalletConnectScreenState.Empty -> WalletAbiWalletConnectEmptyScreen()
     }
 }
 
@@ -145,6 +159,45 @@ private fun WalletAbiWalletConnectConnectionApprovalScreen(
                 testTag = "wallet_connect_connection_reject",
             ) {
                 onReject()
+            }
+        },
+    )
+}
+
+@Composable
+private fun WalletAbiWalletConnectPreparingScreen(
+    look: WalletAbiWalletConnectPreparingLook,
+) {
+    WalletAbiWalletConnectScaffold(
+        body = {
+            CircularProgressIndicator(
+                modifier = Modifier
+                    .align(Alignment.CenterHorizontally)
+                    .size(32.dp),
+            )
+            WalletAbiWalletConnectHeader(
+                title = "Preparing Wallet ABI review",
+                supporting = "Green received the request and is building the exact review before any approval is possible.",
+                testTag = "wallet_connect_preparing_review",
+            )
+            GreenAlert(
+                title = "No signature or broadcast yet",
+                message = "Wait for the review screen. The paired app should not send another request while this one is being prepared.",
+                isBlue = true,
+            )
+            GreenDataLayout(title = "Pending request", testTag = "wallet_connect_preparing_request") {
+                Column(
+                    modifier = Modifier.padding(16.dp),
+                    verticalArrangement = Arrangement.spacedBy(12.dp),
+                ) {
+                    DetailRow(label = "Request ID", value = look.requestId)
+                    look.chainId.takeIf { it.isNotBlank() }?.let { chainId ->
+                        DetailRow(label = "Chain", value = chainId)
+                    }
+                    look.peerName?.takeIf { it.isNotBlank() }?.let { peerName ->
+                        DetailRow(label = "Peer", value = peerName)
+                    }
+                }
             }
         },
     )

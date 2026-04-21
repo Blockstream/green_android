@@ -12,7 +12,6 @@ import com.blockstream.data.json.DefaultJson
 import com.blockstream.data.utils.feeRateWithUnit
 import com.blockstream.data.utils.toAmountLook
 import com.blockstream.data.walletabi.walletconnect.WalletAbiWalletConnectActionOutcome
-import com.blockstream.data.walletabi.walletconnect.WalletAbiWalletConnectManaging
 import com.blockstream.data.walletabi.walletconnect.WalletAbiWalletConnectState
 import com.blockstream.domain.walletabi.flow.WalletAbiAccountOption
 import com.blockstream.domain.walletabi.flow.WalletAbiApprovalTarget
@@ -80,26 +79,49 @@ data class WalletAbiWalletConnectConnectedLook(
     val awaitingTransport: Boolean,
 )
 
+data class WalletAbiWalletConnectPreparingLook(
+    val requestId: String,
+    val peerName: String?,
+    val chainId: String,
+)
+
+sealed interface WalletAbiWalletConnectScreenState {
+    data object Empty : WalletAbiWalletConnectScreenState
+
+    data class ConnectionApproval(
+        val look: WalletAbiWalletConnectConnectionLook,
+    ) : WalletAbiWalletConnectScreenState
+
+    data class Preparing(
+        val look: WalletAbiWalletConnectPreparingLook,
+    ) : WalletAbiWalletConnectScreenState
+
+    data class WalletAbiFlow(
+        val state: WalletAbiFlowState,
+        val reviewLook: WalletAbiReviewLook?,
+    ) : WalletAbiWalletConnectScreenState
+
+    data class AwaitingTransport(
+        val look: WalletAbiWalletConnectAwaitingTransportLook,
+    ) : WalletAbiWalletConnectScreenState
+
+    data class Connected(
+        val look: WalletAbiWalletConnectConnectedLook,
+    ) : WalletAbiWalletConnectScreenState
+}
+
 class WalletAbiWalletConnectRouteViewModel(
     greenWallet: GreenWallet,
 ) : GreenViewModel(greenWalletOrNull = greenWallet) {
-    private val mutableFlowState = MutableStateFlow<WalletAbiFlowState>(WalletAbiFlowState.Idle)
-    private val mutableReviewLook = MutableStateFlow<WalletAbiReviewLook?>(null)
-    private val mutableConnectionApproval = MutableStateFlow<WalletAbiWalletConnectConnectionLook?>(null)
-    private val mutableAwaitingTransport = MutableStateFlow<WalletAbiWalletConnectAwaitingTransportLook?>(null)
-    private val mutableConnectedSession = MutableStateFlow<WalletAbiWalletConnectConnectedLook?>(null)
+    private val mutableScreenState =
+        MutableStateFlow<WalletAbiWalletConnectScreenState>(WalletAbiWalletConnectScreenState.Empty)
     private val overlayActionMutex = Mutex()
 
-    private var latestManagerState: WalletAbiWalletConnectState? = null
     private var terminalOverride: WalletAbiFlowState? = null
 
     override fun screenName(): String = "WalletAbiWalletConnect"
 
-    val flowState: StateFlow<WalletAbiFlowState> = mutableFlowState.asStateFlow()
-    val reviewLook: StateFlow<WalletAbiReviewLook?> = mutableReviewLook.asStateFlow()
-    val connectionApproval: StateFlow<WalletAbiWalletConnectConnectionLook?> = mutableConnectionApproval.asStateFlow()
-    val awaitingTransport: StateFlow<WalletAbiWalletConnectAwaitingTransportLook?> = mutableAwaitingTransport.asStateFlow()
-    val connectedSession: StateFlow<WalletAbiWalletConnectConnectedLook?> = mutableConnectedSession.asStateFlow()
+    val screenState: StateFlow<WalletAbiWalletConnectScreenState> = mutableScreenState.asStateFlow()
 
     init {
         _navData.value = NavData(
@@ -109,7 +131,6 @@ class WalletAbiWalletConnectRouteViewModel(
 
         walletAbiWalletConnectManager.state(greenWallet.id)
             .onEach { state ->
-                latestManagerState = state
                 if (shouldPreemptTerminal(state)) {
                     terminalOverride = null
                 }
@@ -145,9 +166,12 @@ class WalletAbiWalletConnectRouteViewModel(
     private suspend fun handleApprove() {
         if (overlayActionMutex.isLocked) return
         overlayActionMutex.withLock {
+            markOverlayActionStarted()
             val outcome = walletAbiWalletConnectManager.approveCurrentOverlay(greenWallet.id)
             if (outcome != null) {
                 handleOutcome(outcome)
+            } else {
+                synchronizeFromManager(currentManagerState())
             }
         }
     }
@@ -155,20 +179,29 @@ class WalletAbiWalletConnectRouteViewModel(
     private suspend fun handleReject() {
         if (overlayActionMutex.isLocked) return
         overlayActionMutex.withLock {
+            markOverlayActionStarted()
             val outcome = walletAbiWalletConnectManager.rejectCurrentOverlay(greenWallet.id)
             if (outcome != null) {
                 handleOutcome(outcome)
+            } else {
+                synchronizeFromManager(currentManagerState())
             }
         }
     }
 
     private suspend fun handleCancel() {
-        when {
-            connectionApproval.value != null || mutableFlowState.value is WalletAbiFlowState.RequestLoaded -> {
+        when (val state = mutableScreenState.value) {
+            is WalletAbiWalletConnectScreenState.ConnectionApproval -> {
                 handleReject()
             }
 
-            connectedSession.value != null -> {
+            is WalletAbiWalletConnectScreenState.WalletAbiFlow -> {
+                if (state.state is WalletAbiFlowState.RequestLoaded) {
+                    handleReject()
+                }
+            }
+
+            is WalletAbiWalletConnectScreenState.Connected -> {
                 if (overlayActionMutex.isLocked) return
                 overlayActionMutex.withLock {
                     walletAbiWalletConnectManager.disconnectActiveSession(greenWallet.id)
@@ -176,7 +209,9 @@ class WalletAbiWalletConnectRouteViewModel(
                 }
             }
 
-            else -> Unit
+            WalletAbiWalletConnectScreenState.Empty,
+            is WalletAbiWalletConnectScreenState.AwaitingTransport,
+            is WalletAbiWalletConnectScreenState.Preparing -> Unit
         }
     }
 
@@ -222,24 +257,50 @@ class WalletAbiWalletConnectRouteViewModel(
         } ?: synchronizeFromManager(currentManagerState())
     }
 
-    private suspend fun synchronizeFromManager(state: WalletAbiWalletConnectState) {
-        clearSupplementalState()
+    private fun markOverlayActionStarted() {
+        when (val current = mutableScreenState.value) {
+            is WalletAbiWalletConnectScreenState.ConnectionApproval -> {
+                mutableScreenState.value = current.copy(
+                    look = current.look.copy(awaitingTransport = true),
+                )
+            }
 
+            is WalletAbiWalletConnectScreenState.WalletAbiFlow -> {
+                val flowState = current.state
+                if (flowState is WalletAbiFlowState.RequestLoaded) {
+                    mutableScreenState.value = current.copy(
+                        state = WalletAbiFlowState.Submitting(
+                            requestContext = flowState.review.requestContext,
+                            stage = WalletAbiSubmittingStage.PREPARING,
+                        ),
+                    )
+                }
+            }
+
+            WalletAbiWalletConnectScreenState.Empty,
+            is WalletAbiWalletConnectScreenState.AwaitingTransport,
+            is WalletAbiWalletConnectScreenState.Connected,
+            is WalletAbiWalletConnectScreenState.Preparing -> Unit
+        }
+    }
+
+    private suspend fun synchronizeFromManager(state: WalletAbiWalletConnectState) {
         val overlay = state.uiState.currentOverlay
         when (overlay?.kind) {
             WalletAbiWalletConnectOverlayKind.CONNECTION_APPROVAL -> {
                 val proposal = overlay.proposal ?: return
-                mutableConnectionApproval.value = WalletAbiWalletConnectConnectionLook(
-                    proposal = proposal,
-                    chainId = overlay.chainId,
-                    methods = listOf(
-                        proposal.requiredMethods,
-                        proposal.optionalMethods,
-                    ).flatten().distinct(),
-                    awaitingTransport = overlay.awaitingTransport,
-                    queuedOverlayCount = state.uiState.queuedOverlayCount.toInt(),
+                mutableScreenState.value = WalletAbiWalletConnectScreenState.ConnectionApproval(
+                    WalletAbiWalletConnectConnectionLook(
+                        proposal = proposal,
+                        chainId = overlay.chainId,
+                        methods = listOf(
+                            proposal.requiredMethods,
+                            proposal.optionalMethods,
+                        ).flatten().distinct(),
+                        awaitingTransport = overlay.awaitingTransport,
+                        queuedOverlayCount = state.uiState.queuedOverlayCount.toInt(),
+                    ),
                 )
-                mutableFlowState.value = WalletAbiFlowState.Idle
             }
 
             WalletAbiWalletConnectOverlayKind.TRANSACTION_APPROVAL -> {
@@ -261,46 +322,68 @@ class WalletAbiWalletConnectRouteViewModel(
                     requestFamily = requestFamily,
                     preview = preview,
                 )
-                mutableReviewLook.value = look
                 if (overlay.awaitingTransport) {
                     val session = state.uiState.activeSessions.firstOrNull { it.topic == overlay.sessionTopic }
-                    mutableAwaitingTransport.value = WalletAbiWalletConnectAwaitingTransportLook(
-                        requestId = request.requestId,
-                        peerName = session?.peerName,
-                        chainId = overlay.chainId,
+                    mutableScreenState.value = WalletAbiWalletConnectScreenState.AwaitingTransport(
+                        WalletAbiWalletConnectAwaitingTransportLook(
+                            requestId = request.requestId,
+                            peerName = session?.peerName,
+                            chainId = overlay.chainId,
+                        ),
                     )
-                    mutableFlowState.value = WalletAbiFlowState.Idle
                 } else {
-                    mutableFlowState.value = WalletAbiFlowState.RequestLoaded(review)
+                    mutableScreenState.value = WalletAbiWalletConnectScreenState.WalletAbiFlow(
+                        state = WalletAbiFlowState.RequestLoaded(review),
+                        reviewLook = look,
+                    )
                 }
             }
 
             null -> {
                 if (state.lastError != null) {
-                    mutableFlowState.value = WalletAbiFlowState.Error(
-                        WalletAbiFlowError(
-                            kind = WalletAbiFlowErrorKind.EXECUTION_FAILURE,
-                            phase = WalletAbiFlowPhase.APPROVAL,
-                            message = state.lastError ?: "WalletConnect failed",
-                            retryable = true,
-                        )
+                    mutableScreenState.value = WalletAbiWalletConnectScreenState.WalletAbiFlow(
+                        state = WalletAbiFlowState.Error(
+                            WalletAbiFlowError(
+                                kind = WalletAbiFlowErrorKind.EXECUTION_FAILURE,
+                                phase = WalletAbiFlowPhase.APPROVAL,
+                                message = state.lastError ?: "WalletConnect failed",
+                                retryable = true,
+                            )
+                        ),
+                        reviewLook = null,
+                    )
+                    return
+                }
+                state.preparingRequest?.let { preparingRequest ->
+                    val session = state.uiState.activeSessions.firstOrNull { it.topic == preparingRequest.topic }
+                    mutableScreenState.value = WalletAbiWalletConnectScreenState.Preparing(
+                        WalletAbiWalletConnectPreparingLook(
+                            requestId = preparingRequest.requestId,
+                            peerName = session?.peerName,
+                            chainId = session?.chainId ?: "",
+                        ),
                     )
                     return
                 }
                 state.uiState.activeSessions.firstOrNull()?.also { sessionInfo ->
-                    mutableConnectedSession.value = WalletAbiWalletConnectConnectedLook(
-                        session = sessionInfo,
-                        awaitingTransport = state.uiState.pendingActionCount > 0u,
+                    mutableScreenState.value = WalletAbiWalletConnectScreenState.Connected(
+                        WalletAbiWalletConnectConnectedLook(
+                            session = sessionInfo,
+                            awaitingTransport = state.uiState.pendingActionCount > 0u,
+                        ),
                     )
+                    return
                 }
-                mutableFlowState.value = WalletAbiFlowState.Idle
+                mutableScreenState.value = WalletAbiWalletConnectScreenState.Empty
             }
         }
     }
 
     private fun showTerminal(terminal: WalletAbiFlowState) {
-        clearSupplementalState()
-        mutableFlowState.value = terminal
+        mutableScreenState.value = WalletAbiWalletConnectScreenState.WalletAbiFlow(
+            state = terminal,
+            reviewLook = null,
+        )
     }
 
     private fun shouldPreemptTerminal(
@@ -314,22 +397,17 @@ class WalletAbiWalletConnectRouteViewModel(
     }
 
     private fun showUnsupportedRequest(message: String) {
-        clearSupplementalState()
-        mutableFlowState.value = WalletAbiFlowState.Error(
-            WalletAbiFlowError(
-                kind = WalletAbiFlowErrorKind.UNSUPPORTED_REQUEST,
-                phase = WalletAbiFlowPhase.LOADING,
-                message = message,
-                retryable = false,
-            )
+        mutableScreenState.value = WalletAbiWalletConnectScreenState.WalletAbiFlow(
+            state = WalletAbiFlowState.Error(
+                WalletAbiFlowError(
+                    kind = WalletAbiFlowErrorKind.UNSUPPORTED_REQUEST,
+                    phase = WalletAbiFlowPhase.LOADING,
+                    message = message,
+                    retryable = false,
+                )
+            ),
+            reviewLook = null,
         )
-    }
-
-    private fun clearSupplementalState() {
-        mutableReviewLook.value = null
-        mutableConnectionApproval.value = null
-        mutableAwaitingTransport.value = null
-        mutableConnectedSession.value = null
     }
 
     private fun currentManagerState(): WalletAbiWalletConnectState {
