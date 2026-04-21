@@ -407,7 +407,9 @@ class WalletAbiWalletConnectManager(
     private suspend fun routeBridgeError(message: String) {
         logger.w { "routeBridgeError message=$message" }
         val targetWalletId = runtimeMutex.withLock {
-            pendingPairWalletId
+            pendingPairWalletId.also {
+                pendingPairWalletId = null
+            }
                 ?: runtimes.entries.firstOrNull { (_, runtime) ->
                     runtime.state.value.uiState.pendingActionCount > 0u ||
                         runtime.state.value.uiState.currentOverlay != null ||
