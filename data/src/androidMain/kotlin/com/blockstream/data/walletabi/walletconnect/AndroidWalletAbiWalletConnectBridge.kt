@@ -49,6 +49,8 @@ class AndroidWalletAbiWalletConnectBridge(
     private companion object {
         const val SESSION_APPROVAL_LOOKUP_ATTEMPTS = 120
         const val SESSION_APPROVAL_LOOKUP_DELAY_MS = 250L
+        const val SESSION_DISCONNECT_LOOKUP_ATTEMPTS = 40
+        const val SESSION_DISCONNECT_LOOKUP_DELAY_MS = 250L
     }
 
     override suspend fun initialize() {
@@ -365,6 +367,7 @@ class AndroidWalletAbiWalletConnectBridge(
         actionId: String,
         payload: WalletAbiWalletConnectDisconnectSessionAction,
     ): WalletAbiWalletConnectTransportExecutionResult {
+        logger.i { "executeDisconnect actionId=$actionId topic=${payload.topic}" }
         awaitWalletKit<Unit> { onSuccess, onError ->
             WalletKit.disconnectSession(
                 params = Wallet.Params.SessionDisconnect(sessionTopic = payload.topic),
@@ -372,8 +375,22 @@ class AndroidWalletAbiWalletConnectBridge(
                 onError = { error -> onError(error.throwable) },
             )
         }
+        waitForDisconnectedSession(payload.topic)
 
         return WalletAbiWalletConnectTransportExecutionResult(actionId = actionId)
+    }
+
+    private suspend fun waitForDisconnectedSession(topic: String) {
+        repeat(SESSION_DISCONNECT_LOOKUP_ATTEMPTS) {
+            if (WalletKit.getListOfActiveSessions().none { it.topic == topic }) {
+                logger.i { "waitForDisconnectedSession removed topic=$topic" }
+                return
+            }
+
+            delay(SESSION_DISCONNECT_LOOKUP_DELAY_MS)
+        }
+
+        error("WalletConnect session was not removed after disconnect")
     }
 
     private fun startInitialization(initialization: CompletableDeferred<Unit>) {
