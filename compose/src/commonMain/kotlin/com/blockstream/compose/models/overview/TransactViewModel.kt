@@ -392,6 +392,15 @@ private fun WalletAbiWalletConnectState.toCardLook(): WalletAbiWalletConnectCard
         }
     }
 
+    if (isPairing) {
+        return WalletAbiWalletConnectCardLook(
+            title = "WalletConnect pairing",
+            subtitle = null,
+            body = "Waiting for the paired app to send a session proposal.",
+            statusLabel = "Pairing",
+        )
+    }
+
     preparingRequest?.let { preparingRequest ->
         val session = uiState.activeSessions.firstOrNull { it.topic == preparingRequest.topic }
         return WalletAbiWalletConnectCardLook(

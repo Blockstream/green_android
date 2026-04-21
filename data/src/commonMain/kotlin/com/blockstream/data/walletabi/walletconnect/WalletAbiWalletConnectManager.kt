@@ -57,6 +57,7 @@ data class WalletAbiWalletConnectState(
         pendingActionCount = 0u,
     ),
     val bridgeError: String? = null,
+    val isPairing: Boolean = false,
     val preparingRequest: WalletAbiWalletConnectPreparingRequest? = null,
 ) {
     val lastError: String?
@@ -242,6 +243,13 @@ class WalletAbiWalletConnectManager(
             refreshState(runtime, bridgeError = null)
             runtime.coordinator.normalizePairingUri(input)
         }
+        updateState(
+            greenWallet.id,
+            state(greenWallet.id).value.copy(
+                bridgeError = null,
+                isPairing = true,
+            ),
+        )
 
         runCatching {
             bridge.pair(normalized)
@@ -255,7 +263,10 @@ class WalletAbiWalletConnectManager(
             logger.w { "pair failed walletId=${greenWallet.id} message=${error.message}" }
             updateState(
                 greenWallet.id,
-                state(greenWallet.id).value.copy(bridgeError = error.message ?: "WalletConnect pairing failed"),
+                state(greenWallet.id).value.copy(
+                    bridgeError = error.message ?: "WalletConnect pairing failed",
+                    isPairing = false,
+                ),
             )
             throw error
         }
@@ -409,6 +420,7 @@ class WalletAbiWalletConnectManager(
             targetWalletId,
             state(targetWalletId).value.copy(
                 bridgeError = message,
+                isPairing = false,
                 preparingRequest = null,
             ),
         )
@@ -512,6 +524,7 @@ class WalletAbiWalletConnectManager(
         val nextState = WalletAbiWalletConnectState(
             uiState = uiState,
             bridgeError = bridgeError,
+            isPairing = false,
             preparingRequest = null,
         )
         updateState(runtime.walletId, nextState)

@@ -59,6 +59,8 @@ fun WalletAbiWalletConnectScreenContent(
             onReject = { onIntent(WalletAbiFlowIntent.Reject) },
         )
 
+        WalletAbiWalletConnectScreenState.Pairing -> WalletAbiWalletConnectPairingScreen()
+
         is WalletAbiWalletConnectScreenState.Preparing -> WalletAbiWalletConnectPreparingScreen(
             look = screenState.look,
         )
@@ -160,6 +162,29 @@ private fun WalletAbiWalletConnectConnectionApprovalScreen(
             ) {
                 onReject()
             }
+        },
+    )
+}
+
+@Composable
+private fun WalletAbiWalletConnectPairingScreen() {
+    WalletAbiWalletConnectScaffold(
+        body = {
+            CircularProgressIndicator(
+                modifier = Modifier
+                    .align(Alignment.CenterHorizontally)
+                    .size(32.dp),
+            )
+            WalletAbiWalletConnectHeader(
+                title = "Pairing WalletConnect",
+                supporting = "Green is waiting for the paired app to send a WalletConnect session proposal.",
+                testTag = "wallet_connect_pairing",
+            )
+            GreenAlert(
+                title = "Waiting for session proposal",
+                message = "Keep the paired app open. If nothing changes, scan or paste a fresh WalletConnect URI.",
+                isBlue = true,
+            )
         },
     )
 }

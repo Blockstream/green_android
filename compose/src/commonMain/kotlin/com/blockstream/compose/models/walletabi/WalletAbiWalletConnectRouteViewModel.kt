@@ -88,6 +88,8 @@ data class WalletAbiWalletConnectPreparingLook(
 sealed interface WalletAbiWalletConnectScreenState {
     data object Empty : WalletAbiWalletConnectScreenState
 
+    data object Pairing : WalletAbiWalletConnectScreenState
+
     data class ConnectionApproval(
         val look: WalletAbiWalletConnectConnectionLook,
     ) : WalletAbiWalletConnectScreenState
@@ -210,6 +212,7 @@ class WalletAbiWalletConnectRouteViewModel(
             }
 
             WalletAbiWalletConnectScreenState.Empty,
+            WalletAbiWalletConnectScreenState.Pairing,
             is WalletAbiWalletConnectScreenState.AwaitingTransport,
             is WalletAbiWalletConnectScreenState.Preparing -> Unit
         }
@@ -278,6 +281,7 @@ class WalletAbiWalletConnectRouteViewModel(
             }
 
             WalletAbiWalletConnectScreenState.Empty,
+            WalletAbiWalletConnectScreenState.Pairing,
             is WalletAbiWalletConnectScreenState.AwaitingTransport,
             is WalletAbiWalletConnectScreenState.Connected,
             is WalletAbiWalletConnectScreenState.Preparing -> Unit
@@ -352,6 +356,10 @@ class WalletAbiWalletConnectRouteViewModel(
                         ),
                         reviewLook = null,
                     )
+                    return
+                }
+                if (state.isPairing) {
+                    mutableScreenState.value = WalletAbiWalletConnectScreenState.Pairing
                     return
                 }
                 state.preparingRequest?.let { preparingRequest ->

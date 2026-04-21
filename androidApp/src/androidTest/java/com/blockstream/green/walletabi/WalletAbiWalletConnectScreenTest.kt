@@ -70,4 +70,21 @@ class WalletAbiWalletConnectScreenTest {
         composeRule.onNodeWithText("wallet-abi-request-1").assertIsDisplayed()
         composeRule.onNodeWithText("Simplicity Lending").assertIsDisplayed()
     }
+
+    @Test
+    fun walletConnectScreen_shows_pairing_state() {
+        composeRule.setContent {
+            GreenPreview {
+                WalletAbiWalletConnectScreenContent(
+                    screenState = WalletAbiWalletConnectScreenState.Pairing,
+                    onIntent = {},
+                )
+            }
+        }
+
+        composeRule.onNodeWithTag("wallet_connect_pairing")
+            .assertIsDisplayed()
+            .assertTextContains("Pairing WalletConnect")
+        composeRule.onNodeWithText("Waiting for session proposal").assertIsDisplayed()
+    }
 }
