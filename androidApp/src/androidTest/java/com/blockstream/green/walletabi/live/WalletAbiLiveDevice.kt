@@ -390,8 +390,11 @@ class WalletAbiLiveDevice(
             return true
         }
 
-        val pasteBounds = pasteButton.visibleBounds
         Log.w(logTag, "WalletConnect paste path did not react to the first tap, retrying with a direct device click")
+        val retryPasteButton = findObject("transact_wallet_connect_paste")
+            ?: device.findObject(By.text("Paste WalletConnect"))
+            ?: return false
+        val pasteBounds = retryPasteButton.visibleBounds
         check(device.click(pasteBounds.centerX(), pasteBounds.centerY())) {
             "Direct device tap failed for WalletConnect paste"
         }
@@ -821,6 +824,23 @@ class WalletAbiLiveDevice(
         device.waitForIdle()
     }
 
+    private fun tapFirstText(labels: List<String>): Boolean {
+        repeat(3) {
+            labels.forEach { label ->
+                val target = device.findObject(By.text(label)) ?: return@forEach
+                val tapped = runCatching {
+                    tapObject(target)
+                    true
+                }.getOrDefault(false)
+                if (tapped) {
+                    return true
+                }
+            }
+            SystemClock.sleep(POLL_INTERVAL_MS)
+        }
+        return false
+    }
+
     private fun failIfWalletAbiError(context: String) {
         val title = safeText(findObject("wallet_abi_flow_error_title"))
         val body = safeText(findObject("wallet_abi_flow_error"))
@@ -867,9 +887,7 @@ class WalletAbiLiveDevice(
 
     private fun dismissCompatibilityDialog(): Boolean {
         return if (compatibilitySelectors.any(device::hasObject)) {
-            compatibilityButtons.firstNotNullOfOrNull { label ->
-                device.findObject(By.text(label))?.also(UiObject2::click)
-            }
+            tapFirstText(compatibilityButtons)
             device.waitForIdle()
             true
         } else {
@@ -879,9 +897,7 @@ class WalletAbiLiveDevice(
 
     private fun dismissUpgradeOverlay(): Boolean {
         return if (upgradeSelectors.any(device::hasObject)) {
-            upgradeButtons.firstNotNullOfOrNull { label ->
-                device.findObject(By.text(label))?.also(UiObject2::click)
-            }
+            tapFirstText(upgradeButtons)
             device.waitForIdle()
             true
         } else {
