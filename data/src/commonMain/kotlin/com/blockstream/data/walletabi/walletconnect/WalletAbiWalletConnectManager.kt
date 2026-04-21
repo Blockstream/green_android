@@ -720,6 +720,11 @@ private data class WalletAbiWalletConnectRequestKey(
 )
 
 private const val WALLET_ABI_PROCESS_REQUEST_METHOD = "wallet_abi_process_request"
+private const val WALLETCONNECT_MILLISECOND_REQUEST_ID_MIN = 1_000_000_000_000uL
+private const val WALLETCONNECT_MILLISECOND_REQUEST_ID_MAX = 9_999_999_999_999uL
+private const val WALLETCONNECT_MICROSECOND_REQUEST_ID_MIN = 1_000_000_000_000_000uL
+private const val WALLETCONNECT_MICROSECOND_REQUEST_ID_MAX = 9_999_999_999_999_999uL
+private const val WALLETCONNECT_MICROSECONDS_PER_MILLISECOND = 1_000uL
 
 private fun WalletAbiWalletConnectSessionRequest.requestKey(): WalletAbiWalletConnectRequestKey {
     return WalletAbiWalletConnectRequestKey(
@@ -727,6 +732,19 @@ private fun WalletAbiWalletConnectSessionRequest.requestKey(): WalletAbiWalletCo
         requestId = requestId.toString(),
         method = method,
     )
+}
+
+internal fun walletAbiWalletConnectRequestIdTimestampMsOrNull(requestId: ULong): ULong? {
+    return when {
+        requestId >= WALLETCONNECT_MILLISECOND_REQUEST_ID_MIN &&
+            requestId <= WALLETCONNECT_MILLISECOND_REQUEST_ID_MAX -> requestId
+
+        requestId >= WALLETCONNECT_MICROSECOND_REQUEST_ID_MIN &&
+            requestId <= WALLETCONNECT_MICROSECOND_REQUEST_ID_MAX ->
+            requestId / WALLETCONNECT_MICROSECONDS_PER_MILLISECOND
+
+        else -> null
+    }
 }
 
 private data class WalletAbiProviderBundle(
