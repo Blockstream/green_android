@@ -10,6 +10,7 @@ import lwk.XOnlyPublicKey
 @OptIn(ExperimentalStdlibApi::class)
 class WalletAbiJadeSignerCallbacks(
     private val jadeWallet: JadeHWWallet,
+    private val psetSigner: WalletAbiJadePsetSigner = WalletAbiUnsupportedJadePsetSigner,
 ) : WalletAbiSignerCallbacks {
     private val identityKeypair: Keypair by lazy {
         val keyBytes = jadeWallet.getWalletAbiSharedIdentityKey()
@@ -21,9 +22,7 @@ class WalletAbiJadeSignerCallbacks(
     }
 
     override fun signPst(pst: Pset): Pset {
-        throw LwkException.Generic(
-            "Wallet ABI Jade PSET signing is not available in the Android Jade transport yet",
-        )
+        return psetSigner.sign(pst)
     }
 
     override fun signSchnorr(message: ByteArray): ByteArray {

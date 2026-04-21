@@ -2,6 +2,7 @@ package com.blockstream.domain.walletabi.provider
 
 import com.blockstream.data.walletabi.provider.WalletAbiEsploraHttpClient
 import com.blockstream.data.walletabi.provider.WalletAbiJadeSignerCallbacks
+import com.blockstream.data.walletabi.provider.WalletAbiJadePsetSignerFactory
 import com.blockstream.data.walletabi.provider.WalletAbiJadeWalletSignerSupport
 import com.blockstream.data.walletabi.provider.WalletAbiWalletSnapshotSupport
 import com.blockstream.data.gdk.data.Account
@@ -71,6 +72,7 @@ interface WalletAbiProviderRunning {
 class WalletAbiProviderRunner(
     private val json: Json = DefaultJson,
     private val esploraHttpClient: WalletAbiEsploraHttpClient,
+    private val jadePsetSignerFactory: WalletAbiJadePsetSignerFactory = WalletAbiJadePsetSignerFactory.Device,
 ) : WalletAbiProviderRunning {
     override suspend fun run(
         context: WalletAbiExecutionContext,
@@ -201,7 +203,15 @@ class WalletAbiProviderRunner(
                         ?: throw WalletAbiExecutionContextException(
                             "Wallet ABI Jade provider requires a connected Jade hardware wallet",
                         )
-                    signerLink = SignerMetaLink(WalletAbiJadeSignerCallbacks(jadeWallet))
+                    signerLink = SignerMetaLink(
+                        WalletAbiJadeSignerCallbacks(
+                            jadeWallet = jadeWallet,
+                            psetSigner = jadePsetSignerFactory.create(
+                                jadeWallet = jadeWallet,
+                                network = lwkNetwork,
+                            ),
+                        ),
+                    )
                     WalletAbiJadeWalletSignerSupport(jadeWallet)
                 }
             }

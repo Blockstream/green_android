@@ -1,7 +1,16 @@
 package com.blockstream.data.walletabi.provider
 
+import com.blockstream.data.jade.JadeHWWallet
+import com.blockstream.domain.domainModule
+import com.blockstream.domain.walletabi.provider.WalletAbiProviderRunner
+import com.blockstream.domain.walletabi.provider.WalletAbiProviderRunning
+import io.mockk.mockk
 import lwk.LwkException
+import lwk.Network
 import org.junit.Test
+import org.koin.core.context.startKoin
+import org.koin.core.context.stopKoin
+import org.koin.dsl.module
 import kotlin.test.assertContentEquals
 import kotlin.test.assertFailsWith
 import kotlin.test.assertTrue
@@ -67,6 +76,49 @@ class WalletAbiJadeTransportCallbacksTest {
         }
 
         assertTrue(error.msg.contains("Wallet ABI Jade transport read failed: boom"))
+    }
+
+    @Test
+    fun device_factory_creates_real_device_signer() {
+        val signer = WalletAbiJadePsetSignerFactory.Device.create(
+            jadeWallet = mockk<JadeHWWallet>(),
+            network = mockk<Network>(),
+        )
+
+        assertTrue(signer is WalletAbiLwkDeviceJadePsetSigner)
+    }
+
+    @Test
+    fun domain_module_wires_provider_runner_to_real_device_signer_factory() {
+        runCatching { stopKoin() }
+        try {
+            val koin = startKoin {
+                modules(
+                    module {
+                        single {
+                            mockk<WalletAbiEsploraHttpClient>()
+                        }
+                    },
+                    domainModule,
+                )
+            }.koin
+
+            val runner = koin.get<WalletAbiProviderRunning>()
+            assertTrue(runner is WalletAbiProviderRunner)
+
+            val factoryField = WalletAbiProviderRunner::class.java
+                .getDeclaredField("jadePsetSignerFactory")
+            factoryField.isAccessible = true
+            val factory = factoryField.get(runner) as WalletAbiJadePsetSignerFactory
+            val signer = factory.create(
+                jadeWallet = mockk<JadeHWWallet>(),
+                network = mockk<Network>(),
+            )
+
+            assertTrue(signer is WalletAbiLwkDeviceJadePsetSigner)
+        } finally {
+            stopKoin()
+        }
     }
 
     private class QueueJadeByteTransport(

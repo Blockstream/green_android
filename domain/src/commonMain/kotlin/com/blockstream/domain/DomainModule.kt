@@ -28,6 +28,7 @@ import com.blockstream.domain.walletabi.flow.WalletAbiFlowSnapshotRepository
 import com.blockstream.domain.walletabi.flow.WalletAbiFlowStore
 import com.blockstream.domain.walletabi.provider.WalletAbiExecutionContextResolver
 import com.blockstream.domain.walletabi.provider.WalletAbiExecutionContextResolving
+import com.blockstream.data.walletabi.provider.WalletAbiJadePsetSignerFactory
 import com.blockstream.domain.walletabi.provider.WalletAbiProviderRunner
 import com.blockstream.domain.walletabi.provider.WalletAbiProviderRunning
 import org.koin.dsl.module
@@ -86,7 +87,13 @@ val domainModule = module {
         WalletAbiExecutionContextResolver()
     }
     factory<WalletAbiProviderRunning> {
-        WalletAbiProviderRunner(esploraHttpClient = get())
+        WalletAbiProviderRunner(
+            esploraHttpClient = get(),
+            jadePsetSignerFactory = get(),
+        )
+    }
+    single<WalletAbiJadePsetSignerFactory> {
+        WalletAbiJadePsetSignerFactory.Device
     }
     single {
         WalletAbiFlowSnapshotRepository(get())
