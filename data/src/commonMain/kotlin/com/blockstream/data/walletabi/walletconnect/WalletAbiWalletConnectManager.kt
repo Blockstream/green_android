@@ -17,6 +17,7 @@ import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.sync.Mutex
 import kotlinx.coroutines.sync.withLock
+import kotlinx.coroutines.withContext
 import lwk.Mnemonic
 import lwk.Network as LwkNetwork
 import lwk.Signer
@@ -56,10 +57,17 @@ data class WalletAbiWalletConnectState(
         pendingActionCount = 0u,
     ),
     val bridgeError: String? = null,
+    val preparingRequest: WalletAbiWalletConnectPreparingRequest? = null,
 ) {
     val lastError: String?
         get() = bridgeError ?: uiState.lastError
 }
+
+data class WalletAbiWalletConnectPreparingRequest(
+    val topic: String,
+    val requestId: String,
+    val method: String,
+)
 
 interface WalletAbiWalletConnectManaging {
     fun state(walletId: String): StateFlow<WalletAbiWalletConnectState>
@@ -89,7 +97,7 @@ class WalletAbiWalletConnectManager(
         bridge.setListener(
             object : WalletAbiWalletConnectBridgeListener {
                 override fun onSessionProposal(proposal: WalletAbiWalletConnectSessionProposal) {
-                    applicationScope.launch {
+                    applicationScope.launch(Dispatchers.IO) {
                         runCatching {
                             handleSessionProposal(proposal)
                         }.onFailure { error ->
@@ -99,7 +107,7 @@ class WalletAbiWalletConnectManager(
                 }
 
                 override fun onSessionRequest(request: WalletAbiWalletConnectSessionRequest) {
-                    applicationScope.launch {
+                    applicationScope.launch(Dispatchers.IO) {
                         val requestKey = request.requestKey()
                         val accepted = bridgeRequestMutex.withLock {
                             inFlightBridgeRequests.add(requestKey)
@@ -126,7 +134,7 @@ class WalletAbiWalletConnectManager(
                 }
 
                 override fun onSessionDelete(topic: String) {
-                    applicationScope.launch {
+                    applicationScope.launch(Dispatchers.IO) {
                         runCatching {
                             handleSessionDelete(topic)
                         }.onFailure { error ->
@@ -136,7 +144,7 @@ class WalletAbiWalletConnectManager(
                 }
 
                 override fun onSessionExtend(session: WalletAbiWalletConnectSessionInfo) {
-                    applicationScope.launch {
+                    applicationScope.launch(Dispatchers.IO) {
                         runCatching {
                             handleSessionExtend(session)
                         }.onFailure { error ->
@@ -146,7 +154,7 @@ class WalletAbiWalletConnectManager(
                 }
 
                 override fun onError(message: String) {
-                    applicationScope.launch {
+                    applicationScope.launch(Dispatchers.IO) {
                         routeBridgeError(message)
                     }
                 }
@@ -158,7 +166,7 @@ class WalletAbiWalletConnectManager(
         return stateFlow(walletId).asStateFlow()
     }
 
-    override suspend fun bind(greenWallet: GreenWallet, session: GdkSession) {
+    override suspend fun bind(greenWallet: GreenWallet, session: GdkSession) = withContext(Dispatchers.IO) {
         logger.i { "bind walletId=${greenWallet.id}" }
         bridge.initialize()
         val recoveryState = readRecoveryState()
@@ -169,7 +177,7 @@ class WalletAbiWalletConnectManager(
         }
         if (existingRuntime?.matches(bindingTarget) == true) {
             logger.i { "bind reusing runtime walletId=$walletId accountId=${bindingTarget.primaryAccount.id}" }
-            return
+            return@withContext
         }
         val nextRuntime = try {
             createRuntime(
@@ -181,7 +189,7 @@ class WalletAbiWalletConnectManager(
         } catch (error: Throwable) {
             logger.w { "bind failed walletId=$walletId message=${error.message}" }
             updateState(walletId, state(walletId).value.copy(bridgeError = error.message ?: "WalletConnect is unavailable"))
-            return
+            return@withContext
         }
 
         val previous = runtimeMutex.withLock {
@@ -199,21 +207,21 @@ class WalletAbiWalletConnectManager(
         }
     }
 
-    override suspend fun pair(greenWallet: GreenWallet, session: GdkSession, input: String) {
+    override suspend fun pair(greenWallet: GreenWallet, session: GdkSession, input: String) = withContext(Dispatchers.IO) {
         logger.i { "pair requested walletId=${greenWallet.id} inputPrefix=${input.take(32)}" }
         val runtime = runtimeMutex.withLock {
             runtimes[greenWallet.id]
         } ?: run {
             bind(greenWallet, session)
             runtimeMutex.withLock { runtimes[greenWallet.id] }
-        } ?: return
+        } ?: return@withContext
 
         val hasPendingConnectionApproval = runtime.operationMutex.withLock {
             runtime.state.value.uiState.currentOverlay?.kind == WalletAbiWalletConnectOverlayKind.CONNECTION_APPROVAL
         }
         if (hasPendingConnectionApproval) {
             logger.i { "pair ignored walletId=${greenWallet.id} reason=pending_connection_approval" }
-            return
+            return@withContext
         }
 
         val pairReserved = runtimeMutex.withLock {
@@ -226,7 +234,7 @@ class WalletAbiWalletConnectManager(
         }
         if (!pairReserved) {
             logger.i { "pair ignored walletId=${greenWallet.id} reason=pair_already_in_flight" }
-            return
+            return@withContext
         }
 
         val normalized = runtime.operationMutex.withLock {
@@ -253,27 +261,27 @@ class WalletAbiWalletConnectManager(
         }
     }
 
-    override suspend fun approveCurrentOverlay(walletId: String): WalletAbiWalletConnectActionOutcome? {
-        val runtime = runtimeMutex.withLock { runtimes[walletId] } ?: return null
-        return runtime.operationMutex.withLock {
+    override suspend fun approveCurrentOverlay(walletId: String): WalletAbiWalletConnectActionOutcome? = withContext(Dispatchers.IO) {
+        val runtime = runtimeMutex.withLock { runtimes[walletId] } ?: return@withContext null
+        runtime.operationMutex.withLock {
             val actions = runtime.coordinator.approveCurrentOverlay()
             refreshState(runtime, bridgeError = null)
             executeActions(runtime, actions)
         }
     }
 
-    override suspend fun rejectCurrentOverlay(walletId: String): WalletAbiWalletConnectActionOutcome? {
-        val runtime = runtimeMutex.withLock { runtimes[walletId] } ?: return null
-        return runtime.operationMutex.withLock {
+    override suspend fun rejectCurrentOverlay(walletId: String): WalletAbiWalletConnectActionOutcome? = withContext(Dispatchers.IO) {
+        val runtime = runtimeMutex.withLock { runtimes[walletId] } ?: return@withContext null
+        runtime.operationMutex.withLock {
             val actions = runtime.coordinator.rejectCurrentOverlay()
             refreshState(runtime, bridgeError = null)
             executeActions(runtime, actions)
         }
     }
 
-    override suspend fun disconnectActiveSession(walletId: String): WalletAbiWalletConnectActionOutcome? {
-        val runtime = runtimeMutex.withLock { runtimes[walletId] } ?: return null
-        return runtime.operationMutex.withLock {
+    override suspend fun disconnectActiveSession(walletId: String): WalletAbiWalletConnectActionOutcome? = withContext(Dispatchers.IO) {
+        val runtime = runtimeMutex.withLock { runtimes[walletId] } ?: return@withContext null
+        runtime.operationMutex.withLock {
             val actions = runtime.coordinator.disconnectActiveSession(runtime.bundle.chainId)
             refreshState(runtime, bridgeError = null)
             executeActions(runtime, actions)
@@ -281,12 +289,14 @@ class WalletAbiWalletConnectManager(
     }
 
     override suspend fun clearError(walletId: String) {
-        runtimeMutex.withLock { runtimes[walletId] }?.also { runtime ->
-            runtime.operationMutex.withLock {
-                runtime.coordinator.clearError()
-                val current = state(walletId).value
-                updateState(walletId, current.copy(bridgeError = null, uiState = current.uiState.copy(lastError = null)))
-                refreshState(runtime, bridgeError = null)
+        withContext(Dispatchers.IO) {
+            runtimeMutex.withLock { runtimes[walletId] }?.also { runtime ->
+                runtime.operationMutex.withLock {
+                    runtime.coordinator.clearError()
+                    val current = state(walletId).value
+                    updateState(walletId, current.copy(bridgeError = null, uiState = current.uiState.copy(lastError = null)))
+                    refreshState(runtime, bridgeError = null)
+                }
             }
         }
     }
@@ -345,6 +355,19 @@ class WalletAbiWalletConnectManager(
                 )
                 return@withLock
             }
+            if (request.method == WALLET_ABI_PROCESS_REQUEST_METHOD) {
+                updateState(
+                    runtime.walletId,
+                    runtime.state.value.copy(
+                        bridgeError = null,
+                        preparingRequest = WalletAbiWalletConnectPreparingRequest(
+                            topic = request.topic,
+                            requestId = request.requestId.toString(),
+                            method = request.method,
+                        ),
+                    ),
+                )
+            }
             val actions = runtime.coordinator.handleSessionRequest(request)
             refreshState(runtime, bridgeError = null)
             logger.i {
@@ -382,7 +405,13 @@ class WalletAbiWalletConnectManager(
                 ?: runtimes.keys.firstOrNull()
         } ?: return
 
-        updateState(targetWalletId, state(targetWalletId).value.copy(bridgeError = message))
+        updateState(
+            targetWalletId,
+            state(targetWalletId).value.copy(
+                bridgeError = message,
+                preparingRequest = null,
+            ),
+        )
     }
 
     private suspend fun reconcile(runtime: WalletRuntime) {
@@ -483,6 +512,7 @@ class WalletAbiWalletConnectManager(
         val nextState = WalletAbiWalletConnectState(
             uiState = uiState,
             bridgeError = bridgeError,
+            preparingRequest = null,
         )
         updateState(runtime.walletId, nextState)
         persistSnapshot(runtime, nextState)
