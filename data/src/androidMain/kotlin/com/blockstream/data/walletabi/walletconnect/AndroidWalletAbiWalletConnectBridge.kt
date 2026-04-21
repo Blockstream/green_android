@@ -368,12 +368,20 @@ class AndroidWalletAbiWalletConnectBridge(
         payload: WalletAbiWalletConnectDisconnectSessionAction,
     ): WalletAbiWalletConnectTransportExecutionResult {
         logger.i { "executeDisconnect actionId=$actionId topic=${payload.topic}" }
-        awaitWalletKit<Unit> { onSuccess, onError ->
-            WalletKit.disconnectSession(
-                params = Wallet.Params.SessionDisconnect(sessionTopic = payload.topic),
-                onSuccess = { onSuccess(Unit) },
-                onError = { error -> onError(error.throwable) },
-            )
+        runCatching {
+            awaitWalletKit<Unit> { onSuccess, onError ->
+                WalletKit.disconnectSession(
+                    params = Wallet.Params.SessionDisconnect(sessionTopic = payload.topic),
+                    onSuccess = { onSuccess(Unit) },
+                    onError = { error -> onError(error.throwable) },
+                )
+            }
+        }.getOrElse { error ->
+            if (error.message?.isWalletConnectMissingSequence() == true) {
+                logger.i { "ignoring WalletConnect disconnect for missing topic sequence: ${payload.topic}" }
+                return WalletAbiWalletConnectTransportExecutionResult(actionId = actionId)
+            }
+            throw error
         }
         waitForDisconnectedSession(payload.topic)
 
@@ -488,7 +496,13 @@ class AndroidWalletAbiWalletConnectBridge(
 
                     val message = state.reason?.let { reason ->
                         when (reason) {
-                            is Wallet.Model.ConnectionState.Reason.ConnectionClosed -> reason.message
+                            is Wallet.Model.ConnectionState.Reason.ConnectionClosed -> {
+                                if (reason.message.isWalletConnectLifecyclePause()) {
+                                    logger.i { "ignoring WalletConnect lifecycle close: ${reason.message}" }
+                                    return
+                                }
+                                reason.message
+                            }
                             is Wallet.Model.ConnectionState.Reason.ConnectionFailed -> {
                                 reason.throwable.message ?: "WalletConnect connection failed"
                             }
@@ -628,6 +642,14 @@ private fun WalletAbiWalletConnectRpcErrorKind.toRpcCode(): Int {
         WalletAbiWalletConnectRpcErrorKind.SESSION_NOT_FOUND -> -32000
         WalletAbiWalletConnectRpcErrorKind.INTERNAL_ERROR -> -32603
     }
+}
+
+private fun String.isWalletConnectLifecyclePause(): Boolean {
+    return contains("App is paused", ignoreCase = true)
+}
+
+private fun String.isWalletConnectMissingSequence(): Boolean {
+    return contains("Cannot find sequence for given topic", ignoreCase = true)
 }
 
 private fun WalletAbiWalletConnectReasonKind.defaultMessage(): String {

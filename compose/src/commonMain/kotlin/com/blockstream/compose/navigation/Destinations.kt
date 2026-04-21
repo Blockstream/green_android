@@ -66,7 +66,8 @@ sealed class NavigateDestinations : NavigateDestination() {
 
     @Serializable
     data class WalletAbiWalletConnect(
-        val greenWallet: GreenWallet
+        val greenWallet: GreenWallet,
+        val pairingUri: String? = null,
     ) : NavigateDestination(unique = true)
 
     @Serializable

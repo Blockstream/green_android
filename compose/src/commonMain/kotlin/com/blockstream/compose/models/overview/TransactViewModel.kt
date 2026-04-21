@@ -10,7 +10,6 @@ import com.blockstream.compose.looks.transaction.TransactionLook
 import com.blockstream.compose.navigation.NavData
 import com.blockstream.compose.navigation.NavigateDestinations
 import com.blockstream.compose.navigation.WalletAbiFlowLaunchMode
-import com.blockstream.compose.sideeffects.SideEffects
 import com.blockstream.data.data.DataState
 import com.blockstream.data.data.GreenWallet
 import com.blockstream.data.extensions.ifConnected
@@ -264,19 +263,12 @@ class TransactViewModel(greenWallet: GreenWallet) : TransactViewModelAbstract(gr
             return
         }
 
-        viewModelScope.launch {
-            runCatching {
-                walletAbiWalletConnectManager.pair(
-                    greenWallet = greenWallet,
-                    session = session,
-                    input = pairingInput,
-                )
-            }.onSuccess {
-                postEvent(NavigateDestinations.WalletAbiWalletConnect(greenWallet = greenWallet))
-            }.onFailure { error ->
-                postSideEffect(SideEffects.ErrorSnackbar(error))
-            }
-        }
+        postEvent(
+            NavigateDestinations.WalletAbiWalletConnect(
+                greenWallet = greenWallet,
+                pairingUri = pairingInput,
+            )
+        )
     }
 
     private suspend fun updateNavData(greenWallet: GreenWallet) {

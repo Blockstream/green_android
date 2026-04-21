@@ -792,12 +792,10 @@ open class GreenViewModel constructor(
         doAsync({
             val normalizedInput = data.trim()
             if (greenWalletOrNull != null && normalizedInput.startsWith("wc:")) {
-                walletAbiWalletConnectManager.pair(
+                return@doAsync NavigateDestinations.WalletAbiWalletConnect(
                     greenWallet = greenWallet,
-                    session = session,
-                    input = normalizedInput,
+                    pairingUri = normalizedInput,
                 )
-                return@doAsync NavigateDestinations.WalletAbiWalletConnect(greenWallet = greenWallet)
             }
 
             val checkedInput = session.parseInput(data)

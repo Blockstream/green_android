@@ -4,6 +4,7 @@ import androidx.lifecycle.viewModelScope
 import com.blockstream.compose.extensions.launchIn
 import com.blockstream.compose.models.GreenViewModel
 import com.blockstream.compose.navigation.NavData
+import com.blockstream.compose.sideeffects.SideEffects
 import com.blockstream.data.data.GreenWallet
 import com.blockstream.data.gdk.data.Account
 import com.blockstream.data.gdk.data.AccountAssetBalance
@@ -61,6 +62,7 @@ import kotlin.math.absoluteValue
 import org.koin.core.component.inject
 
 private const val USER_REJECTED_MESSAGE = "wallet connect request rejected by user"
+private const val WALLET_ABI_PROCESS_REQUEST_METHOD = "wallet_abi_process_request"
 
 data class WalletAbiWalletConnectConnectionLook(
     val proposal: WalletAbiWalletConnectSessionProposal,
@@ -116,12 +118,16 @@ sealed interface WalletAbiWalletConnectScreenState {
 
 class WalletAbiWalletConnectRouteViewModel(
     greenWallet: GreenWallet,
+    private val initialPairingUri: String? = null,
 ) : GreenViewModel(greenWalletOrNull = greenWallet) {
     private val mutableScreenState =
         MutableStateFlow<WalletAbiWalletConnectScreenState>(WalletAbiWalletConnectScreenState.Empty)
     private val overlayActionMutex = Mutex()
 
     private var terminalOverride: WalletAbiFlowState? = null
+    private var requestApprovalInFlight = false
+    private var leaveRouteAfterTerminalDismiss = false
+    private var pairingInFlight = false
 
     override fun screenName(): String = "WalletAbiWalletConnect"
 
@@ -144,11 +150,16 @@ class WalletAbiWalletConnectRouteViewModel(
             }
             .launchIn(this)
 
+        val pairingUri = initialPairingUri?.takeIf { it.isNotBlank() }
         viewModelScope.launch {
-            walletAbiWalletConnectManager.bind(
-                greenWallet = greenWallet,
-                session = session,
-            )
+            if (pairingUri != null) {
+                pairFromRoute(pairingUri)
+            } else {
+                walletAbiWalletConnectManager.bind(
+                    greenWallet = greenWallet,
+                    session = session,
+                )
+            }
         }
 
         sessionManager.pendingUri
@@ -159,13 +170,7 @@ class WalletAbiWalletConnectRouteViewModel(
                     return@onEach
                 }
                 sessionManager.consumePendingUri(uri)?.also { pendingUri ->
-                    runCatching {
-                        walletAbiWalletConnectManager.pair(
-                            greenWallet = greenWallet,
-                            session = session,
-                            input = pendingUri,
-                        )
-                    }
+                    pairFromRoute(pendingUri)
                 }
             }
             .launchIn(this)
@@ -173,15 +178,49 @@ class WalletAbiWalletConnectRouteViewModel(
         bootstrap()
     }
 
+    private suspend fun pairFromRoute(input: String) {
+        val pairingInput = input.trim()
+        if (pairingInput.isBlank()) {
+            return
+        }
+
+        pairingInFlight = true
+        mutableScreenState.value = WalletAbiWalletConnectScreenState.Pairing
+        runCatching {
+            walletAbiWalletConnectManager.pair(
+                greenWallet = greenWallet,
+                session = session,
+                input = pairingInput,
+            )
+        }.onFailure { error ->
+            pairingInFlight = false
+            mutableScreenState.value = WalletAbiWalletConnectScreenState.WalletAbiFlow(
+                state = WalletAbiFlowState.Error(
+                    WalletAbiFlowError(
+                        kind = WalletAbiFlowErrorKind.EXECUTION_FAILURE,
+                        phase = WalletAbiFlowPhase.LOADING,
+                        message = error.message ?: "WalletConnect pairing failed",
+                        retryable = true,
+                    )
+                ),
+                reviewLook = null,
+            )
+        }
+    }
+
     fun dispatch(intent: WalletAbiFlowIntent) {
         viewModelScope.launch {
-            when (intent) {
-                WalletAbiFlowIntent.Approve -> handleApprove()
-                WalletAbiFlowIntent.Reject -> handleReject()
-                WalletAbiFlowIntent.Cancel -> handleCancel()
-                WalletAbiFlowIntent.DismissTerminal -> dismissTerminal()
-                WalletAbiFlowIntent.Retry -> retryFromError()
-                else -> Unit
+            runCatching {
+                when (intent) {
+                    WalletAbiFlowIntent.Approve -> handleApprove()
+                    WalletAbiFlowIntent.Reject -> handleReject()
+                    WalletAbiFlowIntent.Cancel -> handleCancel()
+                    WalletAbiFlowIntent.DismissTerminal -> dismissTerminal()
+                    WalletAbiFlowIntent.Retry -> retryFromError()
+                    else -> Unit
+                }
+            }.onFailure { error ->
+                showOverlayActionFailure(error)
             }
         }
     }
@@ -189,12 +228,19 @@ class WalletAbiWalletConnectRouteViewModel(
     private suspend fun handleApprove() {
         if (overlayActionMutex.isLocked) return
         overlayActionMutex.withLock {
+            val isRequestApproval = isCurrentWalletAbiRequestApproval()
+            requestApprovalInFlight = isRequestApproval
             markOverlayActionStarted()
             val outcome = walletAbiWalletConnectManager.approveCurrentOverlay(greenWallet.id)
             if (outcome != null) {
                 handleOutcome(outcome)
             } else {
-                synchronizeFromManager(currentManagerState())
+                requestApprovalInFlight = false
+                if (isRequestApproval) {
+                    postSideEffect(SideEffects.NavigateBack())
+                } else {
+                    synchronizeFromManager(currentManagerState())
+                }
             }
         }
     }
@@ -202,12 +248,19 @@ class WalletAbiWalletConnectRouteViewModel(
     private suspend fun handleReject() {
         if (overlayActionMutex.isLocked) return
         overlayActionMutex.withLock {
+            val isRequestApproval = isCurrentWalletAbiRequestApproval()
+            requestApprovalInFlight = isRequestApproval
             markOverlayActionStarted()
             val outcome = walletAbiWalletConnectManager.rejectCurrentOverlay(greenWallet.id)
             if (outcome != null) {
                 handleOutcome(outcome)
             } else {
-                synchronizeFromManager(currentManagerState())
+                requestApprovalInFlight = false
+                if (isRequestApproval) {
+                    postSideEffect(SideEffects.NavigateBack())
+                } else {
+                    synchronizeFromManager(currentManagerState())
+                }
             }
         }
     }
@@ -240,15 +293,24 @@ class WalletAbiWalletConnectRouteViewModel(
     }
 
     private suspend fun dismissTerminal() {
+        val shouldLeaveRoute = leaveRouteAfterTerminalDismiss || mutableScreenState.value.isTerminalFlow()
+        leaveRouteAfterTerminalDismiss = false
         terminalOverride = null
+        walletAbiWalletConnectManager.clearTerminal(greenWallet.id)
         if (currentManagerState().lastError != null) {
             walletAbiWalletConnectManager.clearError(greenWallet.id)
+        }
+        if (shouldLeaveRoute) {
+            postSideEffect(SideEffects.NavigateBack())
+            return
         }
         synchronizeFromManager(currentManagerState())
     }
 
     private suspend fun retryFromError() {
+        leaveRouteAfterTerminalDismiss = false
         terminalOverride = null
+        walletAbiWalletConnectManager.clearTerminal(greenWallet.id)
         if (currentManagerState().lastError != null) {
             walletAbiWalletConnectManager.clearError(greenWallet.id)
         }
@@ -256,6 +318,8 @@ class WalletAbiWalletConnectRouteViewModel(
     }
 
     private suspend fun handleOutcome(outcome: WalletAbiWalletConnectActionOutcome) {
+        val wasRequestApprovalInFlight = requestApprovalInFlight
+        requestApprovalInFlight = false
         terminalOverride = when (outcome) {
             WalletAbiWalletConnectActionOutcome.SessionApproved -> null
             WalletAbiWalletConnectActionOutcome.SessionDisconnected -> null
@@ -263,22 +327,29 @@ class WalletAbiWalletConnectRouteViewModel(
                 WalletAbiFlowState.Cancelled(WalletAbiCancelledReason.UserRejected)
 
             is WalletAbiWalletConnectActionOutcome.RequestSucceeded ->
-                outcome.resultJson.toWalletAbiTerminalState()
+                outcome.toTerminalOverride()
 
             is WalletAbiWalletConnectActionOutcome.RequestRejected ->
-                WalletAbiFlowState.Error(
-                    WalletAbiFlowError(
-                        kind = WalletAbiFlowErrorKind.EXECUTION_FAILURE,
-                        phase = WalletAbiFlowPhase.SUBMISSION,
-                        message = outcome.message,
-                        retryable = false,
-                    )
-                )
+                outcome.toTerminalOverride()
         }
 
         terminalOverride?.also { terminal ->
+            leaveRouteAfterTerminalDismiss = when (outcome) {
+                is WalletAbiWalletConnectActionOutcome.RequestRejected,
+                is WalletAbiWalletConnectActionOutcome.RequestSucceeded,
+                -> true
+
+                WalletAbiWalletConnectActionOutcome.SessionApproved,
+                WalletAbiWalletConnectActionOutcome.SessionDisconnected,
+                WalletAbiWalletConnectActionOutcome.SessionRejected,
+                -> false
+            }
             showTerminal(terminal)
-        } ?: synchronizeFromManager(currentManagerState())
+        } ?: if (wasRequestApprovalInFlight) {
+            postSideEffect(SideEffects.NavigateBack())
+        } else {
+            synchronizeFromManager(currentManagerState())
+        }
     }
 
     private fun markOverlayActionStarted() {
@@ -311,8 +382,18 @@ class WalletAbiWalletConnectRouteViewModel(
 
     private suspend fun synchronizeFromManager(state: WalletAbiWalletConnectState) {
         val overlay = state.uiState.currentOverlay
+        if (overlay == null) {
+            state.terminalOutcome?.toTerminalOverride()?.let { terminal ->
+                terminalOverride = terminal
+                leaveRouteAfterTerminalDismiss = true
+                showTerminal(terminal)
+                return
+            }
+        }
+
         when (overlay?.kind) {
             WalletAbiWalletConnectOverlayKind.CONNECTION_APPROVAL -> {
+                pairingInFlight = false
                 val proposal = overlay.proposal ?: return
                 mutableScreenState.value = WalletAbiWalletConnectScreenState.ConnectionApproval(
                     WalletAbiWalletConnectConnectionLook(
@@ -329,6 +410,7 @@ class WalletAbiWalletConnectRouteViewModel(
             }
 
             WalletAbiWalletConnectOverlayKind.TRANSACTION_APPROVAL -> {
+                pairingInFlight = false
                 val request = decodeWalletAbiRequest(overlay.requestJson)
                     ?: return showUnsupportedRequest("WalletConnect request payload is unavailable")
                 val preview = decodeWalletAbiPreview(overlay.previewJson)
@@ -366,6 +448,7 @@ class WalletAbiWalletConnectRouteViewModel(
 
             null -> {
                 if (state.lastError != null) {
+                    pairingInFlight = false
                     mutableScreenState.value = WalletAbiWalletConnectScreenState.WalletAbiFlow(
                         state = WalletAbiFlowState.Error(
                             WalletAbiFlowError(
@@ -380,10 +463,12 @@ class WalletAbiWalletConnectRouteViewModel(
                     return
                 }
                 if (state.isPairing) {
+                    pairingInFlight = false
                     mutableScreenState.value = WalletAbiWalletConnectScreenState.Pairing
                     return
                 }
                 state.preparingRequest?.let { preparingRequest ->
+                    pairingInFlight = false
                     val session = state.uiState.activeSessions.firstOrNull { it.topic == preparingRequest.topic }
                     mutableScreenState.value = WalletAbiWalletConnectScreenState.Preparing(
                         WalletAbiWalletConnectPreparingLook(
@@ -394,7 +479,15 @@ class WalletAbiWalletConnectRouteViewModel(
                     )
                     return
                 }
+                if (requestApprovalInFlight) {
+                    return
+                }
+                if (pairingInFlight) {
+                    mutableScreenState.value = WalletAbiWalletConnectScreenState.Pairing
+                    return
+                }
                 state.uiState.activeSessions.firstOrNull()?.also { sessionInfo ->
+                    pairingInFlight = false
                     mutableScreenState.value = WalletAbiWalletConnectScreenState.Connected(
                         WalletAbiWalletConnectConnectedLook(
                             session = sessionInfo,
@@ -403,6 +496,7 @@ class WalletAbiWalletConnectRouteViewModel(
                     )
                     return
                 }
+                pairingInFlight = false
                 mutableScreenState.value = WalletAbiWalletConnectScreenState.Empty
             }
         }
@@ -437,6 +531,27 @@ class WalletAbiWalletConnectRouteViewModel(
             ),
             reviewLook = null,
         )
+    }
+
+    private fun showOverlayActionFailure(error: Throwable) {
+        requestApprovalInFlight = false
+        mutableScreenState.value = WalletAbiWalletConnectScreenState.WalletAbiFlow(
+            state = WalletAbiFlowState.Error(
+                WalletAbiFlowError(
+                    kind = WalletAbiFlowErrorKind.EXECUTION_FAILURE,
+                    phase = WalletAbiFlowPhase.APPROVAL,
+                    message = error.message ?: "WalletConnect action failed",
+                    retryable = true,
+                )
+            ),
+            reviewLook = null,
+        )
+    }
+
+    private fun isCurrentWalletAbiRequestApproval(): Boolean {
+        val state = mutableScreenState.value as? WalletAbiWalletConnectScreenState.WalletAbiFlow
+            ?: return false
+        return state.state is WalletAbiFlowState.RequestLoaded
     }
 
     private fun currentManagerState(): WalletAbiWalletConnectState {
@@ -673,7 +788,7 @@ private fun String.toWalletAbiTerminalState(): WalletAbiFlowState {
 
                 WalletAbiProviderStatus.ERROR -> {
                     val errorMessage = response.error?.message ?: "WalletConnect request failed"
-                    if (errorMessage.equals(USER_REJECTED_MESSAGE, ignoreCase = true)) {
+                    if (errorMessage.isUserRejectedMessage()) {
                         WalletAbiFlowState.Cancelled(WalletAbiCancelledReason.UserRejected)
                     } else {
                         WalletAbiFlowState.Error(
@@ -699,6 +814,46 @@ private fun String.toWalletAbiTerminalState(): WalletAbiFlowState {
             )
         },
     )
+}
+
+private fun WalletAbiWalletConnectActionOutcome.toTerminalOverride(): WalletAbiFlowState? {
+    return when (this) {
+        is WalletAbiWalletConnectActionOutcome.RequestSucceeded ->
+            resultJson.takeIf { method == WALLET_ABI_PROCESS_REQUEST_METHOD }?.toWalletAbiTerminalState()
+        is WalletAbiWalletConnectActionOutcome.RequestRejected ->
+            message.takeIf { method == WALLET_ABI_PROCESS_REQUEST_METHOD }?.let { errorMessage ->
+                if (errorMessage.isUserRejectedMessage()) {
+                    WalletAbiFlowState.Cancelled(WalletAbiCancelledReason.UserRejected)
+                } else {
+                    WalletAbiFlowState.Error(
+                        WalletAbiFlowError(
+                            kind = WalletAbiFlowErrorKind.EXECUTION_FAILURE,
+                            phase = WalletAbiFlowPhase.SUBMISSION,
+                            message = errorMessage,
+                            retryable = false,
+                        )
+                    )
+                }
+            }
+
+        WalletAbiWalletConnectActionOutcome.SessionApproved,
+        WalletAbiWalletConnectActionOutcome.SessionDisconnected,
+        WalletAbiWalletConnectActionOutcome.SessionRejected,
+        -> null
+    }
+}
+
+private fun WalletAbiWalletConnectScreenState.isTerminalFlow(): Boolean {
+    val flowState = (this as? WalletAbiWalletConnectScreenState.WalletAbiFlow)?.state
+        ?: return false
+    return flowState is WalletAbiFlowState.Success ||
+        flowState is WalletAbiFlowState.Cancelled ||
+        flowState is WalletAbiFlowState.Error
+}
+
+private fun String.isUserRejectedMessage(): Boolean {
+    return trim().equals(USER_REJECTED_MESSAGE, ignoreCase = true) ||
+        contains("rejected by user", ignoreCase = true)
 }
 
 private fun WalletAbiTxCreateRequest.toFlowReview(

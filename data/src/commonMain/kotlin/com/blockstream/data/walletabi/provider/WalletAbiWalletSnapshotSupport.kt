@@ -63,16 +63,22 @@ data class WalletAbiIndexedUtxo(
 class WalletAbiUtxoIndex {
     private val lock = Any()
     private val entries = mutableMapOf<String, WalletAbiIndexedUtxo>()
+    private var loaded = false
 
     fun replace(nextEntries: Map<String, WalletAbiIndexedUtxo>) {
         synchronized(lock) {
             entries.clear()
             entries.putAll(nextEntries)
+            loaded = true
         }
     }
 
     fun get(outpointKey: String): WalletAbiIndexedUtxo? = synchronized(lock) {
         entries[outpointKey]
+    }
+
+    fun hasLoadedSnapshot(): Boolean = synchronized(lock) {
+        loaded
     }
 }
 
@@ -203,9 +209,21 @@ class WalletAbiWalletSnapshotSupport(
     WalletAbiBroadcasterCallbacks {
     private val txOutCacheLock = Any()
     private val txOutCache = mutableMapOf<String, TxOut>()
+    private val lightweightSessionLock = Any()
+    private var lightweightSessionCount = 0
+
+    fun useLightweightRequestSessionOnce() {
+        synchronized(lightweightSessionLock) {
+            lightweightSessionCount += 1
+        }
+    }
 
     override fun openWalletRequestSession(): WalletAbiRequestSession {
-        val spendableUtxos = runBlocking { buildSpendableUtxos() }
+        val spendableUtxos = if (consumeLightweightRequestSession()) {
+            emptyList()
+        } else {
+            runBlocking { buildSpendableUtxos() }
+        }
         return WalletAbiRequestSession(
             sessionId = walletAbiGenerateRequestId(),
             network = lwkNetwork,
@@ -286,6 +304,9 @@ class WalletAbiWalletSnapshotSupport(
     private suspend fun indexedUtxoOrNull(outpoint: OutPoint): WalletAbiIndexedUtxo? {
         val outpointKey = outpoint.cacheKey()
         utxoIndex.get(outpointKey)?.let { return it }
+        if (utxoIndex.hasLoadedSnapshot()) {
+            return null
+        }
 
         refreshIndexedUtxos()
         return utxoIndex.get(outpointKey)
@@ -300,7 +321,19 @@ class WalletAbiWalletSnapshotSupport(
         }
     }
 
+    private fun consumeLightweightRequestSession(): Boolean {
+        return synchronized(lightweightSessionLock) {
+            if (lightweightSessionCount <= 0) {
+                false
+            } else {
+                lightweightSessionCount -= 1
+                true
+            }
+        }
+    }
+
     private suspend fun refreshIndexedUtxos(): Map<String, WalletAbiIndexedUtxo> {
+        val outspendsCache = mutableMapOf<String, NetworkResponse<List<WalletAbiEsploraOutspend>>>()
         val nextEntries = buildMap {
             snapshotAccounts.forEach { account ->
                 val unspentOutputs = session.getUnspentOutputs(account)
@@ -312,7 +345,7 @@ class WalletAbiWalletSnapshotSupport(
                         io = io.normalizeWalletAbi(account),
                         utxo = utxo,
                     )
-                    if (isChainSpendable(indexed)) {
+                    if (isChainSpendable(indexed, outspendsCache)) {
                         put(indexed.outpoint().cacheKey(), indexed)
                     }
                 }
@@ -323,7 +356,10 @@ class WalletAbiWalletSnapshotSupport(
         return nextEntries
     }
 
-    private suspend fun isChainSpendable(indexed: WalletAbiIndexedUtxo): Boolean {
+    private suspend fun isChainSpendable(
+        indexed: WalletAbiIndexedUtxo,
+        outspendsCache: MutableMap<String, NetworkResponse<List<WalletAbiEsploraOutspend>>>,
+    ): Boolean {
         if (indexed.io.isSpent == true) {
             return false
         }
@@ -332,7 +368,11 @@ class WalletAbiWalletSnapshotSupport(
         val vout = indexed.outpoint().vout().toInt()
 
         indexed.account.network.walletAbiEsploraApiBaseUrls().forEach { apiBaseUrl ->
-            when (val response = esploraHttpClient.getTransactionOutspends(apiBaseUrl, txid)) {
+            val cacheKey = "${apiBaseUrl.trim().trimEnd('/')}/$txid"
+            val response = outspendsCache.getOrPut(cacheKey) {
+                esploraHttpClient.getTransactionOutspends(apiBaseUrl, txid)
+            }
+            when (response) {
                 is NetworkResponse.Success -> {
                     if (walletAbiOutspendIsSpent(response.data, vout)) {
                         return false

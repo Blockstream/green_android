@@ -397,6 +397,7 @@ fun Router(
                 val viewModel = viewModel {
                     WalletAbiWalletConnectRouteViewModel(
                         greenWallet = args.greenWallet,
+                        initialPairingUri = args.pairingUri,
                     )
                 }
                 SetupScreen(viewModel = viewModel, withPadding = false, withBottomInsets = false) {
