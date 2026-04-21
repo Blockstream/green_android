@@ -105,6 +105,7 @@ class SessionManager constructor(
     private var timeoutTimers = mutableListOf<Timer>()
 
     val pendingUri: MutableStateFlow<String?> = MutableStateFlow(null)
+    private val pendingUriLock = ReentrantLock()
 
     private val _connectionChangeEvent = MutableSharedFlow<Unit>(replay = 1, onBufferOverflow = BufferOverflow.DROP_OLDEST).also {
         // Set initial value
@@ -174,6 +175,28 @@ class SessionManager constructor(
         _torProxy.filterNotNull().onEach {
             countly.updateTorProxy(it)
         }.launchIn(scope)
+    }
+
+    fun setPendingUri(uri: String?) {
+        pendingUriLock.withLock {
+            pendingUri.value = uri
+        }
+    }
+
+    fun clearPendingUri(expected: String? = null) {
+        pendingUriLock.withLock {
+            if (expected == null || pendingUri.value == expected) {
+                pendingUri.value = null
+            }
+        }
+    }
+
+    fun consumePendingUri(expected: String? = null): String? {
+        return pendingUriLock.withLock {
+            pendingUri.value?.takeIf { expected == null || it == expected }?.also {
+                pendingUri.value = null
+            }
+        }
     }
 
     fun getDeviceSessionForNetworkAllPolicies(device: GreenDevice, network: Network, isEphemeral: Boolean): GdkSession? {

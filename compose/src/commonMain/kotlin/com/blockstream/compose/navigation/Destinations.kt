@@ -65,6 +65,11 @@ sealed class NavigateDestinations : NavigateDestination() {
     ) : NavigateDestination(unique = true)
 
     @Serializable
+    data class WalletAbiWalletConnect(
+        val greenWallet: GreenWallet
+    ) : NavigateDestination(unique = true)
+
+    @Serializable
     data object Home : NavigateDestination(unique = true, makeItRoot = true)
 
     @Serializable

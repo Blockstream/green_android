@@ -450,9 +450,8 @@ private fun SuccessContent(
                     secondary = state.result.responseId
                         ?.takeIf { state.result.txHash != null }
                         ?.let { "Response ID: $it" },
-                    modifier = Modifier
-                        .padding(16.dp)
-                        .testTag("wallet_abi_flow_success_tx_hash")
+                    modifier = Modifier.padding(16.dp),
+                    testTag = "wallet_abi_flow_success_tx_hash"
                 )
             }
             GreenDataLayout(title = "Request", testTag = "wallet_abi_flow_success_request") {

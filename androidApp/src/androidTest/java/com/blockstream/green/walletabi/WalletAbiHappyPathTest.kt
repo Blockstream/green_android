@@ -215,6 +215,11 @@ class WalletAbiHappyPathTest {
                 WalletAbiTransactEntry(
                     isDevelopment = false,
                     pendingSnapshot = snapshot,
+                    walletConnectCard = null,
+                    hasPendingWalletConnectRequest = false,
+                    onScanWalletConnect = {},
+                    onPasteWalletConnect = {},
+                    onOpenWalletConnect = {},
                     onOpenDemo = {},
                     onResumePending = {}
                 )
@@ -297,6 +302,11 @@ class WalletAbiHappyPathTest {
                     WalletAbiTransactEntry(
                         isDevelopment = true,
                         pendingSnapshot = pendingSnapshot,
+                        walletConnectCard = null,
+                        hasPendingWalletConnectRequest = false,
+                        onScanWalletConnect = {},
+                        onPasteWalletConnect = {},
+                        onOpenWalletConnect = {},
                         onOpenDemo = {},
                         onResumePending = { isFlowVisible = true }
                     )

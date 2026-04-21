@@ -297,10 +297,8 @@ class WalletOverviewViewModel(
             // Handle pending URI (BIP-21 or lightning)
             sessionManager.pendingUri.filterNotNull().debounce(50L).onEach {
                 logger.d { "Handling pending intent in WalletOverviewViewModel" }
-                // Check if pendingUri is consumed from SendViewModel
-                if (sessionManager.pendingUri.value != null) {
-                    handleUserInput(it, isQr = false)
-                    sessionManager.pendingUri.value = null
+                sessionManager.consumePendingUri(it)?.also { pendingUri ->
+                    handleUserInput(pendingUri, isQr = false)
                 }
             }.launchIn(this)
         }

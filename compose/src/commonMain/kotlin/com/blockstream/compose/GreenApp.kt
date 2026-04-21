@@ -159,7 +159,7 @@ fun GreenApp(mainViewModel: MainViewModel, modifier: Modifier = Modifier) {
                     )
 
                     if (result == SnackbarResult.ActionPerformed) {
-                        mainViewModel.sessionManager.pendingUri.value = null
+                        mainViewModel.sessionManager.clearPendingUri(it)
                     }
                 }
             }

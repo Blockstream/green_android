@@ -1,17 +1,22 @@
 package com.blockstream.compose.screens.overview
 
 import androidx.compose.foundation.layout.PaddingValues
+import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.lazy.rememberLazyListState
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.material3.LinearProgressIndicator
 import androidx.compose.material3.OutlinedButton
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.setValue
+import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.testTag
 import androidx.compose.ui.text.font.FontStyle
@@ -27,8 +32,10 @@ import com.blockstream.compose.components.ListHeader
 import com.blockstream.compose.components.TransactionActionButtons
 import com.blockstream.compose.components.WalletBalance
 import com.blockstream.compose.events.Events
+import com.blockstream.compose.managers.LocalPlatformManager
 import com.blockstream.compose.models.overview.TransactViewModelAbstract
 import com.blockstream.compose.models.overview.TransactViewModelPreview
+import com.blockstream.compose.models.overview.WalletAbiWalletConnectCardLook
 import com.blockstream.compose.navigation.LocalInnerPadding
 import com.blockstream.compose.navigation.NavigateDestinations
 import com.blockstream.compose.navigation.getResult
@@ -38,6 +45,7 @@ import com.blockstream.compose.utils.SwapUtils
 import com.blockstream.compose.utils.bottom
 import com.blockstream.compose.utils.plus
 import com.blockstream.data.data.GreenWallet
+import com.blockstream.data.data.ScanResult
 import com.blockstream.domain.walletabi.flow.WalletAbiResumePhase
 import com.blockstream.domain.walletabi.flow.WalletAbiResumeSnapshot
 import org.jetbrains.compose.resources.stringResource
@@ -45,6 +53,9 @@ import org.jetbrains.compose.ui.tooling.preview.Preview
 
 @Composable
 fun TransactScreen(viewModel: TransactViewModelAbstract) {
+    NavigateDestinations.Camera.getResult<ScanResult> {
+        viewModel.handleWalletConnectInput(it.result)
+    }
 
     NavigateDestinations.Login.getResult<GreenWallet> {
         SwapUtils.navigateToDeviceScanOrJadeQr(viewModel)
@@ -52,13 +63,30 @@ fun TransactScreen(viewModel: TransactViewModelAbstract) {
 
     SetupScreen(viewModel = viewModel, withPadding = false, withBottomInsets = false) {
 
+        val platformManager = LocalPlatformManager.current
         val isMainnet = viewModel.greenWallet.isMainnet
         val isSwapAvailable = viewModel.isSwapAvailable
         val transactions by viewModel.transactions.collectAsStateWithLifecycle()
         val pendingWalletAbiResume by viewModel.pendingWalletAbiResume.collectAsStateWithLifecycle()
+        val walletAbiWalletConnectCard by viewModel.walletAbiWalletConnectCard.collectAsStateWithLifecycle()
+        val hasPendingWalletAbiWalletConnectRequest by viewModel.hasPendingWalletAbiWalletConnectRequest.collectAsStateWithLifecycle()
         val isMultisigWatchOnly by viewModel.isMultisigWatchOnly.collectAsStateWithLifecycle()
         val innerPadding = LocalInnerPadding.current
         val listState = rememberLazyListState()
+        var lastAutoOpenedWalletConnectKey by rememberSaveable { mutableStateOf<String?>(null) }
+        val walletConnectAutoOpenKey = walletAbiWalletConnectCard
+            ?.takeIf { hasPendingWalletAbiWalletConnectRequest && it.statusLabel == "Review" }
+            ?.let { "${it.title}|${it.subtitle.orEmpty()}|${it.body}" }
+
+        LaunchedEffect(walletConnectAutoOpenKey) {
+            when {
+                walletConnectAutoOpenKey == null -> lastAutoOpenedWalletConnectKey = null
+                walletConnectAutoOpenKey != lastAutoOpenedWalletConnectKey -> {
+                    lastAutoOpenedWalletConnectKey = walletConnectAutoOpenKey
+                    viewModel.openWalletAbiWalletConnect()
+                }
+            }
+        }
 
         LazyColumn(
             state = listState,
@@ -88,6 +116,20 @@ fun TransactScreen(viewModel: TransactViewModelAbstract) {
                 WalletAbiTransactEntry(
                     isDevelopment = viewModel.appInfo.isDevelopment,
                     pendingSnapshot = pendingWalletAbiResume,
+                    walletConnectCard = walletAbiWalletConnectCard,
+                    hasPendingWalletConnectRequest = hasPendingWalletAbiWalletConnectRequest,
+                    onScanWalletConnect = {
+                        viewModel.postEvent(
+                            NavigateDestinations.Camera(
+                                isDecodeContinuous = true,
+                                parentScreenName = viewModel.screenName()
+                            )
+                        )
+                    },
+                    onPasteWalletConnect = {
+                        platformManager.getClipboard()?.let(viewModel::handleWalletConnectInput)
+                    },
+                    onOpenWalletConnect = viewModel::openWalletAbiWalletConnect,
                     onOpenDemo = viewModel::openWalletAbiFlow,
                     onResumePending = viewModel::resumePendingWalletAbiFlow
                 )
@@ -132,20 +174,92 @@ fun TransactScreen(viewModel: TransactViewModelAbstract) {
 fun WalletAbiTransactEntry(
     isDevelopment: Boolean,
     pendingSnapshot: WalletAbiResumeSnapshot?,
+    walletConnectCard: WalletAbiWalletConnectCardLook?,
+    hasPendingWalletConnectRequest: Boolean,
+    onScanWalletConnect: () -> Unit,
+    onPasteWalletConnect: () -> Unit,
+    onOpenWalletConnect: () -> Unit,
     onOpenDemo: () -> Unit,
     onResumePending: () -> Unit
 ) {
+    Row(modifier = Modifier.padding(top = 16.dp)) {
+        OutlinedButton(
+            onClick = onScanWalletConnect,
+            modifier = Modifier
+                .weight(1f)
+                .testTag("transact_wallet_connect_scan")
+        ) {
+            Text("Scan WalletConnect")
+        }
+
+        OutlinedButton(
+            onClick = onPasteWalletConnect,
+            modifier = Modifier
+                .padding(start = 8.dp)
+                .weight(1f)
+                .testTag("transact_wallet_connect_paste")
+        ) {
+            Text("Paste WalletConnect")
+        }
+    }
+
+    walletConnectCard?.also { card ->
+        WalletAbiWalletConnectEntryCard(
+            card = card,
+            hasPendingWalletConnectRequest = hasPendingWalletConnectRequest,
+            onOpen = onOpenWalletConnect
+        )
+    }
+
     if (pendingSnapshot != null) {
         WalletAbiPendingResumeEntry(
             snapshot = pendingSnapshot,
             onResume = onResumePending
         )
-        return
     }
 
     WalletAbiDevelopmentEntry(
-        visible = isDevelopment,
+        visible = isDevelopment && pendingSnapshot == null,
         onOpen = onOpenDemo
+    )
+}
+
+@Composable
+fun WalletAbiWalletConnectEntryCard(
+    card: WalletAbiWalletConnectCardLook,
+    hasPendingWalletConnectRequest: Boolean,
+    onOpen: () -> Unit,
+) {
+    OutlinedButton(
+        onClick = onOpen,
+        modifier = Modifier
+            .padding(top = 16.dp)
+            .fillMaxWidth()
+            .testTag(
+                if (hasPendingWalletConnectRequest) {
+                    "transact_wallet_connect_request_card"
+                } else {
+                    "transact_wallet_connect_card"
+                }
+            )
+    ) {
+        Text(
+            buildString {
+                append(card.title)
+                card.subtitle?.takeIf { it.isNotBlank() }?.let {
+                    append(" · ")
+                    append(it)
+                }
+                append(" · ")
+                append(card.statusLabel)
+            }
+        )
+    }
+
+    Text(
+        text = card.body,
+        style = bodyMedium,
+        modifier = Modifier.padding(top = 8.dp)
     )
 }
 

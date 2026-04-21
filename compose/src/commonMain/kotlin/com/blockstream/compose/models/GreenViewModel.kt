@@ -71,6 +71,7 @@ import com.blockstream.data.managers.PromoManager
 import com.blockstream.data.managers.SessionManager
 import com.blockstream.data.managers.SettingsManager
 import com.blockstream.data.managers.WalletSettingsManager
+import com.blockstream.data.walletabi.walletconnect.WalletAbiWalletConnectManaging
 import com.blockstream.data.utils.generateWalletName
 import com.blockstream.domain.account.RemoveAccountUseCase
 import com.blockstream.domain.banner.GetBannerUseCase
@@ -144,6 +145,7 @@ open class GreenViewModel constructor(
     protected val promoManager: PromoManager by inject()
     val sessionManager: SessionManager by inject()
     val settingsManager: SettingsManager by inject()
+    protected val walletAbiWalletConnectManager: WalletAbiWalletConnectManaging by inject()
     protected val getBannerUseCase: GetBannerUseCase by inject()
     protected val getPromoUseCase: GetPromoUseCase by inject()
     protected val removeAccountUseCase: RemoveAccountUseCase by inject()
@@ -788,6 +790,16 @@ open class GreenViewModel constructor(
 
     protected fun handleUserInput(data: String, isQr: Boolean) {
         doAsync({
+            val normalizedInput = data.trim()
+            if (greenWalletOrNull != null && normalizedInput.startsWith("wc:")) {
+                walletAbiWalletConnectManager.pair(
+                    greenWallet = greenWallet,
+                    session = session,
+                    input = normalizedInput,
+                )
+                return@doAsync NavigateDestinations.WalletAbiWalletConnect(greenWallet = greenWallet)
+            }
+
             val checkedInput = session.parseInput(data)
 
             if (checkedInput != null) {
@@ -854,8 +866,12 @@ open class GreenViewModel constructor(
             } else {
                 postSideEffect(SideEffects.Snackbar(StringHolder.create(if (isQr) Res.string.id_could_not_recognized_qr_code else Res.string.id_could_not_recognized_the_uri)))
             }
-        }, onSuccess = {
 
+            null
+        }, onSuccess = { destination ->
+            if (destination is NavigateDestination) {
+                postSideEffect(SideEffects.NavigateTo(destination))
+            }
         })
     }
 

@@ -64,9 +64,10 @@ class SendAddressViewModel(
 
         session.ifConnected {
             sessionManager.pendingUri.filterNotNull().onEach {
-                sessionManager.pendingUri.value = null
-                address.value = it
-                postSideEffect(SideEffects.Snackbar(StringHolder.create(Res.string.id_address_was_filled_by_a_payment)))
+                sessionManager.consumePendingUri(it)?.also { pendingUri ->
+                    address.value = pendingUri
+                    postSideEffect(SideEffects.Snackbar(StringHolder.create(Res.string.id_address_was_filled_by_a_payment)))
+                }
             }.launchIn(this)
 
             address.onEach {

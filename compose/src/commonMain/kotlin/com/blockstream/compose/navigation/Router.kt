@@ -101,6 +101,7 @@ import com.blockstream.compose.models.swap.SwapViewModel
 import com.blockstream.compose.models.transaction.TransactionViewModel
 import com.blockstream.compose.models.twofactor.ReEnable2FAViewModel
 import com.blockstream.compose.models.walletabi.WalletAbiFlowRouteViewModel
+import com.blockstream.compose.models.walletabi.WalletAbiWalletConnectRouteViewModel
 import com.blockstream.compose.models.wallet.WalletDeleteViewModel
 import com.blockstream.compose.models.wallet.WalletNameViewModel
 import com.blockstream.compose.navigation.bottomsheet.onDismissRequest
@@ -171,6 +172,7 @@ import com.blockstream.compose.screens.swap.SwapScreen
 import com.blockstream.compose.screens.transaction.TransactionScreen
 import com.blockstream.compose.screens.twofactor.ReEnable2FAScreen
 import com.blockstream.compose.screens.walletabi.WalletAbiFlowScreen
+import com.blockstream.compose.screens.walletabi.WalletAbiWalletConnectScreen
 import com.blockstream.compose.sheets.AccountRenameBottomSheet
 import com.blockstream.compose.sheets.AccountsBottomSheet
 import com.blockstream.compose.sheets.AnalyticsBottomSheet
@@ -388,6 +390,17 @@ fun Router(
                 }
                 SetupScreen(viewModel = viewModel, withPadding = false, withBottomInsets = false) {
                     WalletAbiFlowScreen(viewModel = viewModel)
+                }
+            }
+            appComposable<NavigateDestinations.WalletAbiWalletConnect> {
+                val args = it.toRoute<NavigateDestinations.WalletAbiWalletConnect>()
+                val viewModel = viewModel {
+                    WalletAbiWalletConnectRouteViewModel(
+                        greenWallet = args.greenWallet,
+                    )
+                }
+                SetupScreen(viewModel = viewModel, withPadding = false, withBottomInsets = false) {
+                    WalletAbiWalletConnectScreen(viewModel = viewModel)
                 }
             }
             appComposable<NavigateDestinations.AccountOverview> {

@@ -230,7 +230,7 @@ class GreenActivity : AppCompatActivity() {
         } else {
             // Handle Uri (BIP-21 or lightning)
             intent?.data?.let {
-                sessionManager.pendingUri.value = it.toString()
+                sessionManager.setPendingUri(it.toString())
             }
         }
     }
