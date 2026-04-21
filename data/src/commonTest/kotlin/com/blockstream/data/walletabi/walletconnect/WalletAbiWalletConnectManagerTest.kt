@@ -22,6 +22,22 @@ class WalletAbiWalletConnectManagerTest {
     }
 
     @Test
+    fun requestIdTimestampMs_normalizesCentimillisecondIds() {
+        assertEquals(
+            1_776_787_187_563uL,
+            walletAbiWalletConnectRequestIdTimestampMsOrNull(177_678_718_756_339uL),
+        )
+    }
+
+    @Test
+    fun requestIdTimestampMs_normalizesDecimillisecondIds() {
+        assertEquals(
+            1_776_787_187_563uL,
+            walletAbiWalletConnectRequestIdTimestampMsOrNull(17_767_871_875_639uL),
+        )
+    }
+
+    @Test
     fun requestIdTimestampMs_ignoresSequentialIds() {
         assertNull(walletAbiWalletConnectRequestIdTimestampMsOrNull(42uL))
     }

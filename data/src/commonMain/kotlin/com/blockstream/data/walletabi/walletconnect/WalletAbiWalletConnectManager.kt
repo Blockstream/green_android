@@ -1015,7 +1015,6 @@ private const val WALLETCONNECT_MILLISECOND_REQUEST_ID_MIN = 1_000_000_000_000uL
 private const val WALLETCONNECT_MILLISECOND_REQUEST_ID_MAX = 9_999_999_999_999uL
 private const val WALLETCONNECT_MICROSECOND_REQUEST_ID_MIN = 1_000_000_000_000_000uL
 private const val WALLETCONNECT_MICROSECOND_REQUEST_ID_MAX = 9_999_999_999_999_999uL
-private const val WALLETCONNECT_MICROSECONDS_PER_MILLISECOND = 1_000uL
 private const val WALLETCONNECT_OBSOLETE_REQUEST_CLOCK_SKEW_MS = 10_000uL
 
 private fun WalletAbiWalletConnectSessionRequest.requestKey(): WalletAbiWalletConnectRequestKey {
@@ -1036,8 +1035,13 @@ internal fun walletAbiWalletConnectRequestIdTimestampMsOrNull(requestId: ULong):
             requestId <= WALLETCONNECT_MILLISECOND_REQUEST_ID_MAX -> requestId
 
         requestId >= WALLETCONNECT_MICROSECOND_REQUEST_ID_MIN &&
-            requestId <= WALLETCONNECT_MICROSECOND_REQUEST_ID_MAX ->
-            requestId / WALLETCONNECT_MICROSECONDS_PER_MILLISECOND
+            requestId <= WALLETCONNECT_MICROSECOND_REQUEST_ID_MAX -> requestId / 1_000uL
+
+        requestId >= 10_000_000_000_000uL &&
+            requestId <= 99_999_999_999_999uL -> requestId / 10uL
+
+        requestId >= 100_000_000_000_000uL &&
+            requestId <= 999_999_999_999_999uL -> requestId / 100uL
 
         else -> null
     }
