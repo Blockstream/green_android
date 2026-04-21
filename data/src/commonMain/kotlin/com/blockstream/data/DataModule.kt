@@ -6,6 +6,7 @@ import com.blockstream.data.notifications.notificationsDataModule
 import com.blockstream.data.walletabi.flow.FakeWalletAbiFlowDriver
 import com.blockstream.data.walletabi.flow.WalletAbiFlowSnapshotStore
 import com.blockstream.data.walletabi.provider.WalletAbiEsploraHttpClient
+import com.blockstream.data.walletabi.provider.WalletAbiJadePsetSignerFactory
 import com.blockstream.data.walletabi.request.DefaultWalletAbiDemoRequestSource
 import com.blockstream.data.walletabi.request.WalletAbiDemoRequestSource
 import com.blockstream.data.walletabi.request.NoOpWalletAbiDemoRequestOverrideStore
@@ -29,6 +30,7 @@ val dataModule = module {
             snapshotStore = get(),
             bridge = get(),
             esploraHttpClient = get(),
+            jadePsetSignerFactory = getOrNull() ?: WalletAbiJadePsetSignerFactory.Device,
         )
     }
     single { FakeWalletAbiFlowDriver() }

@@ -6,7 +6,11 @@ import com.blockstream.data.di.ApplicationScope
 import com.blockstream.data.gdk.GdkSession
 import com.blockstream.data.gdk.data.Account
 import com.blockstream.data.gdk.data.Network
+import com.blockstream.data.jade.JadeHWWallet
 import com.blockstream.data.walletabi.provider.WalletAbiEsploraHttpClient
+import com.blockstream.data.walletabi.provider.WalletAbiJadePsetSignerFactory
+import com.blockstream.data.walletabi.provider.WalletAbiJadeSignerCallbacks
+import com.blockstream.data.walletabi.provider.WalletAbiJadeWalletSignerSupport
 import com.blockstream.data.walletabi.provider.WalletAbiWalletSnapshotSupport
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
@@ -85,6 +89,7 @@ class WalletAbiWalletConnectManager(
     private val snapshotStore: WalletAbiWalletConnectSnapshotStore,
     private val bridge: WalletAbiWalletConnectBridge,
     private val esploraHttpClient: WalletAbiEsploraHttpClient,
+    private val jadePsetSignerFactory: WalletAbiJadePsetSignerFactory = WalletAbiJadePsetSignerFactory.Device,
 ) : WalletAbiWalletConnectManaging {
     private val logger = Logger.withTag("WalletAbiWalletConnectManager")
     private val runtimeMutex = Mutex()
@@ -568,6 +573,7 @@ class WalletAbiWalletConnectManager(
             primaryAccount = primaryAccount,
             snapshotAccounts = snapshotAccounts,
             esploraHttpClient = esploraHttpClient,
+            jadePsetSignerFactory = jadePsetSignerFactory,
         )
         val snapshotJson = snapshotStore.load(greenWallet.id)
         val coordinator = if (snapshotJson.isNullOrBlank()) {
@@ -750,8 +756,8 @@ internal fun walletAbiWalletConnectRequestIdTimestampMsOrNull(requestId: ULong):
 private data class WalletAbiProviderBundle(
     val provider: WalletAbiProvider,
     val signerLink: SignerMetaLink,
-    val signer: Signer,
-    val mnemonic: Mnemonic,
+    val signer: Signer?,
+    val mnemonic: Mnemonic?,
     val sessionFactoryLink: WalletSessionFactoryLink,
     val outputAllocatorLink: WalletOutputAllocatorLink,
     val prevoutResolverLink: WalletPrevoutResolverLink,
@@ -769,8 +775,8 @@ private data class WalletAbiProviderBundle(
         outputAllocatorLink.close()
         sessionFactoryLink.close()
         signerLink.close()
-        signer.close()
-        mnemonic.close()
+        signer?.close()
+        mnemonic?.close()
     }
 
     companion object {
@@ -780,27 +786,60 @@ private data class WalletAbiProviderBundle(
             primaryAccount: Account,
             snapshotAccounts: List<Account>,
             esploraHttpClient: WalletAbiEsploraHttpClient,
+            jadePsetSignerFactory: WalletAbiJadePsetSignerFactory,
         ): WalletAbiProviderBundle {
-            val mnemonicString = session.getCredentials().mnemonic
-                ?.takeIf { it.isNotBlank() }
-                ?: throw IllegalStateException("WalletConnect Wallet ABI requires mnemonic credentials")
             val lwkNetwork = primaryAccount.network.toLwkNetwork()
-            val mnemonic = Mnemonic(mnemonicString)
-            val signer = Signer(mnemonic, lwkNetwork)
-            val signerLink = SignerMetaLink.fromSoftwareSigner(
-                signer = signer,
-                context = WalletAbiSignerContext(
-                    network = lwkNetwork,
-                    accountIndex = primaryAccount.walletAbiAccountIndex(),
-                ),
-            )
-            val snapshotSupport = WalletAbiWalletSnapshotSupport(
-                session = session,
-                primaryAccount = primaryAccount,
-                snapshotAccounts = snapshotAccounts,
-                lwkNetwork = lwkNetwork,
-                esploraHttpClient = esploraHttpClient,
-            )
+            var mnemonic: Mnemonic? = null
+            var signer: Signer? = null
+            val jadeWallet = session.gdkHwWallet as? JadeHWWallet
+            if (session.isHardwareWallet && jadeWallet == null) {
+                throw IllegalStateException("WalletConnect Wallet ABI hardware support currently requires Jade")
+            }
+
+            val signerLink = if (jadeWallet == null) {
+                val mnemonicString = session.getCredentials().mnemonic
+                    ?.takeIf { it.isNotBlank() }
+                    ?: throw IllegalStateException("WalletConnect Wallet ABI requires mnemonic credentials")
+                val softwareMnemonic = Mnemonic(mnemonicString)
+                mnemonic = softwareMnemonic
+                val softwareSigner = Signer(softwareMnemonic, lwkNetwork)
+                signer = softwareSigner
+                SignerMetaLink.fromSoftwareSigner(
+                    signer = softwareSigner,
+                    context = WalletAbiSignerContext(
+                        network = lwkNetwork,
+                        accountIndex = primaryAccount.walletAbiAccountIndex(),
+                    ),
+                )
+            } else {
+                SignerMetaLink(
+                    WalletAbiJadeSignerCallbacks(
+                        jadeWallet = jadeWallet,
+                        psetSigner = jadePsetSignerFactory.create(
+                            jadeWallet = jadeWallet,
+                            network = lwkNetwork,
+                        ),
+                    ),
+                )
+            }
+            val snapshotSupport = if (jadeWallet == null) {
+                WalletAbiWalletSnapshotSupport(
+                    session = session,
+                    primaryAccount = primaryAccount,
+                    snapshotAccounts = snapshotAccounts,
+                    lwkNetwork = lwkNetwork,
+                    esploraHttpClient = esploraHttpClient,
+                )
+            } else {
+                WalletAbiWalletSnapshotSupport(
+                    session = session,
+                    primaryAccount = primaryAccount,
+                    snapshotAccounts = snapshotAccounts,
+                    lwkNetwork = lwkNetwork,
+                    esploraHttpClient = esploraHttpClient,
+                    signerSupport = WalletAbiJadeWalletSignerSupport(jadeWallet),
+                )
+            }
             val sessionFactoryLink = WalletSessionFactoryLink(snapshotSupport)
             val outputAllocatorLink = WalletOutputAllocatorLink(snapshotSupport)
             val prevoutResolverLink = WalletPrevoutResolverLink(snapshotSupport)
