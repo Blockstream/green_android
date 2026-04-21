@@ -78,6 +78,8 @@ class WalletAbiUtxoIndex {
 
 interface WalletAbiWalletSignerSupport {
     val maxWeightToSatisfy: UInt
+    val prefersChainTxOut: Boolean
+        get() = false
 
     fun getBip32DerivationPair(
         account: Account,
@@ -141,6 +143,7 @@ class WalletAbiJadeWalletSignerSupport(
     private val jadeWallet: JadeHWWallet,
 ) : WalletAbiWalletSignerSupport {
     override val maxWeightToSatisfy: UInt = 107u
+    override val prefersChainTxOut: Boolean = true
 
     override fun getBip32DerivationPair(
         account: Account,
@@ -390,6 +393,13 @@ class WalletAbiWalletSnapshotSupport(
     }
 
     private suspend fun resolveTxOut(indexed: WalletAbiIndexedUtxo): TxOut {
+        if (signerSupport.prefersChainTxOut) {
+            val outpointKey = indexed.outpoint().cacheKey()
+            return walletAbiRequireJadeChainTxOut(
+                outpointKey = outpointKey,
+                txOut = fetchTxOutFromEsplora(indexed.outpoint()),
+            )
+        }
         if (!indexed.io.hasUnblindingData()) {
             indexed.toWalletAbiExplicitTxOutOrNull()?.let { return it }
             fetchTxOutFromWalletTransactions(indexed)?.let { return it }
@@ -426,6 +436,14 @@ internal fun walletAbiResolveTxOutFromTransactions(
             ?: indexed.utxo.assetId.ifBlank { null }
             ?: indexed.account.network.policyAsset,
     ).toWalletAbiExplicitTxOutOrNull(indexed.account.network.policyAsset)
+}
+
+internal fun walletAbiRequireJadeChainTxOut(
+    outpointKey: String,
+    txOut: TxOut?,
+): TxOut {
+    return txOut
+        ?: throw LwkException.Generic("Wallet ABI Jade txout not found on chain for outpoint $outpointKey")
 }
 
 internal fun walletAbiOutspendIsSpent(
