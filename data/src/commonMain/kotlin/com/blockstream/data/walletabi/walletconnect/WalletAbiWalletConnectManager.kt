@@ -446,8 +446,10 @@ class WalletAbiWalletConnectManager(
     }
 
     private suspend fun handleSessionRequest(request: WalletAbiWalletConnectSessionRequest) {
+        val requestIdText = request.requestId.toString()
         logger.i {
-            "handleSessionRequest topic=${request.topic} requestId=${request.requestId} method=${request.method}"
+            "handleSessionRequest topic=${request.topic} requestId=${request.requestId} " +
+                "requestIdDigits=${requestIdText.length} method=${request.method}"
         }
         if (isCompletedRequest(request.requestKey())) {
             logger.i {
@@ -488,7 +490,13 @@ class WalletAbiWalletConnectManager(
                     ),
                 )
             }
+            val mappingStartMs = walletAbiWalletConnectNowMs()
             val actions = runtime.coordinator.handleSessionRequest(request)
+            logger.i {
+                "handleSessionRequest mapped walletId=${runtime.walletId} topic=${request.topic} " +
+                    "requestId=${request.requestId} method=${request.method} actions=${actions.size} " +
+                    "elapsedMs=${walletAbiWalletConnectElapsedMs(mappingStartMs)}"
+            }
             refreshState(runtime, bridgeError = null)
             logger.i {
                 "request mapped walletId=${runtime.walletId} overlay=${runtime.state.value.uiState.currentOverlay?.kind} actions=${actions.size}"
@@ -1045,6 +1053,14 @@ internal fun walletAbiWalletConnectRequestIdTimestampMsOrNull(requestId: ULong):
 
         else -> null
     }
+}
+
+private fun walletAbiWalletConnectNowMs(): Long {
+    return Clock.System.now().toEpochMilliseconds().coerceAtLeast(0L)
+}
+
+private fun walletAbiWalletConnectElapsedMs(startMs: Long): Long {
+    return (walletAbiWalletConnectNowMs() - startMs).coerceAtLeast(0L)
 }
 
 private fun WalletAbiWalletConnectTransportAction.completedRequestKey(
