@@ -1,8 +1,11 @@
 package com.blockstream.domain.walletabi.provider
 
 import com.blockstream.data.walletabi.provider.WalletAbiEsploraHttpClient
+import com.blockstream.data.walletabi.provider.WalletAbiJadeSignerCallbacks
+import com.blockstream.data.walletabi.provider.WalletAbiJadeWalletSignerSupport
 import com.blockstream.data.walletabi.provider.WalletAbiWalletSnapshotSupport
 import com.blockstream.data.gdk.data.Account
+import com.blockstream.data.jade.JadeHWWallet
 import com.blockstream.data.json.DefaultJson
 import com.blockstream.domain.walletabi.request.WalletAbiTxCreateRequest
 import com.blockstream.domain.walletabi.request.WalletAbiNetwork
@@ -17,6 +20,7 @@ import lwk.Mnemonic
 import lwk.Signer
 import lwk.SignerMetaLink
 import lwk.WalletAbiProvider
+import lwk.WalletAbiRequestSession
 import lwk.WalletAbiSignerContext
 import lwk.WalletBroadcasterLink
 import lwk.WalletOutputAllocatorLink
@@ -24,16 +28,40 @@ import lwk.WalletPrevoutResolverLink
 import lwk.WalletReceiveAddressProviderLink
 import lwk.WalletRuntimeDepsLink
 import lwk.WalletSessionFactoryLink
+import lwk.WalletAbiTxCreateRequest as LwkWalletAbiTxCreateRequest
+import lwk.WalletAbiTxEvaluateRequest as LwkWalletAbiTxEvaluateRequest
 import lwk.Network as LwkNetwork
 
 private const val WALLET_ABI_PROCESS_REQUEST_METHOD = "wallet_abi_process_request"
+private const val WALLET_ABI_EVALUATE_REQUEST_METHOD = "wallet_abi_evaluate_request"
 
 data class WalletAbiProviderRunResult(
     val response: WalletAbiProviderProcessResponse,
     val responseJson: String,
 )
 
+data class WalletAbiProviderEvaluateResult(
+    val requestSession: WalletAbiRequestSession,
+    val response: WalletAbiProviderEvaluateResponse,
+    val responseJson: String,
+)
+
 interface WalletAbiProviderRunning {
+    suspend fun evaluate(
+        context: WalletAbiExecutionContext,
+        request: WalletAbiTxCreateRequest,
+    ): WalletAbiProviderEvaluateResult {
+        error("Wallet ABI provider runner does not support evaluation")
+    }
+
+    suspend fun process(
+        context: WalletAbiExecutionContext,
+        request: WalletAbiTxCreateRequest,
+        requestSession: WalletAbiRequestSession,
+    ): WalletAbiProviderRunResult {
+        return run(context = context, request = request)
+    }
+
     suspend fun run(
         context: WalletAbiExecutionContext,
         request: WalletAbiTxCreateRequest,
@@ -48,6 +76,55 @@ class WalletAbiProviderRunner(
         context: WalletAbiExecutionContext,
         request: WalletAbiTxCreateRequest,
     ): WalletAbiProviderRunResult {
+        return process(
+            context = context,
+            request = request,
+            requestSession = withProvider(context) { provider ->
+                provider.captureRequestSession()
+            },
+        )
+    }
+
+    override suspend fun evaluate(
+        context: WalletAbiExecutionContext,
+        request: WalletAbiTxCreateRequest,
+    ): WalletAbiProviderEvaluateResult {
+        if (request.network != context.requestNetwork) {
+            throw WalletAbiExecutionContextException(
+                "Wallet ABI request network mismatch: request=${request.network.wireValue} context=${context.requestNetwork.wireValue}",
+            )
+        }
+
+        return withProvider(context) { provider ->
+            val requestSession = provider.captureRequestSession()
+            val evaluateRequestJson = normalizeWalletAbiProviderRequestJson(
+                json = json,
+                requestJson = json.encodeToString(request).toWalletAbiEvaluateRequestJson(),
+            )
+            val providerResponseJson = provider.evaluateRequestWithSession(
+                session = requestSession,
+                request = LwkWalletAbiTxEvaluateRequest.fromJson(evaluateRequestJson),
+            ).toJson()
+            val response = json.decodeFromString(
+                WalletAbiProviderEvaluateResponse.serializer(),
+                normalizeWalletAbiProviderResponseJson(
+                    json = json,
+                    responseJson = providerResponseJson,
+                ),
+            )
+            WalletAbiProviderEvaluateResult(
+                requestSession = requestSession,
+                response = response,
+                responseJson = providerResponseJson,
+            )
+        }
+    }
+
+    override suspend fun process(
+        context: WalletAbiExecutionContext,
+        request: WalletAbiTxCreateRequest,
+        requestSession: WalletAbiRequestSession,
+    ): WalletAbiProviderRunResult {
         if (request.network != context.requestNetwork) {
             throw WalletAbiExecutionContextException(
                 "Wallet ABI request network mismatch: request=${request.network.wireValue} context=${context.requestNetwork.wireValue}",
@@ -60,10 +137,10 @@ class WalletAbiProviderRunner(
                 json = json,
                 requestJson = requestJson,
             )
-            val providerResponseJson = provider.dispatchJson(
-                method = WALLET_ABI_PROCESS_REQUEST_METHOD,
-                paramsJson = providerRequestJson,
-            )
+            val providerResponseJson = provider.processRequestWithSession(
+                session = requestSession,
+                request = LwkWalletAbiTxCreateRequest.fromJson(providerRequestJson),
+            ).toJson()
             val response = json.decodeFromString(
                 WalletAbiProviderProcessResponse.serializer(),
                 normalizeWalletAbiProviderResponseJson(
@@ -94,34 +171,59 @@ class WalletAbiProviderRunner(
         var provider: WalletAbiProvider? = null
 
         try {
-            val mnemonicString = context.session.getCredentials().mnemonic
-                ?.takeIf { it.isNotBlank() }
-                ?: throw WalletAbiExecutionContextException(
-                    "Wallet ABI software signer requires mnemonic credentials",
-                )
             val lwkNetwork = context.requestNetwork.toLwkNetwork()
 
-            val currentMnemonic = Mnemonic(mnemonicString)
-            mnemonic = currentMnemonic
+            val signerSupport = when (context.signerBackend) {
+                WalletAbiSignerBackend.Software -> {
+                    val mnemonicString = context.session.getCredentials().mnemonic
+                        ?.takeIf { it.isNotBlank() }
+                        ?: throw WalletAbiExecutionContextException(
+                            "Wallet ABI software signer requires mnemonic credentials",
+                        )
+                    val currentMnemonic = Mnemonic(mnemonicString)
+                    mnemonic = currentMnemonic
 
-            val currentSigner = Signer(currentMnemonic, lwkNetwork)
-            signer = currentSigner
+                    val currentSigner = Signer(currentMnemonic, lwkNetwork)
+                    signer = currentSigner
 
-            signerLink = SignerMetaLink.fromSoftwareSigner(
-                signer = currentSigner,
-                context = WalletAbiSignerContext(
-                    network = lwkNetwork,
-                    accountIndex = context.primaryAccount.walletAbiAccountIndex(),
-                ),
-            )
+                    signerLink = SignerMetaLink.fromSoftwareSigner(
+                        signer = currentSigner,
+                        context = WalletAbiSignerContext(
+                            network = lwkNetwork,
+                            accountIndex = context.primaryAccount.walletAbiAccountIndex(),
+                        ),
+                    )
+                    null
+                }
 
-            val snapshotSupport = WalletAbiWalletSnapshotSupport(
-                session = context.session,
-                primaryAccount = context.primaryAccount,
-                snapshotAccounts = context.accounts,
-                lwkNetwork = lwkNetwork,
-                esploraHttpClient = esploraHttpClient,
-            )
+                is WalletAbiSignerBackend.Jade -> {
+                    val jadeWallet = context.session.gdkHwWallet as? JadeHWWallet
+                        ?: throw WalletAbiExecutionContextException(
+                            "Wallet ABI Jade provider requires a connected Jade hardware wallet",
+                        )
+                    signerLink = SignerMetaLink(WalletAbiJadeSignerCallbacks(jadeWallet))
+                    WalletAbiJadeWalletSignerSupport(jadeWallet)
+                }
+            }
+
+            val snapshotSupport = if (signerSupport == null) {
+                WalletAbiWalletSnapshotSupport(
+                    session = context.session,
+                    primaryAccount = context.primaryAccount,
+                    snapshotAccounts = context.accounts,
+                    lwkNetwork = lwkNetwork,
+                    esploraHttpClient = esploraHttpClient,
+                )
+            } else {
+                WalletAbiWalletSnapshotSupport(
+                    session = context.session,
+                    primaryAccount = context.primaryAccount,
+                    snapshotAccounts = context.accounts,
+                    lwkNetwork = lwkNetwork,
+                    esploraHttpClient = esploraHttpClient,
+                    signerSupport = signerSupport,
+                )
+            }
 
             sessionFactoryLink = WalletSessionFactoryLink(snapshotSupport)
             outputAllocatorLink = WalletOutputAllocatorLink(snapshotSupport)
@@ -155,6 +257,27 @@ class WalletAbiProviderRunner(
             signer?.close()
             mnemonic?.close()
         }
+    }
+}
+
+private fun String.toWalletAbiEvaluateRequestJson(): String {
+    val payload = runCatching {
+        DefaultJson.parseToJsonElement(this).jsonObject
+    }.getOrNull() ?: return this
+
+    return buildString {
+        append('{')
+        payload.entries
+            .filterNot { (key, _) -> key == "broadcast" }
+            .forEachIndexed { index, (key, value) ->
+                if (index > 0) {
+                    append(',')
+                }
+                append(JsonPrimitive(key))
+                append(':')
+                append(value)
+            }
+        append('}')
     }
 }
 

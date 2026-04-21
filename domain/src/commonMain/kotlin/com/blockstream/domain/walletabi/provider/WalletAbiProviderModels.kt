@@ -90,3 +90,15 @@ fun WalletAbiProviderProcessResponse.preview(): WalletAbiProviderRequestPreview?
         previewValue,
     )
 }
+
+@Serializable
+data class WalletAbiProviderEvaluateResponse(
+    @SerialName("abi_version")
+    val abiVersion: String,
+    @SerialName("request_id")
+    val requestId: String,
+    val network: WalletAbiNetwork,
+    val status: WalletAbiProviderStatus,
+    val preview: WalletAbiProviderRequestPreview? = null,
+    val error: WalletAbiProviderErrorInfo? = null,
+)

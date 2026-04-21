@@ -72,6 +72,8 @@ import com.blockstream.domain.walletabi.provider.WalletAbiExecutionContextResolv
 import com.blockstream.domain.walletabi.provider.WalletAbiProviderPreviewAssetDelta
 import com.blockstream.domain.walletabi.provider.WalletAbiProviderPreviewOutput
 import com.blockstream.domain.walletabi.provider.WalletAbiProviderPreviewOutputKind
+import com.blockstream.domain.walletabi.provider.WalletAbiProviderEvaluateResponse
+import com.blockstream.domain.walletabi.provider.WalletAbiProviderEvaluateResult
 import com.blockstream.domain.walletabi.provider.WalletAbiProviderProcessResponse
 import com.blockstream.domain.walletabi.provider.WalletAbiProviderRequestPreview
 import com.blockstream.domain.walletabi.provider.WalletAbiProviderRunning
@@ -106,6 +108,7 @@ import org.koin.dsl.module
 import kotlin.test.assertEquals
 import kotlin.test.assertIs
 import kotlinx.serialization.json.JsonObject
+import lwk.WalletAbiRequestSession
 
 class WalletAbiFlowRouteViewModelTest {
     private val dispatcher = StandardTestDispatcher()
@@ -1825,9 +1828,33 @@ class WalletAbiFlowRouteViewModelTest {
         txid: String,
     ): WalletAbiProviderRunning {
         return object : WalletAbiProviderRunning {
-            override suspend fun run(
+            private val requestSession = WalletAbiRequestSession(
+                sessionId = "fake-provider-session",
+                network = mockk(relaxed = true),
+                spendableUtxos = emptyList(),
+            )
+
+            override suspend fun evaluate(
                 context: WalletAbiExecutionContext,
                 request: com.blockstream.domain.walletabi.request.WalletAbiTxCreateRequest
+            ): WalletAbiProviderEvaluateResult {
+                return WalletAbiProviderEvaluateResult(
+                    requestSession = requestSession,
+                    response = WalletAbiProviderEvaluateResponse(
+                        abiVersion = "wallet-abi-0.1",
+                        requestId = requestId,
+                        network = network,
+                        status = WalletAbiProviderStatus.OK,
+                        preview = preview
+                    ),
+                    responseJson = "{}"
+                )
+            }
+
+            override suspend fun process(
+                context: WalletAbiExecutionContext,
+                request: com.blockstream.domain.walletabi.request.WalletAbiTxCreateRequest,
+                requestSession: WalletAbiRequestSession
             ): com.blockstream.domain.walletabi.provider.WalletAbiProviderRunResult {
                 return com.blockstream.domain.walletabi.provider.WalletAbiProviderRunResult(
                     response = WalletAbiProviderProcessResponse(
@@ -1850,6 +1877,17 @@ class WalletAbiFlowRouteViewModelTest {
                         }
                     ),
                     responseJson = "{}"
+                )
+            }
+
+            override suspend fun run(
+                context: WalletAbiExecutionContext,
+                request: com.blockstream.domain.walletabi.request.WalletAbiTxCreateRequest
+            ): com.blockstream.domain.walletabi.provider.WalletAbiProviderRunResult {
+                return process(
+                    context = context,
+                    request = request,
+                    requestSession = requestSession,
                 )
             }
         }
