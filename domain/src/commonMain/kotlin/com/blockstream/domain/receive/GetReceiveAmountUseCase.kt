@@ -107,19 +107,6 @@ class GetReceiveAmountUseCase(
                         ) else null
                     }
 
-                    val isValid =
-                        balance != null && (balance.satoshi >= 0 && balance.satoshi <= nodeInfo.maxReceivableSatoshi() && (balance.satoshi <= totalInboundLiquiditySatoshi || (balance.satoshi > (openChannelFee?.feeSatoshi()
-                            ?: 0))))
-
-                    val hint = nodeInfo.maxReceivableSatoshi().toAmountLook(
-                        session = session,
-                        assetId = session.lightningAccount.network.policyAsset,
-                        denomination = denomination,
-                        withUnit = true
-                    )?.let {
-                        "id_max_limit_s|$it"
-                    }
-
                     val error = if (amount.isBlank()) null else {
                         if (balance != null) {
                             val channelMinimum = openChannelFee?.feeSatoshi() ?: 0
@@ -149,6 +136,19 @@ class GetReceiveAmountUseCase(
                         } else {
                             null
                         }
+                    }
+
+                    val isValid =
+                        balance != null && error == null && (balance.satoshi >= 0 && balance.satoshi <= nodeInfo.maxReceivableSatoshi() && (balance.satoshi <= totalInboundLiquiditySatoshi || (balance.satoshi > (openChannelFee?.feeSatoshi()
+                            ?: 0))))
+
+                    val hint = nodeInfo.maxReceivableSatoshi().toAmountLook(
+                        session = session,
+                        assetId = session.lightningAccount.network.policyAsset,
+                        denomination = denomination,
+                        withUnit = true
+                    )?.let {
+                        "id_max_limit_s|$it"
                     }
 
                     val isSetupChannel = totalInboundLiquiditySatoshi == 0L
