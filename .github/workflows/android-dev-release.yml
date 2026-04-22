@@ -1,0 +1,103 @@
+name: Android Dev Release
+
+on:
+  push:
+    tags:
+      - "*"
+
+permissions:
+  contents: write
+
+concurrency:
+  group: android-dev-release-${{ github.ref }}
+  cancel-in-progress: false
+
+jobs:
+  release:
+    name: Build and publish dev APK
+    runs-on: ubuntu-latest
+
+    env:
+      REOWN_PROJECT_ID: ${{ secrets.REOWN_PROJECT_ID }}
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Set up JDK
+        uses: actions/setup-java@v4
+        with:
+          distribution: temurin
+          java-version: 17
+
+      - name: Set up Gradle
+        uses: gradle/actions/setup-gradle@v4
+
+      - name: Prepare Android SDK
+        run: |
+          yes | sdkmanager --licenses >/dev/null || true
+          sdkmanager --install "platforms;android-36" "build-tools;36.0.0" "platform-tools"
+
+      - name: Build development debug APK
+        run: ./gradlew :androidApp:assembleDevelopmentDebug -PandroidOnly=true --stacktrace
+
+      - name: Collect APK
+        run: |
+          mkdir -p release-assets
+          shopt -s nullglob
+          apks=(androidApp/build/outputs/apk/development/debug/*.apk)
+
+          if (( ${#apks[@]} == 0 )); then
+            echo "No development debug APK was produced." >&2
+            find androidApp/build/outputs/apk -type f -name "*.apk" -print >&2 || true
+            exit 1
+          fi
+
+          for apk in "${apks[@]}"; do
+            cp "$apk" "release-assets/$(basename "$apk")"
+          done
+
+          sha256sum release-assets/*.apk > release-assets/SHA256SUMS.txt
+
+      - name: Build release notes
+        run: |
+          tag="$GITHUB_REF_NAME"
+          tag_sha="$(git rev-list -n 1 "$tag")"
+          previous_tag="$(git describe --tags --abbrev=0 "${tag_sha}^" 2>/dev/null || true)"
+
+          {
+            echo "# $tag"
+            echo
+            echo "Android development debug APK."
+            echo
+
+            if [[ -n "$previous_tag" ]]; then
+              echo "## Commits since $previous_tag"
+              echo
+              git log --reverse --pretty=format:'- %h %s (%an)' "$previous_tag..$tag"
+            else
+              echo "## Commits"
+              echo
+              git log --reverse --pretty=format:'- %h %s (%an)' "$tag"
+            fi
+
+            echo
+            echo
+            echo "## SHA-256"
+            echo
+            sed 's/^/- `/' release-assets/SHA256SUMS.txt | sed 's/$/`/'
+          } > release-notes.md
+
+      - name: Publish GitHub release
+        uses: softprops/action-gh-release@v3
+        with:
+          name: ${{ github.ref_name }}
+          tag_name: ${{ github.ref_name }}
+          body_path: release-notes.md
+          files: |
+            release-assets/*.apk
+            release-assets/SHA256SUMS.txt
+          fail_on_unmatched_files: true
+          overwrite_files: true
