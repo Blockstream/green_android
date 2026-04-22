@@ -80,6 +80,17 @@ class SendChooseAssetViewModel(
                     )
                 }
 
+                is SendFlow.SelectLightningAmount -> {
+                    SideEffects.NavigateTo(
+                        NavigateDestinations.SendLightningAmount(
+                            greenWallet = greenWallet,
+                            address = address,
+                            addressType = addressType,
+                            accountAsset = sendFlow.account,
+                        )
+                    )
+                }
+
                 is SendFlow.SendConfirmation -> {
                     session.pendingTransaction = PendingTransaction(
                         params = sendFlow.params,
@@ -95,6 +106,28 @@ class SendChooseAssetViewModel(
                         NavigateDestinations.SendConfirm(
                             greenWallet = greenWallet,
                             accountAsset = sendFlow.account,
+                            denomination = denomination.value
+                        )
+                    )
+                }
+
+                is SendFlow.SendLightningConfirmation -> {
+                    session.pendingTransaction = PendingTransaction(
+                        params = sendFlow.params,
+                        transaction = sendFlow.transaction,
+                        segmentation = TransactionSegmentation(
+                            transactionType = TransactionType.SEND,
+                            addressInputType = addressType,
+                            sendAll = false
+                        )
+                    )
+
+                    SideEffects.NavigateTo(
+                        NavigateDestinations.SendLightningConfirm(
+                            greenWallet = greenWallet,
+                            accountAsset = sendFlow.account,
+                            invoice = sendFlow.invoice,
+                            amountSatoshi = sendFlow.params.swap?.toAmount,
                             denomination = denomination.value
                         )
                     )

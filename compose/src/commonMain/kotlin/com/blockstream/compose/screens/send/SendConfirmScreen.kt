@@ -1,8 +1,10 @@
 package com.blockstream.compose.screens.send
 
 import androidx.compose.animation.AnimatedVisibility
+import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.defaultMinSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
@@ -17,6 +19,7 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
@@ -26,7 +29,7 @@ import blockstream_green.common.generated.resources.id_amount
 import blockstream_green.common.generated.resources.id_from
 import blockstream_green.common.generated.resources.id_network_fee
 import blockstream_green.common.generated.resources.id_note
-import blockstream_green.common.generated.resources.id_sent_to
+import blockstream_green.common.generated.resources.id_send_to
 import blockstream_green.common.generated.resources.id_to
 import blockstream_green.common.generated.resources.id_total_fees
 import blockstream_green.common.generated.resources.id_total_spent
@@ -39,7 +42,6 @@ import blockstream_green.common.generated.resources.pencil_simple_line
 import com.blockstream.compose.GreenPreview
 import com.blockstream.compose.components.Banner
 import com.blockstream.compose.components.GreenAccountAsset
-import com.blockstream.compose.components.GreenAmount
 import com.blockstream.compose.components.GreenButton
 import com.blockstream.compose.components.GreenButtonColor
 import com.blockstream.compose.components.GreenButtonType
@@ -47,6 +49,8 @@ import com.blockstream.compose.components.GreenColumn
 import com.blockstream.compose.components.GreenConfirmButton
 import com.blockstream.compose.components.GreenDataLayout
 import com.blockstream.compose.components.OnProgressStyle
+import com.blockstream.compose.dialogs.TransactionBroadcastedDialog
+import com.blockstream.compose.dialogs.TransactionFailedDialog
 import com.blockstream.compose.models.send.CreateTransactionViewModelAbstract
 import com.blockstream.compose.models.send.SendConfirmViewModel
 import com.blockstream.compose.models.send.SendConfirmViewModelAbstract
@@ -59,6 +63,7 @@ import com.blockstream.compose.screens.jade.JadeQRResult
 import com.blockstream.compose.sideeffects.SideEffects
 import com.blockstream.compose.theme.bodyMedium
 import com.blockstream.compose.theme.bodySmall
+import com.blockstream.compose.theme.displaySmall
 import com.blockstream.compose.theme.labelLarge
 import com.blockstream.compose.theme.titleSmall
 import com.blockstream.compose.theme.whiteHigh
@@ -77,7 +82,26 @@ fun SendConfirmScreen(
 ) {
     val look by viewModel.transactionConfirmation.collectAsStateWithLifecycle()
     val onProgressSending by viewModel.onProgressSending.collectAsStateWithLifecycle()
+    val sentTxHash by viewModel.sentTxHash.collectAsStateWithLifecycle()
+    val successAmount by viewModel.successAmount.collectAsStateWithLifecycle()
+    val failureMessage by viewModel.failureMessage.collectAsStateWithLifecycle()
     val bottomSheetNavigator = LocalNavigator.current.navigatorProvider[BottomSheetNavigator::class]
+
+    sentTxHash?.takeIf { it.isNotBlank() }?.also {
+        TransactionBroadcastedDialog(
+            txHash = it,
+            amount = successAmount,
+            onDismissRequest = viewModel::onSuccessAcknowledged,
+            onShare = viewModel::shareSentTransaction,
+        )
+    }
+
+    failureMessage?.also {
+        TransactionFailedDialog(
+            message = it,
+            onDismissRequest = viewModel::onFailureAcknowledged,
+        )
+    }
 
     NavigateDestinations.Note.getResult<String> {
         viewModel.note.value = it
@@ -135,35 +159,108 @@ fun SendConfirmScreen(
                         )
                     }
 
-                    look.amount?.also {
-                        GreenAmount(
-                            title = stringResource(Res.string.id_amount),
-                            amount = it,
-                            amountFiat = look.amountFiat,
-                        )
-                    }
+                    val utxos = look.utxos
+                    if (!utxos.isNullOrEmpty()) {
+                        val sendToTitle = if (look.isRedeposit == true) {
+                            Res.string.id_your_redeposit_address
+                        } else {
+                            Res.string.id_send_to
+                        }
+                        utxos.forEachIndexed { index, utxo ->
+                            val address = utxo.address
+                            if (!address.isNullOrBlank()) {
+                                GreenDataLayout(title = stringResource(sendToTitle), withPadding = false) {
+                                    Row(
+                                        horizontalArrangement = Arrangement.Center,
+                                        verticalAlignment = Alignment.CenterVertically,
+                                        modifier = Modifier
+                                            .fillMaxWidth()
+                                            .defaultMinSize(minHeight = 70.dp)
+                                            .padding(horizontal = 16.dp, vertical = 12.dp),
+                                    ) {
+                                        ChunkedInvoice(
+                                            invoice = address,
+                                            isLightning = look.isLiquidToLightningSwap,
+                                        )
+                                    }
+                                }
+                            }
 
-                    look.utxos?.forEach {
-                        GreenAmount(
-                            title = stringResource(if (look.isRedeposit == true) Res.string.id_your_redeposit_address else Res.string.id_sent_to),
-                            amount = it.amount ?: "",
-                            amountFiat = it.amountExchange,
-                            assetId = it.assetId,
-                            address = it.address,
-                            addressMaxLines = if (look?.isLiquidToLightningSwap == true) 1 else null,
-                            session = viewModel.sessionOrNull,
-                            showIcon = true
-                        )
-                    }
+                            val amountText = utxo.amount
+                                ?: look.amount.takeIf { index == 0 && utxos.size == 1 }
+                            val amountFiatText = utxo.amountExchange
+                                ?: look.amountFiat.takeIf { index == 0 && utxos.size == 1 }
+                            if (!amountText.isNullOrBlank()) {
+                                Column(
+                                    modifier = Modifier.fillMaxWidth(),
+                                    verticalArrangement = Arrangement.spacedBy(4.dp),
+                                ) {
+                                    GreenDataLayout(title = stringResource(Res.string.id_amount), withPadding = false) {
+                                        Column(
+                                            horizontalAlignment = Alignment.CenterHorizontally,
+                                            verticalArrangement = Arrangement.spacedBy(2.dp),
+                                            modifier = Modifier
+                                                .fillMaxWidth()
+                                                .defaultMinSize(minHeight = 70.dp)
+                                                .padding(horizontal = 16.dp, vertical = 12.dp),
+                                        ) {
+                                            Text(
+                                                text = amountText,
+                                                style = displaySmall.copy(fontWeight = FontWeight.Medium),
+                                                color = whiteHigh,
+                                                textAlign = TextAlign.Center,
+                                            )
+                                            amountFiatText?.also {
+                                                Text(
+                                                    text = "≈ $it",
+                                                    style = bodyMedium,
+                                                    color = whiteMedium,
+                                                    textAlign = TextAlign.Center,
+                                                )
+                                            }
+                                        }
+                                    }
 
-                    if (look.isLiquidToLightningSwap) {
-                        Text(
-                            text = stringResource(Res.string.id_you_are_paying_this_lightning_invoice),
-                            color = whiteMedium,
-                            style = bodySmall,
-                            textAlign = TextAlign.Center,
-                            modifier = Modifier.align(Alignment.CenterHorizontally)
-                        )
+                                    if (index == 0 && utxos.size == 1 && look.isLiquidToLightningSwap) {
+                                        Text(
+                                            text = stringResource(Res.string.id_you_are_paying_this_lightning_invoice),
+                                            style = bodyMedium,
+                                            color = whiteMedium,
+                                            textAlign = TextAlign.Center,
+                                            modifier = Modifier.fillMaxWidth(),
+                                        )
+                                    }
+                                }
+                            }
+                        }
+                    } else {
+                        look.amount?.takeIf { it.isNotBlank() }?.also { amount ->
+                            GreenDataLayout(title = stringResource(Res.string.id_amount), withPadding = false) {
+                                Column(
+                                    horizontalAlignment = Alignment.CenterHorizontally,
+                                    verticalArrangement = Arrangement.spacedBy(2.dp),
+                                    modifier = Modifier
+                                        .fillMaxWidth()
+                                        .defaultMinSize(minHeight = 70.dp)
+                                        .padding(horizontal = 16.dp, vertical = 12.dp),
+                                ) {
+                                    Text(
+                                        text = amount,
+                                        style = displaySmall.copy(fontWeight = FontWeight.Medium),
+                                        color = whiteHigh,
+                                        textAlign = TextAlign.Center,
+                                    )
+                                    look.amountFiat?.also {
+                                        Text(
+                                            text = "≈ $it",
+                                            style = bodyMedium,
+                                            color = whiteMedium,
+                                            textAlign = TextAlign.Center,
+                                        )
+                                    }
+                                }
+                            }
+                        }
                     }
 
                     val showVerifyOnDevice by viewModel.showVerifyOnDevice.collectAsStateWithLifecycle()
@@ -184,20 +281,12 @@ fun SendConfirmScreen(
                         GreenDataLayout(
                             title = stringResource(Res.string.id_note), withPadding = false
                         ) {
-                            Row {
-                                Text(
-                                    text = note, modifier = Modifier.weight(1f).padding(vertical = 16.dp).padding(start = 16.dp)
-                                )
-                                IconButton(onClick = {
-                                    viewModel.postEvent(SendConfirmViewModel.LocalEvents.Note)
-                                }) {
-                                    Icon(
-                                        painter = painterResource(Res.drawable.pencil_simple_line),
-                                        contentDescription = "Edit",
-                                        modifier = Modifier.minimumInteractiveComponentSize()
-                                    )
-                                }
-                            }
+                            Text(
+                                text = note,
+                                modifier = Modifier
+                                    .fillMaxWidth()
+                                    .padding(horizontal = 16.dp, vertical = 16.dp),
+                            )
                         }
                     }
                 }

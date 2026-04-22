@@ -23,8 +23,10 @@ import com.blockstream.data.data.Denomination
 import com.blockstream.data.data.GreenWallet
 import com.blockstream.data.extensions.ifConnected
 import com.blockstream.data.extensions.isNotBlank
+import com.blockstream.data.extensions.tryCatch
 import com.blockstream.data.gdk.data.AccountAsset
 import com.blockstream.data.gdk.data.UtxoView
+import com.blockstream.data.lwk.PaymentInstruction
 import com.blockstream.data.transaction.TransactionConfirmation
 import com.blockstream.utils.Loggable
 import kotlinx.coroutines.delay
@@ -47,6 +49,13 @@ abstract class SendConfirmViewModelAbstract(greenWallet: GreenWallet, accountAss
     }
     abstract val transactionConfirmation: StateFlow<TransactionConfirmation?>
     abstract val showVerifyOnDevice: StateFlow<Boolean>
+    abstract val successAmount: StateFlow<String?>
+    abstract val failureMessage: StateFlow<String?>
+    abstract val sentTxHash: StateFlow<String?>
+
+    abstract fun onSuccessAcknowledged()
+    abstract fun onFailureAcknowledged()
+    open fun shareSentTransaction() {}
 }
 
 class SendConfirmViewModel constructor(
@@ -62,6 +71,15 @@ class SendConfirmViewModel constructor(
 
     override val transactionConfirmation: StateFlow<TransactionConfirmation?> =
         _transactionConfirmation.asStateFlow()
+
+    private val _successAmount: MutableStateFlow<String?> = MutableStateFlow(null)
+    override val successAmount: StateFlow<String?> = _successAmount.asStateFlow()
+
+    private val _failureMessage: MutableStateFlow<String?> = MutableStateFlow(null)
+    override val failureMessage: StateFlow<String?> = _failureMessage.asStateFlow()
+
+    private val _sentTxHash: MutableStateFlow<String?> = MutableStateFlow(null)
+    override val sentTxHash: StateFlow<String?> = _sentTxHash.asStateFlow()
 
     class LocalEvents {
         object Note : Event
@@ -102,16 +120,16 @@ class SendConfirmViewModel constructor(
                 _denomination.value = denomination
             }
 
-            session.pendingTransaction?.also {
+            session.pendingTransaction?.also { pending ->
                 viewModelScope.launch {
                     if (appInfo.isDevelopmentOrDebug) {
-                        logger.d { "Params: ${it.params}" }
-                        logger.d { "Transaction: ${it.transaction}" }
+                        logger.d { "Params: ${pending.params}" }
+                        logger.d { "Transaction: ${pending.transaction}" }
                     }
 
                     _transactionConfirmation.value = sendUseCase.getTransactionConfirmationUseCase(
-                        params = it.params,
-                        transaction = it.transaction,
+                        params = pending.params,
+                        transaction = pending.transaction,
                         account = account,
                         session = session,
                         denomination = _denomination.value,
@@ -119,10 +137,25 @@ class SendConfirmViewModel constructor(
                     )
 
                     _showVerifyOnDevice.value =
-                        if (it.params.isRedeposit) session.device?.canVerifyAddressOnDevice(account)
+                        if (pending.params.isRedeposit) session.device?.canVerifyAddressOnDevice(account)
                             ?: false else false
 
                     _isValid.value = true
+                }
+
+                viewModelScope.launch {
+                    val invoiceInput = pending.params.swap?.submarineInvoiceTo
+                    if (invoiceInput != null && note.value.isBlank()) {
+                        val instruction = tryCatch { session.lwkOrNull?.inspectPaymentInstruction(invoiceInput) }
+                        if (instruction is PaymentInstruction.Bolt11) {
+                            val description = tryCatch {
+                                lwk.Bolt11Invoice(instruction.invoice).use { it.invoiceDescription() }
+                            }
+                            if (!description.isNullOrBlank()) {
+                                note.value = description
+                            }
+                        }
+                    }
                 }
 
             } ?: run {
@@ -198,6 +231,43 @@ class SendConfirmViewModel constructor(
         }
     }
 
+    override fun onSendSuccess(params: com.blockstream.data.gdk.params.CreateTransactionParams?, txHash: String?) {
+        if (!txHash.isNullOrBlank()) {
+            val confirmation = _transactionConfirmation.value
+            _successAmount.value = confirmation?.amount
+                ?: confirmation?.utxos?.firstOrNull()?.amount
+            _sentTxHash.value = txHash
+        } else {
+            super.onSendSuccess(params, txHash)
+        }
+    }
+
+    override fun onSendError(error: Throwable) {
+        when (error.message) {
+            "id_action_canceled" -> { }
+            "id_transaction_already_confirmed" -> super.onSendError(error)
+            else -> {
+                _failureMessage.value = error.message ?: error.cause?.message ?: "id_error"
+            }
+        }
+    }
+
+    override fun onSuccessAcknowledged() {
+        _sentTxHash.value = null
+        _successAmount.value = null
+        postSideEffect(SideEffects.NavigateAfterSendTransaction)
+    }
+
+    override fun onFailureAcknowledged() {
+        _failureMessage.value = null
+    }
+
+    override fun shareSentTransaction() {
+        val txHash = _sentTxHash.value?.takeIf { it.isNotBlank() } ?: return
+        val explorerUrl = account.network.explorerUrl?.takeIf { it.isNotBlank() } ?: return
+        postSideEffect(SideEffects.Share(text = "$explorerUrl$txHash"))
+    }
+
     private fun verifyAddressOnDevice() {
         val hwWallet = session.gdkHwWallet
         val transaction = session.pendingTransaction?.transaction
@@ -255,6 +325,12 @@ class SendConfirmViewModelPreview(
         MutableStateFlow(transactionConfirmation)
 
     override val showVerifyOnDevice: StateFlow<Boolean> = MutableStateFlow(false)
+    override val successAmount: StateFlow<String?> = MutableStateFlow(null)
+    override val failureMessage: StateFlow<String?> = MutableStateFlow(null)
+    override val sentTxHash: StateFlow<String?> = MutableStateFlow(null)
+
+    override fun onSuccessAcknowledged() {}
+    override fun onFailureAcknowledged() {}
 
     init {
         // banner.value = Banner.preview3

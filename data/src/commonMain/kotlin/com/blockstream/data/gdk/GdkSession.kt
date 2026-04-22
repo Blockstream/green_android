@@ -127,6 +127,7 @@ import com.blockstream.data.lightning.minSendableSatoshi
 import com.blockstream.data.lightning.sendableSatoshi
 import com.blockstream.data.lwk.Lwk
 import com.blockstream.data.lwk.LwkManager
+import com.blockstream.data.lwk.PaymentInstruction
 import com.blockstream.data.managers.AssetManager
 import com.blockstream.data.managers.AssetsProvider
 import com.blockstream.data.managers.NetworkAssetManager
@@ -140,6 +141,7 @@ import com.blockstream.data.utils.toHex
 import com.blockstream.glsdk.OnchainReceiveResponse
 import com.blockstream.jade.HttpRequestHandler
 import com.blockstream.utils.Loggable
+import kotlinx.coroutines.CancellationException
 import kotlinx.coroutines.CoroutineDispatcher
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.CoroutineStart
@@ -491,9 +493,15 @@ class GdkSession constructor(
     val lightningSdk
         get() = lightningSdkOrNull!!
 
+    /** Null until LWK is initialised (swaps disabled, wallet still connecting, etc.).
+     *  Use this for read-only probes (`inspectPaymentInstruction`, `quote`, `refreshSwapInfo`)
+     *  that can run before the swap path is committed. */
     var lwkOrNull: Lwk? = null
         private set
 
+    /** Force-unwrapped accessor for action paths (`createNormalSubmarineSwap`, `restorePreparePay`,
+     *  `btcToLbtc`, …). The contract is "the caller already verified swaps are enabled and the
+     *  flow has reached an action step", so a null here is a programming error and NPE is fine. */
     val lwk: Lwk
         get() = lwkOrNull!!
 
@@ -3468,10 +3476,22 @@ class GdkSession constructor(
                         validateAddress(it.key, ValidateAddresseesParams.create(it.key, input))
                     }.filter { it.value.isValid }.keys.firstOrNull()?.let { it to null }
                 } ?: run {
-                    // Check for lightning in case breez sdk is not initiated
-                    tryCatch {
-                        LightningPayment(input.replace("lightning:", ""))
-                        lightning to null
+                    // Fall back to LWK for BOLT12 detection (and BOLT11/LNURL if Breez missed them).
+                    // Propagate BIP-353-specific errors instead of swallowing so the user sees
+                    // why resolution failed.
+                    try {
+                        when (lwkOrNull?.inspectPaymentInstruction(input)) {
+                            is PaymentInstruction.Bolt12,
+                            is PaymentInstruction.Bolt11,
+                            is PaymentInstruction.LnUrl -> lightning to null
+                            null -> null
+                        }
+                    } catch (e: CancellationException) {
+                        throw e
+                    } catch (e: Exception) {
+                        if (e.message == "id_failed_to_resolve_bip353_payment_request") throw e
+                        e.printStackTrace()
+                        null
                     }
                 }
         }

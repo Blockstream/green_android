@@ -124,6 +124,7 @@
     <string name="id_amount">Amount</string>
     <string name="id_amount_above_maximum_allowed">Amount above maximum allowed value</string>
     <string name="id_amount_below_minimum_allowed">Amount below minimum allowed value</string>
+    <string name="id_amount_is_above_the_maximum_payment_limit_of_s">Amount is above the maximum payment limit of %1$s</string>
     <string name="id_amount_below_the_dust_threshold">Amount below the dust threshold</string>
     <string name="id_amount_in_s">Amount in %1$s</string>
     <string name="id_amount_must_be_at_least_s">Amount must be at least %1$s</string>
@@ -605,6 +606,7 @@
     <string name="id_failed">Failed</string>
     <string name="id_failed_to_load_asset_icons">Failed to load asset icons</string>
     <string name="id_failed_to_load_asset_registry">Failed to Load Asset Registry</string>
+    <string name="id_failed_to_resolve_bip353_payment_request">Failed to resolve BIP-353 payment request</string>
     <string name="id_fast">Fast</string>
     <string name="id_fast_transactions_on_the">Fast transactions on the Lightning Network, powered by Greenlight.</string>
     <string name="id_faster_more_confidential">Faster, more confidential Bitcoin transactions</string>
@@ -769,6 +771,7 @@
     <string name="id_instant">Instant</string>
     <string name="id_instant_recovery">Instant recovery</string>
     <string name="id_insufficient_funds">Insufficient funds</string>
+    <string name="id_insufficient_funds_invoice_amount_s">Insufficient funds. Invoice amount: %1$s</string>
     <string name="id_insufficient_lbtc_for_fees">Insufficient LBTC for fees</string>
     <string name="id_insufficient_lbtc_to_send_a">Insufficient LBTC to send a transaction. In Liquid, LBTC are needed to pay transaction fees. Generate an address to receive LBTC</string>
     <string name="id_invalid_address">Invalid address</string>
@@ -846,6 +849,7 @@
     <string name="id_legacy_segwit_bip49">Legacy SegWit (BIP49)</string>
     <string name="id_lets_get_you_set_up">Let&apos;s get you set up.</string>
     <string name="id_lightning">Lightning</string>
+    <string name="id_lightning_bitcoin">Lightning Bitcoin</string>
     <string name="id_swaps">Swaps</string>
     <string name="id_lightning_account">Lightning Account</string>
     <string name="id_lightning_account_shortcut">Lightning Account Shortcut</string>
@@ -1336,6 +1340,8 @@
     <string name="id_send_and_receive_liquidbased">Send and receive Liquid-based Managed Assets</string>
     <string name="id_send_error_report">Send error report</string>
     <string name="id_send_more_than_s_and_up_to_s_to">Send more than %1$s and up to %2$s to this address. A minimum setup fee of %3$s will be applied on the received amount.\n\nThis address can be used only once</string>
+    <string name="id_send_lightning_bitcoin">Send Lightning Bitcoin</string>
+    <string name="id_send_max">Send Max</string>
     <string name="id_send_to">Send To</string>
     <string name="id_sending">Sending</string>
     <string name="id_sending_request">Sending Request…</string>
@@ -1791,6 +1797,12 @@
     <string name="id_you_have_no_coins_to_send">You have no coins to send. Generate an address to receive some bitcoins.</string>
     <string name="id_you_have_received_s">You have received %1$s</string>
     <string name="id_you_have_successfully_changed">You have successfully changed your PIN</string>
+    <string name="id_you_transferred_s">You transferred %1$s.</string>
+    <string name="id_your_transaction_could_not_reach_network">Your transaction could not reach the network. Please try again.</string>
+    <string name="id_no_route_to_recipient">We couldn\'t find a route to the recipient. Try a smaller amount or a different invoice.</string>
+    <string name="id_lightning_payment_timed_out">The payment timed out. Please try again.</string>
+    <string name="id_swap_expired_please_retry">The swap expired before completing. Please try sending again.</string>
+    <string name="id_lightning_service_unavailable">Lightning service is temporarily unavailable. Please try again.</string>
     <string name="id_you_have_successfully_sent_a">You have successfully sent a transaction. Please give us your feedback to improve Green.</string>
     <string name="id_you_have_to_authenticate_to">You have to Authenticate to unlock your device</string>
     <string name="id_you_have_to_authenticate_using">You have to Authenticate using biometrics</string>
@@ -1957,7 +1969,11 @@
     <string name="id_payer_sends">Payer Sends</string>
     <string name="id_you_will_receive_liquid_bitcoin">You will receive Liquid bitcoin via Lightning invoice.</string>
     <string name="id_you_are_paying_this_lightning_invoice">You are paying this Lightning invoice with Liquid bitcoin</string>
-    <string name="id_no_amount_less_invoices_supported">No amount-less invoices supported</string>
+    <string name="id_bolt12_amount">BOLT12 amount</string>
+    <string name="id_lnurl_amount">LNURL amount</string>
+    <string name="id_no_amount_less_invoices_supported">Invoices without an amount can only be paid from a Lightning account</string>
+    <string name="id_lightning_balance_too_low_to_send">Lightning balance too low to send. Receive more sats to make it spendable.</string>
+    <string name="id_not_enough_lbtc_to_cover_swap_fees_s">Not enough LBTC to cover swap fees. Need %1$s more.</string>
     <string name="id_swap_id">Swap ID</string>
     <string name="id_paid_for_transaction_confirmation">Paid for transaction confirmation</string>
     <string name="id_includes_swap_and_lightning_routing">Includes service and Lightning routing.</string>
@@ -1989,4 +2005,5 @@
     <string name="id_you_cannot_disable_while_a_swap">You cannot disable while a swap is in progress.</string>
     <string name="id_unlock_jade_and_scan_this_qr">Unlock Jade and scan this QR to enable swaps on this phone and generate a retrieval key in case of swap failure.</string>
     <string name="id_invoice_already_paid">Invoice already paid</string>
+    <string name="id_bolt12_payment_is_only_available_via_lbtc">BOLT12 payment is only available via LBTC</string>
 </resources>

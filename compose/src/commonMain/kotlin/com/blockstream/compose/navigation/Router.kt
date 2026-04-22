@@ -77,6 +77,8 @@ import com.blockstream.compose.models.send.SendAddressViewModel
 import com.blockstream.compose.models.send.SendChooseAccountViewModel
 import com.blockstream.compose.models.send.SendChooseAssetViewModel
 import com.blockstream.compose.models.send.SendConfirmViewModel
+import com.blockstream.compose.models.send.SendLightningAmountViewModel
+import com.blockstream.compose.models.send.SendLightningConfirmViewModel
 import com.blockstream.compose.models.send.SendViewModel
 import com.blockstream.compose.models.send.SweepViewModel
 import com.blockstream.compose.models.settings.AppSettingsViewModel
@@ -155,6 +157,8 @@ import com.blockstream.compose.screens.send.SendAddressScreen
 import com.blockstream.compose.screens.send.SendChooseAccountScreen
 import com.blockstream.compose.screens.send.SendChooseAssetScreen
 import com.blockstream.compose.screens.send.SendConfirmScreen
+import com.blockstream.compose.screens.send.SendLightningAmountScreen
+import com.blockstream.compose.screens.send.SendLightningConfirmScreen
 import com.blockstream.compose.screens.send.SendScreen
 import com.blockstream.compose.screens.send.SweepScreen
 import com.blockstream.compose.screens.settings.AppSettingsScreen
@@ -525,6 +529,17 @@ fun Router(
                     )
                 })
             }
+            appComposable<NavigateDestinations.SendLightningAmount> {
+                val args = it.toRoute<NavigateDestinations.SendLightningAmount>()
+                SendLightningAmountScreen(viewModel {
+                    SendLightningAmountViewModel(
+                        greenWallet = args.greenWallet,
+                        address = args.address,
+                        addressType = args.addressType,
+                        accountAsset = args.accountAsset
+                    )
+                })
+            }
             appComposable<NavigateDestinations.SendAddress> {
                 val args = it.toRoute<NavigateDestinations.SendAddress>()
                 SendAddressScreen(viewModel {
@@ -542,6 +557,18 @@ fun Router(
                     SendConfirmViewModel(
                         greenWallet = args.greenWallet,
                         accountAsset = args.accountAsset,
+                        denomination = args.denomination
+                    )
+                })
+            }
+            appComposable<NavigateDestinations.SendLightningConfirm> {
+                val args = it.toRoute<NavigateDestinations.SendLightningConfirm>()
+                SendLightningConfirmScreen(viewModel {
+                    SendLightningConfirmViewModel(
+                        greenWallet = args.greenWallet,
+                        accountAsset = args.accountAsset,
+                        invoice = args.invoice,
+                        amountSatoshi = args.amountSatoshi,
                         denomination = args.denomination
                     )
                 })

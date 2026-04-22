@@ -48,6 +48,8 @@ import com.blockstream.compose.models.send.DenominationViewModel
 import com.blockstream.compose.models.send.FeeViewModel
 import com.blockstream.compose.models.send.RedepositViewModel
 import com.blockstream.compose.models.send.SendConfirmViewModel
+import com.blockstream.compose.models.send.SendLightningAmountViewModel
+import com.blockstream.compose.models.send.SendLightningConfirmViewModel
 import com.blockstream.compose.models.send.SendViewModel
 import com.blockstream.compose.models.send.SweepViewModel
 import com.blockstream.compose.models.settings.AppSettingsViewModel
@@ -145,10 +147,16 @@ val viewModels = module {
         SendConfirmViewModel(get(), get(), getOrNull())
     }
     viewModel {
+        SendLightningConfirmViewModel(get(), get(), get(), getOrNull(), getOrNull())
+    }
+    viewModel {
         AccountExchangeViewModel(get(), getOrNull())
     }
     viewModel {
         SendViewModel(get(), get(), get(), get())
+    }
+    viewModel {
+        SendLightningAmountViewModel(get(), get(), get(), get())
     }
     viewModel {
         SimpleGreenViewModel(getOrNull(), getOrNull(), getOrNull(), getOrNull())

@@ -2,9 +2,11 @@ package com.blockstream.domain.send
 
 import com.blockstream.data.data.EnrichedAsset
 import com.blockstream.data.data.GreenWallet
+import com.blockstream.data.extensions.tryCatch
 import com.blockstream.data.gdk.GdkSession
 import com.blockstream.data.gdk.data.AccountAsset
 import com.blockstream.data.gdk.data.AccountAssetBalance
+import com.blockstream.data.lwk.PaymentInstruction
 import com.blockstream.domain.swap.IsLiquidToLightningSwapUseCase
 
 /**
@@ -55,8 +57,18 @@ class GetSendAccountsUseCase(
         session: GdkSession, wallet: GreenWallet, asset: EnrichedAsset, address: String
     ): List<AccountAssetBalance> {
 
+
+        val instruction = tryCatch {
+            session.lwkOrNull?.inspectPaymentInstruction(address)
+        }
+        val isBolt12Destination = instruction is PaymentInstruction.Bolt12
+        val isAmountlessBolt11 = instruction is PaymentInstruction.Bolt11 && instruction.amountSats == null
+
         return session.accounts.value.filter { account ->
             when {
+                isBolt12Destination && account.network.isLightning -> false
+                isAmountlessBolt11 && !account.network.isLightning -> false
+
                 // Same Policy Asset
                 asset.assetId == account.network.policyAsset -> true
 

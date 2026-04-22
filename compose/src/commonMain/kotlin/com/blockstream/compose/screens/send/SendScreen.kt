@@ -53,7 +53,6 @@ import com.blockstream.compose.components.GreenDataLayout
 import com.blockstream.compose.components.GreenNetworkFee
 import com.blockstream.compose.components.GreenTextField
 import com.blockstream.compose.components.OnProgressStyle
-import com.blockstream.compose.components.SlideToUnlock
 import com.blockstream.compose.dialogs.TextDialog
 import com.blockstream.compose.events.Events
 import com.blockstream.compose.models.send.CreateTransactionViewModelAbstract
@@ -324,30 +323,15 @@ fun SendScreen(
             }
 
             AnimatedNullableVisibility(value = accountAssetBalance) {
-                val buttonEnabled by viewModel.buttonEnabled.collectAsStateWithLifecycle()
                 val isValid by viewModel.isValid.collectAsStateWithLifecycle()
 
-                if (it.account.isLightning) {
-                    GreenColumn(padding = 0) {
-                        SlideToUnlock(
-                            isLoading = onProgressSending,
-                            enabled = buttonEnabled,
-                            onSlideComplete = {
-                                viewModel.postEvent(
-                                    SendViewModel.LocalEvents.SendLightningTransaction
-                                )
-                            }
-                        )
-                    }
-                } else {
-                    GreenButton(
-                        text = stringResource(Res.string.id_next),
-                        enabled = isValid,
-                        size = GreenButtonSize.BIG,
-                        modifier = Modifier.fillMaxWidth()
-                    ) {
-                        viewModel.postEvent(Events.Continue)
-                    }
+                GreenButton(
+                    text = stringResource(Res.string.id_next),
+                    enabled = isValid,
+                    size = GreenButtonSize.BIG,
+                    modifier = Modifier.fillMaxWidth()
+                ) {
+                    viewModel.postEvent(Events.Continue)
                 }
             }
         }

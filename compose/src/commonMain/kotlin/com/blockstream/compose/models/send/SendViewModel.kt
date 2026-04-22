@@ -6,7 +6,6 @@ import blockstream_green.common.generated.resources.id_add_note
 import blockstream_green.common.generated.resources.id_limits_s__s
 import blockstream_green.common.generated.resources.id_payment_requested_by_s
 import blockstream_green.common.generated.resources.id_send
-import blockstream_green.common.generated.resources.id_transaction_sent
 import blockstream_green.common.generated.resources.note_pencil
 import com.blockstream.compose.events.Event
 import com.blockstream.compose.events.Events
@@ -26,7 +25,6 @@ import com.blockstream.data.TransactionType
 import com.blockstream.data.banner.Banner
 import com.blockstream.data.data.DenominatedValue
 import com.blockstream.data.data.Denomination
-import com.blockstream.data.data.ExceptionWithSupportData
 import com.blockstream.data.data.GreenWallet
 import com.blockstream.data.data.SupportData
 import com.blockstream.data.extensions.ifConnected
@@ -41,6 +39,8 @@ import com.blockstream.data.gdk.data.PendingTransaction
 import com.blockstream.data.gdk.params.CreateTransactionParams
 import com.blockstream.data.lightning.lnUrlPayDescription
 import com.blockstream.data.lightning.lnUrlPayImage
+import com.blockstream.data.lwk.Bolt12AmountMode
+import com.blockstream.data.lwk.PaymentInstruction
 import com.blockstream.data.utils.UserInput
 import com.blockstream.data.utils.feeRateWithUnit
 import com.blockstream.data.utils.ifNotNull
@@ -48,7 +48,8 @@ import com.blockstream.data.utils.toAmountLook
 import com.blockstream.domain.swap.SwapUseCase
 import com.blockstream.utils.Loggable
 import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.GlobalScope
+import kotlinx.coroutines.ExperimentalCoroutinesApi
+import kotlinx.coroutines.FlowPreview
 import kotlinx.coroutines.IO
 import kotlinx.coroutines.async
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -56,19 +57,19 @@ import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.combine
+import kotlinx.coroutines.flow.debounce
 import kotlinx.coroutines.flow.filterNotNull
 import kotlinx.coroutines.flow.flowOf
 import kotlinx.coroutines.flow.map
+import kotlinx.coroutines.flow.mapLatest
 import kotlinx.coroutines.flow.merge
 import kotlinx.coroutines.flow.onEach
 import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.launch
-import kotlinx.coroutines.withTimeout
 import org.jetbrains.compose.resources.getString
 import org.koin.core.component.inject
 import kotlin.io.encoding.Base64
 import kotlin.math.absoluteValue
-import kotlin.time.Duration.Companion.minutes
 
 abstract class SendViewModelAbstract(greenWallet: GreenWallet, accountAsset: AccountAsset) :
     CreateTransactionViewModelAbstract(greenWallet = greenWallet, accountAssetOrNull = accountAsset) {
@@ -182,11 +183,14 @@ class SendViewModel(
 
     class LocalEvents {
         object ToggleIsSendAll : Event
-        object SendLightningTransaction : Event
         object Note : Event
     }
 
     private var addressNetwork: MutableStateFlow<Network?> = MutableStateFlow(null)
+
+    // LWK-level inspection of the pasted instruction (LNURL info, BOLT12 amount mode, etc.).
+    // Null while loading or for unrecognised/non-Lightning inputs.
+    private val _paymentInstruction: MutableStateFlow<PaymentInstruction?> = MutableStateFlow(null)
 
     init {
         _addressInputType = addressType
@@ -238,28 +242,42 @@ class SendViewModel(
             viewModelScope.launch {
                 isSwapsEnabled = swapsUseCase.isSwapsEnabledUseCase(wallet = greenWallet)
                 addressNetwork.value = tryCatch { session.parseInput(address)?.first }
+                _paymentInstruction.value = tryCatch { session.lwkOrNull?.inspectPaymentInstruction(address) }
             }
 
+            @OptIn(FlowPreview::class, ExperimentalCoroutinesApi::class)
             combine(
                 addressNetwork.filterNotNull(),
                 _feeEstimation,
                 amount,
                 isSendAll,
                 _feePriorityPrimitive,
+                _paymentInstruction,
                 merge(
                     flowOf(Unit),
                     session.accountsAndBalanceUpdated
                 ), // set initial value, watch for wallet balance updates, especially on wallet startup like bip39 uris
             ) {
-                // Prefer account network as this can be a swap
+                // Side effects fire immediately on every input change so the UI (showAmount,
+                // fee selector visibility) stays responsive while the user is typing.
                 val accountNetwork = accountAsset.account.network
-
                 _showFeeSelector.value = sendUseCase.showFeeSelectorUseCase(session = session, network = accountNetwork)
 
-                _showAmount.value = !isSwapsEnabled || !(addressNetwork.value?.isLightning == true && accountAsset.account.network.isLiquid)
+                val isLiquidToLightningSwap = isLiquidToLightningSwap(accountAsset)
+                val instruction = _paymentInstruction.value
+                val isAmountlessInstruction = instruction is PaymentInstruction.LnUrl ||
+                        (instruction is PaymentInstruction.Bolt12 && instruction.amountMode == Bolt12AmountMode.AMOUNTLESS)
 
-                createTransactionParams.value = tryCatch(context = Dispatchers.Default) { createTransactionParams() }
-            }.launchIn(this)
+                _showAmount.value = !isSwapsEnabled || !isLiquidToLightningSwap || isAmountlessInstruction
+
+                isLiquidToLightningSwap
+            }
+                .debounce { isSwap -> if (isSwap) SWAP_PARAMS_DEBOUNCE_MS else 0L }
+                .mapLatest {
+                    tryCatch(context = Dispatchers.Default) { createTransactionParams() }
+                }
+                .onEach { createTransactionParams.value = it }
+                .launchIn(this)
 
             error.onEach {
                 _errorAmount.value = it.takeIf {
@@ -309,10 +327,6 @@ class SendViewModel(
                 }
             }
 
-            is LocalEvents.SendLightningTransaction -> {
-                sendLightningTransaction()
-            }
-
             is LocalEvents.Note -> {
                 postSideEffect(
                     SideEffects.NavigateTo(
@@ -336,7 +350,8 @@ class SendViewModel(
             amount = amount.value,
             denomination = denomination.value,
             isSendAll = isSendAll.value,
-            feeRate = getFeeRate()
+            feeRate = getFeeRate(),
+            paymentInstruction = _paymentInstruction.value,
         )
     }
 
@@ -355,7 +370,10 @@ class SendViewModel(
                 return@doAsync null
             }
 
-            val isSwap = addressNetwork.value?.isLightning == true && accountAsset.value?.account?.network?.isLiquid == true
+            val isSwap = accountAsset.value?.let { isLiquidToLightningSwap(it) } == true
+            val paymentInstruction = _paymentInstruction.value
+            val isAmountlessInstruction = paymentInstruction is PaymentInstruction.LnUrl ||
+                    (paymentInstruction is PaymentInstruction.Bolt12 && paymentInstruction.amountMode == Bolt12AmountMode.AMOUNTLESS)
 
             accountAsset.value?.let { accountAsset ->
 
@@ -374,7 +392,8 @@ class SendViewModel(
                 _description.value = tx.memo
 
                 tx.addressees.firstOrNull()?.also { addressee ->
-                    _isAmountLocked.value = addressee.isAmountLocked == true || isSwap
+                    // For amountless swap inputs the user must enter the amount — keep the field editable.
+                    _isAmountLocked.value = (addressee.isAmountLocked == true || isSwap) && !isAmountlessInstruction
 
                     _metadataDomain.value = addressee.domain?.let { getString(Res.string.id_payment_requested_by_s, it) }
                     _metadataImage.value = addressee.metadata.lnUrlPayImage()
@@ -394,10 +413,17 @@ class SendViewModel(
                                     withUnit = true
                                 ) ?: ""
                             )
+                        } ?: (_paymentInstruction.value as? PaymentInstruction.LnUrl)?.let { lnurl ->
+                            // Swap + LNURL: GDK doesn't know the range, fall back to LWK's resolved info
+                            getString(
+                                Res.string.id_limits_s__s,
+                                lnurl.minSats.toAmountLook(session = session, withUnit = false) ?: "",
+                                lnurl.maxSats.toAmountLook(session = session, withUnit = true) ?: "",
+                            )
                         }
                     } else null
 
-                    if (addressee.bip21Params?.hasAmount == true || addressee.isGreedy == true || addressee.isAmountLocked == true || isSwap) {
+                    if ((addressee.bip21Params?.hasAmount == true || addressee.isGreedy == true || addressee.isAmountLocked == true || isSwap) && !isAmountlessInstruction) {
                         val assetId = addressee.assetId ?: account.network.policyAsset
 
                         (tx.satoshi[assetId]?.absoluteValue?.let { sendAmount ->
@@ -514,79 +540,20 @@ class SendViewModel(
 
     }
 
-    private fun sendLightningTransaction() {
-        doAsync({
-            countly.startSendTransaction()
-            countly.startFailedTransaction()
-            
-            GlobalScope.async(context = Dispatchers.IO) {
-                withTimeout(1.minutes) {
-                    createTransactionParams.value?.let {
-                        session.sendLightningTransaction(params = session.createTransaction(_network.value!!, it), comment = note.value)
-                    } ?: run {
-                        throw Exception("Something went wrong while creating the Transaction")
-                    }
-                }
-            }.await()
-
-        }, timeout = 1.minutes, preAction = {
-            _onProgressSending.value = true
-            onProgress.value = true
-        }, postAction = {
-            val isSuccess = it == null
-            _onProgressSending.value = isSuccess
-            onProgress.value = isSuccess
-        }, onSuccess = {
-            countly.endSendTransaction(
-                session = session,
-                account = account,
-                transactionSegmentation = TransactionSegmentation(
-                    transactionType = TransactionType.SEND,
-                    addressInputType = _addressInputType
-                ),
-                withMemo = false
-            )
-
-            if (it.hasMessageOrUrl) {
-                postSideEffect(SideEffects.TransactionSent(it))
-            } else {
-                postSideEffect(SideEffects.NavigateAfterSendTransaction)
-            }
-
-            postSideEffect(SideEffects.Snackbar(StringHolder.create(Res.string.id_transaction_sent)))
-
-        }, onError = {
-
-            postSideEffect(
-                SideEffects.ErrorDialog(
-                    error = it, supportData = (it as? ExceptionWithSupportData)?.supportData
-                        ?: SupportData.create(
-                            throwable = it,
-                            network = account.network,
-                            session = session
-                        )
-                )
-            )
-
-            countly.failedTransaction(
-                session = session,
-                account = account,
-                transactionSegmentation = TransactionSegmentation(
-                    transactionType = TransactionType.SEND,
-                    addressInputType = _addressInputType
-                ),
-                error = it
-            )
-        })
-    }
-
     override fun setDenominatedValue(denominatedValue: DenominatedValue) {
         _denomination.value = denominatedValue.denomination
         amount.value = denominatedValue.asInput ?: ""
     }
 
+    /** True when the recipient resolves to Lightning and the source account is on Liquid — i.e.
+     *  the send will be brokered as a Boltz submarine swap. */
+    private fun isLiquidToLightningSwap(accountAsset: AccountAsset): Boolean =
+        addressNetwork.value?.isLightning == true && accountAsset.account.network.isLiquid
+
     companion object : Loggable() {
         val DustLimit = 546
+
+        private const val SWAP_PARAMS_DEBOUNCE_MS = 400L
     }
 }
 

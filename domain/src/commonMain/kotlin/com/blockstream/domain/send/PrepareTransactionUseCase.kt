@@ -10,6 +10,8 @@ import com.blockstream.data.gdk.params.AddressParams
 import com.blockstream.data.gdk.params.CreateTransactionParams
 import com.blockstream.data.gdk.params.toJsonElement
 import com.blockstream.data.lightning.maxPayableSatoshi
+import com.blockstream.data.lwk.Bolt12AmountMode
+import com.blockstream.data.lwk.PaymentInstruction
 import com.blockstream.data.swap.SwapDetails
 import com.blockstream.data.utils.UserInput
 import com.blockstream.domain.swap.SwapUseCase
@@ -68,6 +70,7 @@ class PrepareTransactionUseCase(private val swapUseCase: SwapUseCase) {
         denomination: Denomination? = null,
         isSendAll: Boolean = false,
         feeRate: Long? = null,
+        paymentInstruction: PaymentInstruction? = null,
     ): CreateTransactionParams {
 
         return (if (accountAsset.account.network.isLightning) {
@@ -102,12 +105,36 @@ class PrepareTransactionUseCase(private val swapUseCase: SwapUseCase) {
             } ?: false
 
             if (isLiquidToLightningSwap) {
+                val effectiveInstruction = paymentInstruction
+                    ?: tryCatch { session.lwkOrNull?.inspectPaymentInstruction(address) }
+
+                val isAmountlessInstruction = effectiveInstruction is PaymentInstruction.LnUrl ||
+                        (effectiveInstruction is PaymentInstruction.Bolt12 && effectiveInstruction.amountMode == Bolt12AmountMode.AMOUNTLESS)
+
+                val bolt12FixedAmount = (effectiveInstruction as? PaymentInstruction.Bolt12)
+                    ?.takeIf { it.amountMode == Bolt12AmountMode.WITH_AMOUNT }
+                    ?.amountSats
+
+                val userAmountSatoshi = if (isAmountlessInstruction) {
+                    UserInput.parseUserInputSafe(
+                        session = session,
+                        input = amount,
+                        assetId = accountAsset.assetId,
+                        denomination = denomination
+                    ).getBalance(onlyInAcceptableRange = false)?.satoshi
+                } else null
+
+                if (isAmountlessInstruction && (userAmountSatoshi == null || userAmountSatoshi <= 0)) {
+                    throw IllegalArgumentException("id_invalid_amount")
+                }
+
                 swap = swapUseCase.createNormalSubmarineSwapUseCase(
                     wallet = greenWallet,
                     session = session,
                     isAutoSwap = true,
                     account = accountAsset.account,
-                    invoice = address
+                    invoice = address,
+                    amountSats = userAmountSatoshi ?: bolt12FixedAmount,
                 )
 
                 isGreedy = false

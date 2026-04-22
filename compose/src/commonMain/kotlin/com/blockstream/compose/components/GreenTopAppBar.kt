@@ -35,6 +35,10 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
+import androidx.compose.foundation.Image
+import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.width
 import androidx.constraintlayout.compose.ConstraintLayout
 import com.adamglin.PhosphorIcons
 import com.adamglin.phosphoricons.Regular
@@ -47,6 +51,7 @@ import com.blockstream.compose.theme.bodyLarge
 import com.blockstream.compose.theme.bodySmall
 import com.blockstream.compose.theme.titleMedium
 import com.blockstream.compose.utils.ifTrue
+import org.jetbrains.compose.resources.painterResource
 import org.jetbrains.compose.resources.stringResource
 
 @OptIn(ExperimentalMaterial3Api::class)
@@ -125,29 +130,52 @@ fun GreenTopAppBar(
                     val (title, subtitle) = createRefs()
                     val isCentered = navData.isCentered
 
-                    Crossfade(
-                        targetState = navData.title ?: navData.titleRes?.let { stringResource(it) }
-                        ?: "",
-                        modifier = Modifier.constrainAs(title) {
-                            if (isCentered) {
-                                start.linkTo(parent.start)
-                                end.linkTo(parent.end)
-                            } else {
-                                start.linkTo(parent.start)
+                    Row(
+                        verticalAlignment = Alignment.CenterVertically,
+                        horizontalArrangement = if (isCentered) Arrangement.Center else Arrangement.Start,
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .constrainAs(title) {
+                                if (isCentered) {
+                                    start.linkTo(parent.start)
+                                    end.linkTo(parent.end)
+                                } else {
+                                    start.linkTo(parent.start)
+                                }
+                                top.linkTo(parent.top)
+                                if (navData.subtitle.isNullOrBlank()) {
+                                    bottom.linkTo(parent.bottom)
+                                }
+                            },
+                    ) {
+                        AnimatedVisibility(
+                            visible = navData.titleIcon != null,
+                            enter = fadeIn(),
+                            exit = fadeOut(),
+                        ) {
+                            navData.titleIcon?.also { iconRes ->
+                                Row(verticalAlignment = Alignment.CenterVertically) {
+                                    Image(
+                                        painter = painterResource(iconRes),
+                                        contentDescription = null,
+                                        modifier = Modifier.size(20.dp),
+                                    )
+                                    Spacer(modifier = Modifier.width(8.dp))
+                                }
                             }
-                            top.linkTo(parent.top)
-                            if (navData.subtitle.isNullOrBlank()) {
-                                bottom.linkTo(parent.bottom)
-                            }
-                        }) {
-                        Text(
-                            text = it,
-                            maxLines = 1,
-                            style = titleMedium,
-                            textAlign = if (isCentered) TextAlign.Center else TextAlign.Start,
-                            overflow = TextOverflow.Ellipsis,
-                            modifier = Modifier.fillMaxWidth()
-                        )
+                        }
+                        Crossfade(
+                            targetState = navData.title ?: navData.titleRes?.let { stringResource(it) } ?: "",
+                            animationSpec = tween(220),
+                        ) {
+                            Text(
+                                text = it,
+                                maxLines = 1,
+                                style = titleMedium,
+                                textAlign = if (isCentered) TextAlign.Center else TextAlign.Start,
+                                overflow = TextOverflow.Ellipsis,
+                            )
+                        }
                     }
 
                     // Looking good

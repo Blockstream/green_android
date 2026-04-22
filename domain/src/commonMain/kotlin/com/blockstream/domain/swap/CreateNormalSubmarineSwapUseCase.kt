@@ -9,6 +9,7 @@ import com.blockstream.data.extensions.letTryCatch
 import com.blockstream.data.gdk.GdkSession
 import com.blockstream.data.gdk.data.Account
 import com.blockstream.data.lightning.satoshi
+import com.blockstream.data.lwk.PaymentInstruction
 import com.blockstream.data.swap.SwapDetails
 import lwk.Bolt11Invoice
 import lwk.LwkException
@@ -46,33 +47,54 @@ class CreateNormalSubmarineSwapUseCase(val database: Database) {
         session: GdkSession,
         isAutoSwap: Boolean,
         account: Account,
-        invoice: String
+        invoice: String,
+        amountSats: Long? = null,
     ): SwapDetails {
 
         val xPubHashId = session.xPubHashId ?: throw Exception("xPubHashId should not be null")
+        val normalizedInput = invoice.replace("lightning:", "")
+        val refundAddress = session.getReceiveAddress(account).address
 
-        val invoice = invoice.replace("lightning:", "")
+        val instruction = try {
+            session.lwkOrNull?.inspectPaymentInstruction(normalizedInput)
+        } catch (_: Exception) {
+            null
+        }
 
-        val bolt11Invoice = Bolt11Invoice(invoice)
+        if (instruction is PaymentInstruction.LnUrl || instruction is PaymentInstruction.Bolt12) {
+            return createForInstruction(
+                wallet = wallet,
+                session = session,
+                isAutoSwap = isAutoSwap,
+                account = account,
+                input = normalizedInput,
+                amountSats = amountSats,
+                refundAddress = refundAddress,
+                xPubHashId = xPubHashId,
+            )
+        }
+
+        // BOLT11 path (existing behaviour, unchanged)
+        val bolt11Invoice = Bolt11Invoice(normalizedInput)
 
         if (bolt11Invoice.amountMilliSatoshis() == null) {
             throw Exception("id_no_amount_less_invoices_supported")
         }
 
         // Prevent double spending even when paid using Magic hint routing
-        if (database.isInvoicePaid(invoice = invoice)) {
+        if (database.isInvoicePaid(invoice = normalizedInput)) {
             throw Exception("id_invoice_already_paid")
         }
 
         val boltzSwap = database.getSwapFromUnpaidInvoice(
-            invoice = invoice,
+            invoice = normalizedInput,
             xPubHashId = xPubHashId
         )
 
         val swap = boltzSwap?.takeIf { !it.is_magic }?.letTryCatch {
             session.lwk.restorePreparePay(it.data_)
         } ?: try {
-            session.lwk.createNormalSubmarineSwap(bolt11Invoice = invoice, refundAddress = session.getReceiveAddress(account).address)
+            session.lwk.createNormalSubmarineSwap(input = normalizedInput, refundAddress = refundAddress)
         } catch (hint: LwkException.MagicRoutingHint) {
             val swap = SwapDetails(
                 swapId = Uuid.generateV7().toString(),
@@ -81,7 +103,7 @@ class CreateNormalSubmarineSwapUseCase(val database: Database) {
                 fromAssetId = account.network.policyAsset,
                 toAmount = hint.amount.toLong(),
                 toAssetId = session.lightning.policyAsset,
-                submarineInvoiceTo = invoice
+                submarineInvoiceTo = normalizedInput
             )
 
             if (boltzSwap == null) {
@@ -90,7 +112,7 @@ class CreateNormalSubmarineSwapUseCase(val database: Database) {
                     id = swap.swapId,
                     walletId = wallet.id,
                     xPubHashId = xPubHashId,
-                    invoice = invoice,
+                    invoice = normalizedInput,
                     swapType = SwapType.NormalSubmarine,
                     isAutoSwap = isAutoSwap,
                     isMagic = true,
@@ -106,7 +128,7 @@ class CreateNormalSubmarineSwapUseCase(val database: Database) {
             id = swap.swapId(),
             walletId = wallet.id,
             xPubHashId = xPubHashId,
-            invoice = invoice,
+            invoice = normalizedInput,
             swapType = SwapType.NormalSubmarine,
             isAutoSwap = isAutoSwap,
             isMagic = false,
@@ -118,11 +140,61 @@ class CreateNormalSubmarineSwapUseCase(val database: Database) {
             address = swap.uriAddress().toString(),
             fromAmount = swap.uriAmount().toLong(),
             fromAssetId = account.network.policyAsset,
-            submarineInvoiceTo = invoice,
+            submarineInvoiceTo = normalizedInput,
             toAmount = bolt11Invoice.amountMilliSatoshis()?.satoshi() ?: 0,
             toAssetId = session.lightning.policyAsset,
             providerFee = swap.boltzFee()?.toLong() ?: 0,
             claimNetworkFee = (swap.fee()?.toLong() ?: 0) - (swap.boltzFee()?.toLong() ?: 0)
         )
     }
+
+    private suspend fun createForInstruction(
+        wallet: GreenWallet,
+        session: GdkSession,
+        isAutoSwap: Boolean,
+        account: Account,
+        input: String,
+        amountSats: Long?,
+        refundAddress: String,
+        xPubHashId: String,
+    ): SwapDetails {
+        val dedupKey = instructionDedupKey(input, amountSats)
+
+        val existing = database.getSwapFromUnpaidInvoice(invoice = dedupKey, xPubHashId = xPubHashId)
+        val swap = existing?.takeIf { !it.is_magic }?.letTryCatch {
+            session.lwk.restorePreparePay(it.data_)
+        } ?: run {
+            val newSwap = session.lwk.createNormalSubmarineSwap(
+                input = input,
+                refundAddress = refundAddress,
+                amountSats = amountSats,
+            )
+            database.setSwap(
+                id = newSwap.swapId(),
+                walletId = wallet.id,
+                xPubHashId = xPubHashId,
+                invoice = dedupKey,
+                swapType = SwapType.NormalSubmarine,
+                isAutoSwap = isAutoSwap,
+                isMagic = false,
+                data = newSwap.serialize(),
+            )
+            newSwap
+        }
+
+        return SwapDetails(
+            swapId = swap.swapId(),
+            address = swap.uriAddress().toString(),
+            fromAmount = swap.uriAmount().toLong(),
+            fromAssetId = account.network.policyAsset,
+            submarineInvoiceTo = input,
+            toAmount = amountSats ?: 0,
+            toAssetId = session.lightning.policyAsset,
+            providerFee = swap.boltzFee()?.toLong() ?: 0,
+            claimNetworkFee = (swap.fee()?.toLong() ?: 0) - (swap.boltzFee()?.toLong() ?: 0),
+        )
+    }
+
+    private fun instructionDedupKey(input: String, amountSats: Long?): String =
+        "$input|amountSats=$amountSats"
 }

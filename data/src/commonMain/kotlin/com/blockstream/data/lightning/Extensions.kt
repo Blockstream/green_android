@@ -33,6 +33,9 @@ fun LightningInvoice.receiveAmountSatoshi(openingFeeSatoshi: Long) =
 fun Bolt11Invoice.expireIn() = Instant.fromEpochSeconds((this.timestamp() + this.expiryTime()).toLong())
 fun Bolt11Invoice.timeUntilExpiration() = expireIn().periodUntil(Clock.System.now(), TimeZone.currentSystemDefault())
 
+fun parseBolt11AndCheckExpired(input: String): Boolean =
+    Bolt11Invoice(input).use { Clock.System.now() > it.expireIn() }
+
 fun LightningInvoice.expireIn() = Instant.fromEpochSeconds((this.timestamp + this.expiry).toLong())
 fun LightningInvoice.timeUntilExpiration() = expireIn().periodUntil(Clock.System.now(), TimeZone.currentSystemDefault())
 

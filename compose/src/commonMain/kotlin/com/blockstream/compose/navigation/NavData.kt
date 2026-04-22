@@ -1,10 +1,12 @@
 package com.blockstream.compose.navigation
 
+import org.jetbrains.compose.resources.DrawableResource
 import org.jetbrains.compose.resources.StringResource
 
 data class NavData(
     val title: String? = null,
     val titleRes: StringResource? = null,
+    val titleIcon: DrawableResource? = null,
     val isCentered: Boolean = false,
 
     val subtitle: String? = null,

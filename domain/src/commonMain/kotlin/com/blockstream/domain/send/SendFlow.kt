@@ -14,7 +14,15 @@ sealed class SendFlow {
     data class SelectAsset(val address: String, val assets: EnrichedAssetList) : SendFlow()
     data class SelectAccount(val address: String, val asset: EnrichedAsset, val accounts: AccountAssetBalanceList) : SendFlow()
     data class SelectAmount(val address: String, val account: AccountAsset) : SendFlow()
+    data class SelectLightningAmount(val address: String, val account: AccountAsset) : SendFlow()
 
     data class SendConfirmation(val account: AccountAsset, val params: CreateTransactionParams, val transaction: CreateTransaction) :
         SendFlow()
+
+    data class SendLightningConfirmation(
+        val account: AccountAsset,
+        val params: CreateTransactionParams,
+        val transaction: CreateTransaction,
+        val invoice: String,
+    ) : SendFlow()
 }

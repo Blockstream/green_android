@@ -377,6 +377,14 @@ sealed class NavigateDestinations : NavigateDestination() {
     ) : NavigateDestination()
 
     @Serializable
+    data class SendLightningAmount(
+        val greenWallet: GreenWallet,
+        val address: String,
+        val addressType: AddressInputType,
+        val accountAsset: AccountAsset
+    ) : NavigateDestination()
+
+    @Serializable
     data class SendAddress(
         val greenWallet: GreenWallet,
         val address: String? = null,
@@ -395,6 +403,15 @@ sealed class NavigateDestinations : NavigateDestination() {
     data class SendConfirm(
         val greenWallet: GreenWallet,
         val accountAsset: AccountAsset,
+        val denomination: com.blockstream.data.data.Denomination? = null
+    ) : NavigateDestination()
+
+    @Serializable
+    data class SendLightningConfirm(
+        val greenWallet: GreenWallet,
+        val accountAsset: AccountAsset,
+        val invoice: String,
+        val amountSatoshi: Long? = null,
         val denomination: com.blockstream.data.data.Denomination? = null
     ) : NavigateDestination()
 

@@ -2,6 +2,7 @@ package com.blockstream.compose.models.send
 
 import androidx.lifecycle.viewModelScope
 import blockstream_green.common.generated.resources.Res
+import blockstream_green.common.generated.resources.id_amount_is_above_the_maximum_payment_limit_of_s
 import blockstream_green.common.generated.resources.id_insufficient_funds
 import blockstream_green.common.generated.resources.id_select_account
 import blockstream_green.common.generated.resources.id_send
@@ -13,11 +14,14 @@ import com.blockstream.compose.sideeffects.SideEffects
 import com.blockstream.data.AddressInputType
 import com.blockstream.data.TransactionSegmentation
 import com.blockstream.data.TransactionType
+import com.blockstream.data.data.Denomination
 import com.blockstream.data.data.EnrichedAsset
 import com.blockstream.data.data.GreenWallet
 import com.blockstream.data.gdk.data.AccountAsset
 import com.blockstream.data.gdk.data.AccountAssetBalance
 import com.blockstream.data.gdk.data.PendingTransaction
+import com.blockstream.data.lightning.maxPayableSatoshi
+import com.blockstream.data.utils.toAmountLook
 import com.blockstream.domain.send.SendFlow
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
@@ -60,19 +64,33 @@ class SendChooseAccountViewModel(
                 subtitle = getString(Res.string.id_select_account),
             )
         }
-        
+
         doAsync({
 
             val amount = sendUseCase.getSendAmountUseCase(session = session, input = address)
 
-            _accountsWithMessage.value = accounts.map {
+            _accountsWithMessage.value = accounts.map { accountBalance ->
+                val account = accountBalance.accountAsset.account
+                val balance = accountBalance.balance(session = session)
 
-                val hasFunds = amount == null || it.balance(session = session) > amount
+                val maxPayable = if (account.network.isLightning) {
+                    session.lightningSdkOrNull?.nodeInfoStateFlow?.value?.maxPayableSatoshi()
+                } else null
+
+                val (message, isError) = when {
+                    amount == null -> null to false
+                    maxPayable != null && amount > maxPayable -> {
+                        val formatted = formatSatsForError(maxPayable)
+                        "id_amount_is_above_the_maximum_payment_limit_of_s|$formatted" to true
+                    }
+                    balance > amount -> null to false
+                    else -> getString(Res.string.id_insufficient_funds) to true
+                }
 
                 AccountState(
-                    account = it,
-                    message = if (hasFunds) null else getString(Res.string.id_insufficient_funds),
-                    isError = !hasFunds
+                    account = accountBalance,
+                    message = message,
+                    isError = isError,
                 )
             }
         })
@@ -102,13 +120,24 @@ class SendChooseAccountViewModel(
                     )
                 }
 
+                is SendFlow.SelectLightningAmount -> {
+                    SideEffects.NavigateTo(
+                        NavigateDestinations.SendLightningAmount(
+                            greenWallet = greenWallet,
+                            address = address,
+                            addressType = addressType,
+                            accountAsset = sendFlow.account,
+                        )
+                    )
+                }
+
                 is SendFlow.SendConfirmation -> {
                     session.pendingTransaction = PendingTransaction(
                         params = sendFlow.params,
                         transaction = sendFlow.transaction,
                         segmentation = TransactionSegmentation(
                             transactionType = TransactionType.SEND,
-                            addressInputType = _addressInputType,
+                            addressInputType = addressType,
                             sendAll = false
                         )
                     )
@@ -117,6 +146,28 @@ class SendChooseAccountViewModel(
                         NavigateDestinations.SendConfirm(
                             greenWallet = greenWallet,
                             accountAsset = sendFlow.account,
+                            denomination = denomination.value
+                        )
+                    )
+                }
+
+                is SendFlow.SendLightningConfirmation -> {
+                    session.pendingTransaction = PendingTransaction(
+                        params = sendFlow.params,
+                        transaction = sendFlow.transaction,
+                        segmentation = TransactionSegmentation(
+                            transactionType = TransactionType.SEND,
+                            addressInputType = addressType,
+                            sendAll = false
+                        )
+                    )
+
+                    SideEffects.NavigateTo(
+                        NavigateDestinations.SendLightningConfirm(
+                            greenWallet = greenWallet,
+                            accountAsset = sendFlow.account,
+                            invoice = sendFlow.invoice,
+                            amountSatoshi = sendFlow.params.swap?.toAmount,
                             denomination = denomination.value
                         )
                     )
@@ -133,6 +184,24 @@ class SendChooseAccountViewModel(
         }, onSuccess = {
             postSideEffect(it)
         })
+    }
+
+    private suspend fun formatSatsForError(satoshi: Long): String {
+        val sats = satoshi.toAmountLook(
+            session = session,
+            denomination = Denomination.SATOSHI,
+            withUnit = true,
+            withGrouping = true,
+        ) ?: "$satoshi"
+        val fiat = Denomination.fiat(session)?.let {
+            satoshi.toAmountLook(
+                session = session,
+                denomination = it,
+                withUnit = true,
+                withGrouping = true,
+            )
+        }
+        return if (fiat != null) "$sats ($fiat)" else sats
     }
 }
 

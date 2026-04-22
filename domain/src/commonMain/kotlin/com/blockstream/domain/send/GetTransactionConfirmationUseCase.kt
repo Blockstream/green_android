@@ -46,16 +46,17 @@ class GetTransactionConfirmationUseCase() {
 
                 val satoshi = if (isAddressVerificationOnDevice) swap.fromAmount else swap.toAmount
                 val satoshiAssetId = if (isAddressVerificationOnDevice) swap.fromAssetId else swap.toAssetId
+                val displayAssetId = if (params.isLiquidToLightningSwap) account.network.policyAsset else satoshiAssetId
 
                 amount = satoshi.toAmountLook(
                     session = session,
-                    assetId = satoshiAssetId,
+                    assetId = displayAssetId,
                     withMinimumDigits = isAddressVerificationOnDevice,
                     denomination = if (isAddressVerificationOnDevice) Denomination.BTC else denomination
                 )
                 amountFiat = satoshi.toAmountLook(
                     session = session,
-                    assetId = satoshiAssetId,
+                    assetId = displayAssetId,
                     denomination = Denomination.fiat(session)
                 )
 
@@ -63,7 +64,7 @@ class GetTransactionConfirmationUseCase() {
                     utxos = listOf(
                         UtxoView(
                             address = swap.submarineInvoiceTo,
-                            assetId = satoshiAssetId,
+                            assetId = displayAssetId,
                             satoshi = satoshi,
                             amount = amount,
                             amountExchange = amountFiat

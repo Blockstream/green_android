@@ -502,8 +502,7 @@ abstract class CreateTransactionViewModelAbstract(
                 }
 
                 session.pendingTransaction = null // clear pending transaction
-                postSideEffect(SideEffects.Snackbar(StringHolder.create(Res.string.id_transaction_sent)))
-                postSideEffect(SideEffects.NavigateAfterSendTransaction)
+                onSendSuccess(params, it.txHash)
             } else {
                 postSideEffect(
                     SideEffects.Dialog(
@@ -517,40 +516,7 @@ abstract class CreateTransactionViewModelAbstract(
             // Dismiss Verify Transaction Dialog
             postSideEffect(SideEffects.Dismiss)
 
-            when {
-                // If the error is the Anti-Exfil validation violation we show that prominently.
-                // Otherwise show a toast of the error text.
-                it.message == "id_signature_validation_failed_if" -> {
-                    postSideEffect(
-                        SideEffects.ErrorDialog(
-                            it,
-                            supportData = SupportData.create(
-                                throwable = it,
-                                network = account.network,
-                                session = session
-                            )
-                        )
-                    )
-                }
-
-                it.message == "id_transaction_already_confirmed" -> {
-                    postSideEffect(SideEffects.Snackbar(StringHolder.create(Res.string.id_transaction_already_confirmed)))
-                    postSideEffect(SideEffects.NavigateToRoot(popTo = PopTo.Transact))
-                }
-
-                it.message != "id_action_canceled" -> {
-                    postSideEffect(
-                        SideEffects.ErrorDialog(
-                            error = it, supportData = (it as? ExceptionWithSupportData)?.supportData
-                                ?: SupportData.create(
-                                    throwable = it,
-                                    network = account.network,
-                                    session = session
-                                )
-                        )
-                    )
-                }
-            }
+            onSendError(it)
 
             countly.failedTransaction(
                 session = session,
@@ -569,6 +535,46 @@ abstract class CreateTransactionViewModelAbstract(
                     delay(500L)
                     postEvent(LocalEvents.SignTransaction())
                 }
+            }
+        }
+    }
+
+    protected open fun onSendSuccess(params: CreateTransactionParams?, txHash: String? = null) {
+        postSideEffect(SideEffects.Snackbar(StringHolder.create(Res.string.id_transaction_sent)))
+        postSideEffect(SideEffects.NavigateAfterSendTransaction)
+    }
+
+    protected open fun onSendError(error: Throwable) {
+        when {
+            error.message == "id_signature_validation_failed_if" -> {
+                postSideEffect(
+                    SideEffects.ErrorDialog(
+                        error,
+                        supportData = SupportData.create(
+                            throwable = error,
+                            network = account.network,
+                            session = session
+                        )
+                    )
+                )
+            }
+
+            error.message == "id_transaction_already_confirmed" -> {
+                postSideEffect(SideEffects.Snackbar(StringHolder.create(Res.string.id_transaction_already_confirmed)))
+                postSideEffect(SideEffects.NavigateToRoot(popTo = PopTo.Transact))
+            }
+
+            error.message != "id_action_canceled" -> {
+                postSideEffect(
+                    SideEffects.ErrorDialog(
+                        error = error, supportData = (error as? ExceptionWithSupportData)?.supportData
+                            ?: SupportData.create(
+                                throwable = error,
+                                network = account.network,
+                                session = session
+                            )
+                    )
+                )
             }
         }
     }

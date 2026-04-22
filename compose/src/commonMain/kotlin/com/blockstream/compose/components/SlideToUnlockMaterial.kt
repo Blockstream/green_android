@@ -14,7 +14,6 @@ import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.offset
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
-import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.ExperimentalMaterialApi
 import androidx.compose.material.FractionalThreshold
@@ -46,11 +45,12 @@ import androidx.compose.ui.unit.IntOffset
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.times
 import blockstream_green.common.generated.resources.Res
-import blockstream_green.common.generated.resources.arrow_fat_lines_right
 import blockstream_green.common.generated.resources.id_slide_to_send
+import blockstream_green.common.generated.resources.slide_to_send_arrow
 import com.blockstream.compose.theme.green
 import com.blockstream.compose.theme.labelLarge
 import com.blockstream.compose.theme.md_theme_backgroundVariant
+import com.blockstream.compose.theme.md_theme_onPrimary
 import com.blockstream.compose.theme.whiteHigh
 import com.blockstream.compose.utils.StringHolder
 import org.jetbrains.compose.resources.painterResource
@@ -171,12 +171,12 @@ fun Track(
             )
             .background(
                 color = backgroundColor,
-                shape = RoundedCornerShape(percent = 50),
+                shape = RoundedCornerShape(12.dp),
             )
             .padding(
                 PaddingValues(
                     horizontal = horizontalPadding,
-                    vertical = 8.dp,
+                    vertical = 3.dp,
                 )
             ),
         content = content,
@@ -196,25 +196,26 @@ fun Thumb(
     modifier: Modifier = Modifier,
 ) {
     Box(
+        contentAlignment = Alignment.Center,
         modifier = modifier
-            .size(Thumb.Size)
+            .size(width = Thumb.Width, height = Thumb.Height)
             .background(
                 color = if (enabled) green else ButtonDefaults.buttonColors().disabledContainerColor,
-                shape = CircleShape
+                shape = RoundedCornerShape(8.dp),
             )
             .padding(8.dp),
     ) {
         if (isLoading) {
             CircularProgressIndicator(
                 modifier = Modifier.padding(2.dp),
-                color = whiteHigh,
+                color = md_theme_onPrimary,
                 strokeWidth = 2.dp
             )
         } else {
             Image(
-                painter = painterResource(Res.drawable.arrow_fat_lines_right),
+                painter = painterResource(Res.drawable.slide_to_send_arrow),
                 contentDescription = null,
-                colorFilter = ColorFilter.tint(if (enabled) whiteHigh else ButtonDefaults.buttonColors().disabledContentColor)
+                colorFilter = ColorFilter.tint(if (enabled) md_theme_onPrimary else ButtonDefaults.buttonColors().disabledContentColor)
             )
         }
     }
@@ -235,7 +236,9 @@ fun Hint(
 }
 
 private object Thumb {
-    val Size = 40.dp
+    val Width = 50.dp
+    val Height = 50.dp
+    val Size = Width // kept for Track padding calculation
 }
 
 private object Track {

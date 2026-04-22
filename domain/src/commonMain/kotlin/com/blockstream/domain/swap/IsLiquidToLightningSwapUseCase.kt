@@ -36,9 +36,7 @@ class IsLiquidToLightningSwapUseCase(
         accountAsset: AccountAsset,
         session: GdkSession,
     ): Boolean {
-        return asset.isLightning && accountAsset.account.isLiquid && isSwapsEnabledUseCase(wallet = wallet) && isInvoiceSwappableUseCase(
-            address = address,
-            session = session
-        )
+        return asset.isLightning && accountAsset.account.isLiquid && isSwapsEnabledUseCase(wallet = wallet) &&
+                isInvoiceSwappableUseCase(address = address, session = session) is InvoiceSwappability.Swappable
     }
 }

@@ -32,6 +32,7 @@ val md_theme_surface = Color(0xFF181818) // card, text fields
 val md_theme_onSurface = Color(0xFFFFFFFF)
 val md_theme_surfaceVariant = Color(0xFF232323)
 val md_theme_onSurfaceVariant = Color(0xFFC1C9BE)
+val md_theme_dialogSurface = Color(0xFF262626) // modal/dialog container, one tier lighter than surface
 
 val md_theme_outline = Color(0xFF262626)
 val md_theme_inverseOnSurface = Color(0xFFEEF0FF)

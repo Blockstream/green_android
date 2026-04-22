@@ -44,7 +44,7 @@ fun SendAddressScreen(
 ) {
 
     NavigateDestinations.Camera.getResult<ScanResult> {
-        viewModel.address.value = it.result
+        viewModel.address.value = it.result.trim()
         viewModel.postEvent(CreateTransactionViewModelAbstract.LocalEvents.SetAddressInputType(AddressInputType.SCAN))
     }
 
@@ -80,7 +80,7 @@ fun SendAddressScreen(
                     pasteIconEnabled = false,
                     onValueChange = {
                         viewModel.postEvent(CreateTransactionViewModelAbstract.LocalEvents.SetAddressInputType(AddressInputType.PASTE))
-                        viewModel.address.value = it
+                        viewModel.address.value = it.trim()
                     },
                     singleLine = false,
                     maxLines = 8,
@@ -114,7 +114,7 @@ fun SendAddressScreen(
                     modifier = Modifier.fillMaxWidth(),
                     onClick = {
                         platformManager.getClipboard()?.let {
-                            viewModel.address.value = it
+                            viewModel.address.value = it.trim()
                             viewModel.postEvent(CreateTransactionViewModelAbstract.LocalEvents.SetAddressInputType(AddressInputType.PASTE))
                         }
                     }

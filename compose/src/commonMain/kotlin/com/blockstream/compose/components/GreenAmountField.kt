@@ -80,6 +80,7 @@ fun GreenAmountField(
     denomination: Denomination,
     secondaryValue: String? = "",
     title: String? = null,
+    showTitle: Boolean = true,
     assetId: String? = null,
     session: GdkSession? = null,
     sendAll: Boolean = false,
@@ -149,7 +150,7 @@ fun GreenAmountField(
         var endRowWidth by remember { mutableStateOf(0.dp) }
 
         GreenDataLayout(
-            title = title ?: stringResource(Res.string.id_amount),
+            title = if (showTitle) title ?: stringResource(Res.string.id_amount) else null,
             withPadding = false,
             helperText = helperText,
             helperContainerColor = helperContainerColor
@@ -163,8 +164,7 @@ fun GreenAmountField(
                     Column(
                         horizontalAlignment = Alignment.CenterHorizontally,
                         modifier = Modifier.align(Alignment.Center)
-                            .padding(top = 12.dp)
-                            .padding(bottom = 4.dp)
+                            .padding(vertical = 16.dp)
                             .padding(horizontal = max(startRowWidth, endRowWidth))
                     ) {
                         BasicTextField(
@@ -190,26 +190,29 @@ fun GreenAmountField(
                                 .appTestTag("amount")
                         )
 
-                        Box {
+                        AnimatedVisibility(
+                            visible = secondaryValue == null || secondaryValue.isNotBlank()
+                        ) {
                             if (secondaryValue == null) {
-                                CircularProgressIndicator(
-                                    strokeWidth = 1.dp,
-                                    modifier = Modifier
-                                        .align(Alignment.Center)
-                                        .size(8.dp),
+                                Box {
+                                    CircularProgressIndicator(
+                                        strokeWidth = 1.dp,
+                                        modifier = Modifier
+                                            .align(Alignment.Center)
+                                            .size(8.dp),
+                                    )
+                                }
+                            } else {
+                                Text(
+                                    text = secondaryValue,
+                                    modifier = Modifier.fillMaxWidth()
+                                        .appTestTag("amount_converted"),
+                                    maxLines = 1,
+                                    style = bodySmall,
+                                    textAlign = TextAlign.Center,
+                                    color = whiteMedium
                                 )
                             }
-
-                            Text(
-                                // hack to fix height adjustments
-                                text = secondaryValue?.takeIf { it.isNotBlank() } ?: " ",
-                                modifier = Modifier.fillMaxWidth()
-                                    .appTestTag("amount_converted"),
-                                maxLines = 1,
-                                style = bodySmall,
-                                textAlign = TextAlign.Center,
-                                color = whiteMedium
-                            )
                         }
                     }
                 }

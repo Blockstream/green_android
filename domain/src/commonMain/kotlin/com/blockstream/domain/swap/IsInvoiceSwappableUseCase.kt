@@ -2,28 +2,49 @@ package com.blockstream.domain.swap
 
 import com.blockstream.data.extensions.tryCatch
 import com.blockstream.data.gdk.GdkSession
-import lwk.Bolt11Invoice
+import com.blockstream.data.lwk.PaymentInstruction
 
 /**
- * Use case that validates whether a Lightning invoice can be used for a swap.
+ * Result of evaluating whether a Lightning payment instruction can be used for a submarine swap.
  *
- * Swaps currently require a BOLT11 invoice with an explicit amount. Amount-less
- * invoices are rejected because a precise amount is necessary to construct the swap.
+ * Distinguishing failure modes lets callers surface a precise error string instead of a
+ * generic "invalid address" when the input is recognised but unsupported (e.g. amountless BOLT11).
  */
-class IsInvoiceSwappableUseCase() {
+sealed interface InvoiceSwappability {
+    /** Recognised and ready to swap (BOLT11 with amount, LNURL, or any BOLT12 offer). */
+    data object Swappable : InvoiceSwappability
+
+    /** Recognised as BOLT11 but without an embedded amount. Submarine swaps need a fixed amount. */
+    data object AmountlessBolt11 : InvoiceSwappability
+
+    /** Unparseable, unrecognised, or not a Lightning instruction. */
+    data object Unknown : InvoiceSwappability
+}
+
+/**
+ * Use case that classifies a Lightning payment instruction for swap eligibility.
+ *
+ * Accepts:
+ *  - BOLT11 invoices with an explicit amount.
+ *  - LNURL / Lightning Address (amount supplied later).
+ *  - BOLT12 offers, amountless or per-item (amount/count supplied later).
+ *
+ * Rejects amountless BOLT11 explicitly so callers can show a meaningful error.
+ */
+class IsInvoiceSwappableUseCase {
 
     suspend operator fun invoke(
         address: String,
         session: GdkSession
-    ): Boolean {
-        /**
-         * Check if the provided address `address` is BOLT11 (invoice) and includes an amount.
-         *
-         * - Returns true if parsing succeeds and the invoice specifies `amountMilliSatoshis`.
-         * - Returns false if parsing fails or the invoice has no amount.
-         */
-
-        // Don't allow amount-less invoices
-        return tryCatch { Bolt11Invoice(address.replace("lightning:", "")).amountMilliSatoshis() != null } ?: false
+    ): InvoiceSwappability {
+        val normalized = address.replace("lightning:", "")
+        val instruction = tryCatch { session.lwkOrNull?.inspectPaymentInstruction(normalized) }
+        return when (instruction) {
+            is PaymentInstruction.LnUrl, is PaymentInstruction.Bolt12 -> InvoiceSwappability.Swappable
+            is PaymentInstruction.Bolt11 ->
+                if (instruction.amountSats != null) InvoiceSwappability.Swappable
+                else InvoiceSwappability.AmountlessBolt11
+            null -> InvoiceSwappability.Unknown
+        }
     }
 }

@@ -33,12 +33,16 @@ fun GreenAddress(
 ) {
     val schemes = listOf("bitcoin", "liquidnetwork", "liquidtestnet", "lightning")
 
-    val text = if (!schemes.any { address.startsWith(it) }) {
+    // Email-style instructions (Lightning Address, BIP353) are human-readable —
+    // chunking them into 4-char groups makes no sense. Display verbatim.
+    val isEmailLike = address.contains('@')
+
+    val text = if (isEmailLike || schemes.any { address.startsWith(it) }) {
+        AnnotatedString(address)
+    } else {
         address.chunked(4).joinToString(" ").let {
             colorTextEdges(text = it, numberOfSections = 2)
         }
-    } else {
-        AnnotatedString(address)
     }
 
     val content = @Composable {
