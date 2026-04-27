@@ -89,12 +89,8 @@ abstract class AssetAccountDetailsViewModelAbstract(
     }
 
     fun onReceive() {
-        accountAsset.value?.takeIf {
-            !it.network.isLiquid || !it.assetId.isPolicyAsset(session)
-        }?.also {
+        accountAsset.value?.let {
             postEvent(NavigateDestinations.Receive(greenWallet = greenWallet, accountAsset = it))
-        } ?: run {
-            postEvent(NavigateDestinations.ReceiveChooseAsset(greenWallet = greenWallet, accountAsset = accountAsset.value))
         }
     }
 
