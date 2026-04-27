@@ -175,12 +175,18 @@ class AssetAccountDetailsViewModel(
 
     init {
         session.ifConnected {
-            combine(accounts, isWatchOnly) { accounts, isWatchOnly ->
+            combine(
+                accounts,
+                isWatchOnly
+            ) { accounts, isWatchOnly ->
                 viewModelScope.launch {
+                    val updatedAccount = accounts.find { it.id == accountAsset.account.id } ?: accountAsset.account
+
                     val assetName = accountAsset.asset.name(session)
-                    val accountName = accountAsset.account.name
+                    val accountName = updatedAccount.name
+
                     val isArchiveEnabled = accounts.count {
-                        it.network.isSameNetwork(account.network) && !it.hidden
+                        it.network.isSameNetwork(updatedAccount.network) && !it.hidden
                     } > 1
 
                     _navData.value = NavData(
