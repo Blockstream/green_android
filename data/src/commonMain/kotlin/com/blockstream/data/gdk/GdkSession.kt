@@ -3189,6 +3189,7 @@ class GdkSession constructor(
     private fun onLightningEvent(event: LightningEvent) {
         when (event) {
             is LightningEvent.Synced -> {
+                // Synced is not used in glsdk yet
                 getTransactions(account = lightningAccount, isReset = false, isLoadMore = false)
                 updateAccountsAndBalances(updateBalancesForAccounts = listOf(lightningAccount))
                 updateWalletTransactions(updateForAccounts = listOf(lightningAccount))
@@ -3199,6 +3200,10 @@ class GdkSession constructor(
             }
 
             is LightningEvent.InvoicePaid -> {
+                // Added here getTransactions call as Synced is not used in glsdk yet
+                getTransactions(account = lightningAccount, isReset = false, isLoadMore = false)
+                updateAccountsAndBalances(updateBalancesForAccounts = listOf(lightningAccount))
+                updateWalletTransactions(updateForAccounts = listOf(lightningAccount))
                 _lastInvoicePaid.value = event.paymentHash to event.paymentAmountSatoshi
             }
         }
