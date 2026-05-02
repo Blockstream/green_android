@@ -12,7 +12,7 @@ fun EnrichedAsset.nameStringHolderOrNull(session: GdkSession?): StringHolder? = 
 //    } else if (session != null && assetId.isPolicyAsset(session)) {
 //        when {
 //            assetId.isBitcoinPolicyAsset() -> "Bitcoin"
-//            assetId.isLightningPolicyAsset() -> "Bitcoin (Lightning)"
+//            assetId.isLightningPolicyAsset() -> "Lightning Bitcoin"
 //            assetId.isPolicyAsset(session.liquid) -> "Liquid Bitcoin"
 //            else -> throw Exception("No supported network")
 //        }.let {

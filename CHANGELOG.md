@@ -3,6 +3,28 @@ All notable changes to this project will be documented in this file.
 
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/).
 
+## [5.4.0] - 2026-05-02
+
+### Added
+
+- Aggregate fiat total balance across all wallet assets
+- Redesigned Send flow (recipient, select asset, select account)
+
+### Fixed
+
+- Transaction pagination in transact tab
+- Navigate directly to receive screen from account details
+- Update account name immediately after rename
+- Swap improvements
+- Retry logic and stability for watch-only wallet import
+
+### Changed
+
+- Migrate lightning from Breez to glsdk
+- Update GDK to Release 0.77.3
+- Bump countly-sdk-android
+- Update CI security checks
+
 ## [5.3.0] - 2026-03-31
 
 ### Added

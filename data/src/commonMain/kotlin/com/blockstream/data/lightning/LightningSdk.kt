@@ -168,7 +168,7 @@ class LightningSdk(
     }
 
     suspend fun sendPayment(invoice: LightningInvoice, satoshi: Long?): SendPaymentResult = withNodeContext {
-        logger.i { "Send payment of $satoshi sats - Invoice: ${invoice.bolt11} - NodeId: ${nodeInfoStateFlow.value.id}" }
+        logger.i { "Send payment of ${satoshi ?: invoice.amountSatoshi} sats - Invoice: ${invoice.bolt11} - NodeId: ${nodeInfoStateFlow.value.id}" }
         greenlightSdk.sendPayment(invoice, satoshi)
     }
 

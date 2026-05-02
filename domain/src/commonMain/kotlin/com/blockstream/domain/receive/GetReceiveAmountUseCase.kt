@@ -63,15 +63,19 @@ class GetReceiveAmountUseCase(
             }
         }
 
-        val quote = getQuoteUseCase(
-            session = session,
-            from = flowOf(SwapAsset.Lightning),
-            to = flowOf(accountAsset.toSwapAsset()),
-            satoshi = balance.map {
-                it?.satoshi ?: 0
-            },
-            quoteMode = flowOf(QuoteMode.SEND)
-        )
+        val quote = if (accountAsset.account.isLightning) {
+            flowOf(null)
+        } else {
+            getQuoteUseCase(
+                session = session,
+                from = flowOf(SwapAsset.Lightning),
+                to = flowOf(accountAsset.toSwapAsset()),
+                satoshi = balance.map {
+                    it?.satoshi ?: 0
+                },
+                quoteMode = flowOf(QuoteMode.SEND)
+            )
+        }
 
         return combine(
             amount,
@@ -138,9 +142,11 @@ class GetReceiveAmountUseCase(
                         }
                     }
 
+                    val minOpenChannel = 25000L
+
                     // Use as a workaround for newly created wallets (nodeInfo.maxReceivableSatoshi() == 0L && balance.satoshi >= 5000)
                     val isValid =
-                        balance != null && error == null && (balance.satoshi >= 0 && (balance.satoshi <= nodeInfo.maxReceivableSatoshi() || (nodeInfo.maxReceivableSatoshi() == 0L && balance.satoshi >= 5000)) && (balance.satoshi <= totalInboundLiquiditySatoshi || (balance.satoshi > (openChannelFee?.feeSatoshi()
+                        balance != null && error == null && (balance.satoshi >= 0 && (balance.satoshi <= nodeInfo.maxReceivableSatoshi() || (nodeInfo.maxReceivableSatoshi() == 0L && balance.satoshi >= minOpenChannel)) && (balance.satoshi <= totalInboundLiquiditySatoshi || (balance.satoshi > (openChannelFee?.feeSatoshi()
                             ?: 0))))
 
                     val hint = nodeInfo.maxReceivableSatoshi().toAmountLook(
@@ -194,6 +200,17 @@ class GetReceiveAmountUseCase(
                             ) ?: ""
 
                             "id_a_funding_fee_of_s_s_is_applied|$channelFee|$channelFeeFiat|$inboundLiquidity|$inboundLiquidityFiat"
+                        }
+
+                        nodeInfo.maxReceivableSatoshi() == 0L && balance != null && balance.satoshi < minOpenChannel -> {
+                            "id_amount_must_be_at_least_s|${
+                                minOpenChannel.toAmountLook(
+                                    session = session,
+                                    assetId = accountAsset.account.network.policyAsset,
+                                    denomination = denomination.notFiat(),
+                                    withUnit = true
+                                )
+                            }"
                         }
 
                         else -> null

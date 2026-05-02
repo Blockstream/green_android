@@ -424,7 +424,7 @@ class GdkSession constructor(
         get() {
             if (_lightningAccount == null) {
                 _lightningAccount = Account(
-                    gdkName = "Instant",
+                    gdkName = "Lightning",
                     pointer = 0,
                     type = AccountType.LIGHTNING
                 ).also {

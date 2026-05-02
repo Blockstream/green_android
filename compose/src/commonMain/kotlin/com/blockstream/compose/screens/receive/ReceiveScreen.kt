@@ -99,6 +99,7 @@ import com.blockstream.compose.theme.whiteMedium
 import com.blockstream.compose.utils.AnimatedNullableVisibility
 import com.blockstream.compose.utils.SetupScreen
 import com.blockstream.compose.utils.appTestTag
+import com.blockstream.compose.utils.stringResourceFromId
 import com.blockstream.data.data.AlertType
 import com.blockstream.data.data.DenominatedValue
 import com.blockstream.data.data.GreenWallet
@@ -352,7 +353,7 @@ fun ReceiveScreen(
                             ) {
                                 Column {
                                     Text(
-                                        it,
+                                        stringResourceFromId(it),
                                         style = bodyMedium,
                                         color = whiteMedium,
                                         modifier = Modifier.padding(horizontal = 8.dp)

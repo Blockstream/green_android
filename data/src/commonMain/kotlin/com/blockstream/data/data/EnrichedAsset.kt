@@ -45,7 +45,7 @@ data class EnrichedAsset constructor(
         } else if (session != null && assetId.isPolicyAsset(session)) {
             when {
                 assetId.isBitcoinPolicyAsset() -> "Bitcoin"
-                assetId.isLightningPolicyAsset() -> "Bitcoin (Lightning)"
+                assetId.isLightningPolicyAsset() -> "Lightning Bitcoin"
                 assetId.isPolicyAsset(session.liquid) -> "Liquid Bitcoin"
                 else -> throw Exception("No supported network")
             }.let {
@@ -124,7 +124,7 @@ data class EnrichedAsset constructor(
                 return (create(
                     session = session,
                     assetId = BTC_POLICY_ASSET
-                ).copy(assetId = LN_BTC_POLICY_ASSET, name = "Bitcoin (Lightning)"))
+                ).copy(assetId = LN_BTC_POLICY_ASSET, name = "Lightning Bitcoin"))
             }
 
             val asset = session.getAsset(assetId)
