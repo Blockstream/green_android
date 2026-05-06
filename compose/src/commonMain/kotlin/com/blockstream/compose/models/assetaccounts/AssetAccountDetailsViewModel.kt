@@ -188,7 +188,7 @@ class AssetAccountDetailsViewModel(
                         title = assetName,
                         subtitle = accountName,
                         actions = getMenuActions(
-                            account = account,
+                            account = updatedAccount,
                             accountAsset = accountAsset,
                             isWatchOnly = isWatchOnly,
                             isArchiveEnabled = isArchiveEnabled
