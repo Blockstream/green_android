@@ -526,7 +526,7 @@
     <string name="id_enable_spv">Enable SPV</string>
     <string name="id_enable_spv_and_modify_spv">Enable SPV and modify SPV settings</string>
     <string name="id_enable_testnet">Enable Testnet</string>
-    <string name="id_allow_tesnet_wallets">Allow testnet wallets</string>
+    <string name="id_allow_testnet_wallets">Allow testnet wallets</string>
     <string name="id_enable_testnet_in_app_settings">Enable testnet in app settings to use Jade</string>
     <string name="id_enable_tls">Enable TLS</string>
     <string name="id_enable_tls_connection">Enable TLS connection</string>
@@ -1363,7 +1363,7 @@
     <string name="id_sent">Sent</string>
     <string name="id_sent_to">Sent to</string>
     <string name="id_server_ip_and_port_ipport">Server IP and port</string>
-    <string name="id_enter_a_valid_proxy_addres">Enter a valid proxy. Use host:port format.</string>
+    <string name="id_enter_a_valid_proxy_address">Enter a valid proxy. Use host:port format.</string>
     <string name="id_use_host_and_port_format">Use host:port format.</string>
     <string name="id_invalid_gap_limit">Invalid gap limit. Please use a value from %1$d to %2$d</string>
     <string name="id_allowed_range">Allowed range: from %1$d to %2$d</string>

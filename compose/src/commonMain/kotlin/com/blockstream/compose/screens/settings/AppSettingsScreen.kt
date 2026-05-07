@@ -47,7 +47,7 @@ import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import blockstream_green.common.generated.resources.Res
 import blockstream_green.common.generated.resources.id_address_scan_limit
 import blockstream_green.common.generated.resources.id_advanced
-import blockstream_green.common.generated.resources.id_allow_tesnet_wallets
+import blockstream_green.common.generated.resources.id_allow_testnet_wallets
 import blockstream_green.common.generated.resources.id_allowed_range
 import blockstream_green.common.generated.resources.id_connect_through_a_proxy
 import blockstream_green.common.generated.resources.id_connect_with_tor
@@ -260,7 +260,7 @@ fun AppSettingsScreen(
                 val testnetEnabled by viewModel.testnetEnabled.collectAsStateWithLifecycle()
                 SettingSwitch(
                     title = stringResource(Res.string.id_enable_testnet),
-                    subtitle = stringResource(Res.string.id_allow_tesnet_wallets),
+                    subtitle = stringResource(Res.string.id_allow_testnet_wallets),
                     checked = testnetEnabled,
                     onCheckedChange = autoSaveOnBooleanChange(viewModel.testnetEnabled),
                     testTag = "enable_testnet_switch"

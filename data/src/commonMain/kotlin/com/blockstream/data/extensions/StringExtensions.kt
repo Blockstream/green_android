@@ -13,7 +13,7 @@ fun String.isDigitsOnly() = all(Char::isDigit) && isNotEmpty()
 fun List<String>?.startsWith(other: String?): Boolean = if (this == null) false else
     other.takeIf { it.isNotBlank() }?.let { o -> any { o.startsWith(it) } } ?: false
 
-fun String?.isHostPortUrlValid(): Boolean {
+fun String?.isHostPortFormatValid(): Boolean {
     val text = this ?: return true
     if (text.isBlank()) return true
 

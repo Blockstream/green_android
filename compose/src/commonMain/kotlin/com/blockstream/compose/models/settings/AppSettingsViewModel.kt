@@ -4,7 +4,7 @@ import androidx.lifecycle.viewModelScope
 import blockstream_green.common.generated.resources.Res
 import blockstream_green.common.generated.resources.id_app_settings
 import blockstream_green.common.generated.resources.id_applies_to_every_wallet
-import blockstream_green.common.generated.resources.id_enter_a_valid_proxy_addres
+import blockstream_green.common.generated.resources.id_enter_a_valid_proxy_address
 import blockstream_green.common.generated.resources.id_invalid_gap_limit
 import blockstream_green.common.generated.resources.id_invalid_server_address_format
 import com.blockstream.compose.events.Event
@@ -16,7 +16,7 @@ import com.blockstream.compose.sideeffects.SideEffect
 import com.blockstream.compose.sideeffects.SideEffects
 import com.blockstream.data.data.ApplicationSettings
 import com.blockstream.data.data.ScreenLockSetting
-import com.blockstream.data.extensions.isHostPortUrlValid
+import com.blockstream.data.extensions.isHostPortFormatValid
 import com.blockstream.data.extensions.isNotBlank
 import com.blockstream.data.gdk.events.GenericEvent
 import com.blockstream.data.managers.LocaleManager
@@ -189,7 +189,7 @@ class AppSettingsViewModel : AppSettingsViewModelAbstract() {
                 HostPortUrlField(
                     proxyUrl,
                     proxyUrlError,
-                    Res.string.id_enter_a_valid_proxy_addres
+                    Res.string.id_enter_a_valid_proxy_address
                 )
             )
         )
@@ -255,7 +255,7 @@ class AppSettingsViewModel : AppSettingsViewModelAbstract() {
                         field.errorState.value = null
                         return@onEach
                     }
-                    val isInvalid = isEnabled && text.isHostPortUrlValid().not()
+                    val isInvalid = isEnabled && text.isHostPortFormatValid().not()
                     field.errorState.value = if (isInvalid) getString(field.errorRes) else null
                 }.launchIn(viewModelScope)
         }
@@ -276,6 +276,20 @@ class AppSettingsViewModel : AppSettingsViewModelAbstract() {
         }.launchIn(viewModelScope)
     }
 
+    private fun isConfigValid(): Boolean {
+        val proxyValid = !proxyEnabled.value || proxyUrl.value.isHostPortFormatValid()
+        val gapLimitValid = electrumServerGapLimit.value.isGapLimitValid()
+
+        val btcValid = !electrumNodeEnabled.value || personalBitcoinElectrumServer.value.isHostPortFormatValid()
+        val liqValid = !electrumNodeEnabled.value || personalLiquidElectrumServer.value.isHostPortFormatValid()
+
+        val testnetServersEnabled = electrumNodeEnabled.value && testnetEnabled.value
+        val tBtcValid = !testnetServersEnabled || personalTestnetElectrumServer.value.isHostPortFormatValid()
+        val tLiqValid = !testnetServersEnabled || personalTestnetLiquidElectrumServer.value.isHostPortFormatValid()
+
+        return proxyValid && gapLimitValid && btcValid && liqValid && tBtcValid && tLiqValid
+    }
+
     override suspend fun handleEvent(event: Event) {
         super.handleEvent(event)
 
@@ -287,8 +301,12 @@ class AppSettingsViewModel : AppSettingsViewModelAbstract() {
             }
 
             is LocalEvents.AutoSave -> {
-                localeManager.setLocale(locale.value)
-                settingsManager.saveApplicationSettings(getSettings())
+                if (isConfigValid()) {
+                    localeManager.setLocale(locale.value)
+                    val currentSettings = getSettings()
+                    settingsManager.saveApplicationSettings(currentSettings)
+                    appSettings = currentSettings
+                }
             }
 
             is LocalEvents.Cancel -> {
@@ -317,53 +335,17 @@ class AppSettingsViewModel : AppSettingsViewModelAbstract() {
         tor = torEnabled.value,
         personalElectrumServerTls = personalElectrumServerTlsEnabled.value,
 
-        proxyUrl = if (!proxyEnabled.value) {
-            null
-        } else if (proxyUrl.value.isHostPortUrlValid()) {
-            proxyUrl.value
-        } else {
-            appSettings.proxyUrl
-        },
+        proxyUrl = proxyUrl.value.takeIf { proxyEnabled.value },
 
-        // use null value as a reset to re-set the default urls and blank as a way to disabled it for a specific network
-        electrumServerGapLimit = if (electrumServerGapLimit.value.isGapLimitValid()) {
-            val text = electrumServerGapLimit.value
-            if (text.isBlank() || text == DEFAULT_SCAN_GAP_LIMIT) null else text.toIntOrNull()
-        } else {
-            appSettings.electrumServerGapLimit
-        },
+        electrumServerGapLimit = electrumServerGapLimit.value.toIntOrNull(),
 
-        personalBitcoinElectrumServer = if (!electrumNodeEnabled.value) {
-            null
-        } else if (personalBitcoinElectrumServer.value.isHostPortUrlValid()) {
-            personalBitcoinElectrumServer.value
-        } else {
-            appSettings.personalBitcoinElectrumServer
-        },
+        personalBitcoinElectrumServer = personalBitcoinElectrumServer.value.takeIf { electrumNodeEnabled.value },
 
-        personalLiquidElectrumServer = if (!electrumNodeEnabled.value) {
-            null
-        } else if (personalLiquidElectrumServer.value.isHostPortUrlValid()) {
-            personalLiquidElectrumServer.value
-        } else {
-            appSettings.personalLiquidElectrumServer
-        },
+        personalLiquidElectrumServer = personalLiquidElectrumServer.value.takeIf { electrumNodeEnabled.value },
 
-        personalTestnetElectrumServer = if (!electrumNodeEnabled.value || !testnetEnabled.value) {
-            null
-        } else if (personalTestnetElectrumServer.value.isHostPortUrlValid()) {
-            personalTestnetElectrumServer.value
-        } else {
-            appSettings.personalTestnetElectrumServer
-        },
+        personalTestnetElectrumServer = personalTestnetElectrumServer.value.takeIf { electrumNodeEnabled.value && testnetEnabled.value },
 
-        personalTestnetLiquidElectrumServer = if (!electrumNodeEnabled.value || !testnetEnabled.value) {
-            null
-        } else if (personalTestnetLiquidElectrumServer.value.isHostPortUrlValid()) {
-            personalTestnetLiquidElectrumServer.value
-        } else {
-            appSettings.personalTestnetLiquidElectrumServer
-        }
+        personalTestnetLiquidElectrumServer = personalTestnetLiquidElectrumServer.value.takeIf { electrumNodeEnabled.value && testnetEnabled.value }
     )
 
     private fun areSettingsDirty(): Boolean {
