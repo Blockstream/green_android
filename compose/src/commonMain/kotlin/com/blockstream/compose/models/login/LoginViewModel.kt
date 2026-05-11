@@ -231,7 +231,7 @@ class LoginViewModel constructor(
     init {
         deviceOrNull = deviceId?.let {
             deviceManager.getDevice(it) ?: run {
-                postSideEffect(SideEffects.ErrorDialog(Exception("Device wasn't found")))
+                postSideEffect(SideEffects.ErrorDialog(Exception("id_your_device_was_disconnected")))
                 postSideEffect(SideEffects.Logout(LogoutReason.DEVICE_DISCONNECTED))
                 null
             }
