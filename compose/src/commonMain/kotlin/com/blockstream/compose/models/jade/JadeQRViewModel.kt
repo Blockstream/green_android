@@ -2,6 +2,7 @@ package com.blockstream.compose.models.jade
 
 import androidx.lifecycle.viewModelScope
 import blockstream_green.common.generated.resources.Res
+import blockstream_green.common.generated.resources.id_enable_lightning
 import blockstream_green.common.generated.resources.id_enable_swaps
 import blockstream_green.common.generated.resources.id_get_watch_only_information_from
 import blockstream_green.common.generated.resources.id_initiate_oracle_communication
@@ -15,6 +16,7 @@ import blockstream_green.common.generated.resources.id_scan_qr_with_jade
 import blockstream_green.common.generated.resources.id_scan_your_xpub_on_jade
 import blockstream_green.common.generated.resources.id_swaps_enabled
 import blockstream_green.common.generated.resources.id_unlock_jade_and_scan_this_qr
+import blockstream_green.common.generated.resources.id_unlock_your_jade_and_scan
 import blockstream_green.common.generated.resources.id_validate_pin_and_unlock
 import blockstream_green.common.generated.resources.id_validate_the_transaction_details
 import com.blockstream.compose.events.Event
@@ -190,7 +192,10 @@ class JadeQRViewModel(
 
     init {
         stepInfo.onEach {
-            _isLightTheme.value = !it.isScan
+            val isRedesignedFlow = operation is JadeQrOperation.LightningMnemonicExport
+                    || operation is JadeQrOperation.BoltzMnemonicExport
+
+            _isLightTheme.value = !it.isScan && !isRedesignedFlow
 
             // Reset scanner if it is a scan step
             if (it.isScan) {
@@ -530,8 +535,8 @@ class JadeQRViewModel(
         val ExportLightningScenario = Scenario(
             listOf(
                 StepInfo(
-                    title = Res.string.id_scan_qr_with_jade,
-                    message = Res.string.id_jade_will_securely_create_and,
+                    title = Res.string.id_enable_lightning,
+                    message = Res.string.id_unlock_your_jade_and_scan,
                     step = 1,
                     isScan = false
                 ),

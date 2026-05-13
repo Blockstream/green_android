@@ -76,10 +76,6 @@ class ChooseAccountTypeViewModel(greenWallet: GreenWallet, initAsset: AssetBalan
         class ArchivedAccountDialog(event: Event) : SideEffects.SideEffectEvent(event) {
             constructor(sideEffect: SideEffect) : this(Events.EventSideEffect(sideEffect))
         }
-
-        class ExperimentalFeaturesDialog(event: Event) : SideEffects.SideEffectEvent(event) {
-            constructor(sideEffect: SideEffect) : this(Events.EventSideEffect(sideEffect))
-        }
     }
 
     override fun assetId(): String = asset.value.assetId
@@ -224,20 +220,16 @@ class ChooseAccountTypeViewModel(greenWallet: GreenWallet, initAsset: AssetBalan
         } else {
             if (accountType.isLightning()) {
                 sideEffect = if (session.isHardwareWallet) {
-                    LocalSideEffects.ExperimentalFeaturesDialog(
-                        SideEffects.NavigateTo(
-                            NavigateDestinations.JadeQR(
-                                greenWalletOrNull = greenWalletOrNull,
-                                operation = JadeQrOperation.LightningMnemonicExport,
-                                deviceModel = DeviceModel.BlockstreamGeneric
-                            )
+                    SideEffects.NavigateTo(
+                        NavigateDestinations.JadeQR(
+                            greenWalletOrNull = greenWalletOrNull,
+                            operation = JadeQrOperation.LightningMnemonicExport,
+                            deviceModel = DeviceModel.BlockstreamGeneric
                         )
                     )
                 } else {
-                    LocalSideEffects.ExperimentalFeaturesDialog(
-                        LocalEvents.CreateAccount(
-                            accountType
-                        )
+                    SideEffects.NavigateTo(
+                        NavigateDestinations.LightningOnboarding(greenWallet = greenWallet)
                     )
                 }
             } else {
