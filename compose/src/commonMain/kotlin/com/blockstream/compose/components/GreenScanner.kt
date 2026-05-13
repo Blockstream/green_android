@@ -33,6 +33,7 @@ import com.blockstream.compose.managers.rememberImagePicker
 import com.blockstream.compose.managers.rememberPlatformManager
 import com.blockstream.compose.utils.AnimatedNullableVisibility
 import com.blockstream.compose.utils.getScreenSizeInfo
+import com.blockstream.compose.utils.ifTrue
 import org.jetbrains.compose.resources.painterResource
 import org.jetbrains.compose.resources.stringResource
 
@@ -41,22 +42,25 @@ fun GreenScanner(
     modifier: Modifier = Modifier,
     isDecodeContinuous: Boolean = true,
     showScanFromImage: Boolean = true,
+    isFullPage: Boolean = false,
     viewModel: AbstractScannerViewModel
 ) {
     val screenSizeInfo = getScreenSizeInfo()
+    val defaultHeight = (screenSizeInfo.heightPx * 0.70).toInt().pxToDp()
     val platformManager = rememberPlatformManager()
-
-    val height = (screenSizeInfo.heightPx * 0.70).toInt().pxToDp()
 
     var isFlashOn by remember { mutableStateOf(false) }
 
     Box(modifier = modifier) {
         Box(
             modifier = Modifier
-                .height(height)
-                .fillMaxWidth()
-                .clip(RoundedCornerShape(8.dp))
-                .align(Alignment.BottomCenter),
+                .ifTrue(!isFullPage) {
+                    it.height(defaultHeight)
+                        .fillMaxWidth()
+                        .clip(RoundedCornerShape(8.dp))
+                        .align(Alignment.BottomCenter)
+                }
+                .ifTrue(isFullPage) { it.fillMaxSize() }
         ) {
             CameraView(
                 modifier = Modifier.fillMaxSize(),
@@ -83,7 +87,7 @@ fun GreenScanner(
             Image(
                 modifier = Modifier
                     .align(Alignment.TopEnd)
-                    .padding(8.dp)
+                    .padding(if (isFullPage) 32.dp else 8.dp)
                     .clip(CircleShape)
                     .clickable {
                         isFlashOn = !isFlashOn

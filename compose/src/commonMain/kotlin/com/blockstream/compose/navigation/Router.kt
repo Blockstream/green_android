@@ -44,6 +44,8 @@ import com.blockstream.compose.models.exchange.BuyViewModel
 import com.blockstream.compose.models.exchange.OnOffRampsViewModel
 import com.blockstream.compose.models.home.HomeViewModel
 import com.blockstream.compose.models.jade.JadeQRViewModel
+import com.blockstream.compose.models.lightning.EnabledLightningViewModel
+import com.blockstream.compose.models.lightning.LightningOnboardingViewModel
 import com.blockstream.compose.models.lightning.LnUrlAuthViewModel
 import com.blockstream.compose.models.lightning.LnUrlWithdrawViewModel
 import com.blockstream.compose.models.lightning.RecoverFundsViewModel
@@ -126,6 +128,8 @@ import com.blockstream.compose.screens.exchange.BuyScreen
 import com.blockstream.compose.screens.exchange.OnOffRampsScreen
 import com.blockstream.compose.screens.jade.JadePinUnlockScreen
 import com.blockstream.compose.screens.jade.JadeQRScreen
+import com.blockstream.compose.screens.lightning.EnabledLightningScreen
+import com.blockstream.compose.screens.lightning.LightningOnboardingScreen
 import com.blockstream.compose.screens.lightning.LnUrlAuthScreen
 import com.blockstream.compose.screens.lightning.LnUrlWithdrawScreen
 import com.blockstream.compose.screens.lightning.RecoverFundsScreen
@@ -440,6 +444,25 @@ fun Router(
                     )
                 })
             }
+
+            appComposable<NavigateDestinations.LightningOnboarding> {
+                val args = it.toRoute<NavigateDestinations.LightningOnboarding>()
+                LightningOnboardingScreen(viewModel {
+                    LightningOnboardingViewModel(
+                        greenWallet = args.greenWallet,
+                    )
+                })
+            }
+
+            appComposable<NavigateDestinations.EnabledLightning> {
+                val args = it.toRoute<NavigateDestinations.EnabledLightning>()
+                EnabledLightningScreen(viewModel {
+                    EnabledLightningViewModel(
+                        greenWallet = args.greenWallet
+                    )
+                })
+            }
+
             appComposable<NavigateDestinations.SwapsSettings> {
                 val args = it.toRoute<NavigateDestinations.SwapsSettings>()
                 SwapsSettingsScreen(viewModel {

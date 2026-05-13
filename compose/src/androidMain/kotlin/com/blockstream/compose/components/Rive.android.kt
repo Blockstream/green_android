@@ -42,6 +42,7 @@ actual fun Rive(riveAnimation: RiveAnimation, previewContent: @Composable (() ->
         RiveAnimation.JADE_PLUS_SCROLL -> "jade_plus_scroll.riv"
         RiveAnimation.JADE_PLUS_POWER -> "jade_plus_power.riv"
         RiveAnimation.JADE_PLUS_UPDATE -> "jade_plus_update.riv"
+        RiveAnimation.LIGHTNING_SUCCESS -> "lightning_success.riv"
         RiveAnimation.NONE -> null
     }?.let {
         "files/rive/$it"

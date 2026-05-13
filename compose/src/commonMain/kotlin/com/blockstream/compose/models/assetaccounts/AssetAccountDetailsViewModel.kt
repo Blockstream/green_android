@@ -24,12 +24,10 @@ import com.blockstream.data.data.EnrichedAsset
 import com.blockstream.data.data.GreenWallet
 import com.blockstream.data.extensions.hasUnconfirmedTransactions
 import com.blockstream.data.extensions.ifConnected
-import com.blockstream.data.extensions.isPolicyAsset
 import com.blockstream.data.extensions.launchSafe
 import com.blockstream.data.gdk.data.Account
 import com.blockstream.data.gdk.data.AccountAsset
 import com.blockstream.data.gdk.data.AccountBalance
-import com.blockstream.data.lightning.onchainBalanceSatoshi
 import com.blockstream.data.utils.toAmountLook
 import com.blockstream.domain.swap.IsSwapAvailableUseCase
 import com.blockstream.domain.swap.IsSwapsEnabledUseCase
@@ -271,7 +269,7 @@ class AssetAccountDetailsViewModel(
                     onClick = {
                         postEvent(NavigateDestinations.LightningNode(greenWallet))
                     }
-                )
+                ).takeIf { appInfo.isDevelopmentOrDebug }
             )
         }
 

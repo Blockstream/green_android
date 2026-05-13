@@ -93,12 +93,9 @@ import com.blockstream.compose.components.LearnMoreButton
 import com.blockstream.compose.components.OnProgressStyle
 import com.blockstream.compose.data.WalletSetting
 import com.blockstream.compose.dialogs.DenominationExchangeDialog
-import com.blockstream.compose.dialogs.LightningBetaDialog
 import com.blockstream.compose.dialogs.SingleChoiceDialog
 import com.blockstream.compose.dialogs.TextDialog
-import com.blockstream.compose.events.Event
 import com.blockstream.compose.events.Events.Logout
-import com.blockstream.compose.events.Events.OpenBrowser
 import com.blockstream.compose.extensions.colorText
 import com.blockstream.compose.extensions.localized
 import com.blockstream.compose.models.settings.DenominationExchangeRateViewModel
@@ -116,7 +113,7 @@ import com.blockstream.compose.navigation.NavigateDestinations.RenameWallet
 import com.blockstream.compose.navigation.NavigateDestinations.Support
 import com.blockstream.compose.navigation.NavigateDestinations.WalletSettings
 import com.blockstream.compose.navigation.getResult
-import com.blockstream.compose.screens.jade.JadeQRResult
+import com.blockstream.compose.screens.lightning.LightningOnboardingResult
 import com.blockstream.compose.sideeffects.OpenDialogData
 import com.blockstream.compose.sideeffects.SideEffects
 import com.blockstream.compose.theme.bodyLarge
@@ -134,7 +131,6 @@ import com.blockstream.compose.utils.bottom
 import com.blockstream.compose.utils.ifTrue
 import com.blockstream.compose.utils.plus
 import com.blockstream.data.SupportType
-import com.blockstream.data.Urls
 import com.blockstream.data.data.LogoutReason
 import com.blockstream.data.data.SupportData
 import com.blockstream.data.data.TwoFactorMethod
@@ -159,7 +155,6 @@ fun WalletSettingsScreen(
     var showPgpDialog by remember { mutableStateOf<String?>(null) }
     var showAutologoutTimeoutDialog by remember { mutableStateOf<Int?>(null) }
     var showThresholdDialog by remember { mutableStateOf<String?>(null) }
-    var showLightningBetaDialog by remember { mutableStateOf<Event?>(null) }
     var showTwoFactorChangeDialog by remember { mutableStateOf<LocalSideEffects.Disable2FA?>(null) }
     val onProgress by viewModel.onProgress.collectAsStateWithLifecycle()
 
@@ -263,24 +258,14 @@ fun WalletSettingsScreen(
         }
     }
 
-    showLightningBetaDialog?.also { pendingEvent ->
-        LightningBetaDialog(
-            onUnderstand = {
-                viewModel.postEvent(pendingEvent)
-                showLightningBetaDialog = null
-            },
-            onLearnMore = {
-                viewModel.postEvent(OpenBrowser(Urls.HELP_LIGHTNING_BETA))
-            },
-            onDismissRequest = {
-                showLightningBetaDialog = null
+    NavigateDestinations.LightningOnboarding.getResult<LightningOnboardingResult> { result ->
+        when (result) {
+            is LightningOnboardingResult.HotWallet -> {
+                viewModel.postEvent(LocalEvents.CreateAccount(AccountType.LIGHTNING))
             }
-        )
-    }
-
-    NavigateDestinations.JadeQR.getResult<JadeQRResult> {
-        when {
-            it.lightningMnemonic != null -> viewModel.postEvent(LocalEvents.CreateLightningAccount(it.lightningMnemonic))
+            is LightningOnboardingResult.Jade -> {
+                viewModel.postEvent(LocalEvents.CreateLightningAccount(result.mnemonic))
+            }
         }
     }
 
@@ -336,10 +321,6 @@ fun WalletSettingsScreen(
                             )
                         )
                     }
-                }
-
-                is LocalSideEffects.ExperimentalFeaturesDialog -> {
-                    showLightningBetaDialog = it.event
                 }
 
                 is LocalSideEffects.OpenAutoLogoutTimeout -> {
@@ -724,15 +705,12 @@ fun WalletSettingsScreen(
                     is WalletSetting.Lightning -> {
                         Setting(
                             title = stringResource(Res.string.id_lightning),
-                            checked = item.enabled,
+                            imageVector = PhosphorIcons.Regular.CaretRight,
                             trailingLabel = stringResource(Res.string.id_beta),
-                            onCheckedChange = {
-                                if (it) {
-                                    viewModel.postEvent(LocalEvents.ChooseAccountType(AccountType.LIGHTNING))
-                                } else {
-                                    viewModel.postEvent(LocalEvents.DisableLightning)
-                                }
+                            modifier = Modifier.clickable {
+                                viewModel.postEvent(LocalEvents.OpenLightningSettings)
                             },
+                            testTag = "lightning_settings"
                         )
                     }
 

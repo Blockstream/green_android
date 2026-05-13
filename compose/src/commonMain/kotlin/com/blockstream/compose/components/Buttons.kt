@@ -351,14 +351,40 @@ fun ZoomButton(onClick: () -> Unit) {
 }
 
 @Composable
+fun ZoomOutlinedButton(onClick: () -> Unit) {
+    OutlinedButton(
+        onClick = onClick,
+        modifier = Modifier.height(36.dp),
+        shape = MaterialTheme.shapes.small,
+        border = BorderStroke(1.dp, green),
+        contentPadding = PaddingValues(horizontal = 12.dp, vertical = 0.dp),
+        colors = ButtonDefaults.outlinedButtonColors(contentColor = green)
+    ) {
+        GreenRow(padding = 0, space = 8) {
+            Icon(
+                painter = painterResource(Res.drawable.magnifying_glass_plus),
+                contentDescription = null,
+                modifier = Modifier.size(16.dp)
+            )
+            Text(
+                text = stringResource(Res.string.id_increase_qr_size),
+                style = labelMedium
+            )
+        }
+    }
+}
+
+@Composable
 fun LearnMoreButton(
     color: Color = green,
+    modifier: Modifier = Modifier,
     onClick: () -> Unit
 ) {
     GreenIconButton(
         text = stringResource(Res.string.id_learn_more),
         icon = painterResource(Res.drawable.arrow_square_out),
         color = color,
+        modifier = modifier,
         onClick = onClick
     )
 }
