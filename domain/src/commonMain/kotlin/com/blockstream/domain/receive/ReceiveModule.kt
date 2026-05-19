@@ -8,5 +8,6 @@ val receiveModule = module {
     singleOf(::GetReceiveAssetsUseCase)
     singleOf(::GetReceiveAccountsUseCase)
     singleOf(::ReceiveUseCase)
+    singleOf(::SaveAndShareQrCodeUseCase)
     factoryOf(::GetReceiveAmountUseCase)
 }

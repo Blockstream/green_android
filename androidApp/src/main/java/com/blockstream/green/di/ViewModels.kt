@@ -22,6 +22,7 @@ import com.blockstream.compose.models.exchange.AccountExchangeViewModel
 import com.blockstream.compose.models.exchange.OnOffRampsViewModel
 import com.blockstream.compose.models.home.HomeViewModel
 import com.blockstream.compose.models.jade.JadeQRViewModel
+import com.blockstream.compose.models.lightning.LightningInvoiceViewModel
 import com.blockstream.compose.models.lightning.EnabledLightningViewModel
 import com.blockstream.compose.models.lightning.LnUrlAuthViewModel
 import com.blockstream.compose.models.lightning.LnUrlWithdrawViewModel
@@ -132,6 +133,7 @@ val viewModels = module {
     viewModelOf(::ImportPubKeyViewModel)
     viewModelOf(::SecurityViewModel)
     viewModelOf(::FeeViewModel)
+    viewModelOf(::LightningInvoiceViewModel)
     viewModelOf(::EnabledLightningViewModel)
     viewModel {
         SupportViewModel(get(), get(), getOrNull())

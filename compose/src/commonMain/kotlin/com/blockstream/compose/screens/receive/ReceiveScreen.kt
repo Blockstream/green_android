@@ -21,10 +21,8 @@ import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
-import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
-import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.focus.FocusRequester
@@ -88,7 +86,6 @@ import com.blockstream.compose.navigation.NavigateDestinations
 import com.blockstream.compose.navigation.bottomsheet.BottomSheetNavigator
 import com.blockstream.compose.navigation.getResult
 import com.blockstream.compose.screens.receive.components.LightningReadyBadge
-import com.blockstream.compose.sheets.LightningInvoiceBottomSheet
 import com.blockstream.compose.sideeffects.SideEffects
 import com.blockstream.compose.theme.bodyLarge
 import com.blockstream.compose.theme.bodyMedium
@@ -109,7 +106,6 @@ import com.blockstream.data.extensions.isNotBlank
 import com.blockstream.data.gdk.data.AssetBalance
 import io.github.alexzhirkevich.qrose.QrCodePainter
 import io.github.alexzhirkevich.qrose.toByteArray
-import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 import org.jetbrains.compose.resources.getString
 import org.jetbrains.compose.resources.painterResource
@@ -175,35 +171,13 @@ fun ReceiveScreen(
     val amount by viewModel.amount.collectAsStateWithLifecycle()
     val receiveAmountData by viewModel.receiveAmountData.collectAsStateWithLifecycle()
     val showRecoveryConfirmation by viewModel.showRecoveryConfirmation.collectAsStateWithLifecycle()
-
-    var showLightningInvoiceBottomSheet by remember { mutableStateOf(false) }
-
     val isLightningOrSwap = (accountAsset?.account?.isLightning == true && !showLightningOnChainAddress) || isReverseSubmarineSwap
 
-    LaunchedEffect(receiveAddress, isLightningOrSwap) {
-        if (isLightningOrSwap && receiveAddress.isNotBlank()) {
-            showLightningInvoiceBottomSheet = true
-        }
-    }
 
     LaunchedEffect(showRequestAmount, isReverseSubmarineSwap, receiveAddress) {
         if ((showRequestAmount || (isReverseSubmarineSwap && receiveAddress == null)) && amount.isBlank()) {
             focusRequester.requestFocus()
         }
-    }
-
-    if (showLightningInvoiceBottomSheet) {
-        LightningInvoiceBottomSheet(
-            viewModel = viewModel,
-            onDismissRequest = {
-                showLightningInvoiceBottomSheet = false
-                viewModel.postEvent(ReceiveViewModel.LocalEvents.ClearLightningInvoice)
-                scope.launch {
-                    delay(100)
-                    focusRequester.requestFocus()
-                }
-            }
-        )
     }
 
     SetupScreen(

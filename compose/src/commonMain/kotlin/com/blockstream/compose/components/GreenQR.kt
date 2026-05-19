@@ -24,8 +24,10 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.ColorFilter
+import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.window.Dialog
 import androidx.compose.ui.window.DialogProperties
@@ -45,6 +47,17 @@ import org.jetbrains.compose.resources.painterResource
 import org.jetbrains.compose.resources.stringResource
 import org.jetbrains.compose.ui.tooling.preview.Preview
 
+data class BorderedQrProps(
+    val config: QrBorderConfig = QrBorderConfig(),
+    val footer: @Composable ((openFullScreen: () -> Unit) -> Unit)? = null
+)
+
+data class QrBorderConfig(
+    val color: Color = green,
+    val strokeWidth: Dp = 6.dp,
+    val cornerSize: Dp = 40.dp,
+    val maxBorderWidth: Dp = 280.dp
+)
 @Composable
 fun GreenQR(
     modifier: Modifier = Modifier,
@@ -52,17 +65,20 @@ fun GreenQR(
     isVisible: Boolean = true,
     isJadeQR: Boolean = false,
     isBordered: Boolean = false,
+    borderedProps: BorderedQrProps? = null,
     onQrClick: (() -> Unit)? = null,
     visibilityClick: () -> Unit = {},
-    footer: @Composable ((openFullScreen: () -> Unit) -> Unit)? = null
 ) {
     val isReady = isVisible && data.isNotBlank()
 
-    if (isBordered && isReady) {
+    if ((isBordered || borderedProps != null) && isReady) {
+        val props = borderedProps ?: BorderedQrProps()
+
         BorderedQR(
             data = data,
             modifier = modifier,
-            footer = footer
+            config = props.config,
+            footer = props.footer
         )
     } else {
         LegacyGreenQR(
@@ -157,6 +173,7 @@ fun LegacyGreenQR(
 private fun BorderedQR(
     data: String?,
     modifier: Modifier = Modifier,
+    config: QrBorderConfig,
     footer: @Composable ((openFullScreen: () -> Unit) -> Unit)? = null
 ) {
     var isFullscreen by remember { mutableStateOf(false) }
@@ -174,29 +191,32 @@ private fun BorderedQR(
     val outerPadding = 10.dp
     val spacingBetweenFrameAndCard = 8.dp
     val cardRadius = 12.dp
+    val cardShape = remember { RoundedCornerShape(cardRadius) }
 
     Column(
-        modifier = modifier,
+        modifier = modifier.fillMaxWidth(),
         horizontalAlignment = Alignment.CenterHorizontally,
     ) {
         Box(
             modifier = Modifier
-                .widthIn(max = 280.dp)
+                .widthIn(max = config.maxBorderWidth)
                 .aspectRatio(1f)
                 .padding(outerPadding)
-                .clickable { openTrigger() }
                 .qrScannerFrame(
-                    color = green,
-                    strokeWidth = 6.dp,
-                    cornerSize = 40.dp,
+                    color = config.color,
+                    strokeWidth = config.strokeWidth,
+                    cornerSize = config.cornerSize,
                     cornerRadius = cardRadius + spacingBetweenFrameAndCard
                 )
-                .padding(spacingBetweenFrameAndCard))
-        {
+                .padding(spacingBetweenFrameAndCard)
+        ) {
             Card(
-                shape = RoundedCornerShape(cardRadius),
+                shape = cardShape,
                 colors = CardDefaults.cardColors(containerColor = Color.White),
-                modifier = Modifier.fillMaxSize()
+                modifier = Modifier
+                    .fillMaxSize()
+                    .clip(cardShape)
+                    .clickable { openTrigger() }
             ) {
                 Image(
                     painter = qrCodePainter,

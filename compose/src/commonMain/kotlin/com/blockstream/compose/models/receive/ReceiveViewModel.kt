@@ -36,7 +36,6 @@ import com.blockstream.compose.utils.StringHolder
 import com.blockstream.data.AddressType
 import com.blockstream.data.MediaType
 import com.blockstream.data.Urls
-import com.blockstream.data.data.AppConfig
 import com.blockstream.data.data.DenominatedValue
 import com.blockstream.data.data.Denomination
 import com.blockstream.data.data.EnrichedAsset
@@ -53,13 +52,13 @@ import com.blockstream.data.gdk.data.AssetBalance
 import com.blockstream.data.lightning.expireIn
 import com.blockstream.data.lightning.receiveAmountSatoshi
 import com.blockstream.data.lightning.satoshi
-import com.blockstream.data.platformFileSystem
 import com.blockstream.data.receive.ReceiveAmountData
 import com.blockstream.data.utils.UserInput
 import com.blockstream.data.utils.formatAuto
 import com.blockstream.data.utils.toAmountLookOrNa
 import com.blockstream.domain.hardware.VerifyAddressUseCase
 import com.blockstream.domain.receive.GetReceiveAmountUseCase
+import com.blockstream.domain.receive.SaveAndShareQrCodeUseCase
 import com.blockstream.domain.swap.SwapUseCase
 import com.blockstream.utils.Loggable
 import com.eygraber.uri.Uri
@@ -77,7 +76,6 @@ import kotlinx.coroutines.launch
 import kotlinx.coroutines.sync.Mutex
 import kotlinx.coroutines.withContext
 import kotlinx.serialization.Serializable
-import okio.Path.Companion.toPath
 import org.jetbrains.compose.resources.getString
 import org.koin.core.component.inject
 import org.koin.core.parameter.parametersOf
@@ -184,7 +182,7 @@ class ReceiveViewModel(greenWallet: GreenWallet, accountAsset: AccountAsset) :
     private val _address = MutableStateFlow<Address?>(null)
     private val _lightningInvoicePaymentHash = MutableStateFlow<String?>(null)
 
-    private val _appConfig: AppConfig by inject()
+    private val saveAndShareQrCodeUseCase: SaveAndShareQrCodeUseCase by inject()
 
     private val hideWalletBackupAlert = MutableStateFlow(false)
 
@@ -470,7 +468,7 @@ class ReceiveViewModel(greenWallet: GreenWallet, accountAsset: AccountAsset) :
                     session = session
                 )
 
-                createQRImageAndShare(receiveAddress.value ?: "", event.data)
+                createQRImageAndShare(event.data)
             }
 
             is LocalEvents.ToggleLightning -> {
@@ -702,23 +700,24 @@ class ReceiveViewModel(greenWallet: GreenWallet, accountAsset: AccountAsset) :
                 _invoiceDescription.value = response.invoice.description
             }
         }, onSuccess = {
-
+            postSideEffect(
+                SideEffects.NavigateTo(
+                    NavigateDestinations.LightningInvoice(
+                        greenWallet = greenWallet,
+                        invoiceUri = _receiveAddressUri.value ?: "",
+                        amount = _invoiceAmountToReceive.value ?: "",
+                        amountFiat = _invoiceAmountToReceiveFiat.value ?: "",
+                        description = _invoiceDescription.value ?: "",
+                        expiration = _invoiceExpiration.value ?: "",
+                    )
+                )
+            )
         })
     }
 
-    private suspend fun createQRImageAndShare(address: String, data: ByteArray?) {
-        if (data != null) {
-            val fileSystem = platformFileSystem()
-
-            "${_appConfig.cacheDir}/Green_QR_Code.jpeg".toPath().also {
-                withContext(context = Dispatchers.IO) {
-                    fileSystem.write(it) {
-                        this.write(data)
-                    }
-                }
-
-                postSideEffect(SideEffects.ShareFile(it))
-            }
+    private suspend fun createQRImageAndShare(data: ByteArray?) {
+        saveAndShareQrCodeUseCase(data)?.also { cachePath ->
+            postSideEffect(SideEffects.ShareFile(cachePath))
         }
     }
 

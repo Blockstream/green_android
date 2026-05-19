@@ -8,7 +8,6 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
-import androidx.compose.foundation.layout.widthIn
 import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Scaffold
@@ -40,6 +39,7 @@ import com.adamglin.PhosphorIcons
 import com.adamglin.phosphoricons.Regular
 import com.adamglin.phosphoricons.regular.Info
 import com.blockstream.compose.GreenPreview
+import com.blockstream.compose.components.BorderedQrProps
 import com.blockstream.compose.components.GreenAlert
 import com.blockstream.compose.components.GreenButton
 import com.blockstream.compose.components.GreenButtonColor
@@ -49,6 +49,7 @@ import com.blockstream.compose.components.GreenColumn
 import com.blockstream.compose.components.GreenQR
 import com.blockstream.compose.components.GreenScanner
 import com.blockstream.compose.components.OnProgressStyle
+import com.blockstream.compose.components.QrBorderConfig
 import com.blockstream.compose.components.ZoomOutlinedButton
 import com.blockstream.compose.events.Events
 import com.blockstream.compose.models.jade.JadeQRViewModel
@@ -255,17 +256,24 @@ fun JadeQRScreen(
                                     data = qrCode,
                                     isJadeQR = !isBorderedQr,
                                     isBordered = isBorderedQr,
+                                    borderedProps = BorderedQrProps(
+                                        config = QrBorderConfig(
+                                            strokeWidth = 5.dp,
+                                            maxBorderWidth = 260.dp
+                                        ),
+                                        footer = { openFull ->
+                                            if (isBorderedQr) {
+                                                Spacer(Modifier.height(20.dp))
+                                                ZoomOutlinedButton(
+                                                    onClick = openFull
+                                                )
+                                            }
+                                        }
+                                    ),
                                     modifier = Modifier
                                         .align(Alignment.Center)
-                                        .fillMaxWidth(),
-                                    footer = { openFull ->
-                                        if (isBorderedQr) {
-                                            Spacer(Modifier.height(20.dp))
-                                            ZoomOutlinedButton(
-                                                onClick = openFull
-                                            )
-                                        }
-                                    })
+                                        .fillMaxWidth()
+                                )
                             }
                         }
                     }

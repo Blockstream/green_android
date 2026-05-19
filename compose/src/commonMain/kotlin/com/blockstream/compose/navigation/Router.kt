@@ -44,6 +44,8 @@ import com.blockstream.compose.models.exchange.BuyViewModel
 import com.blockstream.compose.models.exchange.OnOffRampsViewModel
 import com.blockstream.compose.models.home.HomeViewModel
 import com.blockstream.compose.models.jade.JadeQRViewModel
+import com.blockstream.compose.models.lightning.LightningInvoiceState
+import com.blockstream.compose.models.lightning.LightningInvoiceViewModel
 import com.blockstream.compose.models.lightning.EnabledLightningViewModel
 import com.blockstream.compose.models.lightning.LightningOnboardingViewModel
 import com.blockstream.compose.models.lightning.LnUrlAuthViewModel
@@ -130,6 +132,7 @@ import com.blockstream.compose.screens.jade.JadePinUnlockScreen
 import com.blockstream.compose.screens.jade.JadeQRScreen
 import com.blockstream.compose.screens.lightning.EnabledLightningScreen
 import com.blockstream.compose.screens.lightning.LightningOnboardingScreen
+import com.blockstream.compose.screens.lightning.LightningInvoiceScreen
 import com.blockstream.compose.screens.lightning.LnUrlAuthScreen
 import com.blockstream.compose.screens.lightning.LnUrlWithdrawScreen
 import com.blockstream.compose.screens.lightning.RecoverFundsScreen
@@ -516,6 +519,23 @@ fun Router(
                         accounts = args.accounts.list,
                     )
                 })
+            }
+            appComposable<NavigateDestinations.LightningInvoice> { backStackEntry ->
+                val args = backStackEntry.toRoute<NavigateDestinations.LightningInvoice>()
+                LightningInvoiceScreen(
+                    viewModel = viewModel {
+                        LightningInvoiceViewModel(
+                            greenWallet = args.greenWallet,
+                            state = LightningInvoiceState(
+                                invoiceUri = args.invoiceUri,
+                                amount = args.amount,
+                                amountFiat = args.amountFiat,
+                                description = args.description,
+                                expiration = args.expiration
+                            )
+                        )
+                    }
+                )
             }
             appComposable<NavigateDestinations.SendChooseAsset> {
                 val args = it.toRoute<NavigateDestinations.SendChooseAsset>()
