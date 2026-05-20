@@ -9,9 +9,11 @@ import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.verticalScroll
+import androidx.compose.material3.Icon
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.rememberCoroutineScope
@@ -25,12 +27,19 @@ import androidx.compose.ui.text.withStyle
 import androidx.compose.ui.unit.dp
 import blockstream_green.common.generated.resources.Res
 import blockstream_green.common.generated.resources.id_address
+import blockstream_green.common.generated.resources.id_amount_to_receive
+import blockstream_green.common.generated.resources.id_copy
 import blockstream_green.common.generated.resources.id_description
+import blockstream_green.common.generated.resources.id_enlarge_qr
+import blockstream_green.common.generated.resources.id_expires_s
+import blockstream_green.common.generated.resources.id_fee
+import blockstream_green.common.generated.resources.id_funding_fee
 import blockstream_green.common.generated.resources.id_qr_code
 import blockstream_green.common.generated.resources.id_share
 import com.adamglin.PhosphorIcons
 import com.adamglin.phosphoricons.Regular
 import com.adamglin.phosphoricons.regular.Copy
+import com.adamglin.phosphoricons.regular.Info
 import com.adamglin.phosphoricons.regular.MagnifyingGlassPlus
 import com.blockstream.compose.GreenPreview
 import com.blockstream.compose.components.BorderedQrProps
@@ -48,10 +57,10 @@ import com.blockstream.compose.models.lightning.LightningInvoiceViewModelPreview
 import com.blockstream.compose.navigation.NavigateDestinations
 import com.blockstream.compose.navigation.getResult
 import com.blockstream.compose.theme.MonospaceFont
-import com.blockstream.compose.theme.bodyLarge
+import com.blockstream.compose.theme.bodyMedium
+import com.blockstream.compose.theme.bodySmall
 import com.blockstream.compose.theme.labelMedium
 import com.blockstream.compose.theme.lightning
-import com.blockstream.compose.theme.titleSmall
 import com.blockstream.compose.theme.whiteHigh
 import com.blockstream.compose.theme.whiteLow
 import com.blockstream.compose.theme.whiteMedium
@@ -74,6 +83,12 @@ fun LightningInvoiceScreen(
     val platformManager = rememberPlatformManager()
 
     val data = viewModel.state
+
+    NavigateDestinations.LightningFeeInfo.getResult<Boolean> { confirmed ->
+        if (confirmed) {
+            viewModel.postEvent(LocalEvents.ClickFundingFeeLearnMore)
+        }
+    }
 
     NavigateDestinations.Menu.getResult<Int> { index ->
         if (index == 0) {
@@ -100,7 +115,6 @@ fun LightningInvoiceScreen(
         Column(
             modifier = Modifier
                 .fillMaxSize()
-                .padding(horizontal = 8.dp)
         ) {
 
             Column(
@@ -113,13 +127,13 @@ fun LightningInvoiceScreen(
                 data.expiration?.also { exp ->
                     if (exp.isNotBlank()) {
                         Text(
-                            text = "Expires $exp",
-                            style = labelMedium,
+                            text = stringResource(Res.string.id_expires_s, exp),
+                            style = bodySmall,
                             color = whiteMedium,
                             textAlign = TextAlign.Center,
                             modifier = Modifier
                                 .fillMaxWidth()
-                                .padding(bottom = 16.dp)
+                                .padding(vertical = 16.dp)
                         )
                     }
                 }
@@ -130,8 +144,6 @@ fun LightningInvoiceScreen(
                     borderedProps = BorderedQrProps(
                         config = QrBorderConfig(
                             color = lightning,
-                            strokeWidth = 5.dp,
-                            maxBorderWidth = 260.dp
                         ),
                         footer = { openFullScreen ->
                             Column(
@@ -158,7 +170,7 @@ fun LightningInvoiceScreen(
                                     horizontalArrangement = Arrangement.spacedBy(12.dp)
                                 ) {
                                     GreenButton(
-                                        text = "Enlarge QR",
+                                        text = stringResource(Res.string.id_enlarge_qr),
                                         icon = PhosphorIcons.Regular.MagnifyingGlassPlus,
                                         type = GreenButtonType.OUTLINE,
                                         color = GreenButtonColor.GREENER,
@@ -168,7 +180,7 @@ fun LightningInvoiceScreen(
                                     }
 
                                     GreenButton(
-                                        text = "Copy Address",
+                                        text = stringResource(Res.string.id_copy),
                                         icon = PhosphorIcons.Regular.Copy,
                                         type = GreenButtonType.OUTLINE,
                                         color = GreenButtonColor.GREENER,
@@ -191,20 +203,67 @@ fun LightningInvoiceScreen(
                         .padding(top = 24.dp),
                     verticalArrangement = Arrangement.spacedBy(12.dp)
                 ) {
+
+                    data.feeText?.also { feeText ->
+                        Row(
+                            modifier = Modifier.fillMaxWidth(),
+                            verticalAlignment = Alignment.Top
+                        ) {
+                            Row(
+                                verticalAlignment = Alignment.CenterVertically,
+                                modifier = Modifier
+                                    .weight(1f)
+                                    .then(
+                                        if (!data.isSwap) {
+                                            Modifier.clickable {
+                                                viewModel.postEvent(LocalEvents.ClickFundingFee)
+                                            }
+                                        } else Modifier
+                                    )
+                            ) {
+                                Text(
+                                    text = if (data.isSwap) {
+                                        stringResource(Res.string.id_fee)
+                                    } else {
+                                        stringResource(Res.string.id_funding_fee)
+                                    },
+                                    style = bodyMedium,
+                                    color = whiteMedium
+                                )
+
+                                if (!data.isSwap) {
+                                    Spacer(modifier = Modifier.width(6.dp))
+                                    Icon(
+                                        imageVector = PhosphorIcons.Regular.Info,
+                                        contentDescription = "Info",
+                                        tint = whiteMedium,
+                                        modifier = Modifier.size(18.dp)
+                                    )
+                                }
+                            }
+                            Column(horizontalAlignment = Alignment.End) {
+                                Text(text = feeText, style = bodyMedium, color = whiteMedium)
+                                data.feeFiatText?.also { feeFiat ->
+                                    Text(text = "≈ $feeFiat", style = bodySmall, color = whiteLow)
+                                }
+                            }
+                        }
+                    }
+
                     Row(
                         modifier = Modifier.fillMaxWidth(),
                         verticalAlignment = Alignment.Top
                     ) {
                         Text(
-                            text = "Amount to Receive",
-                            style = bodyLarge,
+                            text = stringResource(Res.string.id_amount_to_receive),
+                            style = labelMedium,
                             color = whiteHigh,
                             modifier = Modifier.weight(1f)
                         )
                         Column(horizontalAlignment = Alignment.End) {
-                            Text(text = data.amount, style = titleSmall, color = whiteHigh)
+                            Text(text = data.amount, style = labelMedium, color = whiteHigh)
                             data.amountFiat?.also { fiat ->
-                                Text(text = "≈ $fiat", style = labelMedium, color = whiteLow)
+                                Text(text = "≈ $fiat", style = bodySmall, color = whiteLow)
                             }
                         }
                     }
@@ -217,13 +276,13 @@ fun LightningInvoiceScreen(
                             ) {
                                 Text(
                                     text = stringResource(Res.string.id_description),
-                                    style = bodyLarge,
+                                    style = labelMedium,
                                     color = whiteHigh,
                                     modifier = Modifier.weight(1f)
                                 )
                                 Text(
                                     text = desc,
-                                    style = bodyLarge,
+                                    style = bodyMedium,
                                     color = whiteLow,
                                     textAlign = TextAlign.End,
                                     modifier = Modifier.weight(1f)
@@ -235,12 +294,12 @@ fun LightningInvoiceScreen(
             }
 
             GreenButton(
-                size = GreenButtonSize.LARGE,
+                size = GreenButtonSize.BIG,
                 text = stringResource(Res.string.id_share),
                 color = GreenButtonColor.GREEN,
                 modifier = Modifier
                     .fillMaxWidth()
-                    .padding(bottom = 16.dp)
+                    .padding(bottom = 16.dp, start = 16.dp, end = 16.dp)
             ) {
                 scope.launch {
                     viewModel.postEvent(

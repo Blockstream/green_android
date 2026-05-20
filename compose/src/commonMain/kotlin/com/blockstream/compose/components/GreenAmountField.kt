@@ -46,7 +46,6 @@ import blockstream_green.common.generated.resources.Res
 import blockstream_green.common.generated.resources.id_amount
 import blockstream_green.common.generated.resources.id_available
 import blockstream_green.common.generated.resources.id_max_payable
-import blockstream_green.common.generated.resources.id_max_payable_amount
 import blockstream_green.common.generated.resources.id_send_all
 import blockstream_green.common.generated.resources.lock_simple
 import blockstream_green.common.generated.resources.pencil_simple_line
@@ -91,6 +90,7 @@ fun GreenAmountField(
     isAmountLocked: Boolean = false,
     helperText: String? = null,
     helperContainerColor: Color? = null,
+    helperContent: @Composable (() -> Unit)? = null,
     focusRequester: FocusRequester? = null,
     footerContent: @Composable (() -> Unit)? = null,
     isReadyOnly: Boolean = false,
@@ -153,7 +153,8 @@ fun GreenAmountField(
             title = if (showTitle) title ?: stringResource(Res.string.id_amount) else null,
             withPadding = false,
             helperText = helperText,
-            helperContainerColor = helperContainerColor
+            helperContent = helperContent,
+            helperContainerColor = helperContainerColor,
         ) {
             Box {
 

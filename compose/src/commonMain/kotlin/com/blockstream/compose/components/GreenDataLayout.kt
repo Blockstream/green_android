@@ -33,6 +33,7 @@ fun GreenDataLayout(
     border: BorderStroke? = null,
     helperText: String? = null,
     helperContainerColor: Color? = null,
+    helperContent: @Composable (() -> Unit)? = null,
     withPadding: Boolean = true,
     enabled: Boolean = true,
     testTag: String? = null,
@@ -62,6 +63,9 @@ fun GreenDataLayout(
                 enabled = enabled,
                 border = border,
                 helperText = helperText,
+                helperContent = if (helperContent != null) {
+                    { helperContent() }
+                } else null,
                 helperContainerColor = helperContainerColor,
                 content = content
             )

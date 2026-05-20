@@ -198,6 +198,7 @@ import com.blockstream.compose.sheets.EnableJadeFeatureBottomSheet
 import com.blockstream.compose.sheets.EnvironmentBottomSheet
 import com.blockstream.compose.sheets.FeeRateBottomSheet
 import com.blockstream.compose.sheets.JadeFirmwareUpdateBottomSheet
+import com.blockstream.compose.sheets.LightningFeeInfoBottomSheet
 import com.blockstream.compose.sheets.LightningNodeBottomSheet
 import com.blockstream.compose.sheets.MainMenuBottomSheet
 import com.blockstream.compose.sheets.MeldCountriesBottomSheet
@@ -530,6 +531,9 @@ fun Router(
                                 invoiceUri = args.invoiceUri,
                                 amount = args.amount,
                                 amountFiat = args.amountFiat,
+                                feeText = args.feeText,
+                                feeFiatText = args.feeFiatText,
+                                isSwap = args.isSwap,
                                 description = args.description,
                                 expiration = args.expiration
                             )
@@ -1242,6 +1246,16 @@ fun Router(
                         LightningNodeViewModel(
                             greenWallet = args.greenWallet
                         )
+                    },
+                    onDismissRequest = navController.onDismissRequest()
+                )
+            }
+            appBottomSheet<NavigateDestinations.LightningFeeInfo> { backStackEntry ->
+                val args = backStackEntry.toRoute<NavigateDestinations.LightningFeeInfo>()
+                LightningFeeInfoBottomSheet(
+                    onLearnMoreClick = {
+                        args.setResult(true)
+                        navController.popBackStack()
                     },
                     onDismissRequest = navController.onDismissRequest()
                 )

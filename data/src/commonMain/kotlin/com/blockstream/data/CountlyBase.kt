@@ -892,6 +892,18 @@ abstract class CountlyBase(
         }
     }
 
+    fun getLnMinSatoshis(): Long {
+        return getRemoteConfigValueAsNumber(LN_MIN_SATOSHIS) ?: 5000L
+    }
+
+    fun getLnRecommendedSatoshis(): Long {
+        return getRemoteConfigValueAsNumber(LN_RECOMMENDED_SATOSHIS) ?: 85000L
+    }
+
+    fun getLnMaxSatoshis(): Long {
+        return getRemoteConfigValueAsNumber(LN_MAX_SATOSHIS) ?: 400000L
+    }
+
     enum class Events(val event: String) {
         HWW_CONNECT("hww_connect"),
         HWW_CONNECTED("hww_connected"),
@@ -1055,6 +1067,10 @@ abstract class CountlyBase(
         const val COPY = "copy"
 
         const val ANALYTICS_GROUP = "analytics"
+
+        const val LN_MIN_SATOSHIS = "ln_min_satoshis"
+        const val LN_RECOMMENDED_SATOSHIS = "ln_recommended_satoshis"
+        const val LN_MAX_SATOSHIS = "ln_max_satoshis"
 
         val skipExceptionRecording = listOf(
             "id_invalid_amount",

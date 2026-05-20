@@ -52,11 +52,13 @@ import com.blockstream.data.gdk.data.AssetBalance
 import com.blockstream.data.lightning.expireIn
 import com.blockstream.data.lightning.receiveAmountSatoshi
 import com.blockstream.data.lightning.satoshi
+import com.blockstream.data.receive.FeeCommunicationState
 import com.blockstream.data.receive.ReceiveAmountData
 import com.blockstream.data.utils.UserInput
 import com.blockstream.data.utils.formatAuto
 import com.blockstream.data.utils.toAmountLookOrNa
 import com.blockstream.domain.hardware.VerifyAddressUseCase
+import com.blockstream.domain.receive.GetFeeCommunicationStateUseCase
 import com.blockstream.domain.receive.GetReceiveAmountUseCase
 import com.blockstream.domain.receive.SaveAndShareQrCodeUseCase
 import com.blockstream.domain.swap.SwapUseCase
@@ -106,12 +108,15 @@ abstract class ReceiveViewModelAbstract(greenWallet: GreenWallet, accountAssetOr
     abstract val invoiceDescription: StateFlow<String?>
     abstract val invoiceExpiration: StateFlow<String?>
     abstract val invoiceExpirationTimestamp: StateFlow<Long?>
+    abstract val invoiceFundingFee: StateFlow<String?>
+    abstract val invoiceFundingFeeFiat: StateFlow<String?>
     abstract val receiveAddress: StateFlow<String?>
     abstract val receiveAddressUri: StateFlow<String?>
     abstract val showVerifyOnDevice: StateFlow<Boolean>
     abstract val showLightningOnChainAddress: StateFlow<Boolean>
     abstract val showLedgerAssetWarning: StateFlow<Boolean>
     abstract val asset: StateFlow<EnrichedAsset>
+    abstract val feeCommUiState: StateFlow<FeeCommunicationState>
 
     internal var pendingAction: PendingAction? = null
 
@@ -129,6 +134,7 @@ class ReceiveViewModel(greenWallet: GreenWallet, accountAsset: AccountAsset) :
     internal val getReceiveAmountUseCase: GetReceiveAmountUseCase by inject {
         parametersOf(session, accountAsset)
     }
+    internal val getFeeCommunicationStateUseCase: GetFeeCommunicationStateUseCase by inject()
 
     private val _receiveAddress = MutableStateFlow<String?>(null)
     private val _receiveAddressUri = MutableStateFlow<String?>(null)
@@ -147,6 +153,8 @@ class ReceiveViewModel(greenWallet: GreenWallet, accountAsset: AccountAsset) :
     private val _invoiceDescription = MutableStateFlow<String?>(null)
     private val _invoiceExpiration = MutableStateFlow<String?>(null)
     private val _invoiceExpirationTimestamp = MutableStateFlow<Long?>(null)
+    private val _invoiceFee = MutableStateFlow<String?>(null)
+    private val _invoiceFeeFiat = MutableStateFlow<String?>(null)
 
     override val isReverseSubmarineSwap = MutableStateFlow(false)
 
@@ -158,6 +166,8 @@ class ReceiveViewModel(greenWallet: GreenWallet, accountAsset: AccountAsset) :
     override val invoiceDescription = _invoiceDescription
     override val invoiceExpiration = _invoiceExpiration
     override val invoiceExpirationTimestamp = _invoiceExpirationTimestamp
+    override val invoiceFundingFee = _invoiceFee
+    override val invoiceFundingFeeFiat = _invoiceFeeFiat
 
     override val amount = MutableStateFlow("")
     override val note = _note
@@ -213,6 +223,19 @@ class ReceiveViewModel(greenWallet: GreenWallet, accountAsset: AccountAsset) :
 
     override val asset: StateFlow<EnrichedAsset> = MutableStateFlow(accountAsset.asset)
 
+    override val feeCommUiState: StateFlow<FeeCommunicationState> = getFeeCommunicationStateUseCase(
+        session = session,
+        amountFlow = amount,
+        isReverseSubmarineSwapFlow = isReverseSubmarineSwap,
+        showLightningOnChainAddressFlow = showLightningOnChainAddress,
+        accountAsset = accountAsset,
+        denominationFlow = denomination
+    ).stateIn(
+        viewModelScope,
+        SharingStarted.WhileSubscribed(5000L),
+        FeeCommunicationState.None
+    )
+
     class LocalEvents {
         object CreateAccount : Event
         object ToggleLightning : Event
@@ -227,14 +250,24 @@ class ReceiveViewModel(greenWallet: GreenWallet, accountAsset: AccountAsset) :
         class SetNote(val note: String) : Event
         object ClickFundingFeesLearnMore : Events.OpenBrowser(Urls.HELP_FUNDING_FEES)
         object ClickLedgerSupportedAssets : Events.OpenBrowser(Urls.LEDGER_SUPPORTED_ASSETS)
+        object ClickFundingFeeLearnWhy : Event
         object ShowRequestAmount : Event
     }
 
     private val _generateAddressLock = Mutex()
 
     init {
-        receiveAmountData.filterNotNull().onEach {
-            _isValid.value = it.isValid
+        combine(
+            receiveAmountData,
+            feeCommUiState
+        ) { amountData, feeState ->
+            when (feeState) {
+                is FeeCommunicationState.Error -> false
+                FeeCommunicationState.Info, is FeeCommunicationState.Recommend -> true
+                FeeCommunicationState.None -> amountData.isValid
+            }
+        }.onEach {
+            _isValid.value = it
         }.launchIn(this)
 
         combine(
@@ -323,6 +356,8 @@ class ReceiveViewModel(greenWallet: GreenWallet, accountAsset: AccountAsset) :
                 _invoiceAmountToReceiveFiat.value = null
                 _invoiceDescription.value = null
                 _invoiceExpiration.value = null
+                _invoiceFee.value = null
+                _invoiceFeeFiat.value = null
             }.launchIn(this)
 
             combine(this@ReceiveViewModel.accountAsset, isReverseSubmarineSwap) { accountAsset, isReverseSubmarineSwap ->
@@ -407,6 +442,8 @@ class ReceiveViewModel(greenWallet: GreenWallet, accountAsset: AccountAsset) :
                 _invoiceDescription.value = null
                 _invoiceExpiration.value = null
                 _invoiceExpirationTimestamp.value = null
+                _invoiceFee.value = null
+                _invoiceFeeFiat.value = null
             }
 
             is LocalEvents.VerifyOnDevice -> {
@@ -518,6 +555,10 @@ class ReceiveViewModel(greenWallet: GreenWallet, accountAsset: AccountAsset) :
             is LocalEvents.ShowRequestAmount -> {
                 _showRequestAmount.value = true
             }
+
+            is LocalEvents.ClickFundingFeeLearnWhy -> {
+                postSideEffect(SideEffects.NavigateTo(NavigateDestinations.LightningFeeInfo))
+            }
         }
     }
 
@@ -623,6 +664,8 @@ class ReceiveViewModel(greenWallet: GreenWallet, accountAsset: AccountAsset) :
 
     private fun createLightningInvoice() {
         doAsync({
+            val targetDenomination = if (denomination.value.isFiat) Denomination.default(session) else denomination.value
+
             val amount = UserInput.parseUserInput(
                 session = session,
                 input = amount.value,
@@ -643,8 +686,25 @@ class ReceiveViewModel(greenWallet: GreenWallet, accountAsset: AccountAsset) :
 
                 postEvent(Events.SwapReceive(from = session.lightning, to = account.network))
 
-                // Fee is lockup fee + boltz fee + claim fee. We hardcode claim value for 1in 1out tx
-                val fee = (invoice.fee()?.toLong() ?: 0) + 22
+                val fee = invoice.fee()?.toLong() ?: 0L
+
+                if (fee > 0) {
+                    _invoiceFee.value = fee.toAmountLookOrNa(
+                        session = session,
+                        assetId = account.network.policyAsset,
+                        denomination = targetDenomination,
+                        withUnit = true
+                    )
+                    _invoiceFeeFiat.value = fee.toAmountLookOrNa(
+                        session = session,
+                        assetId = account.network.policyAsset,
+                        denomination = Denomination.fiat(session),
+                        withUnit = true
+                    )
+                } else {
+                    _invoiceFee.value = null
+                    _invoiceFeeFiat.value = null
+                }
 
                 val bolt11 = invoice.bolt11Invoice()
 
@@ -674,6 +734,25 @@ class ReceiveViewModel(greenWallet: GreenWallet, accountAsset: AccountAsset) :
 
             } else {
                 val response = session.createLightningInvoice(amount, note.value ?: "")
+                val fundingFeeSats = response.openingFeeSatoshi
+
+                if (fundingFeeSats > 0) {
+                    _invoiceFee.value = fundingFeeSats.toAmountLookOrNa(
+                        session = session,
+                        assetId = account.network.policyAsset,
+                        denomination = targetDenomination,
+                        withUnit = true
+                    )
+                    _invoiceFeeFiat.value = fundingFeeSats.toAmountLookOrNa(
+                        session = session,
+                        assetId = account.network.policyAsset,
+                        denomination = Denomination.fiat(session),
+                        withUnit = true
+                    )
+                } else {
+                    _invoiceFee.value = null
+                    _invoiceFeeFiat.value = null
+                }
 
                 val receiveAmount = response.receiveAmountSatoshi()
 
@@ -707,6 +786,9 @@ class ReceiveViewModel(greenWallet: GreenWallet, accountAsset: AccountAsset) :
                         invoiceUri = _receiveAddressUri.value ?: "",
                         amount = _invoiceAmountToReceive.value ?: "",
                         amountFiat = _invoiceAmountToReceiveFiat.value ?: "",
+                        feeText = _invoiceFee.value,
+                        feeFiatText = _invoiceFeeFiat.value,
+                        isSwap = isReverseSubmarineSwap.value,
                         description = _invoiceDescription.value ?: "",
                         expiration = _invoiceExpiration.value ?: "",
                     )
@@ -767,11 +849,16 @@ class ReceiveViewModelPreview() :
     override val invoiceDescription: MutableStateFlow<String?> = MutableStateFlow("Invoice Description")
     override val invoiceExpiration: MutableStateFlow<String?> = MutableStateFlow(Clock.System.now().formatAuto())
     override val invoiceExpirationTimestamp: StateFlow<Long?> = MutableStateFlow(Clock.System.now().toEpochMilliseconds())
+    override val invoiceFundingFee: StateFlow<String?>
+        get() = MutableStateFlow("2,500 sats")
+    override val invoiceFundingFeeFiat: StateFlow<String?>
+        get() = MutableStateFlow("1.27 USD")
     override val showVerifyOnDevice: StateFlow<Boolean> = MutableStateFlow(false)
     override val showLightningOnChainAddress: StateFlow<Boolean> = MutableStateFlow(false)
     override val showAmount: StateFlow<Boolean> = MutableStateFlow(false)
     override val showLedgerAssetWarning: StateFlow<Boolean> = MutableStateFlow(false)
     override val asset: StateFlow<EnrichedAsset> = MutableStateFlow(previewEnrichedAsset())
+    override val feeCommUiState: StateFlow<FeeCommunicationState> = MutableStateFlow(FeeCommunicationState.Info)
 
     companion object {
         fun preview() = ReceiveViewModelPreview()

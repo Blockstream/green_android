@@ -43,14 +43,15 @@ fun GreenCard(
     padding: Int = 16,
     border: BorderStroke? = null,
     helperText: String? = null,
+    helperContent: (@Composable BoxScope.() -> Unit)? = null,
     helperContainerColor: Color? = null,
     contentError: (@Composable BoxScope.(error: String) -> Unit)? = null,
     testTag: String? = null,
     onClick: (() -> Unit)? = null,
     content: @Composable BoxScope.() -> Unit
 ) {
-
     val borderStroke = border ?: CardDefaults.outlinedCardBorder(enabled)
+    val hasHelper = helperText != null || helperContent != null
 
     Column(
         modifier = Modifier
@@ -60,10 +61,10 @@ fun GreenCard(
         if (onClick == null) {
             OutlinedCard(
                 modifier = Modifier.appTestTag(testTag),
-                shape = if (helperText == null) CardDefaults.shape else GreenSmallBottom,
+                shape = if (!hasHelper) CardDefaults.shape else GreenSmallBottom,
                 elevation = elevation,
                 colors = colors,
-                border = if (helperText == null) borderStroke else BorderStroke(1.dp, helperContainerColor ?: md_theme_errorContainer)
+                border = if (!hasHelper) borderStroke else BorderStroke(1.dp, helperContainerColor ?: md_theme_errorContainer)
             ) {
                 Box(
                     modifier = Modifier
@@ -77,10 +78,10 @@ fun GreenCard(
                 modifier = Modifier.appTestTag(testTag),
                 onClick = onClick,
                 enabled = enabled,
-                shape = if (helperText == null) CardDefaults.shape else GreenSmallBottom,
+                shape = if (!hasHelper) CardDefaults.shape else GreenSmallBottom,
                 elevation = elevation,
                 colors = colors,
-                border = if (helperText == null) borderStroke else BorderStroke(1.dp, helperContainerColor ?: md_theme_errorContainer)
+                border = if (!hasHelper) borderStroke else BorderStroke(1.dp, helperContainerColor ?: md_theme_errorContainer)
             ) {
                 Box(
                     modifier = Modifier
@@ -91,7 +92,7 @@ fun GreenCard(
             }
         }
 
-        AnimatedNullableVisibility(value = helperText) {
+        AnimatedNullableVisibility(value = helperText ?: if (helperContent != null) "" else null) { textValue ->
             Card(
                 modifier = Modifier.fillMaxWidth(),
                 shape = GreenSmallTop,
@@ -103,11 +104,10 @@ fun GreenCard(
                 Box(
                     modifier = Modifier
                         .fillMaxWidth()
-                        .padding(horizontal = 8.dp)
-                        .padding(top = 6.dp, bottom = 8.dp),
+                        .padding(12.dp)
                 ) {
-                    if (contentError != null) {
-                        contentError(it)
+                    if (helperContent != null) {
+                        helperContent()
                     } else {
                         Row(
                             verticalAlignment = Alignment.CenterVertically,
@@ -119,7 +119,7 @@ fun GreenCard(
                                 tint = red,
                                 modifier = Modifier.size(16.dp),
                             )
-                            Text(text = stringResourceFromId(it), style = bodyMedium)
+                            Text(text = stringResourceFromId(textValue), style = bodyMedium)
                         }
                     }
                 }

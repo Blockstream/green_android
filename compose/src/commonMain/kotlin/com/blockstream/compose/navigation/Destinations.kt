@@ -363,9 +363,15 @@ sealed class NavigateDestinations : NavigateDestination() {
         val invoiceUri: String,
         val amount: String,
         val amountFiat: String?,
+        val feeText: String? = null,
+        val feeFiatText: String? = null,
         val description: String?,
-        val expiration: String?
+        val expiration: String?,
+        val isSwap: Boolean = false
     ) : NavigateDestination()
+
+    @Serializable
+    data object LightningFeeInfo : NavigateDestinations()
 
     @Serializable
     data class SendChooseAsset(

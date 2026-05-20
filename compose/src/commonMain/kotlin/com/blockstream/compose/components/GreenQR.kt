@@ -54,8 +54,8 @@ data class BorderedQrProps(
 
 data class QrBorderConfig(
     val color: Color = green,
-    val strokeWidth: Dp = 6.dp,
-    val cornerSize: Dp = 40.dp,
+    val strokeWidth: Dp = 8.dp,
+    val cornerSize: Dp = 70.dp,
     val maxBorderWidth: Dp = 280.dp
 )
 @Composable
@@ -189,7 +189,7 @@ private fun BorderedQR(
     )
 
     val outerPadding = 10.dp
-    val spacingBetweenFrameAndCard = 8.dp
+    val spacingBetweenFrameAndCard = 14.dp
     val cardRadius = 12.dp
     val cardShape = remember { RoundedCornerShape(cardRadius) }
 

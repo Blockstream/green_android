@@ -61,8 +61,8 @@ fun GreenCardPreview() {
                 )
             }
 
-            GreenCard(helperText = error, contentError = {
-                Text(it)
+            GreenCard(helperText = error, helperContent = {
+                Text(text = error ?: "")
                 GreenButton(
                     modifier = Modifier.align(Alignment.CenterEnd),
                     text = "Clear Error",

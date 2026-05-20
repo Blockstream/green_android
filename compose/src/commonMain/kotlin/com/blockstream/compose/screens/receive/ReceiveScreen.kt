@@ -1,6 +1,7 @@
 package com.blockstream.compose.screens.receive
 
 import androidx.compose.animation.AnimatedVisibility
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxWidth
@@ -26,8 +27,13 @@ import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.focus.FocusRequester
+import androidx.compose.ui.graphics.Color.Companion.White
 import androidx.compose.ui.graphics.painter.Painter
+import androidx.compose.ui.text.SpanStyle
+import androidx.compose.ui.text.buildAnnotatedString
 import androidx.compose.ui.text.style.TextAlign
+import androidx.compose.ui.text.style.TextDecoration
+import androidx.compose.ui.text.withStyle
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.navigation.get
@@ -40,13 +46,18 @@ import blockstream_green.common.generated.resources.id_account_type_standard
 import blockstream_green.common.generated.resources.id_address
 import blockstream_green.common.generated.resources.id_amount
 import blockstream_green.common.generated.resources.id_asset
-import blockstream_green.common.generated.resources.id_confirm
+import blockstream_green.common.generated.resources.id_create_invoice
 import blockstream_green.common.generated.resources.id_create_new_account
+import blockstream_green.common.generated.resources.id_learn_why
 import blockstream_green.common.generated.resources.id_ledger_supports_a_limited_set
+import blockstream_green.common.generated.resources.id_lightning_amount_too_high_fiat_s
+import blockstream_green.common.generated.resources.id_lightning_amount_too_low_fiat_s
 import blockstream_green.common.generated.resources.id_payer_sends
 import blockstream_green.common.generated.resources.id_please_verify_that_the_address
 import blockstream_green.common.generated.resources.id_qr_code
+import blockstream_green.common.generated.resources.id_recommended_amount_fee_s
 import blockstream_green.common.generated.resources.id_request_amount
+import blockstream_green.common.generated.resources.id_requires_funding_fee
 import blockstream_green.common.generated.resources.id_share
 import blockstream_green.common.generated.resources.id_show_lightning_invoice
 import blockstream_green.common.generated.resources.id_show_onchain_address
@@ -73,7 +84,6 @@ import com.blockstream.compose.components.GreenColumn
 import com.blockstream.compose.components.GreenGradient
 import com.blockstream.compose.components.GreenQR
 import com.blockstream.compose.components.GreenRow
-import com.blockstream.compose.components.LearnMoreButton
 import com.blockstream.compose.components.OnProgressStyle
 import com.blockstream.compose.events.Events
 import com.blockstream.compose.extensions.onValueChange
@@ -87,16 +97,15 @@ import com.blockstream.compose.navigation.bottomsheet.BottomSheetNavigator
 import com.blockstream.compose.navigation.getResult
 import com.blockstream.compose.screens.receive.components.LightningReadyBadge
 import com.blockstream.compose.sideeffects.SideEffects
+import com.blockstream.compose.theme.blueSurface
 import com.blockstream.compose.theme.bodyLarge
 import com.blockstream.compose.theme.bodyMedium
-import com.blockstream.compose.theme.green20
 import com.blockstream.compose.theme.labelMedium
 import com.blockstream.compose.theme.orange
+import com.blockstream.compose.theme.orangeSurface
 import com.blockstream.compose.theme.whiteMedium
-import com.blockstream.compose.utils.AnimatedNullableVisibility
 import com.blockstream.compose.utils.SetupScreen
 import com.blockstream.compose.utils.appTestTag
-import com.blockstream.compose.utils.stringResourceFromId
 import com.blockstream.data.data.AlertType
 import com.blockstream.data.data.DenominatedValue
 import com.blockstream.data.data.GreenWallet
@@ -104,6 +113,7 @@ import com.blockstream.data.data.MenuEntry
 import com.blockstream.data.data.MenuEntryList
 import com.blockstream.data.extensions.isNotBlank
 import com.blockstream.data.gdk.data.AssetBalance
+import com.blockstream.data.receive.FeeCommunicationState
 import io.github.alexzhirkevich.qrose.QrCodePainter
 import io.github.alexzhirkevich.qrose.toByteArray
 import kotlinx.coroutines.launch
@@ -116,6 +126,12 @@ import org.jetbrains.compose.ui.tooling.preview.Preview
 fun ReceiveScreen(
     viewModel: ReceiveViewModelAbstract
 ) {
+    NavigateDestinations.LightningFeeInfo.getResult<Boolean> { confirmed ->
+        if (confirmed) {
+            viewModel.postEvent(ReceiveViewModel.LocalEvents.ClickFundingFeesLearnMore)
+        }
+    }
+
     NavigateDestinations.Denomination.getResult<DenominatedValue> {
         viewModel.postEvent(Events.SetDenominatedValue(it))
     }
@@ -140,6 +156,7 @@ fun ReceiveScreen(
     val buttonEnabled by viewModel.buttonEnabled.collectAsStateWithLifecycle()
     val isReverseSubmarineSwap by viewModel.isReverseSubmarineSwap.collectAsStateWithLifecycle()
     val showSwap by viewModel.showSwap.collectAsStateWithLifecycle()
+    val feeState by viewModel.feeCommUiState.collectAsStateWithLifecycle()
 
     val scope = rememberCoroutineScope()
     val bottomSheetNavigator = LocalNavigator.current.navigatorProvider[BottomSheetNavigator::class]
@@ -256,7 +273,10 @@ fun ReceiveScreen(
                         subtitle = accountTypeSubtitle,
                         trailingContent = if (showSwap) {
                             { LightningReadyBadge() }
-                        } else null
+                        } else null,
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .padding(top = 7.dp, bottom = 7.dp)
                     )
                 }
 
@@ -296,6 +316,30 @@ fun ReceiveScreen(
                 AnimatedVisibility(visible = (accountAsset?.account?.isLightning == true && !showLightningOnChainAddress) || showRequestAmount || (isReverseSubmarineSwap && receiveAddress == null)) {
 
                     GreenColumn(padding = 0, space = 8) {
+                        val state = feeState
+
+                        val currentErrorText = if (isReverseSubmarineSwap) {
+                            receiveAmountData.error
+                        } else {
+                            when (state) {
+                                is FeeCommunicationState.Error.AmountTooHigh -> {
+                                    stringResource(
+                                        Res.string.id_lightning_amount_too_high_fiat_s,
+                                        state.maxAmountStr,
+                                        state.maxFiatStr
+                                    )
+                                }
+                                is FeeCommunicationState.Error.AmountTooLow -> {
+                                    stringResource(
+                                        Res.string.id_lightning_amount_too_low_fiat_s,
+                                        state.minAmountStr,
+                                        state.minFiatStr
+                                    )
+                                }
+                                is FeeCommunicationState.Error.InvalidAmount -> " "
+                                else -> null
+                            }
+                        }
 
                         GreenAmountField(
                             value = amount,
@@ -303,10 +347,48 @@ fun ReceiveScreen(
                             secondaryValue = receiveAmountData.exchange,
                             assetId = accountAsset?.assetId,
                             session = viewModel.sessionOrNull,
-                            title = if (showRequestAmount) stringResource(
-                                Res.string.id_request_amount
-                            ) else stringResource(Res.string.id_amount),
-                            helperText = receiveAmountData.error,
+                            title = if (showRequestAmount) stringResource(Res.string.id_request_amount) else stringResource(Res.string.id_amount),
+
+                            helperText = currentErrorText,
+
+                            helperContainerColor = when (state) {
+                                is FeeCommunicationState.Info -> blueSurface
+                                is FeeCommunicationState.Recommend -> orangeSurface
+                                is FeeCommunicationState.Error -> null
+                                else -> null
+                            },
+
+                            helperContent = if (!isReverseSubmarineSwap && (state is FeeCommunicationState.Info || state is FeeCommunicationState.Recommend)) {
+                                {
+                                    val baseText = when (state) {
+                                        is FeeCommunicationState.Recommend -> stringResource(Res.string.id_recommended_amount_fee_s, state.satsStr)
+                                        is FeeCommunicationState.Info -> stringResource(Res.string.id_requires_funding_fee)
+                                    }
+
+                                    val infoText = buildAnnotatedString {
+                                        append(baseText)
+                                        append(" ")
+                                        withStyle(style = SpanStyle(textDecoration = TextDecoration.Underline, color = White)) {
+                                            append(stringResource(Res.string.id_learn_why))
+                                        }
+                                        append(".")
+                                    }
+
+                                    Text(
+                                        text = infoText,
+                                        style = bodyMedium,
+                                        color = White,
+                                        modifier = Modifier
+                                            .fillMaxWidth()
+                                            .padding(horizontal = 4.dp)
+                                            .padding(top = 6.dp, bottom = 4.dp)
+                                            .clickable {
+                                                viewModel.postEvent(ReceiveViewModel.LocalEvents.ClickFundingFeeLearnWhy)
+                                            }
+                                    )
+                                }
+                            } else null,
+
                             enabled = !onProgress,
                             denomination = denomination,
                             focusRequester = focusRequester,
@@ -318,30 +400,8 @@ fun ReceiveScreen(
                                 viewModel.postEvent(Events.SelectDenomination)
                             }
                         )
-
-                        AnimatedNullableVisibility(receiveAmountData.liquidityFee) {
-                            GreenCard(
-                                padding = 0, colors = CardDefaults.elevatedCardColors(
-                                    containerColor = green20
-                                )
-                            ) {
-                                Column {
-                                    Text(
-                                        stringResourceFromId(it),
-                                        style = bodyMedium,
-                                        color = whiteMedium,
-                                        modifier = Modifier.padding(horizontal = 8.dp)
-                                            .padding(top = 8.dp)
-                                    )
-                                    LearnMoreButton(color = whiteMedium) {
-                                        viewModel.postEvent(ReceiveViewModel.LocalEvents.ClickFundingFeesLearnMore)
-                                    }
-                                }
-                            }
-                        }
                     }
                 }
-
                 if (!isLightningOrSwap && (receiveAddress.isNotBlank() || accountAsset?.account?.isLightning == false)) {
 
                     Column {
@@ -438,7 +498,7 @@ fun ReceiveScreen(
                 space = 4,
                 padding = 0,
                 modifier = Modifier
-                    .padding(horizontal = 24.dp)
+                    .padding(horizontal = 16.dp)
                     .padding(bottom = 8.dp)
             ) {
                 AnimatedVisibility(visible = !isLightningOrSwap && receiveAddress.isNotBlank()) {
@@ -473,7 +533,7 @@ fun ReceiveScreen(
 
                 AnimatedVisibility(visible = (isReverseSubmarineSwap || accountAsset?.account?.isLightning == true) && !showLightningOnChainAddress && receiveAddress.isNullOrBlank()) {
 
-                    Column {
+                    Column(modifier = Modifier.fillMaxWidth()) {
                         if (isReverseSubmarineSwap) {
                             Text(
                                 text = stringResource(Res.string.id_you_will_receive_liquid_bitcoin),
@@ -484,8 +544,9 @@ fun ReceiveScreen(
                         }
 
                         GreenButton(
-                            text = stringResource(Res.string.id_confirm),
+                            text = stringResource(Res.string.id_create_invoice),
                             modifier = Modifier.fillMaxWidth(),
+                            size = GreenButtonSize.BIG,
                             enabled = buttonEnabled
                         ) {
                             viewModel.postEvent(ReceiveViewModel.LocalEvents.CreateInvoice)
@@ -512,7 +573,7 @@ fun ReceiveScreen(
                 }
             }
 
-            androidx.compose.animation.AnimatedVisibility(
+            this@SetupScreen.AnimatedVisibility(
                 visible = onProgress,
                 modifier = Modifier.align(Alignment.BottomCenter)
             ) {
