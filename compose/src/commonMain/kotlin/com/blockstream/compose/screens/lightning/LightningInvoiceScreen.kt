@@ -390,6 +390,13 @@ private fun LightningInvoiceAddress(
                     modifier = Modifier.fillMaxWidth()
                 )
             }
+        } else {
+            Text(
+                text = clean,
+                fontFamily = MonospaceFont(),
+                textAlign = TextAlign.Center,
+                modifier = Modifier.fillMaxWidth()
+            )
         }
     }
 
