@@ -277,7 +277,7 @@ class AppSettingsViewModel : AppSettingsViewModelAbstract() {
     }
 
     private fun isConfigValid(): Boolean {
-        val proxyValid = !proxyEnabled.value || proxyUrl.value.isHostPortFormatValid()
+        val proxyValid = !proxyEnabled.value || (proxyUrl.value.isNotBlank() && proxyUrl.value.isHostPortFormatValid())
         val gapLimitValid = electrumServerGapLimit.value.isGapLimitValid()
 
         val btcValid = !electrumNodeEnabled.value || personalBitcoinElectrumServer.value.isHostPortFormatValid()
@@ -335,7 +335,7 @@ class AppSettingsViewModel : AppSettingsViewModelAbstract() {
         tor = torEnabled.value,
         personalElectrumServerTls = personalElectrumServerTlsEnabled.value,
 
-        proxyUrl = proxyUrl.value.takeIf { proxyEnabled.value },
+        proxyUrl = proxyUrl.value.takeIf { proxyEnabled.value && it.isNotBlank() },
 
         electrumServerGapLimit = electrumServerGapLimit.value.toIntOrNull(),
 
@@ -366,7 +366,7 @@ class AppSettingsViewModel : AppSettingsViewModelAbstract() {
         personalTestnetElectrumServerError.value = null
         personalTestnetLiquidElectrumServer.value = ""
         personalTestnetLiquidElectrumServerError.value = null
-        personalElectrumServerTlsEnabled.value = false
+        personalElectrumServerTlsEnabled.value = true
     }
 
     override fun onResetGapLimit() {
