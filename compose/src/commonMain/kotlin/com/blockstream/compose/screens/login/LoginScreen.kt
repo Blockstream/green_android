@@ -233,7 +233,7 @@ fun LoginScreen(
                         }
                     }
 
-                    applicationSettings.proxyUrl.takeIf { it.isNotBlank() }?.also {
+                    applicationSettings.proxyUrl.takeIf { applicationSettings.proxyEnabled && it.isNotBlank() }?.also {
                         GreenSpacer(4)
                         Text(
                             text = applicationSettings.proxyUrl ?: "proxy Url",

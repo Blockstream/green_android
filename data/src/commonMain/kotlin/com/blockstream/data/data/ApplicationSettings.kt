@@ -26,6 +26,7 @@ data class ApplicationSettings constructor(
     val screenLockInSeconds: Int = ScreenLockSetting.LOCK_IMMEDIATELY.seconds,
     val testnet: Boolean = false,
     val proxyUrl: String? = null,
+    val proxyEnabled: Boolean = false,
     val rememberHardwareDevices: Boolean = true,
     val tor: Boolean = false,
     val electrumNode: Boolean = false,
@@ -36,6 +37,7 @@ data class ApplicationSettings constructor(
 
     val hideAmounts: Boolean = false,
     val electrumServerGapLimit: Int? = null,
+    val customGapLimitEnabled: Boolean = false,
 
     val personalBitcoinElectrumServer: String? = null,
     val personalLiquidElectrumServer: String? = null,
@@ -68,6 +70,7 @@ data class ApplicationSettings constructor(
         private const val SCREEN_LOCK_IN_SECONDS = "screenLockInSeconds"
         private const val TESTNET = "testnet"
         private const val PROXY_URL = "proxyURL"
+        private const val PROXY_ENABLED = "proxyEnabled"
         private const val REMEMBER_HARDWARE_DEVICES = "rememberHardwareDevices"
         private const val TOR = "tor"
         private const val ELECTRUM_NODE = "electrumNode"
@@ -76,6 +79,7 @@ data class ApplicationSettings constructor(
         private const val LOCALE = "locale"
         private const val HIDE_AMOUNTS = "hideAmounts"
         private const val ELECTRUM_SERVER_GAP_LIMIT = "electrumServerGapLimit"
+        private const val CUSTOM_GAP_LIMIT_ENABLED = "customGapLimitEnabled"
 
         private const val PERSONAL_BITCOIN_ELECTRUM_SERVER = "personalBitcoinElectrumServer"
         private const val PERSONAL_LIQUID_ELECTRUM_SERVER = "personalLiquidElectrumServer"
@@ -91,6 +95,8 @@ data class ApplicationSettings constructor(
                     screenLockInSeconds = settings.getInt(SCREEN_LOCK_IN_SECONDS, 0),
                     testnet = settings.getBoolean(TESTNET, false),
                     proxyUrl = settings.getStringOrNull(PROXY_URL),
+                    proxyEnabled = settings.getBooleanOrNull(PROXY_ENABLED)
+                        ?: settings.getStringOrNull(PROXY_URL).isNullOrBlank().not(),
                     rememberHardwareDevices = settings.getBoolean(REMEMBER_HARDWARE_DEVICES, true),
                     tor = settings.getBoolean(TOR, false),
                     electrumNode = settings.getBoolean(ELECTRUM_NODE, false),
@@ -102,6 +108,8 @@ data class ApplicationSettings constructor(
                     electrumServerGapLimit = settings.getIntOrNull(
                         ELECTRUM_SERVER_GAP_LIMIT
                     ),
+                    customGapLimitEnabled = settings.getBooleanOrNull(CUSTOM_GAP_LIMIT_ENABLED)
+                        ?: (settings.getIntOrNull(ELECTRUM_SERVER_GAP_LIMIT) != null),
                     personalBitcoinElectrumServer = settings.getStringOrNull(
                         PERSONAL_BITCOIN_ELECTRUM_SERVER
                     ),
@@ -127,6 +135,7 @@ data class ApplicationSettings constructor(
                 it.putInt(SCREEN_LOCK_IN_SECONDS, appSettings.screenLockInSeconds)
                 it.putBoolean(TESTNET, appSettings.testnet)
                 it.putStringOrRemove(PROXY_URL, appSettings.proxyUrl)
+                it.putBoolean(PROXY_ENABLED, appSettings.proxyEnabled)
                 it.putBoolean(REMEMBER_HARDWARE_DEVICES, appSettings.rememberHardwareDevices)
                 it.putBoolean(TOR, appSettings.tor)
                 it.putBoolean(ELECTRUM_NODE, appSettings.electrumNode)
@@ -136,6 +145,7 @@ data class ApplicationSettings constructor(
                 it.putBoolean(HIDE_AMOUNTS, appSettings.hideAmounts)
 
                 it.putIntOrRemove(ELECTRUM_SERVER_GAP_LIMIT, appSettings.electrumServerGapLimit)
+                it.putBoolean(CUSTOM_GAP_LIMIT_ENABLED, appSettings.customGapLimitEnabled)
 
                 it.putStringOrRemove(PERSONAL_BITCOIN_ELECTRUM_SERVER, appSettings.personalBitcoinElectrumServer)
                 it.putStringOrRemove(PERSONAL_LIQUID_ELECTRUM_SERVER, appSettings.personalLiquidElectrumServer)

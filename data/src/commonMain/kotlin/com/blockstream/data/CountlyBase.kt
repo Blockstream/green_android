@@ -81,7 +81,7 @@ abstract class CountlyBase(
                 } else {
                     _torProxy ?: "socks5://tor_not_initialized"
                 }
-            } else if (!appSettings.proxyUrl.isNullOrBlank()) {
+            } else if (appSettings.proxyEnabled && !appSettings.proxyUrl.isNullOrBlank()) {
                 appSettings.proxyUrl
             } else {
                 null
@@ -123,7 +123,7 @@ abstract class CountlyBase(
         if (appSettings.tor) {
             settingsAsSet.add(TOR)
         }
-        if (!appSettings.proxyUrl.isNullOrBlank()) {
+        if (appSettings.proxyEnabled && !appSettings.proxyUrl.isNullOrBlank()) {
             settingsAsSet.add(PROXY)
         }
         if (appSettings.testnet) {

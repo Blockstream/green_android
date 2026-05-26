@@ -90,9 +90,11 @@ class GreenActivity : AppCompatActivity() {
                 }
 
                 if (it.hasExtra(PROXY_URL)) {
+                    val proxyUrl = it.getStringExtra(PROXY_URL)
                     settingsManager.saveApplicationSettings(
                         settingsManager.getApplicationSettings().copy(
-                            proxyUrl = it.getStringExtra(PROXY_URL)
+                            proxyUrl = proxyUrl,
+                            proxyEnabled = it.getBooleanExtra(PROXY_ENABLED, !proxyUrl.isNullOrBlank())
                         )
                     )
                 }
@@ -243,6 +245,7 @@ class GreenActivity : AppCompatActivity() {
         const val ENABLE_TESTNET = "ENABLE_TESTNET"
         const val ENABLE_TOR = "ENABLE_TOR"
         const val PROXY_URL = "PROXY_URL"
+        const val PROXY_ENABLED = "PROXY_ENABLED"
         const val PERSONAL_ELECTRUM_SERVER = "PERSONAL_ELECTRUM_SERVER"
 
         const val REGISTER_NETWORK_ID = "REGISTER_NETWORK_ID"

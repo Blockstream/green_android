@@ -111,15 +111,9 @@ fun AppSettingsScreen(
 ) {
     // Helper function to handle value changes and auto-save for Boolean
     fun autoSaveOnBooleanChange(
-        stateFlow: MutableStateFlow<Boolean>,
-        onReset: (() -> Unit)? = null
+        stateFlow: MutableStateFlow<Boolean>
     ): (Boolean) -> Unit = { newValue ->
         stateFlow.value = newValue
-
-        if (!newValue) {
-            onReset?.invoke()
-        }
-
         viewModel.postEvent(AppSettingsViewModel.LocalEvents.AutoSave)
     }
 
@@ -186,9 +180,7 @@ fun AppSettingsScreen(
                     title = stringResource(Res.string.id_connect_through_a_proxy),
                     subtitle = stringResource(Res.string.id_custom_network_route),
                     checked = proxyEnabled,
-                    onCheckedChange = autoSaveOnBooleanChange(viewModel.proxyEnabled) {
-                        viewModel.onResetProxySettings()
-                    },
+                    onCheckedChange = autoSaveOnBooleanChange(viewModel.proxyEnabled),
                     testTag = "proxy_switch"
                 )
 
@@ -459,9 +451,7 @@ fun AppSettingsScreen(
                     title = stringResource(Res.string.id_personal_electrum_server),
                     subtitle = stringResource(Res.string.id_use_your_own_server),
                     checked = electrumNodeEnabled,
-                    onCheckedChange = autoSaveOnBooleanChange(viewModel.electrumNodeEnabled) {
-                        viewModel.onResetElectrumServerSettings()
-                    },
+                    onCheckedChange = autoSaveOnBooleanChange(viewModel.electrumNodeEnabled),
                     testTag = "electrum_switch"
                 )
 
@@ -475,26 +465,18 @@ fun AppSettingsScreen(
                 }
 
                 val electrumServerGapLimit by viewModel.electrumServerGapLimit.collectAsStateWithLifecycle()
-                var isGapLimitCustom by remember {
-                    mutableStateOf(electrumServerGapLimit.isNotBlank() && electrumServerGapLimit != DEFAULT_SCAN_GAP_LIMIT)
-                }
+                val customGapLimitEnabled by viewModel.customGapLimitEnabled.collectAsStateWithLifecycle()
                 val electrumServerGapLimitError by viewModel.electrumServerGapLimitError.collectAsStateWithLifecycle()
 
                 SettingSwitch(
                     title = stringResource(Res.string.id_custom_server_gap_limit),
                     subtitle = stringResource(Res.string.id_number_of_unused_addresses_to_scan),
-                    checked = isGapLimitCustom,
-                    onCheckedChange = { checked ->
-                        isGapLimitCustom = checked
-                        if (!checked) {
-                            viewModel.onResetGapLimit()
-                        }
-                        viewModel.postEvent(AppSettingsViewModel.LocalEvents.AutoSave)
-                    },
+                    checked = customGapLimitEnabled,
+                    onCheckedChange = autoSaveOnBooleanChange(viewModel.customGapLimitEnabled),
                     testTag = "gap_limit_switch"
                 )
 
-                AnimatedVisibility(visible = isGapLimitCustom) {
+                AnimatedVisibility(visible = customGapLimitEnabled) {
                     Card(
                         colors = CardDefaults.cardColors(
                             containerColor = MaterialTheme.colorScheme.outline

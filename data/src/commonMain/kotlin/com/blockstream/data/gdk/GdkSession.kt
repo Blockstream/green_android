@@ -685,7 +685,7 @@ class GdkSession constructor(
 
         var electrumUrl: String? = null
 
-        if (network.isElectrum) {
+        if (network.isElectrum && applicationSettings.electrumNode) {
             electrumUrl = applicationSettings.getPersonalElectrumServer(network).takeIf { it.isNotBlank() }
         }
 
@@ -695,8 +695,8 @@ class GdkSession constructor(
             networkName = network.id,
             useTor = useTor,
             userAgent = userAgent,
-            proxy = applicationSettings.proxyUrl ?: "",
-            gapLimit = if (network.isSinglesig) applicationSettings.electrumServerGapLimit?.coerceAtLeast(1) else null,
+            proxy = if (applicationSettings.proxyEnabled) applicationSettings.proxyUrl ?: "" else "",
+            gapLimit = if (network.isSinglesig && applicationSettings.customGapLimitEnabled) applicationSettings.electrumServerGapLimit?.coerceAtLeast(1) else null,
             electrumTls = if (electrumUrl.isNotBlank()) applicationSettings.personalElectrumServerTls else true,
             electrumUrl = electrumUrl,
             electrumOnionUrl = electrumUrl.takeIf { useTor },
@@ -3336,9 +3336,10 @@ class GdkSession constructor(
 
                     networkEventsStateFlow(network).value = event
 
-                    // Personal Electrum Server Error
-                    if (network.isSinglesig && !event.isConnected && settingsManager.appSettings.getPersonalElectrumServer(network)
-                            .isNotBlank()
+                    // Personal Electrum Server Error - only show when enabled
+                    if (network.isSinglesig && !event.isConnected
+                        && settingsManager.appSettings.electrumNode
+                        && settingsManager.appSettings.getPersonalElectrumServer(network).isNotBlank()
                     ) {
                         scope.launch {
                             _networkErrors.send(network to event)
