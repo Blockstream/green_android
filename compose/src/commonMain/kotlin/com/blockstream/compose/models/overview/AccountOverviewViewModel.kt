@@ -9,10 +9,12 @@ import blockstream_green.common.generated.resources.id_help
 import blockstream_green.common.generated.resources.id_node_info
 import blockstream_green.common.generated.resources.id_remove
 import blockstream_green.common.generated.resources.id_rename_account
+import blockstream_green.common.generated.resources.id_rescan_swaps_initiated
 import blockstream_green.common.generated.resources.info
 import blockstream_green.common.generated.resources.question
 import blockstream_green.common.generated.resources.text_aa
 import blockstream_green.common.generated.resources.trash
+import com.blockstream.data.lightning.LightningHealthStatus
 import com.blockstream.compose.events.Event
 import com.blockstream.compose.events.Events
 import com.blockstream.compose.extensions.launchIn
@@ -27,6 +29,7 @@ import com.blockstream.compose.navigation.NavAction
 import com.blockstream.compose.navigation.NavData
 import com.blockstream.compose.navigation.NavigateDestinations
 import com.blockstream.compose.sideeffects.SideEffects
+import com.blockstream.compose.utils.StringHolder
 import com.blockstream.data.Urls
 import com.blockstream.data.data.AlertType
 import com.blockstream.data.data.DataState
@@ -38,8 +41,8 @@ import com.blockstream.data.gdk.data.AccountAsset
 import com.blockstream.data.gdk.data.AccountBalance
 import com.blockstream.data.gdk.data.AssetBalance
 import com.blockstream.data.gdk.data.Transaction
-import com.blockstream.data.lightning.LightningHealthStatus
 import com.blockstream.data.lightning.fromSwapInfo
+import com.blockstream.data.lightning.onchainBalanceSatoshi
 import com.blockstream.utils.Loggable
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.SharingStarted
@@ -53,7 +56,6 @@ import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.flow.onEach
 import kotlinx.coroutines.flow.stateIn
 import org.jetbrains.compose.resources.getString
-import org.koin.core.component.inject
 
 abstract class AccountOverviewViewModelAbstract(
     greenWallet: GreenWallet, accountAsset: AccountAsset
@@ -72,7 +74,6 @@ abstract class AccountOverviewViewModelAbstract(
 
 class AccountOverviewViewModel(greenWallet: GreenWallet, accountAsset: AccountAsset) :
     AccountOverviewViewModelAbstract(greenWallet = greenWallet, accountAsset = accountAsset) {
-
     override fun segmentation(): HashMap<String, Any> =
         countly.accountSegmentation(session = session, account = account)
 
@@ -209,7 +210,7 @@ class AccountOverviewViewModel(greenWallet: GreenWallet, accountAsset: AccountAs
                             onClick = {
                                 postEvent(NavigateDestinations.LightningNode(greenWallet = greenWallet))
                             }
-                        ).takeIf { account.isLightning && appInfo.isDevelopmentOrDebug  },
+                        ).takeIf { account.isLightning },
                         NavAction(
                             title = getString(Res.string.id_remove),
                             icon = Res.drawable.trash,

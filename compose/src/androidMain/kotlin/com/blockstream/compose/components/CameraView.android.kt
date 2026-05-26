@@ -45,7 +45,6 @@ private const val DEFAULT_FRAME_THICKNESS_DP = 3f
 private const val DEFAULT_MASK_COLOR = 0x22000000
 private const val DEFAULT_FRAME_COLOR = android.graphics.Color.WHITE
 private const val DEFAULT_FRAME_CORNER_SIZE_DP = 50f
-private const val DEFAULT_FRAME_CORNER_RADIUS_DP = 16f
 private const val DEFAULT_FRAME_SIZE = 0.65f
 
 @Composable
@@ -86,11 +85,6 @@ actual fun CameraView(
                         DEFAULT_FRAME_CORNER_SIZE_DP,
                         resources.displayMetrics
                     ).toInt()
-                    viewFinder.frameCornersRadius = TypedValue.applyDimension(
-                        TypedValue.COMPLEX_UNIT_DIP,
-                        DEFAULT_FRAME_CORNER_RADIUS_DP,
-                        resources.displayMetrics
-                    )
                     viewFinder.frameSize = DEFAULT_FRAME_SIZE
 
                     decoratedBarcode.apply {

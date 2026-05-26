@@ -2,13 +2,10 @@ package com.blockstream.compose.screens.jade
 
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.layout.Box
-import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.aspectRatio
 import androidx.compose.foundation.layout.fillMaxWidth
-import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
-import androidx.compose.foundation.layout.widthIn
 import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Scaffold
@@ -28,19 +25,14 @@ import blockstream_green.common.generated.resources.Res
 import blockstream_green.common.generated.resources.id_check_transaction_details
 import blockstream_green.common.generated.resources.id_export_to_file
 import blockstream_green.common.generated.resources.id_import_from_file
-import blockstream_green.common.generated.resources.id_jade_will_generate_a_new_key
-import blockstream_green.common.generated.resources.id_lightning_on_jade
 import blockstream_green.common.generated.resources.id_next
 import blockstream_green.common.generated.resources.id_save_to_files
 import blockstream_green.common.generated.resources.id_share
 import blockstream_green.common.generated.resources.id_step_1s
+import blockstream_green.common.generated.resources.id_troubleshoot
 import blockstream_green.common.generated.resources.qr_code
 import blockstream_green.common.generated.resources.scan
-import com.adamglin.PhosphorIcons
-import com.adamglin.phosphoricons.Regular
-import com.adamglin.phosphoricons.regular.Info
 import com.blockstream.compose.GreenPreview
-import com.blockstream.compose.components.GreenAlert
 import com.blockstream.compose.components.GreenButton
 import com.blockstream.compose.components.GreenButtonColor
 import com.blockstream.compose.components.GreenButtonSize
@@ -49,7 +41,6 @@ import com.blockstream.compose.components.GreenColumn
 import com.blockstream.compose.components.GreenQR
 import com.blockstream.compose.components.GreenScanner
 import com.blockstream.compose.components.OnProgressStyle
-import com.blockstream.compose.components.ZoomOutlinedButton
 import com.blockstream.compose.events.Events
 import com.blockstream.compose.models.jade.JadeQRViewModel
 import com.blockstream.compose.models.jade.JadeQRViewModelAbstract
@@ -69,7 +60,6 @@ import com.blockstream.compose.theme.textHigh
 import com.blockstream.compose.theme.textMedium
 import com.blockstream.compose.utils.SetupScreen
 import com.blockstream.compose.utils.bottom
-import com.blockstream.compose.utils.ifTrue
 import com.blockstream.data.data.MenuEntry
 import com.blockstream.data.data.MenuEntryList
 import com.blockstream.data.data.Redact
@@ -98,10 +88,6 @@ fun JadeQRScreen(
     val innerPadding = LocalInnerPadding.current
 
     val step by viewModel.stepInfo.collectAsStateWithLifecycle()
-
-    val isCleanScan = step.isScan &&
-            (viewModel.operation is JadeQrOperation.LightningMnemonicExport ||
-                    viewModel.operation is JadeQrOperation.BoltzMnemonicExport)
 
     NavigateDestinations.AskJadeUnlock.getResult<Boolean> { isUnlocked ->
         if (!isUnlocked) {
@@ -152,70 +138,68 @@ fun JadeQRScreen(
 
                 GreenColumn(
                     modifier = Modifier.padding(innerPadding.bottom()),
-                    space = if (isCleanScan) 0 else 24,
-                    padding = if (isCleanScan) 0 else 24,
+                    space = 24,
+                    padding = 24,
                     horizontalAlignment = Alignment.CenterHorizontally
                 ) {
 
-                    if (!isCleanScan) {
-                        GreenColumn(
-                            padding = 0,
-                            space = 6,
-                            horizontalAlignment = Alignment.CenterHorizontally,
-                            modifier = Modifier.padding(horizontal = 24.dp)
-                        ) {
-                            val scenario by viewModel.scenario.collectAsStateWithLifecycle()
-                            if (scenario.showStepCounter) {
-                                GreenColumn(
-                                    padding = 0,
-                                    space = 6,
-                                    horizontalAlignment = Alignment.CenterHorizontally
-                                ) {
-                                    Image(
-                                        painter = painterResource(if (step.isScan) Res.drawable.scan else Res.drawable.qr_code),
-                                        contentDescription = null,
-                                        colorFilter = ColorFilter.tint(green),
-                                        modifier = Modifier.size(50.dp)
-                                    )
+                    GreenColumn(
+                        padding = 0,
+                        space = 6,
+                        horizontalAlignment = Alignment.CenterHorizontally,
+                        modifier = Modifier.padding(horizontal = 24.dp)
+                    ) {
+                        val scenario by viewModel.scenario.collectAsStateWithLifecycle()
+                        if (scenario.showStepCounter) {
+                            GreenColumn(
+                                padding = 0,
+                                space = 6,
+                                horizontalAlignment = Alignment.CenterHorizontally
+                            ) {
+                                Image(
+                                    painter = painterResource(if (step.isScan) Res.drawable.scan else Res.drawable.qr_code),
+                                    contentDescription = null,
+                                    colorFilter = ColorFilter.tint(green),
+                                    modifier = Modifier.size(50.dp)
+                                )
 
-                                    step.step?.also {
-                                        Text(
-                                            text = stringResource(
-                                                Res.string.id_step_1s,
-                                                it
-                                            ).uppercase(),
-                                            style = labelLarge,
-                                            textAlign = TextAlign.Center,
-                                            color = green
-                                        )
-                                    }
+                                step.step?.also {
+                                    Text(
+                                        text = stringResource(
+                                            Res.string.id_step_1s,
+                                            it
+                                        ).uppercase(),
+                                        style = labelLarge,
+                                        textAlign = TextAlign.Center,
+                                        color = green
+                                    )
                                 }
                             }
+                        }
 
+                        Text(
+                            text = stringResource(step.title),
+                            style = headlineSmall,
+                            color = textHigh,
+                            textAlign = TextAlign.Center
+                        )
+
+                        step.subtitle?.also { subtitle ->
                             Text(
-                                text = stringResource(step.title),
-                                style = headlineSmall,
-                                color = textHigh,
+                                text = stringResource(subtitle),
+                                style = bodyMedium,
+                                color = textMedium,
                                 textAlign = TextAlign.Center
                             )
+                        }
 
-                            step.subtitle?.also { subtitle ->
-                                Text(
-                                    text = stringResource(subtitle),
-                                    style = bodyMedium,
-                                    color = textMedium,
-                                    textAlign = TextAlign.Center
-                                )
-                            }
-
-                            step.message?.also { message ->
-                                Text(
-                                    text = stringResource(message),
-                                    style = bodyMedium,
-                                    color = textMedium,
-                                    textAlign = TextAlign.Center
-                                )
-                            }
+                        step.message?.also { message ->
+                            Text(
+                                text = stringResource(message),
+                                style = bodyMedium,
+                                color = textMedium,
+                                textAlign = TextAlign.Center
+                            )
                         }
                     }
 
@@ -237,124 +221,107 @@ fun JadeQRScreen(
                         } else {
                             if (step.isScan) {
                                 GreenScanner(
-                                    modifier = Modifier.ifTrue(!isCleanScan) {
-                                        it
-                                            .aspectRatio(1f)
-                                            .align(Alignment.Center)
-                                    },
+                                    modifier = Modifier
+                                        .aspectRatio(1f)
+                                        .align(Alignment.Center),
                                     isDecodeContinuous = true,
                                     showScanFromImage = false,
-                                    isFullPage = isCleanScan,
                                     viewModel = viewModel
                                 )
                             } else {
-                                val isBorderedQr = viewModel.operation is JadeQrOperation.LightningMnemonicExport
-                                        || viewModel.operation is JadeQrOperation.BoltzMnemonicExport
-
                                 GreenQR(
                                     data = qrCode,
-                                    isJadeQR = !isBorderedQr,
-                                    isBordered = isBorderedQr,
+                                    isJadeQR = true,
                                     modifier = Modifier
                                         .align(Alignment.Center)
-                                        .fillMaxWidth(),
-                                    footer = { openFull ->
-                                        if (isBorderedQr) {
-                                            Spacer(Modifier.height(20.dp))
-                                            ZoomOutlinedButton(
-                                                onClick = openFull
-                                            )
-                                        }
-                                    })
+                                        .fillMaxWidth()
+                                )
                             }
                         }
                     }
 
-                    if (!isCleanScan) {
-                        GreenColumn(padding = 0, space = 8) {
+                    GreenColumn(padding = 0, space = 8) {
 
-                            if (viewModel.operation is JadeQrOperation.LightningMnemonicExport && !step.isScan) {
-                                GreenAlert(
-                                    modifier = Modifier.fillMaxWidth().padding(bottom = 8.dp),
-                                    title = stringResource(Res.string.id_lightning_on_jade),
-                                    message = stringResource(Res.string.id_jade_will_generate_a_new_key),
-                                    isBlue = true,
-                                    icon = PhosphorIcons.Regular.Info
-                                )
-                            }
-
-                            if (step.isScan) {
-                                if (viewModel.operation is JadeQrOperation.Psbt) {
-                                    GreenButton(
-                                        text = stringResource(Res.string.id_import_from_file),
-                                        modifier = Modifier
-                                            .fillMaxWidth(),
-                                        size = GreenButtonSize.BIG,
-                                        color = GreenButtonColor.WHITE,
-                                        type = GreenButtonType.OUTLINE,
-                                        enabled = !onProgress
-                                    ) {
-                                        viewModel.postEvent(JadeQRViewModel.LocalEvents.ImportPsbt)
-                                    }
-                                }
-                            } else {
-                                if (viewModel.operation is JadeQrOperation.Psbt) {
-                                    if (viewModel.operation.transactionConfirmation != null) {
-                                        GreenButton(
-                                            text = stringResource(Res.string.id_check_transaction_details),
-                                            modifier = Modifier
-                                                .fillMaxWidth(),
-                                            size = GreenButtonSize.BIG,
-                                            color = GreenButtonColor.WHITE,
-                                            type = GreenButtonType.OUTLINE,
-                                            enabled = !onProgress
-                                        ) {
-                                            viewModel.postEvent(JadeQRViewModel.LocalEvents.CheckTransactionDetails)
-                                        }
-                                    }
-
-                                    GreenButton(
-                                        text = stringResource(Res.string.id_export_to_file),
-                                        modifier = Modifier
-                                            .fillMaxWidth(),
-                                        size = GreenButtonSize.BIG,
-                                        color = GreenButtonColor.WHITE,
-                                        type = GreenButtonType.OUTLINE,
-                                        enabled = !onProgress
-                                    ) {
-                                        scope.launch {
-                                            viewModel.postEvent(
-                                                NavigateDestinations.Menu(
-                                                    title = getString(Res.string.id_share),
-                                                    entries = MenuEntryList(
-                                                        listOf(
-                                                            MenuEntry(
-                                                                title = getString(Res.string.id_share),
-                                                                iconRes = "share-network"
-                                                            ),
-                                                            MenuEntry(
-                                                                title = getString(Res.string.id_save_to_files),
-                                                                iconRes = "download-simple"
-                                                            ),
-                                                        )
-                                                    )
-                                                )
-                                            )
-                                        }
-                                    }
-                                }
-
-                                val buttonEnabled by viewModel.buttonEnabled.collectAsStateWithLifecycle()
+                        if (step.isScan) {
+                            if (viewModel.operation is JadeQrOperation.Psbt) {
                                 GreenButton(
-                                    text = stringResource(Res.string.id_next),
+                                    text = stringResource(Res.string.id_import_from_file),
                                     modifier = Modifier
                                         .fillMaxWidth(),
                                     size = GreenButtonSize.BIG,
-                                    enabled = buttonEnabled
+                                    color = GreenButtonColor.WHITE,
+                                    type = GreenButtonType.OUTLINE,
+                                    enabled = !onProgress
                                 ) {
-                                    viewModel.postEvent(Events.Continue)
+                                    viewModel.postEvent(JadeQRViewModel.LocalEvents.ImportPsbt)
                                 }
                             }
+                        } else {
+                            if (viewModel.operation is JadeQrOperation.Psbt) {
+                                if (viewModel.operation.transactionConfirmation != null) {
+                                    GreenButton(
+                                        text = stringResource(Res.string.id_check_transaction_details),
+                                        modifier = Modifier
+                                            .fillMaxWidth(),
+                                        size = GreenButtonSize.BIG,
+                                        color = GreenButtonColor.WHITE,
+                                        type = GreenButtonType.OUTLINE,
+                                        enabled = !onProgress
+                                    ) {
+                                        viewModel.postEvent(JadeQRViewModel.LocalEvents.CheckTransactionDetails)
+                                    }
+                                }
+
+                                GreenButton(
+                                    text = stringResource(Res.string.id_export_to_file),
+                                    modifier = Modifier
+                                        .fillMaxWidth(),
+                                    size = GreenButtonSize.BIG,
+                                    color = GreenButtonColor.WHITE,
+                                    type = GreenButtonType.OUTLINE,
+                                    enabled = !onProgress
+                                ) {
+                                    scope.launch {
+                                        viewModel.postEvent(
+                                            NavigateDestinations.Menu(
+                                                title = getString(Res.string.id_share),
+                                                entries = MenuEntryList(
+                                                    listOf(
+                                                        MenuEntry(
+                                                            title = getString(Res.string.id_share),
+                                                            iconRes = "share-network"
+                                                        ),
+                                                        MenuEntry(
+                                                            title = getString(Res.string.id_save_to_files),
+                                                            iconRes = "download-simple"
+                                                        ),
+                                                    )
+                                                )
+                                            )
+                                        )
+                                    }
+                                }
+                            }
+
+                            val buttonEnabled by viewModel.buttonEnabled.collectAsStateWithLifecycle()
+                            GreenButton(
+                                text = stringResource(Res.string.id_next),
+                                modifier = Modifier
+                                    .fillMaxWidth(),
+                                size = GreenButtonSize.BIG,
+                                enabled = buttonEnabled
+                            ) {
+                                viewModel.postEvent(Events.Continue)
+                            }
+                        }
+
+                        GreenButton(
+                            text = stringResource(Res.string.id_troubleshoot),
+                            modifier = Modifier
+                                .fillMaxWidth(),
+                            type = GreenButtonType.TEXT
+                        ) {
+                            viewModel.postEvent(JadeQRViewModel.LocalEvents.ClickTroubleshoot)
                         }
                     }
                 }

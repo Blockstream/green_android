@@ -15,7 +15,6 @@ import androidx.compose.runtime.getValue
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.alpha
-import androidx.compose.ui.draw.drawWithCache
 import androidx.compose.ui.draw.drawWithContent
 import androidx.compose.ui.geometry.Offset
 import androidx.compose.ui.geometry.Size
@@ -29,10 +28,6 @@ import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 import com.blockstream.compose.extensions.dpToPx
 import com.blockstream.compose.theme.md_theme_surfaceCircle
-import androidx.compose.ui.graphics.Path
-import androidx.compose.ui.graphics.StrokeCap
-import androidx.compose.ui.graphics.drawscope.Stroke
-import androidx.compose.ui.geometry.Rect
 
 fun Modifier.invisible(invisible: Boolean = true) =
     if (invisible) alpha(0f).pointerInput(Unit) {} else this
@@ -146,46 +141,4 @@ fun Modifier.fadingEdges(
                 )
             }
         }
-}
-
-fun Modifier.qrScannerFrame(
-    color: Color,
-    strokeWidth: Dp = 4.dp,
-    cornerSize: Dp = 36.dp,
-    cornerRadius: Dp = 16.dp
-) = this.drawWithCache {
-    val sw = strokeWidth.toPx()
-    val cs = cornerSize.toPx()
-    val r = cornerRadius.toPx()
-
-    val path = Path().apply {
-        moveTo(0f, cs)
-        lineTo(0f, r)
-        arcTo(Rect(0f, 0f, r * 2, r * 2), 180f, 90f, false)
-        lineTo(cs, 0f)
-
-        moveTo(size.width - cs, 0f)
-        lineTo(size.width - r, 0f)
-        arcTo(Rect(size.width - r * 2, 0f, size.width, r * 2), 270f, 90f, false)
-        lineTo(size.width, cs)
-
-        moveTo(size.width, size.height - cs)
-        lineTo(size.width, size.height - r)
-        arcTo(Rect(size.width - r * 2, size.height - r * 2, size.width, size.height), 0f, 90f, false)
-        lineTo(size.width - cs, size.height)
-
-        moveTo(cs, size.height)
-        lineTo(r, size.height)
-        arcTo(Rect(0f, size.height - r * 2, r * 2, size.height), 90f, 90f, false)
-        lineTo(0f, size.height - cs)
-    }
-
-    onDrawWithContent {
-        drawContent()
-        drawPath(
-            path = path,
-            color = color,
-            style = Stroke(width = sw, cap = StrokeCap.Round)
-        )
-    }
 }

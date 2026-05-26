@@ -15,11 +15,9 @@ import blockstream_green.common.generated.resources.id_another_2fa_method_is_alr
 import blockstream_green.common.generated.resources.id_confirm_via_2fa_that_you
 import blockstream_green.common.generated.resources.id_copied_to_clipboard
 import blockstream_green.common.generated.resources.id_creating_your_s_account
-import blockstream_green.common.generated.resources.id_enabling_lightning
 import blockstream_green.common.generated.resources.id_general
 import blockstream_green.common.generated.resources.id_if_you_have_some_coins_on_the
 import blockstream_green.common.generated.resources.id_learn_more
-import blockstream_green.common.generated.resources.id_lightning_enabled
 import blockstream_green.common.generated.resources.id_recovery_tool
 import blockstream_green.common.generated.resources.id_recovery_transactions
 import blockstream_green.common.generated.resources.id_request_twofactor_reset
@@ -160,7 +158,7 @@ class WalletSettingsViewModel(
 
         data class CopyAmpId(val account: Account? = null) : Event
         data class ChooseAccountType(val accountType: AccountType) : Event
-        data object OpenLightningSettings : Event
+        data object DisableLightning : Event
         data class CreateAccount(val accountType: AccountType, val asset: EnrichedAsset? = null) : Event
         data class CreateLightningAccount(val lightningMnemonic: String) : Event, Redact
         object CreateNewAccount : Event
@@ -184,6 +182,10 @@ class WalletSettingsViewModel(
         class ArchivedAccountDialog(event: Event) : SideEffects.SideEffectEvent(event) {
             constructor(sideEffect: SideEffect) : this(Events.EventSideEffect(sideEffect))
         }
+
+        class ExperimentalFeaturesDialog(event: Event) : SideEffects.SideEffectEvent(event) {
+            constructor(sideEffect: SideEffect) : this(Events.EventSideEffect(sideEffect))
+        }
     }
 
     init {
@@ -196,14 +198,7 @@ class WalletSettingsViewModel(
         }
 
         _accountTypeBeingCreated.filterNotNull().onEach {
-            if (it.accountType == AccountType.LIGHTNING) {
-                onProgressDescription.value = getString(Res.string.id_enabling_lightning)
-            } else {
-                onProgressDescription.value = getString(
-                    Res.string.id_creating_your_s_account,
-                    it.accountType.toString()
-                )
-            }
+            onProgressDescription.value = getString(Res.string.id_creating_your_s_account, it.accountType.toString())
         }.launchIn(this)
 
         session.ifConnected {
@@ -237,6 +232,7 @@ class WalletSettingsViewModel(
             _navData.value = NavData(
                 title = getString(it),
                 isVisible = isVisible,
+                // subtitle = greenWallet.name.takeIf { section != WalletSettingsSection.General },
                 walletName = greenWallet.name.takeIf { section == WalletSettingsSection.General },
                 showBadge = !greenWallet.isRecoveryConfirmed && section == WalletSettingsSection.General,
                 showBottomNavigation = section == WalletSettingsSection.General
@@ -385,7 +381,7 @@ class WalletSettingsViewModel(
 
                 accountSettings += listOfNotNull(
                     WalletSetting.Lightning(enabled = session.hasLightning)
-                        .takeIf { appConfig.lightningFeatureEnabled && !session.isWatchOnlyValue },
+                        .takeIf { appConfig.lightningFeatureEnabled },
                     WalletSetting.Swaps.takeIf {
                         isSwapAvailableUseCase.invoke(wallet = greenWallet, session = session) && greenWallet.isHardware
                     }
@@ -446,23 +442,14 @@ class WalletSettingsViewModel(
                 chooseAccountType(event.accountType)
             }
 
-            is LocalEvents.OpenLightningSettings -> {
-                if (session.hasLightning) {
-                    postSideEffect(
-                        SideEffects.NavigateTo(
-                            NavigateDestinations.EnabledLightning(
-                                greenWallet = greenWallet
-                            )
-                        )
-                    )
-
-                } else {
-                    postSideEffect(
-                        SideEffects.NavigateTo(
-                            NavigateDestinations.LightningOnboarding(greenWallet = greenWallet)
-                        )
-                    )
-                }
+            is LocalEvents.DisableLightning -> {
+                doAsync({
+                    if (session.hasLightning) {
+                        session.lightningAccount.also {
+                            removeAccount(it)
+                        }
+                    }
+                })
             }
 
             is LocalEvents.CreateAccount -> {
@@ -696,9 +683,7 @@ class WalletSettingsViewModel(
             onProgress.value = false
             _accountTypeBeingCreated.value = null
         }, onSuccess = {
-            if (accountType == AccountType.LIGHTNING) {
-                postSideEffect(SideEffects.Snackbar(StringHolder.create(Res.string.id_lightning_enabled)))
-            }
+
         })
     }
 
@@ -722,8 +707,8 @@ class WalletSettingsViewModel(
             )
         } else {
             if (accountType.isLightning()) {
-                if (greenWallet.isHardware) {
-                    postSideEffect(
+                sideEffect = if (greenWallet.isHardware) {
+                    LocalSideEffects.ExperimentalFeaturesDialog(
                         SideEffects.NavigateTo(
                             NavigateDestinations.JadeQR(
                                 greenWalletOrNull = greenWalletOrNull,
@@ -733,7 +718,11 @@ class WalletSettingsViewModel(
                         )
                     )
                 } else {
-                    postEvent(LocalEvents.CreateAccount(accountType))
+                    LocalSideEffects.ExperimentalFeaturesDialog(
+                        LocalEvents.CreateAccount(
+                            accountType
+                        )
+                    )
                 }
             } else {
                 event = LocalEvents.CreateAccount(accountType)

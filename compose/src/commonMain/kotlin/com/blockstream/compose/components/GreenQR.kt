@@ -14,7 +14,6 @@ import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.widthIn
-import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
 import androidx.compose.runtime.Composable
@@ -37,7 +36,6 @@ import com.blockstream.compose.GreenPreview
 import com.blockstream.compose.theme.green
 import com.blockstream.compose.theme.md_theme_surfaceTint
 import com.blockstream.compose.utils.ifTrue
-import com.blockstream.compose.utils.qrScannerFrame
 import com.blockstream.data.extensions.isNotBlank
 import io.github.alexzhirkevich.qrose.options.QrErrorCorrectionLevel
 import io.github.alexzhirkevich.qrose.rememberQrCodePainter
@@ -45,63 +43,78 @@ import org.jetbrains.compose.resources.painterResource
 import org.jetbrains.compose.resources.stringResource
 import org.jetbrains.compose.ui.tooling.preview.Preview
 
+@OptIn(ExperimentalFoundationApi::class)
 @Composable
 fun GreenQR(
     modifier: Modifier = Modifier,
     data: String?,
     isVisible: Boolean = true,
     isJadeQR: Boolean = false,
-    isBordered: Boolean = false,
     onQrClick: (() -> Unit)? = null,
-    visibilityClick: () -> Unit = {},
-    footer: @Composable ((openFullScreen: () -> Unit) -> Unit)? = null
-) {
-    val isReady = isVisible && data.isNotBlank()
-
-    if (isBordered && isReady) {
-        BorderedQR(
-            data = data,
-            modifier = modifier,
-            footer = footer
-        )
-    } else {
-        LegacyGreenQR(
-            modifier = modifier,
-            data = data,
-            isVisible = isVisible,
-            isJadeQR = isJadeQR,
-            onQrClick = onQrClick,
-            visibilityClick = visibilityClick
-        )
-    }
-}
-
-@OptIn(ExperimentalFoundationApi::class)
-@Composable
-fun LegacyGreenQR(
-    modifier: Modifier = Modifier,
-    data: String?,
-    isVisible: Boolean = true,
-    isJadeQR: Boolean = false,
-    onQrClick: (() -> Unit)? = null,
-    visibilityClick: () -> Unit = {},
+    visibilityClick: () -> Unit = {}
 ) {
     var isFullscreen by remember { mutableStateOf(false) }
     val isVisibleAndNotBlank = isVisible && data.isNotBlank()
-
-    if (isFullscreen) {
-        QrFullscreenDialog(data, isJadeQR) { isFullscreen = false }
-    }
+    val qrPadding = if (isJadeQR) 28.dp else 18.dp
+    val qrCodePainter = rememberQrCodePainter(
+        data = data ?: "",
+        errorCorrectionLevel = if (isJadeQR) QrErrorCorrectionLevel.Low else QrErrorCorrectionLevel.Auto
+    )
 
     Column(
-        modifier = modifier,
+        modifier = Modifier
+            .then(modifier),
         verticalArrangement = Arrangement.Center,
         horizontalAlignment = Alignment.CenterHorizontally
     ) {
+
         Box {
+            if (isFullscreen) {
+                Dialog(
+                    onDismissRequest = { isFullscreen = false },
+                    properties = DialogProperties(
+                        usePlatformDefaultWidth = false,
+                    )
+                ) {
+
+                    Box(
+                        modifier = Modifier
+                            .fillMaxSize()
+                            .clickable { isFullscreen = false }
+                            .ifTrue(isJadeQR) {
+                                it.background(Color.White)
+                            }
+                    ) {
+                        Card(
+                            colors = CardDefaults.cardColors(
+                                containerColor = Color.White,
+                                contentColor = Color.Black
+                            ),
+                            modifier = Modifier
+                                .align(Alignment.Center)
+                                .aspectRatio(1f)
+                                .fillMaxSize()
+
+                        ) {
+                            Image(
+                                painter = qrCodePainter,
+                                contentDescription = "QR",
+                                modifier = Modifier
+                                    .fillMaxWidth()
+                                    .fillMaxHeight()
+                                    .padding(qrPadding)
+                            )
+                        }
+                    }
+                }
+            }
+
             val color = if (isVisibleAndNotBlank) Color.White else md_theme_surfaceTint
             Card(
-                colors = CardDefaults.cardColors(containerColor = color),
+                colors = CardDefaults.cardColors(
+                    containerColor = color,
+                    contentColor = color
+                ),
                 modifier = Modifier
                     .align(Alignment.Center)
                     .widthIn(100.dp, 400.dp)
@@ -109,25 +122,38 @@ fun LegacyGreenQR(
                     .combinedClickable(
                         onClick = {
                             if (isVisibleAndNotBlank) {
-                                if (onQrClick != null) onQrClick() else if (!isJadeQR) isFullscreen = true
-                            } else visibilityClick()
+                                if (onQrClick != null) {
+                                    onQrClick()
+                                } else if (!isJadeQR) {
+                                    isFullscreen = true
+                                }
+                            } else {
+                                visibilityClick()
+                            }
                         },
                         onLongClick = {
-                            if (isVisibleAndNotBlank && !isJadeQR) isFullscreen = true else visibilityClick()
+                            if (isVisibleAndNotBlank && !isJadeQR) {
+                                isFullscreen = true
+                            } else {
+                                visibilityClick()
+                            }
                         },
                     )
             ) {
-                Box(modifier = Modifier.fillMaxSize()) {
+                Box(
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .fillMaxHeight()
+                ) {
+
                     if (isVisibleAndNotBlank) {
-                        val qrCodePainter = rememberQrCodePainter(
-                            data = data ?: "",
-                            errorCorrectionLevel = if (isJadeQR) QrErrorCorrectionLevel.Low else QrErrorCorrectionLevel.Auto
-                        )
-                        val padding = if (isJadeQR) 0.dp else 18.dp
                         Image(
                             painter = qrCodePainter,
                             contentDescription = "QR",
-                            modifier = Modifier.fillMaxSize().padding(padding)
+                            modifier = Modifier
+                                .fillMaxWidth()
+                                .fillMaxHeight()
+                                .padding(if (isJadeQR) 0.dp else qrPadding)
                         )
                     } else if (isVisible) {
                         Image(
@@ -141,117 +167,17 @@ fun LegacyGreenQR(
                             text = stringResource(Res.string.id_show_qr_code),
                             icon = painterResource(Res.drawable.eye),
                             modifier = Modifier.align(Alignment.Center)
-                        ) { visibilityClick() }
+                        ) {
+                            visibilityClick()
+                        }
                     }
                 }
             }
         }
 
         if (isVisibleAndNotBlank && !isJadeQR) {
-            ZoomButton { isFullscreen = true }
-        }
-    }
-}
-
-@Composable
-private fun BorderedQR(
-    data: String?,
-    modifier: Modifier = Modifier,
-    footer: @Composable ((openFullScreen: () -> Unit) -> Unit)? = null
-) {
-    var isFullscreen by remember { mutableStateOf(false) }
-    val openTrigger = { isFullscreen = true }
-
-    if (isFullscreen) {
-        QrFullscreenDialog(data, isJadeQR = false) { isFullscreen = false }
-    }
-
-    val qrCodePainter = rememberQrCodePainter(
-        data = data ?: "",
-        errorCorrectionLevel = QrErrorCorrectionLevel.Low
-    )
-
-    val outerPadding = 10.dp
-    val spacingBetweenFrameAndCard = 8.dp
-    val cardRadius = 12.dp
-
-    Column(
-        modifier = modifier,
-        horizontalAlignment = Alignment.CenterHorizontally,
-    ) {
-        Box(
-            modifier = Modifier
-                .widthIn(max = 280.dp)
-                .aspectRatio(1f)
-                .padding(outerPadding)
-                .clickable { openTrigger() }
-                .qrScannerFrame(
-                    color = green,
-                    strokeWidth = 6.dp,
-                    cornerSize = 40.dp,
-                    cornerRadius = cardRadius + spacingBetweenFrameAndCard
-                )
-                .padding(spacingBetweenFrameAndCard))
-        {
-            Card(
-                shape = RoundedCornerShape(cardRadius),
-                colors = CardDefaults.cardColors(containerColor = Color.White),
-                modifier = Modifier.fillMaxSize()
-            ) {
-                Image(
-                    painter = qrCodePainter,
-                    contentDescription = null,
-                    modifier = Modifier
-                        .fillMaxSize()
-                        .padding(8.dp)
-                )
-            }
-        }
-
-        footer?.invoke(openTrigger)
-    }
-}
-
-@Composable
-private fun QrFullscreenDialog(
-    data: String?,
-    isJadeQR: Boolean,
-    onDismiss: () -> Unit
-) {
-    val qrCodePainter = rememberQrCodePainter(
-        data = data ?: "",
-        errorCorrectionLevel = if (isJadeQR) QrErrorCorrectionLevel.Low else QrErrorCorrectionLevel.Auto
-    )
-    val qrPadding = if (isJadeQR) 28.dp else 18.dp
-
-    Dialog(
-        onDismissRequest = onDismiss,
-        properties = DialogProperties(usePlatformDefaultWidth = false)
-    ) {
-        Box(
-            modifier = Modifier
-                .fillMaxSize()
-                .clickable { onDismiss() }
-                .ifTrue(isJadeQR) { it.background(Color.White) }
-        ) {
-            Card(
-                colors = CardDefaults.cardColors(
-                    containerColor = Color.White,
-                    contentColor = Color.Black
-                ),
-                modifier = Modifier
-                    .align(Alignment.Center)
-                    .aspectRatio(1f)
-                    .fillMaxSize()
-            ) {
-                Image(
-                    painter = qrCodePainter,
-                    contentDescription = "QR",
-                    modifier = Modifier
-                        .fillMaxWidth()
-                        .fillMaxHeight()
-                        .padding(qrPadding)
-                )
+            ZoomButton {
+                isFullscreen = true
             }
         }
     }

@@ -490,7 +490,6 @@
     <string name="id_download_finished">Download finished</string>
     <string name="id_dust">Dust</string>
     <string name="id_edit">Edit</string>
-    <string name="id_enabling_lightning">Enabling Lightning...</string>
     <string name="id_edit_fee">Edit Fee</string>
     <string name="id_edit_note">Edit Note</string>
     <string name="id_electrum_server_gap_limit">Electrum Server Gap Limit</string>
@@ -591,9 +590,6 @@
     <string name="id_experimental_feature">Experimental Feature</string>
     <string name="id_experimental_features_might">Experimental features might change, break, or be discontinued at any time, so you agree to use them at your own risk.</string>
     <string name="id_lightning_is_in_beta">Lightning Is in Beta</string>
-    <string name="id_lightning_on_jade">Lightning On Jade</string>
-    <string name="id_lightning_enabled">Lightning Enabled</string>
-    <string name="id_you_may_experience_bugs">You may experience bugs or instability during active development.</string>
     <string name="id_lightning_beta_disclaimer">While your underlying funds remain secure, you may experience occasional payment failures or temporary delays when accessing your balance during network updates.\n\nWe recommend only using funds that you don't need immediate, urgent access to.</string>
     <string name="id_expiration">Expiration</string>
     <string name="id_explore_your_wallet">Explore Your Wallet</string>
@@ -774,7 +770,6 @@
     <string name="id_install_version_s">Install version: %1$s?</string>
     <string name="id_instant">Instant</string>
     <string name="id_instant_recovery">Instant recovery</string>
-    <string name="id_instant_transactions">Instant Transactions</string>
     <string name="id_insufficient_funds">Insufficient funds</string>
     <string name="id_insufficient_funds_invoice_amount_s">Insufficient funds. Invoice amount: %1$s</string>
     <string name="id_insufficient_lbtc_for_fees">Insufficient LBTC for fees</string>
@@ -825,7 +820,6 @@
     <string name="id_jade_unlocked">Jade unlocked</string>
     <string name="id_jade_was_initialized_for_testnet">Jade was initialized for testnet</string>
     <string name="id_jade_will_securely_create_and">Jade will securely create and transfer a new key to your Blockstream app. Jade will not be needed to authorize lightning transactions, because Green will use this new key for your lightning transactions.\n\nDon&apos;t worry about any new backups, your existing recovery phrase backup will be sufficient to restore both your funds onchain and on lightning.</string>
-    <string name="id_jade_will_generate_a_new_key">Jade will generate a new key for the Blockstream app to authorize Lightning transactions.</string>
     <string name="id_just_a_few_more_steps_to_get">Just a few more steps to get you set up.</string>
     <string name="id_keep_your_keys_encrypted_on">Keep your keys encrypted on Jade, easily accessible with PIN</string>
     <string name="id_keep_your_recovery_phrase_fully">Keep your recovery phrase fully offline and stored somewhere secret. Anyone with a copy of these words can steal your funds.</string>
@@ -864,8 +858,6 @@
     <string name="id_lightning_invoice__lnurl">Lightning Invoice / LNURL</string>
     <string name="id_lightning_invoice_is_expired">Lightning invoice is expired</string>
     <string name="id_lightning_network">Lightning Network</string>
-    <string name="id_lightning_node">Lightning Node</string>
-    <string name="id_scaling_solution_for_faster">A scaling solution for faster, cheaper Bitcoin payments.</string>
     <string name="id_lightning_network_account">Lightning Network account powered by Greenlight. Portable onto your own CLN node.</string>
     <string name="id_lightning_network_not_enabled">Lightning Network not enabled</string>
     <string name="id_lightning_notifications">Lightning Notifications</string>
@@ -916,7 +908,6 @@
     <string name="id_looking_for_wallets">Looking for wallets…</string>
     <string name="id_looks_like_you_havent_used_a">Looks like you haven&apos;t used a wallet yet. Try creating a new one.</string>
     <string name="id_low">Low</string>
-    <string name="id_low_fees">Low Fees</string>
     <string name="id_main_account">Main Account</string>
     <string name="id_make_sure_to_be_in_a_private">Make sure to be in a private and safe space</string>
     <string name="id_make_sure_you_are_alone_and_no">Make sure you are alone and no camera is recording you or the screen.</string>
@@ -1652,10 +1643,8 @@
     <string name="id_unlock_signing_device">Unlock Signing Device</string>
     <string name="id_unlock_your_device_to_continue">Unlock your Device to continue</string>
     <string name="id_unlock_your_jade_to_continue">Unlock your Jade to continue</string>
-    <string name="id_unlock_your_jade_and_scan">Unlock your Jade and scan this QR.\n Jade keeps your private keys secure.</string>
     <string name="id_unlock_your_signing_device">Unlock your signing device before signing the transaction.</string>
     <string name="id_unlock_your_wallet_using_pin">Unlock your wallet using PIN.</string>
-    <string name="id_unlock_lightning">Unlock Lightning for this wallet.</string>
     <string name="id_unlocked_coins_can_be_spent_and">Unlocked coins can be spent and are included in your balance.</string>
     <string name="id_unlocking_coins">Unlocking coins</string>
     <string name="id_unstable_internet_connection">Unstable internet connection</string>
@@ -1895,7 +1884,6 @@
     <string name="id_navigate_on_your_jade_to_options">Navigate on your Jade to Options > Wallet > Export Xpub (ensure the derivation path is m/84'/0'/0')</string>
     <string name="id_navigate_on_your_hardware_device">Navigate on your hardware device and export the the singlesig xpub with derivation path m/84'/0'/0' for your Native Segwit account</string>
     <string name="id_get_watch_only_information_from">Get watch-only information from hardware signer</string>
-    <string name="id_global_permissionless_payments">Global, Permissionless Payments</string>
     <string name="id_unlock_your_signing_device_before">Unlock your signing device before signing the transaction.</string>
     <string name="id_retry">Retry</string>
     <string name="id_verify_the_authenticity_of">Verify the authenticity of your Jade.</string>

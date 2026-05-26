@@ -4,9 +4,6 @@ import android.content.Context
 import android.graphics.Canvas
 import android.graphics.Paint
 import android.graphics.Path
-import android.graphics.PorterDuff
-import android.graphics.PorterDuffXfermode
-import android.graphics.RectF
 import android.util.AttributeSet
 import android.view.View
 import androidx.annotation.ColorInt
@@ -16,72 +13,47 @@ import androidx.annotation.Px
 class ViewFinderView(context: Context?, attrs: AttributeSet?) :
     View(context, attrs) {
     private val mMaskPaint: Paint = Paint(Paint.ANTI_ALIAS_FLAG)
-    private val mFramePaint: Paint = Paint(Paint.ANTI_ALIAS_FLAG).apply {
-        style = Paint.Style.STROKE
-        strokeCap = Paint.Cap.ROUND
-    }
-    private val mEraserPaint: Paint = Paint(Paint.ANTI_ALIAS_FLAG).apply {
-        xfermode = PorterDuffXfermode(PorterDuff.Mode.CLEAR)
-    }
-    private val mArcRect = RectF()
-    private val mFramePath: Path = Path()
-
+    private val mFramePaint: Paint = Paint(Paint.ANTI_ALIAS_FLAG)
+    private val mFramePath: Path
     private var frameRect: Rect? = null
     private var mFrameCornersSize = 0
     private var mFrameRatioWidth = 1f
     private var mFrameRatioHeight = 1f
     private var mFrameSize = 0.75f
-    private var mFrameCornersRadius = 50f
 
-    constructor(context: Context) : this(context, null)
+    constructor(context: Context) : this(context, null) {}
 
     override fun onDraw(canvas: Canvas) {
         val frameRect = frameRect ?: return
-        val width = width.toFloat()
-        val height = height.toFloat()
-        val top = frameRect.top.toFloat()
-        val left = frameRect.left.toFloat()
-        val right = frameRect.right.toFloat()
-        val bottom = frameRect.bottom.toFloat()
-        val r = mFrameCornersRadius
-
-        val saveCount = canvas.saveLayer(0f, 0f, width, height, null)
-        canvas.drawRect(0f, 0f, width, height, mMaskPaint)
-
-        canvas.drawRoundRect(left, top, right, bottom, r, r, mEraserPaint)
-        canvas.restoreToCount(saveCount)
-
+        val width = width
+        val height = height
+        val top = frameRect.top
+        val left = frameRect.left
+        val right = frameRect.right
+        val bottom = frameRect.bottom
+        canvas.drawRect(0f, 0f, width.toFloat(), top.toFloat(), mMaskPaint)
+        canvas.drawRect(0f, top.toFloat(), left.toFloat(), bottom.toFloat(), mMaskPaint)
+        canvas.drawRect(
+            right.toFloat(),
+            top.toFloat(),
+            width.toFloat(),
+            bottom.toFloat(),
+            mMaskPaint
+        )
+        canvas.drawRect(0f, bottom.toFloat(), width.toFloat(), height.toFloat(), mMaskPaint)
         mFramePath.reset()
-        val cs = mFrameCornersSize.toFloat()
-
-        // Top-left
-        mFramePath.moveTo(left, top + cs)
-        mFramePath.lineTo(left, top + r)
-        mArcRect.set(left, top, left + r * 2, top + r * 2)
-        mFramePath.arcTo(mArcRect, 180f, 90f)
-        mFramePath.lineTo(left + cs, top)
-
-        // Top-right
-        mFramePath.moveTo(right - cs, top)
-        mFramePath.lineTo(right - r, top)
-        mArcRect.set(right - r * 2, top, right, top + r * 2)
-        mFramePath.arcTo(mArcRect, 270f, 90f)
-        mFramePath.lineTo(right, top + cs)
-
-        // Bottom-right
-        mFramePath.moveTo(right, bottom - cs)
-        mFramePath.lineTo(right, bottom - r)
-        mArcRect.set(right - r * 2, bottom - r * 2, right, bottom)
-        mFramePath.arcTo(mArcRect, 0f, 90f)
-        mFramePath.lineTo(right - cs, bottom)
-
-        // Bottom-left
-        mFramePath.moveTo(left + cs, bottom)
-        mFramePath.lineTo(left + r, bottom)
-        mArcRect.set(left, bottom - r * 2, left + r * 2, bottom)
-        mFramePath.arcTo(mArcRect, 90f, 90f)
-        mFramePath.lineTo(left, bottom - cs)
-
+        mFramePath.moveTo(left.toFloat(), (top + mFrameCornersSize).toFloat())
+        mFramePath.lineTo(left.toFloat(), top.toFloat())
+        mFramePath.lineTo((left + mFrameCornersSize).toFloat(), top.toFloat())
+        mFramePath.moveTo((right - mFrameCornersSize).toFloat(), top.toFloat())
+        mFramePath.lineTo(right.toFloat(), top.toFloat())
+        mFramePath.lineTo(right.toFloat(), (top + mFrameCornersSize).toFloat())
+        mFramePath.moveTo(right.toFloat(), (bottom - mFrameCornersSize).toFloat())
+        mFramePath.lineTo(right.toFloat(), bottom.toFloat())
+        mFramePath.lineTo((right - mFrameCornersSize).toFloat(), bottom.toFloat())
+        mFramePath.moveTo((left + mFrameCornersSize).toFloat(), bottom.toFloat())
+        mFramePath.lineTo(left.toFloat(), bottom.toFloat())
+        mFramePath.lineTo(left.toFloat(), (bottom - mFrameCornersSize).toFloat())
         canvas.drawPath(mFramePath, mFramePaint)
     }
 
@@ -176,13 +148,6 @@ class ViewFinderView(context: Context?, attrs: AttributeSet?) :
             }
         }
 
-    var frameCornersRadius: Float
-        get() = mFrameCornersRadius
-        set(value) {
-            mFrameCornersRadius = value
-            if (isLaidOut(this)) invalidate()
-        }
-
     private fun invalidateFrameRect(width: Int = getWidth(), height: Int = getHeight()) {
         if (width > 0 && height > 0) {
             val viewAR = width.toFloat() / height.toFloat()
@@ -237,5 +202,10 @@ class ViewFinderView(context: Context?, attrs: AttributeSet?) :
         fun isLaidOut(view: View): Boolean {
             return view.isLaidOut
         }
+    }
+
+    init {
+        mFramePaint.style = Paint.Style.STROKE
+        mFramePath = Path()
     }
 }

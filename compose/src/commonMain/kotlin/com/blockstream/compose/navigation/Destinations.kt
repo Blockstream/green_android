@@ -97,12 +97,6 @@ sealed class NavigateDestinations : NavigateDestination() {
     ) : NavigateDestination(isBottomNavigation = section == WalletSettingsSection.General)
 
     @Serializable
-    data class LightningOnboarding(val greenWallet: GreenWallet) : NavigateDestination()
-
-    @Serializable
-    data class EnabledLightning(val greenWallet: GreenWallet) : NavigateDestination()
-
-    @Serializable
     data class SwapsSettings(
         val greenWallet: GreenWallet
     ) : NavigateDestination()

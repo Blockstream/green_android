@@ -5,18 +5,10 @@ import blockstream_green.common.generated.resources.Res
 import blockstream_green.common.generated.resources.id_account_balance
 import blockstream_green.common.generated.resources.id_completed
 import blockstream_green.common.generated.resources.id_inbound_liquidity
-import blockstream_green.common.generated.resources.id_lightning_disabled_successfully
 import blockstream_green.common.generated.resources.id_max_payable_amount
 import blockstream_green.common.generated.resources.id_max_receivable_amount
 import blockstream_green.common.generated.resources.id_max_single_payment_amount
 import blockstream_green.common.generated.resources.id_onchain_balance
-import com.blockstream.compose.events.Event
-import com.blockstream.compose.extensions.launchIn
-import com.blockstream.compose.extensions.previewWallet
-import com.blockstream.compose.models.GreenViewModel
-import com.blockstream.compose.navigation.NavigateDestinations
-import com.blockstream.compose.sideeffects.SideEffects
-import com.blockstream.compose.utils.StringHolder
 import com.blockstream.data.data.GreenWallet
 import com.blockstream.data.data.SetupArgs
 import com.blockstream.data.lightning.LightningManager
@@ -27,6 +19,13 @@ import com.blockstream.data.lightning.maxSinglePaymentAmountSatoshi
 import com.blockstream.data.lightning.onchainBalanceSatoshi
 import com.blockstream.data.lightning.totalInboundLiquiditySatoshi
 import com.blockstream.data.utils.toAmountLookOrNa
+import com.blockstream.compose.events.Event
+import com.blockstream.compose.extensions.launchIn
+import com.blockstream.compose.extensions.previewWallet
+import com.blockstream.compose.models.GreenViewModel
+import com.blockstream.compose.navigation.NavigateDestinations
+import com.blockstream.compose.sideeffects.SideEffects
+import com.blockstream.compose.utils.StringHolder
 import com.blockstream.utils.Loggable
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.SharingStarted
@@ -44,7 +43,6 @@ abstract class LightningNodeViewModelAbstract(
 ) {
     abstract val data: StateFlow<List<Pair<StringHolder, StringHolder>>>
     abstract val showEmptyAccount: StateFlow<Boolean>
-    abstract val hasLightning: StateFlow<Boolean>
 }
 
 class LightningNodeViewModel(greenWallet: GreenWallet) :
@@ -57,12 +55,9 @@ class LightningNodeViewModel(greenWallet: GreenWallet) :
     override val data = _data.asStateFlow()
 
     override val showEmptyAccount = session.lightningSdk.nodeInfoStateFlow.map {
+        // session.lightningSdk.onchainBalanceWithdrawableSat() > 0
         session.lightningSdk.nodeInfoStateFlow.value.onchainBalanceSatoshi() > 0
     }.stateIn(viewModelScope, SharingStarted.WhileSubscribed(), false)
-
-    override val hasLightning = session.lightningSdk.nodeInfoStateFlow.map {
-        session.hasLightning
-    }.stateIn(viewModelScope, SharingStarted.WhileSubscribed(), session.hasLightning)
 
     val lightningManager: LightningManager by inject()
 
@@ -70,7 +65,6 @@ class LightningNodeViewModel(greenWallet: GreenWallet) :
         object ShowRecoveryPhrase : Event
         object EmptyAccount : Event
         object ShareDiagnosticData : Event
-        object DisableLightning : Event
     }
 
     init {
@@ -124,6 +118,7 @@ class LightningNodeViewModel(greenWallet: GreenWallet) :
                     )
                 )
 
+
                 if (appInfo.isDevelopmentOrDebug) {
                     list += listOf(
                         StringHolder.create("Connected Peers") to StringHolder.create(it.connectedPeers.joinToString(", "))
@@ -173,33 +168,6 @@ class LightningNodeViewModel(greenWallet: GreenWallet) :
                 )
                 postSideEffect(SideEffects.Dismiss)
             }
-
-            is LocalEvents.DisableLightning -> {
-                onProgress.value = true
-                try {
-                    if (session.hasLightning) {
-                        val account = session.lightningAccount
-                        removeAccountUseCase(
-                            session = session,
-                            wallet = greenWallet,
-                            account = account
-                        )
-                    }
-
-                    postSideEffect(
-                        SideEffects.Snackbar(StringHolder.create(Res.string.id_lightning_disabled_successfully))
-                    )
-                    postSideEffect(SideEffects.Dismiss)
-
-                } catch (error: Exception) {
-                    error.printStackTrace()
-                    postSideEffect(
-                        SideEffects.Snackbar(StringHolder.create(error.message ?: "Error"))
-                    )
-                } finally {
-                    onProgress.value = false
-                }
-            }
         }
     }
 
@@ -218,9 +186,9 @@ class LightningNodeViewModel(greenWallet: GreenWallet) :
 class LightningNodeViewModelPreview : LightningNodeViewModelAbstract(
     greenWallet = previewWallet()
 ) {
+
     override val data: StateFlow<List<Pair<StringHolder, StringHolder>>> = MutableStateFlow(listOf())
     override val showEmptyAccount: StateFlow<Boolean> = MutableStateFlow(true)
-    override val hasLightning: StateFlow<Boolean> = MutableStateFlow(true)
 
     companion object {
         fun preview() = LightningNodeViewModelPreview()

@@ -1,5 +1,6 @@
 package com.blockstream.compose.sheets
 
+import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
@@ -14,18 +15,19 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import blockstream_green.common.generated.resources.Res
-import blockstream_green.common.generated.resources.id_disable_lightning
 import blockstream_green.common.generated.resources.id_empty_lightning_account
 import blockstream_green.common.generated.resources.id_node_info
+import blockstream_green.common.generated.resources.id_rescan_swaps
 import blockstream_green.common.generated.resources.id_share_diagnostic_data
 import blockstream_green.common.generated.resources.id_show_recovery_phrase
+import com.blockstream.compose.models.sheets.LightningNodeViewModel
+import com.blockstream.compose.models.sheets.LightningNodeViewModelAbstract
 import com.blockstream.compose.components.GreenBottomSheet
 import com.blockstream.compose.components.GreenButton
 import com.blockstream.compose.components.GreenButtonType
-import com.blockstream.compose.components.GreenColumn
-import com.blockstream.compose.models.sheets.LightningNodeViewModel
-import com.blockstream.compose.models.sheets.LightningNodeViewModelAbstract
 import com.blockstream.compose.views.DataListItem
+import com.blockstream.compose.components.GreenColumn
+import com.blockstream.compose.components.GreenRow
 import org.jetbrains.compose.resources.stringResource
 
 @OptIn(ExperimentalMaterial3Api::class)
@@ -43,7 +45,6 @@ fun LightningNodeBottomSheet(
         val onProgress by viewModel.onProgress.collectAsStateWithLifecycle()
         val data by viewModel.data.collectAsStateWithLifecycle()
         val showEmptyAccount by viewModel.showEmptyAccount.collectAsStateWithLifecycle()
-        val hasLightning by viewModel.hasLightning.collectAsStateWithLifecycle()
 
         Box {
 
@@ -83,23 +84,18 @@ fun LightningNodeBottomSheet(
                         }
                     }
 
-                    GreenButton(
-                        text = stringResource(Res.string.id_share_diagnostic_data),
-                        type = GreenButtonType.TEXT,
-                        enabled = !onProgress,
-                        modifier = Modifier.fillMaxWidth()
+                    GreenRow(
+                        padding = 0,
+                        space = 16,
+                        horizontalArrangement = Arrangement.SpaceBetween
                     ) {
-                        viewModel.postEvent(LightningNodeViewModel.LocalEvents.ShareDiagnosticData)
-                    }
-
-                    if (hasLightning) {
                         GreenButton(
-                            text = stringResource(Res.string.id_disable_lightning),
+                            text = stringResource(Res.string.id_share_diagnostic_data),
                             type = GreenButtonType.TEXT,
                             enabled = !onProgress,
-                            modifier = Modifier.fillMaxWidth()
+                            modifier = Modifier.weight(1f)
                         ) {
-                            viewModel.postEvent(LightningNodeViewModel.LocalEvents.DisableLightning)
+                            viewModel.postEvent(LightningNodeViewModel.LocalEvents.ShareDiagnosticData)
                         }
                     }
                 }
