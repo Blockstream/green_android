@@ -4,5 +4,5 @@ class ReceiveUseCase constructor(
     val getReceiveAssetsUseCase: GetReceiveAssetsUseCase,
     val getReceiveAccountsUseCase: GetReceiveAccountsUseCase,
     val saveAndShareQrCodeUseCase: SaveAndShareQrCodeUseCase,
-    val getFeeCommunicationStateUseCase: GetFeeCommunicationStateUseCase
+    val getLightningReceiveAmountStateUseCase: GetLightningReceiveAmountStateUseCase
 )

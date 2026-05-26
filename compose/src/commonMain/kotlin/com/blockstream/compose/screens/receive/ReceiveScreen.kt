@@ -44,7 +44,6 @@ import blockstream_green.common.generated.resources.id_account_type_2fa_protecte
 import blockstream_green.common.generated.resources.id_account_type_amp
 import blockstream_green.common.generated.resources.id_account_type_standard
 import blockstream_green.common.generated.resources.id_address
-import blockstream_green.common.generated.resources.id_amount
 import blockstream_green.common.generated.resources.id_asset
 import blockstream_green.common.generated.resources.id_create_invoice
 import blockstream_green.common.generated.resources.id_create_new_account
@@ -55,6 +54,7 @@ import blockstream_green.common.generated.resources.id_lightning_amount_too_low_
 import blockstream_green.common.generated.resources.id_payer_sends
 import blockstream_green.common.generated.resources.id_please_verify_that_the_address
 import blockstream_green.common.generated.resources.id_qr_code
+import blockstream_green.common.generated.resources.id_receive_amount
 import blockstream_green.common.generated.resources.id_recommended_amount_fee_s
 import blockstream_green.common.generated.resources.id_request_amount
 import blockstream_green.common.generated.resources.id_requires_funding_fee
@@ -113,7 +113,7 @@ import com.blockstream.data.data.MenuEntry
 import com.blockstream.data.data.MenuEntryList
 import com.blockstream.data.extensions.isNotBlank
 import com.blockstream.data.gdk.data.AssetBalance
-import com.blockstream.data.receive.FeeCommunicationState
+import com.blockstream.data.receive.LightningReceiveAmountState
 import io.github.alexzhirkevich.qrose.QrCodePainter
 import io.github.alexzhirkevich.qrose.toByteArray
 import kotlinx.coroutines.launch
@@ -320,26 +320,7 @@ fun ReceiveScreen(
 
                         val currentErrorText = if (isReverseSubmarineSwap) {
                             receiveAmountData.error
-                        } else {
-                            when (state) {
-                                is FeeCommunicationState.Error.AmountTooHigh -> {
-                                    stringResource(
-                                        Res.string.id_lightning_amount_too_high_fiat_s,
-                                        state.maxAmountStr,
-                                        state.maxFiatStr
-                                    )
-                                }
-                                is FeeCommunicationState.Error.AmountTooLow -> {
-                                    stringResource(
-                                        Res.string.id_lightning_amount_too_low_fiat_s,
-                                        state.minAmountStr,
-                                        state.minFiatStr
-                                    )
-                                }
-                                is FeeCommunicationState.Error.InvalidAmount -> " "
-                                else -> null
-                            }
-                        }
+                        } else null
 
                         GreenAmountField(
                             value = amount,
@@ -347,45 +328,84 @@ fun ReceiveScreen(
                             secondaryValue = receiveAmountData.exchange,
                             assetId = accountAsset?.assetId,
                             session = viewModel.sessionOrNull,
-                            title = if (showRequestAmount) stringResource(Res.string.id_request_amount) else stringResource(Res.string.id_amount),
+                            title = if (showRequestAmount) stringResource(Res.string.id_request_amount) else stringResource(Res.string.id_receive_amount),
 
                             helperText = currentErrorText,
 
                             helperContainerColor = when (state) {
-                                is FeeCommunicationState.Info -> blueSurface
-                                is FeeCommunicationState.Recommend -> orangeSurface
-                                is FeeCommunicationState.Error -> null
+                                is LightningReceiveAmountState.Info -> blueSurface
+                                is LightningReceiveAmountState.Recommend -> orangeSurface
                                 else -> null
                             },
 
-                            helperContent = if (!isReverseSubmarineSwap && (state is FeeCommunicationState.Info || state is FeeCommunicationState.Recommend)) {
+                            helperContent = if (!isReverseSubmarineSwap && (state is LightningReceiveAmountState.Info || state is LightningReceiveAmountState.Recommend || state is LightningReceiveAmountState.Error)) {
                                 {
-                                    val baseText = when (state) {
-                                        is FeeCommunicationState.Recommend -> stringResource(Res.string.id_recommended_amount_fee_s, state.satsStr)
-                                        is FeeCommunicationState.Info -> stringResource(Res.string.id_requires_funding_fee)
-                                    }
-
-                                    val infoText = buildAnnotatedString {
-                                        append(baseText)
-                                        append(" ")
-                                        withStyle(style = SpanStyle(textDecoration = TextDecoration.Underline, color = White)) {
-                                            append(stringResource(Res.string.id_learn_why))
+                                    when (state) {
+                                        // To remove diamond warning icon for this flow
+                                        is LightningReceiveAmountState.Error.AmountTooHigh -> {
+                                            Text(
+                                                text = stringResource(
+                                                    Res.string.id_lightning_amount_too_high_fiat_s,
+                                                    state.maxAmountStr,
+                                                    state.maxFiatStr
+                                                ),
+                                                style = bodyMedium,
+                                                color = White,
+                                                modifier = Modifier.fillMaxWidth()
+                                                    .padding(horizontal = 4.dp)
+                                                    .padding(vertical = 6.dp)
+                                            )
                                         }
-                                        append(".")
-                                    }
 
-                                    Text(
-                                        text = infoText,
-                                        style = bodyMedium,
-                                        color = White,
-                                        modifier = Modifier
-                                            .fillMaxWidth()
-                                            .padding(horizontal = 4.dp)
-                                            .padding(top = 6.dp, bottom = 4.dp)
-                                            .clickable {
-                                                viewModel.postEvent(ReceiveViewModel.LocalEvents.ClickFundingFeeLearnWhy)
+                                        is LightningReceiveAmountState.Error.AmountTooLow -> {
+                                            Text(
+                                                text = stringResource(
+                                                    Res.string.id_lightning_amount_too_low_fiat_s,
+                                                    state.minAmountStr,
+                                                    state.minFiatStr
+                                                ),
+                                                style = bodyMedium,
+                                                color = White,
+                                                modifier = Modifier.fillMaxWidth()
+                                                    .padding(horizontal = 4.dp)
+                                                    .padding(vertical = 6.dp)
+                                            )
+                                        }
+
+                                        is LightningReceiveAmountState.Info,
+                                        is LightningReceiveAmountState.Recommend -> {
+                                            val baseText = when (state) {
+                                                is LightningReceiveAmountState.Recommend -> stringResource(
+                                                    Res.string.id_recommended_amount_fee_s,
+                                                    state.satsStr
+                                                )
+                                                else -> stringResource(Res.string.id_requires_funding_fee)
                                             }
-                                    )
+
+                                            val infoText = buildAnnotatedString {
+                                                append(baseText)
+                                                append(" ")
+                                                withStyle(style = SpanStyle(textDecoration = TextDecoration.Underline, color = White)) {
+                                                    append(stringResource(Res.string.id_learn_why))
+                                                }
+                                                append(".")
+                                            }
+
+                                            Text(
+                                                text = infoText,
+                                                style = bodyMedium,
+                                                color = White,
+                                                modifier = Modifier
+                                                    .fillMaxWidth()
+                                                    .padding(horizontal = 4.dp)
+                                                    .padding(top = 6.dp, bottom = 4.dp)
+                                                    .clickable {
+                                                        viewModel.postEvent(ReceiveViewModel.LocalEvents.ClickFundingFeeLearnWhy)
+                                                    }
+                                            )
+                                        }
+                                        else -> {}
+                                    }
                                 }
                             } else null,
 
@@ -556,7 +576,7 @@ fun ReceiveScreen(
 
                 val appInfo = LocalAppInfo.current
 
-                if(appInfo.isDevelopmentOrDebug) {
+                if (appInfo.isDevelopmentOrDebug) {
                     AnimatedVisibility(visible = accountAsset?.account?.isLightning == true) {
                         GreenButton(
                             text = stringResource(if (showLightningOnChainAddress) Res.string.id_show_lightning_invoice else Res.string.id_show_onchain_address),

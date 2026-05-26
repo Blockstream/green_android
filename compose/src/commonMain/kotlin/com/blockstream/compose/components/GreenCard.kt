@@ -45,7 +45,6 @@ fun GreenCard(
     helperText: String? = null,
     helperContent: (@Composable BoxScope.() -> Unit)? = null,
     helperContainerColor: Color? = null,
-    contentError: (@Composable BoxScope.(error: String) -> Unit)? = null,
     testTag: String? = null,
     onClick: (() -> Unit)? = null,
     content: @Composable BoxScope.() -> Unit
@@ -113,13 +112,15 @@ fun GreenCard(
                             verticalAlignment = Alignment.CenterVertically,
                             horizontalArrangement = Arrangement.spacedBy(6.dp),
                         ) {
-                            Icon(
-                                painter = painterResource(Res.drawable.warning_diamond),
-                                contentDescription = null,
-                                tint = red,
-                                modifier = Modifier.size(16.dp),
-                            )
-                            Text(text = stringResourceFromId(textValue), style = bodyMedium)
+                            if (textValue.isNotBlank()) {
+                                Icon(
+                                    painter = painterResource(Res.drawable.warning_diamond),
+                                    contentDescription = null,
+                                    tint = red,
+                                    modifier = Modifier.size(16.dp),
+                                )
+                                Text(text = stringResourceFromId(textValue), style = bodyMedium)
+                            }
                         }
                     }
                 }

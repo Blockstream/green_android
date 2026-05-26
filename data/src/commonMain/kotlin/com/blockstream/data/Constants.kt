@@ -36,7 +36,7 @@ object Urls {
         "https://help.blockstream.com/hc/en-us/articles/900004249546-The-upgrade-from-nLockTime-to-CheckSequenceVerify"
     const val HELP_FEES =
         "https://help.blockstream.com/hc/en-us/articles/4407567899801-Why-do-I-have-to-pay-transaction-fees-and-why-are-they-sometimes-high"
-    const val HELP_FUNDING_FEES = "https://help.blockstream.com/hc/en-us/articles/18788578831897"
+    const val HELP_FUNDING_FEES = "https://help.blockstream.com/hc/en-us/articles/18788499177753-Understand-receive-capacity-and-funding-fees-on-your-Instant-Lightning-account"
     const val HELP_RECEIVE_CAPACITY = "https://help.blockstream.com/hc/en-us/articles/18788499177753"
     const val HELP_GET_LIQUID = "https://help.blockstream.com/hc/en-us/articles/900000630846-How-do-I-get-Liquid-Bitcoin-L-BTC-"
     const val HELP_JADE_USB_UPGRADE = "https://help.blockstream.com/hc/en-us/articles/4408030503577"

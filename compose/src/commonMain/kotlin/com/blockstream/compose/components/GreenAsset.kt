@@ -77,7 +77,7 @@ fun GreenAsset(
                     contentDescription = null,
                     contentScale = ContentScale.Fit,
                     modifier = Modifier
-                        .padding(vertical = 23.dp)
+                        .padding(vertical = 24.dp)
                         .padding(end = 8.dp)
                         .size(24.dp)
                 )

@@ -52,13 +52,13 @@ import com.blockstream.data.gdk.data.AssetBalance
 import com.blockstream.data.lightning.expireIn
 import com.blockstream.data.lightning.receiveAmountSatoshi
 import com.blockstream.data.lightning.satoshi
-import com.blockstream.data.receive.FeeCommunicationState
+import com.blockstream.data.receive.LightningReceiveAmountState
 import com.blockstream.data.receive.ReceiveAmountData
 import com.blockstream.data.utils.UserInput
 import com.blockstream.data.utils.formatAuto
 import com.blockstream.data.utils.toAmountLookOrNa
 import com.blockstream.domain.hardware.VerifyAddressUseCase
-import com.blockstream.domain.receive.GetFeeCommunicationStateUseCase
+import com.blockstream.domain.receive.GetLightningReceiveAmountStateUseCase
 import com.blockstream.domain.receive.GetReceiveAmountUseCase
 import com.blockstream.domain.receive.SaveAndShareQrCodeUseCase
 import com.blockstream.domain.swap.SwapUseCase
@@ -116,7 +116,7 @@ abstract class ReceiveViewModelAbstract(greenWallet: GreenWallet, accountAssetOr
     abstract val showLightningOnChainAddress: StateFlow<Boolean>
     abstract val showLedgerAssetWarning: StateFlow<Boolean>
     abstract val asset: StateFlow<EnrichedAsset>
-    abstract val feeCommUiState: StateFlow<FeeCommunicationState>
+    abstract val feeCommUiState: StateFlow<LightningReceiveAmountState>
 
     internal var pendingAction: PendingAction? = null
 
@@ -134,7 +134,7 @@ class ReceiveViewModel(greenWallet: GreenWallet, accountAsset: AccountAsset) :
     internal val getReceiveAmountUseCase: GetReceiveAmountUseCase by inject {
         parametersOf(session, accountAsset)
     }
-    internal val getFeeCommunicationStateUseCase: GetFeeCommunicationStateUseCase by inject()
+    internal val getLightningReceiveAmountStateUseCase: GetLightningReceiveAmountStateUseCase by inject()
 
     private val _receiveAddress = MutableStateFlow<String?>(null)
     private val _receiveAddressUri = MutableStateFlow<String?>(null)
@@ -223,7 +223,7 @@ class ReceiveViewModel(greenWallet: GreenWallet, accountAsset: AccountAsset) :
 
     override val asset: StateFlow<EnrichedAsset> = MutableStateFlow(accountAsset.asset)
 
-    override val feeCommUiState: StateFlow<FeeCommunicationState> = getFeeCommunicationStateUseCase(
+    override val feeCommUiState: StateFlow<LightningReceiveAmountState> = getLightningReceiveAmountStateUseCase(
         session = session,
         amountFlow = amount,
         isReverseSubmarineSwapFlow = isReverseSubmarineSwap,
@@ -233,7 +233,7 @@ class ReceiveViewModel(greenWallet: GreenWallet, accountAsset: AccountAsset) :
     ).stateIn(
         viewModelScope,
         SharingStarted.WhileSubscribed(5000L),
-        FeeCommunicationState.None
+        LightningReceiveAmountState.None
     )
 
     class LocalEvents {
@@ -262,9 +262,9 @@ class ReceiveViewModel(greenWallet: GreenWallet, accountAsset: AccountAsset) :
             feeCommUiState
         ) { amountData, feeState ->
             when (feeState) {
-                is FeeCommunicationState.Error -> false
-                FeeCommunicationState.Info, is FeeCommunicationState.Recommend -> true
-                FeeCommunicationState.None -> amountData.isValid
+                is LightningReceiveAmountState.Error -> false
+                LightningReceiveAmountState.Info, is LightningReceiveAmountState.Recommend -> true
+                LightningReceiveAmountState.None -> amountData.isValid
             }
         }.onEach {
             _isValid.value = it
@@ -858,7 +858,7 @@ class ReceiveViewModelPreview() :
     override val showAmount: StateFlow<Boolean> = MutableStateFlow(false)
     override val showLedgerAssetWarning: StateFlow<Boolean> = MutableStateFlow(false)
     override val asset: StateFlow<EnrichedAsset> = MutableStateFlow(previewEnrichedAsset())
-    override val feeCommUiState: StateFlow<FeeCommunicationState> = MutableStateFlow(FeeCommunicationState.Info)
+    override val feeCommUiState: StateFlow<LightningReceiveAmountState> = MutableStateFlow(LightningReceiveAmountState.Info)
 
     companion object {
         fun preview() = ReceiveViewModelPreview()

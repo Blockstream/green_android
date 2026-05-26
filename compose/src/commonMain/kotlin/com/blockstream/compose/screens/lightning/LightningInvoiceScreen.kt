@@ -26,14 +26,14 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.text.withStyle
 import androidx.compose.ui.unit.dp
 import blockstream_green.common.generated.resources.Res
-import blockstream_green.common.generated.resources.id_address
 import blockstream_green.common.generated.resources.id_amount_to_receive
-import blockstream_green.common.generated.resources.id_copy
-import blockstream_green.common.generated.resources.id_description
+import blockstream_green.common.generated.resources.id_copy_invoice
 import blockstream_green.common.generated.resources.id_enlarge_qr
 import blockstream_green.common.generated.resources.id_expires_s
 import blockstream_green.common.generated.resources.id_fee
 import blockstream_green.common.generated.resources.id_funding_fee
+import blockstream_green.common.generated.resources.id_invoice
+import blockstream_green.common.generated.resources.id_note
 import blockstream_green.common.generated.resources.id_qr_code
 import blockstream_green.common.generated.resources.id_share
 import com.adamglin.PhosphorIcons
@@ -47,6 +47,7 @@ import com.blockstream.compose.components.GreenButton
 import com.blockstream.compose.components.GreenButtonColor
 import com.blockstream.compose.components.GreenButtonSize
 import com.blockstream.compose.components.GreenButtonType
+import com.blockstream.compose.components.GreenDataLayout
 import com.blockstream.compose.components.GreenQR
 import com.blockstream.compose.components.OnProgressStyle
 import com.blockstream.compose.components.QrBorderConfig
@@ -166,7 +167,7 @@ fun LightningInvoiceScreen(
                                 Row(
                                     modifier = Modifier
                                         .fillMaxWidth()
-                                        .padding(top = 16.dp, bottom = 24.dp, start = 16.dp, end = 16.dp),
+                                        .padding(top = 16.dp, start = 16.dp, end = 16.dp),
                                     horizontalArrangement = Arrangement.spacedBy(12.dp)
                                 ) {
                                     GreenButton(
@@ -180,7 +181,7 @@ fun LightningInvoiceScreen(
                                     }
 
                                     GreenButton(
-                                        text = stringResource(Res.string.id_copy),
+                                        text = stringResource(Res.string.id_copy_invoice),
                                         icon = PhosphorIcons.Regular.Copy,
                                         type = GreenButtonType.OUTLINE,
                                         color = GreenButtonColor.GREENER,
@@ -193,6 +194,26 @@ fun LightningInvoiceScreen(
                         }
                     )
                 )
+
+                data.description?.also { desc ->
+                    if (desc.isNotBlank()) {
+                        GreenDataLayout(
+                            modifier = Modifier
+                                .fillMaxWidth()
+                                .padding(horizontal = 16.dp)
+                                .padding(top = 12.dp),
+                            title = stringResource(Res.string.id_note),
+                            withPadding = true
+                        ) {
+                            Text(
+                                text = desc,
+                                style = bodyMedium,
+                                color = whiteHigh,
+                                modifier = Modifier.fillMaxWidth()
+                            )
+                        }
+                    }
+                }
 
                 Spacer(modifier = Modifier.weight(1f))
 
@@ -267,29 +288,6 @@ fun LightningInvoiceScreen(
                             }
                         }
                     }
-
-                    data.description?.also { desc ->
-                        if (desc.isNotBlank()) {
-                            Row(
-                                modifier = Modifier.fillMaxWidth(),
-                                verticalAlignment = Alignment.Top
-                            ) {
-                                Text(
-                                    text = stringResource(Res.string.id_description),
-                                    style = labelMedium,
-                                    color = whiteHigh,
-                                    modifier = Modifier.weight(1f)
-                                )
-                                Text(
-                                    text = desc,
-                                    style = bodyMedium,
-                                    color = whiteLow,
-                                    textAlign = TextAlign.End,
-                                    modifier = Modifier.weight(1f)
-                                )
-                            }
-                        }
-                    }
                 }
             }
 
@@ -308,7 +306,7 @@ fun LightningInvoiceScreen(
                             entries = MenuEntryList(
                                 listOf(
                                     MenuEntry(
-                                        title = getString(Res.string.id_address),
+                                        title = getString(Res.string.id_invoice),
                                         iconRes = "text-aa"
                                     ),
                                     MenuEntry(

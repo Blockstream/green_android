@@ -9,6 +9,6 @@ val receiveModule = module {
     singleOf(::GetReceiveAccountsUseCase)
     singleOf(::ReceiveUseCase)
     singleOf(::SaveAndShareQrCodeUseCase)
-    singleOf(::GetFeeCommunicationStateUseCase)
+    singleOf(::GetLightningReceiveAmountStateUseCase)
     factoryOf(::GetReceiveAmountUseCase)
 }

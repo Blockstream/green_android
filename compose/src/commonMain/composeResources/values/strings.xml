@@ -196,7 +196,7 @@
     <string name="id_be_sure_your_recovery_phrase_is">Be sure your recovery phrase is backed up before removing this wallet.</string>
     <string name="id_before_you_back_up">Before You Back Up</string>
     <string name="id_best_price">Best Price</string>
-    <string name="id_because_lightning">Because Lightning is a separate network that runs on top of Bitcoin, your wallet occasionally requires funding to receive Lightning payments. After each funding fee, future payments arrive instantly at near-zero fees until you reach your receiving capacity.</string>
+    <string name="id_because_lightning">Because Lightning is a separate network that runs on top of Bitcoin, your wallet occasionally requires funding to receive Lightning payments.\n\nAfter each funding fee, future payments arrive instantly at near-zero fees until you reach your receiving capacity.</string>
     <string name="id_biometric_login_is_disabled">Biometric Login is Disabled</string>
     <string name="id_biometric_login_is_enabled">Biometric Login is Enabled</string>
     <string name="id_biometrics">Biometrics</string>
@@ -377,6 +377,7 @@
     <string name="id_copy_details">Copy details</string>
     <string name="id_copy_device_id">Copy Device ID</string>
     <string name="id_copy_id">Copy ID</string>
+    <string name="id_copy_invoice">Copy Invoice</string>
     <string name="id_copy_raw_transaction">Copy raw transaction</string>
     <string name="id_copy_signature">Copy Signature</string>
     <string name="id_copy_support_id">Copy support ID</string>
@@ -1186,6 +1187,7 @@
     <string name="id_ready">Ready</string>
     <string name="id_ready_to_start">Ready to start</string>
     <string name="id_receive">Receive</string>
+    <string name="id_receive_amount">Receive Amount</string>
     <string name="id_receive_any_amp_asset">Receive any AMP Asset</string>
     <string name="id_receive_any_liquid_asset">Receive any Liquid Asset</string>
     <string name="id_receive_email_notifications_for">Receive email notifications for sent and received transactions</string>

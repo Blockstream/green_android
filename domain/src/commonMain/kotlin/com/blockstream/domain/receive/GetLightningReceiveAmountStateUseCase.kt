@@ -6,13 +6,13 @@ import com.blockstream.data.gdk.GdkSession
 import com.blockstream.data.gdk.data.AccountAsset
 import com.blockstream.data.lightning.maxReceivableSatoshi
 import com.blockstream.data.lightning.totalInboundLiquiditySatoshi
-import com.blockstream.data.receive.FeeCommunicationState
+import com.blockstream.data.receive.LightningReceiveAmountState
 import com.blockstream.data.utils.toAmountLook
 import com.blockstream.data.utils.UserInput
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.combine
 
-class GetFeeCommunicationStateUseCase(
+class GetLightningReceiveAmountStateUseCase(
     val countly: CountlyBase
 ) {
     operator fun invoke(
@@ -22,7 +22,7 @@ class GetFeeCommunicationStateUseCase(
         showLightningOnChainAddressFlow: Flow<Boolean>,
         accountAsset: AccountAsset,
         denominationFlow: Flow<Denomination>
-    ): Flow<FeeCommunicationState> = combine(
+    ): Flow<LightningReceiveAmountState> = combine(
         amountFlow,
         isReverseSubmarineSwapFlow,
         showLightningOnChainAddressFlow,
@@ -32,34 +32,19 @@ class GetFeeCommunicationStateUseCase(
         val isLightningInvoiceFlow = (accountAsset.account.isLightning && !showOnChain) && !isSwap
 
         if (!isLightningInvoiceFlow) {
-            return@combine FeeCommunicationState.None
+            return@combine LightningReceiveAmountState.None
         }
 
         if (amountText.isBlank()) {
-            return@combine FeeCommunicationState.None
+            return@combine LightningReceiveAmountState.None
         }
 
-        val userInput = UserInput.parseUserInputSafe(
+        val amountSatoshi = UserInput.parseUserInputSafe(
             session = session,
             input = amountText,
             denomination = denomination,
             assetId = accountAsset.asset.assetId
-        )
-
-        val cleanIntegerPart = userInput.amount.takeWhile { it != '.' }
-        val isSatsUnit = denomination.denomination == com.blockstream.data.SATOSHI_UNIT
-
-        val isOverflow = if (isSatsUnit) {
-            cleanIntegerPart.length > MAX_SATS_INTEGER_LENGTH
-        } else {
-            cleanIntegerPart.length > MAX_BTC_OR_FIAT_INTEGER_LENGTH
-        }
-
-        if (isOverflow || userInput.amountAsDouble < 0.0) {
-            return@combine FeeCommunicationState.Error.InvalidAmount
-        }
-
-        val amountSats = userInput.getBalance()?.satoshi ?: 0L
+        ).getBalance()?.satoshi ?: return@combine LightningReceiveAmountState.Error.InvalidAmount
 
         val lnMinSatoshis = countly.getLnMinSatoshis()
         val lnRecommendedSatoshis = countly.getLnRecommendedSatoshis()
@@ -82,47 +67,42 @@ class GetFeeCommunicationStateUseCase(
         val recAmountStr = lnRecommendedSatoshis.toAmountLook(session = session, assetId = accountAsset.asset.assetId, denomination = denomination, withUnit = true) ?: "$lnRecommendedSatoshis sats"
 
         // CASE 1: Hard limit overflow
-        // e.g. amountSats (5_000_000) > lnMaxSatoshis (4_000_000) -> blocks confirm button
-        if (amountSats > lnMaxSatoshis) {
-            return@combine FeeCommunicationState.Error.AmountTooHigh(
+        // e.g. amountSatoshi (5_000_000) > lnMaxSatoshis (4_000_000) -> blocks confirm button
+        if (amountSatoshi > lnMaxSatoshis) {
+            return@combine LightningReceiveAmountState.Error.AmountTooHigh(
                 maxAmountStr = maxAmountStr,
                 maxFiatStr = maxFiatStr
             )
         }
         // CASE 2: No active channels and below network floor
-        // e.g. has no channels, amountSats (500) < lnMinSatoshis (1_000) -> blocks confirm button
-        if (!hasChannels && amountSats < lnMinSatoshis) {
-            return@combine FeeCommunicationState.Error.AmountTooLow(
+        // e.g. has no channels, amountSatoshi (500) < lnMinSatoshis (1_000) -> blocks confirm button
+        if (!hasChannels && amountSatoshi < lnMinSatoshis) {
+            return@combine LightningReceiveAmountState.Error.AmountTooLow(
                 minAmountStr = minAmountStr,
                 minFiatStr = minFiatStr
             )
         }
 
         // CASE 3: Active channels exist but amount requires an on-the-fly channel lease
-        // e.g. has channels, amountSats (150_000) > maxReceivableSats (100_000) -> prompts funding fee warning
-        if (hasChannels && amountSats > maxReceivableSats) {
-            return@combine if (amountSats < lnRecommendedSatoshis) {
-                FeeCommunicationState.Recommend(satsStr = recAmountStr)
+        // e.g. has channels, amountSatoshi (150_000) > maxReceivableSats (100_000) -> prompts funding fee warning
+        if (hasChannels && amountSatoshi > maxReceivableSats) {
+            return@combine if (amountSatoshi < lnRecommendedSatoshis) {
+                LightningReceiveAmountState.Recommend(satsStr = recAmountStr)
             } else {
-                FeeCommunicationState.Info
+                LightningReceiveAmountState.Info
             }
         }
 
         // CASE 4: New wallet needs its very first channel setup
-        // e.g. has no channels, amountSats (50_000) passed Case 2 floor -> prompts initial funding fee warning.
+        // e.g. has no channels, amountSatoshi (50_000) passed Case 2 floor -> prompts initial funding fee warning.
         if (!hasChannels) {
-            return@combine if (amountSats < lnRecommendedSatoshis) {
-                FeeCommunicationState.Recommend(satsStr = recAmountStr)
+            return@combine if (amountSatoshi < lnRecommendedSatoshis) {
+                LightningReceiveAmountState.Recommend(satsStr = recAmountStr)
             } else {
-                FeeCommunicationState.Info
+                LightningReceiveAmountState.Info
             }
         }
 
-        FeeCommunicationState.None
-    }
-
-    companion object {
-        private const val MAX_SATS_INTEGER_LENGTH = 15
-        private const val MAX_BTC_OR_FIAT_INTEGER_LENGTH = 8
+        LightningReceiveAmountState.None
     }
 }

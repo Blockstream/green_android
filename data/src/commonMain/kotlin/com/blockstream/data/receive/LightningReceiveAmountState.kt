@@ -1,10 +1,10 @@
 package com.blockstream.data.receive
 
-sealed class FeeCommunicationState {
-    data object None : FeeCommunicationState()
-    data object Info : FeeCommunicationState()
+sealed class LightningReceiveAmountState {
+    data object None : LightningReceiveAmountState()
+    data object Info : LightningReceiveAmountState()
 
-    sealed class Error : FeeCommunicationState() {
+    sealed class Error : LightningReceiveAmountState() {
         data object InvalidAmount : Error()
 
         data class AmountTooHigh(
@@ -18,5 +18,5 @@ sealed class FeeCommunicationState {
         ) : Error()
     }
 
-    data class Recommend(val satsStr: String) : FeeCommunicationState()
+    data class Recommend(val satsStr: String) : LightningReceiveAmountState()
 }
