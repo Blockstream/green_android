@@ -52,23 +52,21 @@ class SaveGreenlightMnemonicAndCredentialsUseCase(
     suspend operator fun invoke(
         session: GdkSession, wallet: GreenWallet
     ) {
-        tryCatch {
-            val derivedMnemonic = session.deriveLightningMnemonic()
+        val derivedMnemonic = session.deriveLightningMnemonic()
 
-            val encryptedMnemonic = withContext(context = Dispatchers.IO) {
-                greenKeystore.encryptData(derivedMnemonic.encodeToByteArray())
-            }
+        val encryptedMnemonic = withContext(context = Dispatchers.IO) {
+            greenKeystore.encryptData(derivedMnemonic.encodeToByteArray())
+        }
 
-            database.replaceLoginCredential(
-                createLoginCredentials(
-                    walletId = wallet.id,
-                    network = session.lightning.id,
-                    credentialType = CredentialType.KEYSTORE_LIGHTNING_MNEMONIC,
-                    encryptedData = encryptedMnemonic
-                )
+        database.replaceLoginCredential(
+            createLoginCredentials(
+                walletId = wallet.id,
+                network = session.lightning.id,
+                credentialType = CredentialType.KEYSTORE_LIGHTNING_MNEMONIC,
+                encryptedData = encryptedMnemonic
             )
-
-
+        )
+        tryCatch {
             val credentials = session.lightningSdk.getNodeCredentials(derivedMnemonic)
 
             val encryptedCredentials = withContext(context = Dispatchers.IO) {

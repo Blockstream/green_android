@@ -62,6 +62,7 @@ import com.blockstream.compose.theme.whiteMedium
 import com.blockstream.compose.utils.SetupScreen
 import com.blockstream.compose.utils.StringHolder
 import com.blockstream.data.Urls
+import com.blockstream.data.data.GreenWallet
 import kotlinx.serialization.Serializable
 import org.jetbrains.compose.resources.stringResource
 import org.jetbrains.compose.ui.tooling.preview.Preview
@@ -88,6 +89,10 @@ fun LightningOnboardingScreen(viewModel: LightningOnboardingViewModelAbstract) {
             )
             viewModel.postEvent(Events.NavigateBack)
         }
+    }
+
+    NavigateDestinations.Login.getResult<GreenWallet> {
+        viewModel.postEvent(LightningOnboardingViewModel.LocalEvents.EnableLightning)
     }
 
     SetupScreen(

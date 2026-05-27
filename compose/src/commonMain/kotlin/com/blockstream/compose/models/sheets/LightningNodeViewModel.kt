@@ -17,8 +17,11 @@ import com.blockstream.compose.models.GreenViewModel
 import com.blockstream.compose.navigation.NavigateDestinations
 import com.blockstream.compose.sideeffects.SideEffects
 import com.blockstream.compose.utils.StringHolder
+import com.blockstream.data.data.CredentialType
 import com.blockstream.data.data.GreenWallet
 import com.blockstream.data.data.SetupArgs
+import com.blockstream.data.extensions.lightningMnemonic
+import com.blockstream.data.gdk.data.Credentials
 import com.blockstream.data.lightning.LightningManager
 import com.blockstream.data.lightning.channelsBalanceSatoshi
 import com.blockstream.data.lightning.maxPayableSatoshi
@@ -32,6 +35,7 @@ import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
+import kotlinx.coroutines.flow.flowOf
 import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.flow.onEach
 import kotlinx.coroutines.flow.stateIn
@@ -138,11 +142,23 @@ class LightningNodeViewModel(greenWallet: GreenWallet) :
         bootstrap()
     }
 
+
     override suspend fun handleEvent(event: Event) {
         super.handleEvent(event)
 
         when (event) {
             is LocalEvents.ShowRecoveryPhrase -> {
+                val credentials = if (greenWallet.isHardware) {
+                    database.getLoginCredential(
+                        id = greenWallet.id,
+                        credentialType = CredentialType.KEYSTORE_LIGHTNING_MNEMONIC
+                    )?.lightningMnemonic(greenKeystore)?.let { lightningMnemonic ->
+                        Credentials(mnemonic = lightningMnemonic)
+                    }
+                } else {
+                    null
+                }
+
                 postSideEffect(
                     SideEffects.NavigateTo(
                         NavigateDestinations.RecoveryIntro(
@@ -150,7 +166,8 @@ class LightningNodeViewModel(greenWallet: GreenWallet) :
                                 mnemonic = "",
                                 isLightningDerived = true,
                                 isShowRecovery = true,
-                                greenWallet = greenWallet
+                                greenWallet = greenWallet,
+                                credentials = credentials
                             ),
                         )
                     )

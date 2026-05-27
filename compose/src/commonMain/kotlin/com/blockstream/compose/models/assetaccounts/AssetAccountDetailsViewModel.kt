@@ -146,7 +146,7 @@ class AssetAccountDetailsViewModel(
         if (isMultisigWatchOnly) {
             false
         } else if (accountAsset.account.isLightning) {
-             (session.lightningSdk.balanceOnChannel() ?: 0) > 0
+             (session.lightningSdkOrNull?.balanceOnChannel() ?: 0) > 0
         } else {
             accountBalance.balance(session, assetId = accountAsset.assetId) > 0
         }
@@ -269,7 +269,9 @@ class AssetAccountDetailsViewModel(
                     onClick = {
                         postEvent(NavigateDestinations.LightningNode(greenWallet))
                     }
-                ).takeIf { appInfo.isDevelopmentOrDebug }
+                ).takeIf {
+                    appInfo.isDevelopmentOrDebug && (session.lightningSdkOrNull != null || !session.lightningNodeId.isNullOrBlank())
+                }
             )
         }
 

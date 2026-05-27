@@ -21,7 +21,7 @@ class EnabledLightningViewModel(greenWallet: GreenWallet) :
     EnabledLightningViewModelAbstract(greenWallet = greenWallet) {
     override fun screenName(): String = "EnabledLightning"
 
-    private val _nodeId = MutableStateFlow<String?>(null)
+    private val _nodeId = MutableStateFlow(session.lightningNodeId)
     override val nodeId = _nodeId.asStateFlow()
 
     class LocalEvents {

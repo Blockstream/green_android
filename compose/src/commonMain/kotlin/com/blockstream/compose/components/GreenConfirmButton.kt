@@ -29,8 +29,9 @@ fun GreenConfirmButton(
     val isWatchOnly by viewModel.isWatchOnly.collectAsStateWithLifecycle()
     val isHwWatchOnly by viewModel.isHwWatchOnly.collectAsStateWithLifecycle()
     val isQrWatchOnly by viewModel.isQrWatchOnly.collectAsStateWithLifecycle()
+    val isLightning = viewModel.account.isLightning
 
-    if (isWatchOnly && !isSweep) {
+    if (isWatchOnly && !isSweep && !isLightning) {
         if (viewModel.account.let { !it.isLiquid && !it.isMultisig }) {
             GreenButton(
                 text = stringResource(Res.string.id_sign_transaction),

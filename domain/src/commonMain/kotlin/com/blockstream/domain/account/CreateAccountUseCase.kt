@@ -17,7 +17,6 @@ import com.blockstream.data.gdk.data.Network
 import com.blockstream.data.gdk.device.DeviceResolver
 import com.blockstream.data.gdk.device.HardwareWalletInteraction
 import com.blockstream.data.gdk.params.SubAccountParams
-import com.blockstream.data.managers.WalletSettingsManager
 import com.blockstream.domain.lightning.LightningNodeIdUseCase
 import com.blockstream.domain.wallet.SaveGreenlightMnemonicAndCredentialsUseCase
 import com.blockstream.utils.Loggable
@@ -45,7 +44,6 @@ class CreateAccountUseCase(
 
             session.initLightningIfNeeded(mnemonic = mnemonic)
 
-
             // Save Lightning mnemonic
             if (!wallet.isEphemeral) {
                 saveGreenlightMnemonicAndCredentialsUseCase.invoke(session = session, wallet = wallet)
@@ -53,16 +51,6 @@ class CreateAccountUseCase(
                 // Check if this is needed, as we already init lwk for swaps in general
                 session.initLwkIfNeeded(wallet = wallet, mnemonic = mnemonic)
             }
-
-//                if (appInfo.isDevelopmentOrDebug) {
-//                    logger.i { "Development/Debug feature setCloseToAddress" }
-//                    session.accounts.value.filter { it.isBitcoin }.let { accounts ->
-//                        accounts.find { it.type == AccountType.BIP84_SEGWIT }
-//                            ?: accounts.find { it.type == AccountType.BIP49_SEGWIT_WRAPPED }
-//                    }?.also {
-//                        session.lightningSdk.setCloseToAddress(session.getReceiveAddress(it).address)
-//                    }
-//                }
 
             // If wallet is new and LN is created, default to Satoshi
             if (isEmptyWallet) {

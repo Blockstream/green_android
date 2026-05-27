@@ -39,17 +39,24 @@ class GetSendFlowUseCase(
 
         val isJadeCore = session.device?.isJadeCore?.value == true
         val swapsEnabled = boltzUseCase.isSwapsEnabledUseCase(wallet = greenWallet)
+        val hasLightning = session.hasLightning
 
-        if (looksLikeLightningInput(address) && (isJadeCore || !swapsEnabled)) {
+        val canSendToLightning = hasLightning || swapsEnabled
+
+        if (looksLikeLightningInput(address) && isJadeCore && !swapsEnabled) {
             throw Exception("id_swaps_not_enabled_for_this_wallet")
+        } else if (looksLikeLightningInput(address) && !canSendToLightning) {
+            throw Exception("id_lightning_network_not_enabled")
         }
 
         val assets = getSendAssetsUseCase(session = session, address = address)
 
         val isLightningAddress = assets.any { it.isLightning }
 
-        if (isLightningAddress && (isJadeCore || !swapsEnabled)) {
+        if (isLightningAddress && isJadeCore && !swapsEnabled) {
             throw Exception("id_swaps_not_enabled_for_this_wallet")
+        } else if (isLightningAddress && !canSendToLightning) {
+            throw Exception("id_lightning_network_not_enabled")
         }
 
         val instruction = if (isLightningAddress) {

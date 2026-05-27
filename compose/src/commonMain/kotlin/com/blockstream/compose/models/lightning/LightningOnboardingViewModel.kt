@@ -54,15 +54,26 @@ class LightningOnboardingViewModel(greenWallet: GreenWallet) :
         when (event) {
             LocalEvents.EnableLightning -> {
                 if (mode == OnboardingMode.JADE_WALLET) {
-                    postSideEffect(
-                        SideEffects.NavigateTo(
-                            NavigateDestinations.JadeQR(
-                                greenWalletOrNull = greenWallet,
-                                operation = JadeQrOperation.LightningMnemonicExport,
-                                deviceModel = DeviceModel.BlockstreamGeneric
+                    if (session.isHwWatchOnly && !greenWallet.isWatchOnlyQr) {
+                        postSideEffect(
+                            SideEffects.NavigateTo(
+                                NavigateDestinations.DeviceScan(
+                                    greenWallet = greenWallet,
+                                    isWatchOnlyUpgrade = true
+                                )
                             )
                         )
-                    )
+                    } else {
+                        postSideEffect(
+                            SideEffects.NavigateTo(
+                                NavigateDestinations.JadeQR(
+                                    greenWalletOrNull = greenWallet,
+                                    operation = JadeQrOperation.LightningMnemonicExport,
+                                    deviceModel = DeviceModel.BlockstreamGeneric
+                                )
+                            )
+                        )
+                    }
                 } else {
                     postSideEffect(SideEffects.Success(true))
                 }

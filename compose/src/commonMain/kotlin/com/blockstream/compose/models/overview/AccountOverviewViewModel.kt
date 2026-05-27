@@ -209,7 +209,7 @@ class AccountOverviewViewModel(greenWallet: GreenWallet, accountAsset: AccountAs
                             onClick = {
                                 postEvent(NavigateDestinations.LightningNode(greenWallet = greenWallet))
                             }
-                        ).takeIf { account.isLightning && appInfo.isDevelopmentOrDebug  },
+                        ).takeIf { account.isLightning && appInfo.isDevelopmentOrDebug },
                         NavAction(
                             title = getString(Res.string.id_remove),
                             icon = Res.drawable.trash,
