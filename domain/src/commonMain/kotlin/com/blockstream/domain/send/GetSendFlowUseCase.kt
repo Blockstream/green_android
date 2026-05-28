@@ -1,5 +1,6 @@
 package com.blockstream.domain.send
 
+import com.blockstream.data.data.Denomination
 import com.blockstream.data.data.EnrichedAsset
 import com.blockstream.data.data.EnrichedAssetList
 import com.blockstream.data.data.GreenWallet
@@ -7,7 +8,6 @@ import com.blockstream.data.extensions.tryCatch
 import com.blockstream.data.gdk.GdkSession
 import com.blockstream.data.gdk.data.AccountAsset
 import com.blockstream.data.gdk.data.AccountAssetBalanceList
-import com.blockstream.data.data.Denomination
 import com.blockstream.data.lightning.LightningInputType
 import com.blockstream.data.lightning.maxPayableSatoshi
 import com.blockstream.data.lightning.parseBolt11AndCheckExpired
@@ -37,13 +37,13 @@ class GetSendFlowUseCase(
         var asset = asset
         var account = account
 
-        val isJadeCore = session.device?.isJadeCore?.value == true
+        val supportsLightningMnemonicDerivation = session.device?.deviceModel?.supportsLightningMnemonicDerivation
         val swapsEnabled = boltzUseCase.isSwapsEnabledUseCase(wallet = greenWallet)
         val hasLightning = session.hasLightning
 
         val canSendToLightning = hasLightning || swapsEnabled
 
-        if (looksLikeLightningInput(address) && isJadeCore && !swapsEnabled) {
+        if (looksLikeLightningInput(address) && supportsLightningMnemonicDerivation == false && !swapsEnabled) {
             throw Exception("id_swaps_not_enabled_for_this_wallet")
         } else if (looksLikeLightningInput(address) && !canSendToLightning) {
             throw Exception("id_lightning_network_not_enabled")
@@ -53,7 +53,7 @@ class GetSendFlowUseCase(
 
         val isLightningAddress = assets.any { it.isLightning }
 
-        if (isLightningAddress && isJadeCore && !swapsEnabled) {
+        if (isLightningAddress && supportsLightningMnemonicDerivation == false && !swapsEnabled) {
             throw Exception("id_swaps_not_enabled_for_this_wallet")
         } else if (isLightningAddress && !canSendToLightning) {
             throw Exception("id_lightning_network_not_enabled")

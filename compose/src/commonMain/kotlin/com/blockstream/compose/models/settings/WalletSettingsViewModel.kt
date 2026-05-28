@@ -387,8 +387,8 @@ class WalletSettingsViewModel(
                     WalletSetting.Lightning(enabled = session.hasLightning)
                         .takeIf {
                             appConfig.lightningFeatureEnabled
-                                && !greenWallet.isWatchOnly
-                                && greenWallet.deviceIdentifiers?.any { it.model == DeviceModel.BlockstreamJadeCore } != true
+                                    && !greenWallet.isWatchOnly && greenWallet.deviceIdentifiers?.any { it.model?.supportsLightningMnemonicDerivation == true } != false
+
                         },
                     WalletSetting.Swaps.takeIf {
                         isSwapAvailableUseCase.invoke(wallet = greenWallet, session = session) && greenWallet.isHardware

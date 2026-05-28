@@ -1,15 +1,13 @@
 package com.blockstream.compose.models.lightning
 
-import androidx.lifecycle.viewModelScope
 import com.blockstream.compose.events.Event
+import com.blockstream.compose.extensions.launchIn
 import com.blockstream.compose.models.GreenViewModel
 import com.blockstream.compose.sideeffects.SideEffects
 import com.blockstream.data.data.GreenWallet
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
-import kotlinx.coroutines.flow.asStateFlow
-import kotlinx.coroutines.flow.catch
-import kotlinx.coroutines.launch
+import kotlinx.coroutines.flow.onEach
 
 abstract class EnabledLightningViewModelAbstract(greenWallet: GreenWallet) :
     GreenViewModel(greenWalletOrNull = greenWallet) {
@@ -21,23 +19,17 @@ class EnabledLightningViewModel(greenWallet: GreenWallet) :
     EnabledLightningViewModelAbstract(greenWallet = greenWallet) {
     override fun screenName(): String = "EnabledLightning"
 
-    private val _nodeId = MutableStateFlow(session.lightningNodeId)
-    override val nodeId = _nodeId.asStateFlow()
+    final override val nodeId: StateFlow<String?>
+        field = MutableStateFlow(session.lightningNodeId)
 
     class LocalEvents {
         object CopyNodeId : Event
     }
 
     init {
-        viewModelScope.launch {
-            session.lightningSdkOrNull?.nodeInfoStateFlow
-                ?.catch { cause ->
-                    cause.printStackTrace()
-                }
-                ?.collect { nodeInfo ->
-                _nodeId.value = nodeInfo.id
-            }
-        }
+        session.lightningSdkOrNull?.nodeInfoStateFlow?.onEach {
+            nodeId.value = it.id
+        }?.launchIn(this)
 
         bootstrap()
     }

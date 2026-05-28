@@ -4,15 +4,17 @@ import androidx.lifecycle.viewModelScope
 import blockstream_green.common.generated.resources.Res
 import blockstream_green.common.generated.resources.id_back_up_recovery_phrase
 import blockstream_green.common.generated.resources.id_lightning
-import com.blockstream.data.Urls
-import com.blockstream.data.data.GreenWallet
-import com.blockstream.data.extensions.ifConnectedSuspend
-import com.blockstream.compose.extensions.previewWallet
-import com.blockstream.data.gdk.data.Credentials
 import com.blockstream.compose.events.Event
 import com.blockstream.compose.events.Events
+import com.blockstream.compose.extensions.previewWallet
 import com.blockstream.compose.models.GreenViewModel
 import com.blockstream.compose.navigation.NavData
+import com.blockstream.data.Urls
+import com.blockstream.data.data.CredentialType
+import com.blockstream.data.data.GreenWallet
+import com.blockstream.data.extensions.ifConnectedSuspend
+import com.blockstream.data.extensions.lightningMnemonic
+import com.blockstream.data.gdk.data.Credentials
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.launch
@@ -60,8 +62,19 @@ class RecoveryPhraseViewModel(
                 subtitle = if (isLightningDerived) getString(Res.string.id_lightning) else null
             )
 
-            (providedCredentials
-                ?: session.ifConnectedSuspend { (if (isLightningDerived) Credentials(mnemonic = session.deriveLightningMnemonic()) else session.getCredentials()) })?.also { credentials ->
+            val credentials = when {
+                providedCredentials != null -> providedCredentials
+                isLightningDerived && greenWallet != null -> database.getLoginCredential(
+                    id = greenWallet.id,
+                    credentialType = CredentialType.KEYSTORE_LIGHTNING_MNEMONIC
+                )?.lightningMnemonic(greenKeystore)?.let { lightningMnemonic ->
+                    Credentials(mnemonic = lightningMnemonic)
+                }
+
+                else -> session.ifConnectedSuspend { (if (isLightningDerived) Credentials(mnemonic = session.deriveLightningMnemonic()) else session.getCredentials()) }
+            }
+
+            credentials?.also {
                 _mnemonic.value = credentials.mnemonic ?: ""
                 _mnemonicWords.value = credentials.mnemonic?.split(" ") ?: listOf()
                 _passphrase.value = credentials.bip39Passphrase

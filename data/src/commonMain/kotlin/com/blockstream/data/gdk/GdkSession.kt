@@ -178,7 +178,6 @@ import kotlinx.serialization.json.jsonPrimitive
 import kotlinx.serialization.json.put
 import kotlinx.serialization.json.putJsonArray
 import kotlinx.serialization.json.putJsonObject
-import lwk.LightningPayment
 import kotlin.math.absoluteValue
 
 typealias AccountId = String
@@ -1618,7 +1617,7 @@ class GdkSession constructor(
                     null
                 }
             },
-            if (!supportsLightning()) null else scope.async(
+            if (!supportsLightning() && !(isHwWatchOnly && greenlightMnemonicAndCredentials != null)) null else scope.async(
                 start = CoroutineStart.LAZY
             ) {
 
@@ -1639,11 +1638,13 @@ class GdkSession constructor(
                     // Make it async to speed up login process
                     val job = scope.async {
                         try {
-                            val xPubHashId = getWalletIdentifier(
-                                network = prominentNetwork,
-                                loginCredentialsParams = loginCredentialsParams,
-                                hwInteraction = hwInteraction
-                            ).xpubHashId
+                            val xPubHashId = wallet?.xPubHashId
+                                ?.takeIf { isHwWatchOnly }
+                                ?: getWalletIdentifier(
+                                    network = prominentNetwork,
+                                    loginCredentialsParams = loginCredentialsParams,
+                                    hwInteraction = hwInteraction
+                                ).xpubHashId
 
                             // Connect SDK
                             connectToGreenlight(

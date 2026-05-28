@@ -31,6 +31,12 @@ enum class DeviceModel(val deviceModel: String) {
             else -> false
         }
 
+    val supportsLightningMnemonicDerivation: Boolean
+        get() = when (this) {
+            BlockstreamGeneric, BlockstreamJade, BlockstreamJadePlus -> true
+            else -> false
+        }
+
     val zendeskValue: String
         get() = when (this) {
             BlockstreamGeneric -> "jade"

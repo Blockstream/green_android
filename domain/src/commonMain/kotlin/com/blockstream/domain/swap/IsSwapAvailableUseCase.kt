@@ -11,7 +11,7 @@ class IsSwapAvailableUseCase {
         asset: EnrichedAsset? = null
     ): Boolean {
 
-        if (session.device?.isJadeCore?.value == true) return false
+        if (session.deviceModel?.supportsLightningMnemonicDerivation == false) return false
 
         if (wallet.isWatchOnly && !wallet.isHardware) return false
 

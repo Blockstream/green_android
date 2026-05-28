@@ -270,7 +270,7 @@ class AssetAccountDetailsViewModel(
                         postEvent(NavigateDestinations.LightningNode(greenWallet))
                     }
                 ).takeIf {
-                    appInfo.isDevelopmentOrDebug && (session.lightningSdkOrNull != null || !session.lightningNodeId.isNullOrBlank())
+                    appInfo.isDevelopmentOrDebug
                 }
             )
         }
