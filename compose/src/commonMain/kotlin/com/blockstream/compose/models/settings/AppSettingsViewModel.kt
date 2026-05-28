@@ -328,29 +328,73 @@ class AppSettingsViewModel : AppSettingsViewModelAbstract() {
         }
     }
 
-    private fun getSettings() = ApplicationSettings(
-        enhancedPrivacy = enhancedPrivacyEnabled.value,
-        screenLockInSeconds = screenLockInSeconds.value.seconds,
-        testnet = testnetEnabled.value,
-        analytics = analyticsEnabled.value,
-        experimentalFeatures = experimentalFeaturesEnabled.value,
-        locale = locale.value,
-        rememberHardwareDevices = rememberHardwareDevices.value,
-        electrumNode = electrumNodeEnabled.value,
-        tor = torEnabled.value,
-        personalElectrumServerTls = personalElectrumServerTlsEnabled.value,
+    private fun getSettings(): ApplicationSettings {
+        val isProxyOn = proxyEnabled.value
+        val isGapLimitOn = customGapLimitEnabled.value
+        val isElectrumNodeOn = electrumNodeEnabled.value
+        val isTestnetServersOn = isElectrumNodeOn && testnetEnabled.value
 
-        proxyEnabled = proxyEnabled.value,
-        proxyUrl = proxyUrl.value.ifBlank { null },
+        return ApplicationSettings(
+            enhancedPrivacy = enhancedPrivacyEnabled.value,
+            screenLockInSeconds = screenLockInSeconds.value.seconds,
+            testnet = testnetEnabled.value,
+            analytics = analyticsEnabled.value,
+            experimentalFeatures = experimentalFeaturesEnabled.value,
+            locale = locale.value,
+            rememberHardwareDevices = rememberHardwareDevices.value,
+            electrumNode = isElectrumNodeOn,
+            tor = torEnabled.value,
+            personalElectrumServerTls = personalElectrumServerTlsEnabled.value,
 
-        customGapLimitEnabled = customGapLimitEnabled.value,
-        electrumServerGapLimit = electrumServerGapLimit.value.toIntOrNull(),
+            proxyEnabled = isProxyOn,
+            proxyUrl = proxyUrl.value.let { raw ->
+                if (isProxyOn) {
+                    raw.ifBlank { null }
+                } else {
+                    if (raw.isNotBlank() && raw.isHostPortFormatValid()) raw else null
+                }
+            },
 
-        personalBitcoinElectrumServer = personalBitcoinElectrumServer.value.ifBlank { null },
-        personalLiquidElectrumServer = personalLiquidElectrumServer.value.ifBlank { null },
-        personalTestnetElectrumServer = personalTestnetElectrumServer.value.ifBlank { null },
-        personalTestnetLiquidElectrumServer = personalTestnetLiquidElectrumServer.value.ifBlank { null }
-    )
+            customGapLimitEnabled = isGapLimitOn,
+            electrumServerGapLimit = electrumServerGapLimit.value.let { raw ->
+                if (isGapLimitOn) {
+                    raw.toIntOrNull()
+                } else {
+                    if (raw.isGapLimitValid()) raw.toIntOrNull() else null
+                }
+            },
+
+            personalBitcoinElectrumServer = personalBitcoinElectrumServer.value.let { raw ->
+                if (isElectrumNodeOn) {
+                    raw.ifBlank { null }
+                } else {
+                    if (raw.isNotBlank() && raw.isHostPortFormatValid()) raw else null
+                }
+            },
+            personalLiquidElectrumServer = personalLiquidElectrumServer.value.let { raw ->
+                if (isElectrumNodeOn) {
+                    raw.ifBlank { null }
+                } else {
+                    if (raw.isNotBlank() && raw.isHostPortFormatValid()) raw else null
+                }
+            },
+
+            personalTestnetElectrumServer = personalTestnetElectrumServer.value.let { raw ->
+                if (isTestnetServersOn) {
+                    raw.ifBlank { null }
+                } else {
+                    if (raw.isNotBlank() && raw.isHostPortFormatValid()) raw else null
+                }
+            },
+            personalTestnetLiquidElectrumServer = personalTestnetLiquidElectrumServer.value.let { raw ->
+                if (isTestnetServersOn) {
+                    raw.ifBlank { null }
+                } else {
+                    if (raw.isNotBlank() && raw.isHostPortFormatValid()) raw else null
+                }
+            }
+        )
+    }
 
     private fun areSettingsDirty(): Boolean {
         return getSettings() != appSettings
