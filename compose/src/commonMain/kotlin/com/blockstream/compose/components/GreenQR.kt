@@ -56,7 +56,7 @@ data class QrBorderConfig(
     val color: Color = green,
     val strokeWidth: Dp = 8.dp,
     val cornerSize: Dp = 70.dp,
-    val maxBorderWidth: Dp = 280.dp
+    val maxBorderWidth: Dp = 340.dp
 )
 @Composable
 fun GreenQR(
@@ -223,7 +223,7 @@ private fun BorderedQR(
                     contentDescription = null,
                     modifier = Modifier
                         .fillMaxSize()
-                        .padding(8.dp)
+                        .padding(20.dp)
                 )
             }
         }

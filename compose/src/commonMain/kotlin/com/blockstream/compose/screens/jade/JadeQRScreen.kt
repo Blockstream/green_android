@@ -258,8 +258,7 @@ fun JadeQRScreen(
                                     isBordered = isBorderedQr,
                                     borderedProps = BorderedQrProps(
                                         config = QrBorderConfig(
-                                            strokeWidth = 5.dp,
-                                            maxBorderWidth = 260.dp
+                                            maxBorderWidth = 310.dp
                                         ),
                                         footer = { openFull ->
                                             if (isBorderedQr) {
@@ -280,7 +279,6 @@ fun JadeQRScreen(
 
                     if (!isCleanScan) {
                         GreenColumn(padding = 0, space = 8) {
-
                             if (viewModel.operation is JadeQrOperation.LightningMnemonicExport && !step.isScan) {
                                 GreenAlert(
                                     modifier = Modifier.fillMaxWidth().padding(bottom = 8.dp),
