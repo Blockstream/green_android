@@ -435,15 +435,7 @@ class ReceiveViewModel(greenWallet: GreenWallet, accountAsset: AccountAsset) :
             }
 
             is LocalEvents.ClearLightningInvoice -> {
-                _receiveAddress.value = null
-                _receiveAddressUri.value = null
-                _invoiceAmountToReceive.value = null
-                _invoiceAmountToReceiveFiat.value = null
-                _invoiceDescription.value = null
-                _invoiceExpiration.value = null
-                _invoiceExpirationTimestamp.value = null
-                _invoiceFee.value = null
-                _invoiceFeeFiat.value = null
+                clearInvoiceState()
             }
 
             is LocalEvents.VerifyOnDevice -> {
@@ -592,6 +584,18 @@ class ReceiveViewModel(greenWallet: GreenWallet, accountAsset: AccountAsset) :
                     postSideEffect(SideEffects.Dismiss)
                 })
         }
+    }
+
+    private fun clearInvoiceState() {
+        _receiveAddress.value = null
+        _receiveAddressUri.value = null
+        _invoiceAmountToReceive.value = null
+        _invoiceAmountToReceiveFiat.value = null
+        _invoiceDescription.value = null
+        _invoiceExpiration.value = null
+        _invoiceExpirationTimestamp.value = null
+        _invoiceFee.value = null
+        _invoiceFeeFiat.value = null
     }
 
     private fun generateAddress() {
@@ -794,6 +798,7 @@ class ReceiveViewModel(greenWallet: GreenWallet, accountAsset: AccountAsset) :
                     )
                 )
             )
+            clearInvoiceState()
         })
     }
 
