@@ -20,6 +20,8 @@ import com.blockstream.data.gdk.params.TransactionParams
 import com.blockstream.data.lwk.LwkAddress
 import com.blockstream.data.utils.toHex
 import com.blockstream.utils.Loggable
+import kotlinx.coroutines.sync.Mutex
+import kotlinx.coroutines.sync.withLock
 import lwk.Chain
 import lwk.LwkException
 import lwk.Pset
@@ -34,8 +36,18 @@ class LwkAccountBackend constructor(
     val wollet: Wollet,
     val signer: Signer,
     val account: Account
-) : AbstractAccountBackend() {
+) : AbstractAccountBackend(), WaterfallsAccount {
     private var nextAddressIndex: Int = 0
+
+    // A scan can be triggered by a subscription hint and by the poll fallback at the same time;
+    // two of them applying an update to the same wollet must not interleave.
+    private val scanMutex = Mutex()
+
+    override val id: String
+        get() = account.id
+
+    override suspend fun openWaterfallsStream(): WaterfallsStream =
+        networkClient.openWaterfallsStream(wollet.descriptor())
 
     override suspend fun getReceiveAddress(): Address {
         val firstUnusedIndex = wollet.address(null).index().toInt()
@@ -257,10 +269,14 @@ class LwkAccountBackend constructor(
         return whole * 100_000_000L + fraction
     }
 
-    internal suspend fun scanBlockchain() {
-        networkClient.fullScanToIndex(wollet = wollet)?.also { update ->
-            logger.d { "Update for ${account.name} : ${update.serialize().toHex()}" }
-            wollet.applyUpdate(update)
+    override suspend fun scanBlockchain() {
+        scanMutex.withLock {
+            // A null update means the scan found nothing new, so there is nothing to announce.
+            networkClient.fullScanToIndex(wollet = wollet)?.also { update ->
+                logger.d { "Update for ${account.name} : ${update.serialize().toHex()}" }
+                wollet.applyUpdate(update)
+                networkBackend.notifyTransaction(account.pointer)
+            }
         }
     }
 

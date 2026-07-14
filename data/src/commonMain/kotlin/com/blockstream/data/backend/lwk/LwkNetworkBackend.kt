@@ -2,6 +2,7 @@ package com.blockstream.data.backend.lwk
 
 import com.blockstream.data.backend.AbstractNetworkBackend
 import com.blockstream.data.backend.AccountBackend
+import com.blockstream.data.backend.NetworkEvent
 import com.blockstream.data.database.Database
 import com.blockstream.data.database.wallet.LwkAccounts
 import com.blockstream.data.gdk.AuthHandler
@@ -28,12 +29,10 @@ import com.blockstream.data.gdk.params.LoginCredentialsParams
 import com.blockstream.data.gdk.params.SubAccountParams
 import com.blockstream.data.gdk.params.ValidateAddresseesParams
 import com.blockstream.data.managers.NetworkAssetManager
-import com.blockstream.data.utils.toHex
 import com.blockstream.jade.Loggable
 import kotlinx.coroutines.CancellationException
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.Job
 import kotlinx.coroutines.SupervisorJob
 import kotlinx.coroutines.cancel
 import kotlinx.coroutines.delay
@@ -43,7 +42,6 @@ import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.isActive
 import kotlinx.coroutines.launch
 import lwk.Amp2
-import lwk.Amp2Descriptor
 import lwk.Bip
 import lwk.DescriptorBlindingKey
 import lwk.Mnemonic
@@ -73,7 +71,8 @@ class LwkNetworkBackend constructor(
     private val client = LwkNetworkClient(isTestnet = network.isTestnet)
 
     private val scope = CoroutineScope(SupervisorJob() + Dispatchers.Default)
-    private var tipJob: Job? = null
+
+    private val subscriptionManager = WaterfallsSubscriptionManager(scope = scope, onTip = ::applyTip)
 
     internal val amp2Client = createAmp2Client(network.isTestnet)
 
@@ -113,7 +112,7 @@ class LwkNetworkBackend constructor(
 
         logger.d { "LWK login complete for ${network.id}" }
 
-        blockHeaderPolling()
+        startSyncLoop()
 
         database.getAccountsFlow(fingerprint()).onEach { rows ->
             _accounts.value = rows.map { it.toAccount() }
@@ -223,38 +222,86 @@ class LwkNetworkBackend constructor(
     override suspend fun getFeeEstimates(): FeeEstimation =
         FeeEstimation(listOf(100L, 100L, 100L, 100L, 100L, 100L, 100L, 100L, 100L, 100L, 100L, 100L, 100L, 100L, 100L, 100L, 100L))
 
-    private fun blockHeaderPolling() {
-        if (tipJob != null) return
-        tipJob = scope.launch {
+    private suspend fun applyTip(block: Block) {
+        val previous = _blockStateFlow.value
+
+        // Tips arrive from every subscription and from the poll, and a lagging backend can report
+        // one the chain has already moved past. Confirmation counts are derived from this height,
+        // so only ever let it move forwards.
+        if (block.height < previous.height) return
+
+        _blockStateFlow.value = block.also {
+            logger.d { "Update block $it" }
+        }
+
+        if (block.height > previous.height) {
+            _networkEventsFlow.emit(NetworkEvent.Block(height = block.height))
+        }
+    }
+
+    private fun startSyncLoop() {
+        scope.launch {
             while (coroutineContext.isActive) {
+                // A wedged stream never ends by itself; recycling it here hands the account back.
+                subscriptionManager.closeStale()
+
+                val subscribed = subscriptionManager.subscribed.value
+                val unsubscribed = lwkAccountBackends().filter { it.id !in subscribed }
+
                 try {
-                    val header = client.tip()
+                    // A subscribed account is told about every new tip, so the tip is only worth
+                    // fetching while some account still depends on the poll.
+                    if (unsubscribed.isNotEmpty() || accountBackends.isEmpty()) {
+                        val header = client.tip()
 
-                    _blockStateFlow.value = Block(
-                        hash = header.blockHash(),
-                        height = header.height().toLong(),
-                        timestamp = header.time().toLong()
-                    ).also {
-                        logger.d { "Update block $it" }
+                        applyTip(
+                            Block(
+                                hash = header.blockHash(),
+                                height = header.height().toLong(),
+                                timestamp = header.time().toLong()
+                            )
+                        )
                     }
-
-                    scanBlockchain()
                 } catch (e: CancellationException) {
                     throw e
                 } catch (e: Exception) {
                     logger.w { "LWK tip poll failed: ${e.message}" }
                 }
+
+                // One account's failure must not starve the accounts behind it.
+                unsubscribed.forEach { backend ->
+                    try {
+                        backend.scanBlockchain()
+
+                        // Waterfalls only accepts a subscription for a descriptor it has already scanned.
+                        subscriptionManager.ensureSubscribed(backend)
+                    } catch (e: CancellationException) {
+                        throw e
+                    } catch (e: Exception) {
+                        logger.w { "LWK scan for ${backend.id} failed: ${e.message}" }
+                    }
+                }
+
                 delay(TIP_POLL_INTERVAL_SEC.toDuration(DurationUnit.SECONDS))
             }
         }
     }
 
+    private fun lwkAccountBackends(): List<LwkAccountBackend> =
+        accountBackends.values.filterIsInstance<LwkAccountBackend>()
+
     private suspend fun scanBlockchain() {
-        accountBackends.values.forEach { backend ->
-            if (backend is LwkAccountBackend) {
-                backend.scanBlockchain()
-            }
+        lwkAccountBackends().forEach { backend ->
+            backend.scanBlockchain()
         }
+    }
+
+    /**
+     * Announces that a scan found something for [pointer]. The transaction and asset use cases
+     * refresh only on [networkEventsFlow], so a scan that stays quiet never reaches a screen.
+     */
+    internal suspend fun notifyTransaction(pointer: Long) {
+        _networkEventsFlow.emit(NetworkEvent.Transaction(accountPointers = listOf(pointer)))
     }
 
     override fun createAccountBackend(account: Account): AccountBackend {
@@ -301,7 +348,7 @@ class LwkNetworkBackend constructor(
         scope.launch {
             delay(1.seconds)
             scanBlockchain()
-            _networkEventsFlow.emit(com.blockstream.data.backend.NetworkEvent.Transaction(accountPointers = listOf(0)))
+            _networkEventsFlow.emit(NetworkEvent.Transaction(accountPointers = listOf(0)))
         }
 
         return ProcessedTransactionDetails(
@@ -319,8 +366,12 @@ class LwkNetworkBackend constructor(
             gdk.destroySession(gaSession)
         }
 
+        // Closing comes before cancelling: a subscription loop parked in LWK's blocking read is
+        // released by closing its stream, not by cancelling its coroutine.
+        subscriptionManager.close()
+        client.close()
+
         scope.cancel()
-        tipJob = null
 
         signer?.close()
         signer = null
