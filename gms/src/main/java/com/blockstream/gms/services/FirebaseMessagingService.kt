@@ -5,7 +5,6 @@ import com.blockstream.data.extensions.tryCatchNull
 import com.blockstream.data.fcm.FcmCommon
 import com.blockstream.data.notifications.models.BoltzNotificationSimple
 import com.blockstream.data.notifications.models.MeldNotificationData
-import com.blockstream.data.notifications.models.MeldNotificationType
 import com.blockstream.utils.Loggable
 import com.google.firebase.messaging.FirebaseMessagingService
 import com.google.firebase.messaging.RemoteMessage
@@ -25,6 +24,11 @@ class FirebaseMessagingService : FirebaseMessagingService(), KoinComponent {
 
         if (data.isEmpty()) return
 
+        if (appInfo.isDevelopmentOrDebug) {
+            fcm.showDebugNotification(
+                title = "Notification Received", message = data.toString()
+            )
+        }
 
         when (data["type"]) {
             "BOLTZ_EVENT" -> {
@@ -44,34 +48,16 @@ class FirebaseMessagingService : FirebaseMessagingService(), KoinComponent {
                 }
             }
 
-            else -> {
-                val notificationType = data["notification_type"]
-
-                // Lightning Notification
-                if (notificationType == "payment_received" || notificationType == "tx_confirmed" || notificationType == "address_txs_confirmed") {
-                    val xpubHashId = data["app_data"]
-
-                    if (appInfo.isDevelopmentOrDebug) {
-                        fcm.showDebugNotification(
-                            title = "Notification Received", message = data.toString()
-                        )
-                    }
-
-                    if (!xpubHashId.isNullOrBlank()) {
-                        fcm.handleLightningPushNotification(xpubHashId)
-                    } else {
-                        logger.d { "No app_data $data" }
-                    }
-                } else {
-                    //we don't have any other notification types
-                    //so for now lets just show it as-is
-                    //add notification types for other types
+            "MELD_TRANSACTION" -> {
+                tryCatchNull {
                     val notification = MeldNotificationData.create(remoteMessage.data)
 
-                    if (notification.type == MeldNotificationType.MELD_TRANSACTION) {
-                        fcm.showBuyTransactionNotification(notification)
-                    }
+                    fcm.showBuyTransactionNotification(notification)
                 }
+            }
+
+            else -> {
+                logger.d { "Unhandled notification type ${data["type"]}" }
             }
         }
     }

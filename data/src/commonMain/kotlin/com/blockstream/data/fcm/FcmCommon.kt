@@ -162,28 +162,6 @@ abstract class FcmCommon constructor(val applicationScope: ApplicationScope) : K
         }
     }
 
-    fun handleLightningPushNotification(xpubHashId: String) {
-        applicationScope.launchSafe(context = logException()) {
-            database.getMainnetWalletWithXpubHashId(xpubHashId)?.also { wallet ->
-
-                val mnemonic =
-                    database.getLoginCredentials(wallet.id).lightningMnemonic?.encrypted_data?.let {
-                        greenKeystore.decryptData(it).decodeToString()
-                    }
-
-                if (mnemonic != null) {
-                    logger.d { "scheduleBackgroundJob" }
-                    scheduleLightningBackgroundJob(wallet.id)
-                } else {
-                    logger.d { "showNotification" }
-                    showOpenWalletNotification(wallet)
-                }
-            } ?: run {
-                logger.d { "wallet not found" }
-            }
-        }
-    }
-
     fun handleGreenlightPushNotification(xpubHashId: String) {
         applicationScope.launchSafe(context = logException()) {
             val wallet = database.getMainnetWalletWithXpubHashId(xpubHashId) ?: run {
@@ -191,14 +169,16 @@ abstract class FcmCommon constructor(val applicationScope: ApplicationScope) : K
                 return@launchSafe
             }
 
+            val hasLightningMnemonic = database.getLoginCredentials(wallet.id).lightningMnemonic?.encrypted_data != null
+
             // Every event must wake the signer so the cloud node can settle in-flight operations.
-            if (database.getLoginCredentials(wallet.id).lightningMnemonic != null) {
+            if (hasLightningMnemonic) {
                 scheduleLightningBackgroundJob(wallet.id)
+                showLightningBackgroundNotification(wallet = wallet)
             } else {
                 logger.d { "Greenlight: no lightning mnemonic for ${wallet.id}" }
+                showOpenWalletNotification(wallet)
             }
-
-            showLightningBackgroundNotification(wallet = wallet)
         }
     }
 
