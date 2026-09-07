@@ -30,7 +30,6 @@ import com.blockstream.data.gdk.params.SubAccountParams
 import com.blockstream.data.gdk.params.ValidateAddresseesParams
 import com.blockstream.data.managers.NetworkAssetManager
 import com.blockstream.jade.Loggable
-import kotlinx.coroutines.CancellationException
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.SupervisorJob
@@ -39,7 +38,6 @@ import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.launchIn
 import kotlinx.coroutines.flow.onEach
 import kotlinx.coroutines.flow.update
-import kotlinx.coroutines.isActive
 import kotlinx.coroutines.launch
 import lwk.Amp2
 import lwk.Bip
@@ -51,8 +49,6 @@ import lwk.Transaction
 import lwk.WolletBuilder
 import lwk.WolletDescriptor
 import kotlin.time.Duration.Companion.seconds
-import kotlin.time.DurationUnit
-import kotlin.time.toDuration
 import lwk.Network as LwkNetwork
 
 class LwkNetworkBackend constructor(
@@ -73,6 +69,13 @@ class LwkNetworkBackend constructor(
     private val scope = CoroutineScope(SupervisorJob() + Dispatchers.Default)
 
     private val subscriptionManager = WaterfallsSubscriptionManager(scope = scope, onTip = ::applyTip)
+
+    private val syncLoop = LwkSyncLoop(
+        subscriptionManager = subscriptionManager,
+        accounts = ::lwkAccountBackends,
+        fetchTip = ::fetchTip,
+        onTip = ::applyTip
+    )
 
     internal val amp2Client = createAmp2Client(network.isTestnet)
 
@@ -112,7 +115,7 @@ class LwkNetworkBackend constructor(
 
         logger.d { "LWK login complete for ${network.id}" }
 
-        startSyncLoop()
+        syncLoop.start(scope)
 
         database.getAccountsFlow(fingerprint()).onEach { rows ->
             _accounts.value = rows.map { it.toAccount() }
@@ -239,52 +242,14 @@ class LwkNetworkBackend constructor(
         }
     }
 
-    private fun startSyncLoop() {
-        scope.launch {
-            while (coroutineContext.isActive) {
-                // A wedged stream never ends by itself; recycling it here hands the account back.
-                subscriptionManager.closeStale()
+    private suspend fun fetchTip(): Block {
+        val header = client.tip()
 
-                val subscribed = subscriptionManager.subscribed.value
-                val unsubscribed = lwkAccountBackends().filter { it.id !in subscribed }
-
-                try {
-                    // A subscribed account is told about every new tip, so the tip is only worth
-                    // fetching while some account still depends on the poll.
-                    if (unsubscribed.isNotEmpty() || accountBackends.isEmpty()) {
-                        val header = client.tip()
-
-                        applyTip(
-                            Block(
-                                hash = header.blockHash(),
-                                height = header.height().toLong(),
-                                timestamp = header.time().toLong()
-                            )
-                        )
-                    }
-                } catch (e: CancellationException) {
-                    throw e
-                } catch (e: Exception) {
-                    logger.w { "LWK tip poll failed: ${e.message}" }
-                }
-
-                // One account's failure must not starve the accounts behind it.
-                unsubscribed.forEach { backend ->
-                    try {
-                        backend.scanBlockchain()
-
-                        // Waterfalls only accepts a subscription for a descriptor it has already scanned.
-                        subscriptionManager.ensureSubscribed(backend)
-                    } catch (e: CancellationException) {
-                        throw e
-                    } catch (e: Exception) {
-                        logger.w { "LWK scan for ${backend.id} failed: ${e.message}" }
-                    }
-                }
-
-                delay(TIP_POLL_INTERVAL_SEC.toDuration(DurationUnit.SECONDS))
-            }
-        }
+        return Block(
+            hash = header.blockHash(),
+            height = header.height().toLong(),
+            timestamp = header.time().toLong()
+        )
     }
 
     private fun lwkAccountBackends(): List<LwkAccountBackend> =
@@ -416,7 +381,5 @@ class LwkNetworkBackend constructor(
 
         fun createAmp2Client(isTestnet: Boolean) =
             Amp2(serverKey = if (isTestnet) Amp2TestnetServerKey else Amp2ServerKey, url = if (isTestnet) Amp2TestnetUrl else Amp2Url)
-
-        const val TIP_POLL_INTERVAL_SEC = 20L
     }
 }

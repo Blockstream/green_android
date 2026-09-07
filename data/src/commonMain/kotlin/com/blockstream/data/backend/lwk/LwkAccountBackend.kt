@@ -273,7 +273,7 @@ class LwkAccountBackend constructor(
         scanMutex.withLock {
             // A null update means the scan found nothing new, so there is nothing to announce.
             networkClient.fullScanToIndex(wollet = wollet)?.also { update ->
-                logger.d { "Update for ${account.name} : ${update.serialize().toHex()}" }
+                logger.d { "Update for ${account.id}, onlyTip=${update.onlyTip()}" }
                 wollet.applyUpdate(update)
                 networkBackend.notifyTransaction(account.pointer)
             }
