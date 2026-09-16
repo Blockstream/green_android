@@ -122,7 +122,8 @@ abstract class DataStateObservableUseCase<P, R> : ObservableUseCase<P, DataState
  */
 suspend fun <P, T> DataStateObservableUseCase<P, T>.firstSettled(params: P): DataState<T> {
     invoke(params)
-    return observe().first { !it.isLoading() }
+    // The shared observer may still replay the value from before this invocation.
+    return get().first { !it.isLoading() }
 }
 
 /**
