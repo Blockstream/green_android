@@ -17,7 +17,8 @@ variables:
   FF_USE_FASTZIP: "true"
   ANDROID_IMAGE: blockstream/green_android
   HOMEBREW_NO_AUTO_UPDATE: 1
-  SAST_EXCLUDED_PATHS: "spec, test, tests, tmp, vendor, node_modules, .git"
+  SAST_EXCLUDED_PATHS: "spec, test, tests, tmp, vendor, node_modules, .git, .gradle, build, .kotlin"
+  SECRET_DETECTION_EXCLUDED_PATHS: ".gradle, build, .kotlin"
   AST_ENABLE_MR_PIPELINES: "false"
 
 # Defaults applied to all jobs unless overridden
