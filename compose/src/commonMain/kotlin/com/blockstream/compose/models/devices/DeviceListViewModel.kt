@@ -44,7 +44,7 @@ class DeviceListViewModel(isJade: Boolean = true) :
             _navData.value =
                 NavData(
                     title = if (isJade) "Blockstream Jade" else "", actions = listOfNotNull(
-                        NavAction(title = getString(Res.string.id_setup_guide), onClick = {
+                        NavAction.Text(title = getString(Res.string.id_setup_guide), onClick = {
                             postEvent(NavigateDestinations.JadeGuide)
                         }).takeIf { isJade }
                     ))

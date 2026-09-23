@@ -135,7 +135,7 @@ class EnterRecoveryPhraseViewModel(setupArgs: SetupArgs, stateKeeper: StateKeepe
                 title = setupArgs.accountType?.toString(),
                 subtitle = greenWalletOrNull?.name,
                 actions = listOf(
-                    NavAction(
+                    NavAction.Text(
                         title = getString(Res.string.id_help),
                         icon = Res.drawable.question,
                         onClick = {

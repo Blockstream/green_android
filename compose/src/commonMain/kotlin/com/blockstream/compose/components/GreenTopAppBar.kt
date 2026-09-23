@@ -13,6 +13,7 @@ import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.widthIn
@@ -127,6 +128,15 @@ fun GreenTopAppBar(
                 enter = fadeIn(),
                 exit = fadeOut()
             ) {
+                navData.logo?.also { logo ->
+                    Image(
+                        painter = painterResource(logo),
+                        contentDescription = null,
+                        modifier = Modifier.height(28.dp)
+                    )
+                    return@AnimatedVisibility
+                }
+
                 ConstraintLayout(modifier = Modifier.fillMaxWidth()) {
                     val (title, subtitle) = createRefs()
                     val isCentered = navData.isCentered

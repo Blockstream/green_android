@@ -94,17 +94,15 @@ class SendConfirmViewModel constructor(
                 title = getString(Res.string.id_confirm_transaction),
                 isVisible = !onProgressSending,
                 actions = listOfNotNull(
-                    NavAction(
+                    NavAction.Text(
                         title = getString(Res.string.id_add_note),
-                        icon = Res.drawable.note_pencil,
-                        isMenuEntry = false
+                        icon = Res.drawable.note_pencil
                     ) {
                         postEvent(LocalEvents.Note)
                     },
-                    (NavAction(
+                    (NavAction.Menu(
                         title = getString(Res.string.id_sign_transaction),
-                        icon = Res.drawable.signature,
-                        isMenuEntry = true
+                        icon = Res.drawable.signature
                     ) {
                         postEvent(
                             CreateTransactionViewModelAbstract.LocalEvents.SignTransaction(

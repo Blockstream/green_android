@@ -2,12 +2,11 @@ package com.blockstream.compose.models.home
 
 import androidx.lifecycle.viewModelScope
 import blockstream_green.common.generated.resources.Res
-import blockstream_green.common.generated.resources.blockstream_logo
-import blockstream_green.common.generated.resources.id_about
+import blockstream_green.common.generated.resources.brand
 import blockstream_green.common.generated.resources.id_app_settings
 import com.adamglin.PhosphorIcons
 import com.adamglin.phosphoricons.Regular
-import com.adamglin.phosphoricons.regular.Sliders
+import com.adamglin.phosphoricons.regular.Gear
 import com.blockstream.compose.events.Event
 import com.blockstream.compose.events.Events
 import com.blockstream.compose.extensions.launchIn
@@ -15,6 +14,7 @@ import com.blockstream.compose.extensions.previewWalletListView
 import com.blockstream.compose.looks.wallet.WalletListLook
 import com.blockstream.compose.models.GreenViewModel
 import com.blockstream.compose.navigation.NavAction
+import com.blockstream.compose.navigation.IconContainer
 import com.blockstream.compose.navigation.NavData
 import com.blockstream.compose.navigation.NavigateDestinations
 import com.blockstream.compose.navigation.NavigateToWallet
@@ -113,23 +113,19 @@ class HomeViewModel(isGetStarted: Boolean = false) : HomeViewModelAbstract(isGet
             countly.updateRemoteConfig(force = false)
         }
 
-        showV5Upgrade.onEach {
+        combine(showV5Upgrade, isEmptyWallet) { showV5Upgrade, isEmptyWallet ->
             _navData.value = NavData(
-                isVisible = !it,
-                actions = listOfNotNull(
-                    NavAction(
+                isVisible = !showV5Upgrade,
+                logo = Res.drawable.brand.takeIf { isEmptyWallet == false },
+                actions = listOf(
+                    // TODO: profile button goes here
+                    NavAction.Icon(
                         titleRes = Res.string.id_app_settings,
-                        imageVector = PhosphorIcons.Regular.Sliders,
-                        isMenuEntry = true,
+                        imageVector = PhosphorIcons.Regular.Gear,
+                        container = IconContainer.OUTLINED,
+                        testTag = "btn_home_app_settings",
                     ) {
                         postSideEffect(SideEffects.NavigateTo(NavigateDestinations.AppSettings))
-                    },
-                    NavAction(
-                        titleRes = Res.string.id_about,
-                        icon = Res.drawable.blockstream_logo,
-                        isMenuEntry = true,
-                    ) {
-                        postSideEffect(SideEffects.NavigateTo(NavigateDestinations.About))
                     }
                 )
             )

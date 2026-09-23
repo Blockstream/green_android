@@ -68,10 +68,9 @@ class SetupNewWalletViewModel(greenWalletOrNull: GreenWallet? = null) :
         viewModelScope.launch {
             _navData.value = NavData(
                 actions = listOfNotNull(
-                    NavAction(
+                    NavAction.Text(
                         titleRes = Res.string.id_set_up_watchonly,
                         imageVector = PhosphorIcons.Regular.Eye,
-                        isMenuEntry = false,
                     ) {
                         postSideEffect(SideEffects.NavigateTo(NavigateDestinations.WatchOnlySinglesig(
                             SetupArgs(

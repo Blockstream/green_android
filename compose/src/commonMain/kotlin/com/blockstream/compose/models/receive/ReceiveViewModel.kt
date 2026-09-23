@@ -296,10 +296,9 @@ class ReceiveViewModel(greenWallet: GreenWallet, accountAsset: AccountAsset) :
                 title = getString(Res.string.id_receive),
                 subtitle = accountAsset.account.name,
                 actions = listOfNotNull(
-                    NavAction(
+                    NavAction.Text(
                         title = getString(Res.string.id_note),
                         icon = Res.drawable.note_pencil,
-                        isMenuEntry = false,
                         onClick = {
                             postSideEffect(
                                 SideEffects.NavigateTo(
@@ -312,37 +311,33 @@ class ReceiveViewModel(greenWallet: GreenWallet, accountAsset: AccountAsset) :
                             )
                         }
                     ).takeIf { accountAsset.account.isLightning == true && !showLightningOnChainAddress && receiveAddress == null },
-                    NavAction(
+                    NavAction.Text(
                         title = getString(Res.string.id_help),
                         icon = Res.drawable.question,
-                        isMenuEntry = false,
                         onClick = {
                             postSideEffect(SideEffects.OpenBrowser(if (accountAsset.account.isAmpOrLecacy) Urls.HELP_AMP_ASSETS else Urls.HELP_RECEIVE_ASSETS))
                         }
                     ),
 
-                    NavAction(
+                    NavAction.Menu(
                         title = getString(Res.string.id_request_amount),
                         icon = Res.drawable.text_aa,
-                        isMenuEntry = true,
                         onClick = {
                             postEvent(LocalEvents.ShowRequestAmount)
                         }
                     ).takeIf { receiveAddress.isNotBlank() && !accountAsset.account.isLightning },
-                    NavAction(
+                    NavAction.Menu(
                         title = getString(Res.string.id_list_of_addresses),
                         icon = Res.drawable.at,
-                        isMenuEntry = true,
                         onClick = {
                             accountAsset?.also {
                                 postEvent(NavigateDestinations.Addresses(greenWallet = greenWallet, accountAsset = it))
                             }
                         }
                     ).takeIf { receiveAddress.isNotBlank() && !accountAsset.account.isLightning && !accountAsset.account.isAmpOrLecacy },
-                    NavAction(
+                    NavAction.Menu(
                         title = getString(Res.string.id_sweep_from_paper_wallet),
                         icon = Res.drawable.qr_code,
-                        isMenuEntry = true,
                         onClick = {
                             postEvent(NavigateDestinations.Sweep(greenWallet = greenWallet, accountAsset = accountAsset))
                         }

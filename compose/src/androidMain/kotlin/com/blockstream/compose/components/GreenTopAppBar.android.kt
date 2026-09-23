@@ -30,20 +30,17 @@ private fun GreenTopAppScreenPreview() {
                     subtitle = "This is the Subtitle",
                     walletName = "Liquid Wallet Singlesig",
                     actions = listOf(
-                        NavAction(title = "Action", isMenuEntry = false),
-                        NavAction(
+                        NavAction.Text(title = "Action"),
+                        NavAction.Text(
                             title = "Action",
-                            isMenuEntry = false,
                             icon = Res.drawable.note_pencil
                         ),
-                        NavAction(
+                        NavAction.Menu(
                             title = "Action Menu",
-                            isMenuEntry = true,
                             icon = Res.drawable.signature
                         ),
-                        NavAction(
+                        NavAction.Menu(
                             title = "Action Menu",
-                            isMenuEntry = true,
                             icon = Res.drawable.note_pencil
                         ),
                     )

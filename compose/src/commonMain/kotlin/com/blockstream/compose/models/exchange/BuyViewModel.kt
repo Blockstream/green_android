@@ -279,7 +279,7 @@ class BuyViewModel(greenWallet: GreenWallet, initialAccountAsset: AccountAsset? 
     private suspend fun updateNavData(country: String) {
         _navData.value = NavData(
             title = getString(Res.string.id_buy), actions = listOfNotNull(
-                NavAction(
+                NavAction.Text(
                     title = country,
                     onClick = {
                         viewModelScope.launch {
@@ -293,9 +293,8 @@ class BuyViewModel(greenWallet: GreenWallet, initialAccountAsset: AccountAsset? 
                         }
                     }
                 ),
-                NavAction(
+                NavAction.Menu(
                     title = getString(Res.string.id_verify_address),
-                    isMenuEntry = true,
                     onClick = {
                         verifyAddressOnDevice()
                     }

@@ -76,7 +76,7 @@ class DeviceScanViewModel(
         viewModelScope.launch {
             _navData.value = NavData(
                 title = greenWallet.name, actions = listOfNotNull(
-                    NavAction(title = getString(Res.string.id_troubleshoot), onClick = {
+                    NavAction.Text(title = getString(Res.string.id_troubleshoot), onClick = {
                         postEvent(LocalEvents.Troubleshoot)
                     }),
                 )

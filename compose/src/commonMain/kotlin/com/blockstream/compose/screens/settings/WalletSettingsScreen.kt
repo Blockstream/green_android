@@ -568,6 +568,7 @@ fun WalletSettingsScreen(
                         Setting(
                             title = stringResource(Res.string.id_version),
                             subtitle = item.version,
+                            imageVector = PhosphorIcons.Regular.CaretRight,
                             modifier = Modifier.clickable {
                                 viewModel.postEvent(NavigateDestinations.About)
                             },

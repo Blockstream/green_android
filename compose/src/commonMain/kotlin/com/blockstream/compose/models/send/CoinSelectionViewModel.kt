@@ -379,12 +379,11 @@ class CoinSelectionViewModel(
         // Phosphor doesn't ship a funnel+dot icon, so the active state is the one
         // remaining custom asset; the inactive state uses the stock Phosphor icon.
         val isActive = _selectedFilters.value.isNotEmpty()
-        return NavAction(
+        return NavAction.Icon(
             icon = Res.drawable.funnel_outline_active.takeIf { isActive },
             imageVector = if (isActive) null else PhosphorIcons.Regular.Funnel,
             iconTint = if (isActive) Color.Unspecified else null,
             iconSize = 22.dp,
-            isMenuEntry = false,
             onClick = {
                 postEvent(LocalEvents.OpenFilters)
             }

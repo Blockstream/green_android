@@ -86,13 +86,13 @@ class DeviceInfoViewModel(deviceId: String) : DeviceInfoViewModelAbstract(device
                 title = deviceOrNull?.deviceBrand?.name,
                 isVisible = !onProgress.value,
                 actions = listOfNotNull(
-                    NavAction(title = getString(Res.string.id_setup_guide), onClick = {
+                    NavAction.Text(title = getString(Res.string.id_setup_guide), onClick = {
                         postEvent(NavigateDestinations.JadeGuide)
                     }).takeIf { deviceOrNull?.isJade == true },
-                    NavAction(title = "Update Firmware", isMenuEntry = true, onClick = {
+                    NavAction.Menu(title = "Update Firmware", onClick = {
                         postSideEffect(LocalSideEffects.SelectFirmwareChannel())
                     }).takeIf { appInfo.isDevelopmentOrDebug && deviceOrNull?.isJade == true },
-                    NavAction(title = "Genuine Check", isMenuEntry = true, onClick = {
+                    NavAction.Menu(title = "Genuine Check", onClick = {
                         postSideEffect(
                             SideEffects.NavigateTo(
                                 NavigateDestinations.JadeGenuineCheck(

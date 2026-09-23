@@ -2,14 +2,19 @@ package com.blockstream.compose.models.settings
 
 import androidx.lifecycle.viewModelScope
 import blockstream_green.common.generated.resources.Res
+import blockstream_green.common.generated.resources.id_about
 import blockstream_green.common.generated.resources.id_app_settings
 import blockstream_green.common.generated.resources.id_applies_to_every_wallet
 import blockstream_green.common.generated.resources.id_enter_a_valid_proxy_address
 import blockstream_green.common.generated.resources.id_invalid_gap_limit
 import blockstream_green.common.generated.resources.id_invalid_server_address_format
+import com.adamglin.PhosphorIcons
+import com.adamglin.phosphoricons.Regular
+import com.adamglin.phosphoricons.regular.Info
 import com.blockstream.compose.events.Event
 import com.blockstream.compose.events.Events
 import com.blockstream.compose.models.GreenViewModel
+import com.blockstream.compose.navigation.NavAction
 import com.blockstream.compose.navigation.NavData
 import com.blockstream.compose.navigation.NavigateDestinations
 import com.blockstream.compose.sideeffects.SideEffect
@@ -161,6 +166,15 @@ class AppSettingsViewModel : AppSettingsViewModelAbstract() {
                 title = getString(Res.string.id_app_settings),
                 subtitle = getString(Res.string.id_applies_to_every_wallet),
                 isCentered = true,
+                actions = listOf(
+                    NavAction.Icon(
+                        titleRes = Res.string.id_about,
+                        imageVector = PhosphorIcons.Regular.Info,
+                        testTag = "btn_app_settings_about",
+                    ) {
+                        postSideEffect(SideEffects.NavigateTo(NavigateDestinations.About))
+                    }
+                )
             )
             database.insertEvent(GenericEvent(deviceId = settingsManager.getCountlyDeviceId()).sha256(), randomInsert = true)
         }

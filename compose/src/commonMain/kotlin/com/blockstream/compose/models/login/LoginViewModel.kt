@@ -323,18 +323,16 @@ class LoginViewModel constructor(
             _navData.value = NavData(
                 title = it.name,
                 actions = listOfNotNull(
-                    NavAction(
+                    NavAction.Menu(
                         title = getString(Res.string.id_help),
                         icon = Res.drawable.question,
-                        isMenuEntry = true,
 
                         ) {
                         postEvent(LocalEvents.ClickHelp)
                     }.takeIf { check2 && pinCredentials.isEmpty() && passwordCredentials.isEmpty() },
-                    NavAction(
+                    NavAction.Menu(
                         title = getString(Res.string.id_bip39_passphrase_login),
                         icon = Res.drawable.password,
-                        isMenuEntry = true,
                     ) {
                         postSideEffect(
                             SideEffects.NavigateTo(
@@ -345,25 +343,22 @@ class LoginViewModel constructor(
                             )
                         )
                     }.takeIf { check2 && (pinCredentials.value.isNotEmpty() || biometricsCredentials.value.isNotEmpty() || passwordCredentials.value.isNotEmpty()) },
-                    NavAction(
+                    NavAction.Menu(
                         title = getString(Res.string.id_show_recovery_phrase),
                         icon = Res.drawable.key,
-                        isMenuEntry = true,
                     ) {
                         postEvent(LocalEvents.EmergencyRecovery(true))
                     }.takeIf { check2 && (pinCredentials.value.isNotEmpty() || biometricsCredentials.value.isNotEmpty() || passwordCredentials.value.isNotEmpty()) },
-                    NavAction(
+                    NavAction.Menu(
                         title = getString(Res.string.id_rename_wallet),
                         icon = Res.drawable.text_aa,
-                        isMenuEntry = true,
                     ) {
                         postSideEffect(SideEffects.NavigateTo(NavigateDestinations.RenameWallet(it)))
                     }.takeIf { check1 },
 
-                    NavAction(
+                    NavAction.Menu(
                         title = getString(Res.string.id_remove_wallet),
                         icon = Res.drawable.trash,
-                        isMenuEntry = true,
                     ) {
                         postSideEffect(SideEffects.NavigateTo(NavigateDestinations.DeleteWallet(it)))
                     }.takeIf { check1 },

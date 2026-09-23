@@ -109,7 +109,6 @@ import com.blockstream.compose.models.wallet.WalletNameViewModel
 import com.blockstream.compose.navigation.bottomsheet.onDismissRequest
 import com.blockstream.compose.navigation.dialogs.GenericDialog
 import com.blockstream.compose.screens.HomeScreen
-import com.blockstream.compose.screens.about.AboutScreen
 import com.blockstream.compose.screens.add.Account2of3Screen
 import com.blockstream.compose.screens.add.ChooseAccountTypeScreen
 import com.blockstream.compose.screens.add.ReviewAddAccountScreen
@@ -178,6 +177,7 @@ import com.blockstream.compose.screens.twofactor.ReEnable2FAScreen
 import com.blockstream.compose.sheets.AccountRenameBottomSheet
 import com.blockstream.compose.sheets.AmpAccountBottomSheet
 import com.blockstream.compose.sheets.AccountsBottomSheet
+import com.blockstream.compose.sheets.AboutBottomSheet
 import com.blockstream.compose.sheets.AnalyticsBottomSheet
 import com.blockstream.compose.sheets.AskJadeUnlockBottomSheet
 import com.blockstream.compose.sheets.AssetDetailsBottomSheet
@@ -258,9 +258,6 @@ fun Router(
             }
             appComposable<NavigateDestinations.GetStarted> {
                 HomeScreen(viewModel { HomeViewModel(isGetStarted = true) })
-            }
-            appComposable<NavigateDestinations.About> {
-                AboutScreen(viewModel { AboutViewModel() })
             }
             appComposable<NavigateDestinations.AppSettings> {
                 AppSettingsScreen(viewModel { AppSettingsViewModel() })
@@ -832,6 +829,12 @@ fun Router(
                 })
             }
             // Bottom sheets
+            appBottomSheet<NavigateDestinations.About> {
+                AboutBottomSheet(
+                    viewModel = viewModel { AboutViewModel() },
+                    onDismissRequest = navController.onDismissRequest()
+                )
+            }
             appBottomSheet<NavigateDestinations.Analytics> {
                 val args = it.toRoute<NavigateDestinations.Analytics>()
                 AnalyticsBottomSheet(

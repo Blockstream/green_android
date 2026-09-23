@@ -239,10 +239,9 @@ class SendViewModel(
             _navData.value = NavData(
                 title = getString(Res.string.id_send),
                 actions = listOfNotNull(
-                    (NavAction(
+                    (NavAction.Text(
                         title = getString(Res.string.id_add_note),
-                        icon = Res.drawable.note_pencil,
-                        isMenuEntry = false
+                        icon = Res.drawable.note_pencil
                     ) {
                         postEvent(LocalEvents.Note)
                     }).takeIf { isEditable }
@@ -253,10 +252,9 @@ class SendViewModel(
             _navData.value = NavData(
                 title = getString(Res.string.id_send),
                 actions = listOfNotNull(
-                    (NavAction(
+                    (NavAction.Text(
                         title = getString(Res.string.id_add_note),
-                        icon = Res.drawable.note_pencil,
-                        isMenuEntry = false
+                        icon = Res.drawable.note_pencil
                     ) {
                         postEvent(LocalEvents.Note)
                     }).takeIf { isNoteEditable }

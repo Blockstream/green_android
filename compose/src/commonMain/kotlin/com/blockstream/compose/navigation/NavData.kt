@@ -10,6 +10,8 @@ data class NavData(
     val titleIconTestTag: String? = null,
     val isCentered: Boolean = false,
 
+    val logo: DrawableResource? = null,
+
     val subtitle: String? = null,
 
     val walletName: String? = null,

@@ -308,10 +308,9 @@ class AssetAccountDetailsViewModel(
 
         if (account.isLightning) {
             return listOfNotNull(
-                NavAction(
+                NavAction.Menu(
                     title = getString(Res.string.id_node_info),
                     icon = Res.drawable.info,
-                    isMenuEntry = true,
                     onClick = {
                         postEvent(NavigateDestinations.LightningNode(greenWallet))
                     }
@@ -322,19 +321,17 @@ class AssetAccountDetailsViewModel(
         }
 
         return listOfNotNull(
-            NavAction(
+            NavAction.Menu(
                 title = getString(Res.string.id_rename_account),
                 icon = Res.drawable.text_aa,
-                isMenuEntry = true,
                 onClick = {
                     postEvent(NavigateDestinations.RenameAccount(greenWallet = greenWallet, account = account))
                 }
             ).takeIf { !isWatchOnly },
 
-            NavAction(
+            NavAction.Menu(
                 title = getString(Res.string.id_watchonly),
                 icon = Res.drawable.binoculars,
-                isMenuEntry = true,
                 onClick = {
                     if (account.isSinglesig) {
                         accountAsset?.also {
@@ -346,10 +343,9 @@ class AssetAccountDetailsViewModel(
                     }
                 }
             ),
-            NavAction(
+            NavAction.Menu(
                 title = getString(Res.string.id_archive_account),
                 icon = Res.drawable.box_arrow_down,
-                isMenuEntry = true,
                 enabled = !account.isFunded(session) && !session.hasUnconfirmedTransactions(transactions),
                 onClick = {
                     postEvent(Events.ArchiveAccount(account))

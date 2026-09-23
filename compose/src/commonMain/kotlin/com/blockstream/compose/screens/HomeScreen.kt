@@ -72,12 +72,6 @@ fun HomeScreen(
         Box(modifier = Modifier.fillMaxSize()) {
 
             Column {
-                Image(
-                    painter = painterResource(Res.drawable.brand),
-                    contentDescription = null,
-                    modifier = Modifier.height(70.dp).padding(bottom = 24.dp)
-                )
-
                 Banner(viewModel = viewModel, withTopPadding = true)
 
                 val isEmptyWallet by viewModel.isEmptyWallet.collectAsStateWithLifecycle()
@@ -91,6 +85,16 @@ fun HomeScreen(
                         ) {
 
                             Column(modifier = Modifier.padding(vertical = 32.dp)) {
+                                Image(
+                                    painter = painterResource(Res.drawable.brand),
+                                    contentDescription = null,
+                                    modifier = Modifier
+                                        .align(Alignment.CenterHorizontally)
+                                        .height(34.dp)
+                                )
+
+                                Spacer(modifier = Modifier.height(48.dp))
+
                                 Text(
                                     modifier = Modifier.fillMaxWidth(),
                                     text = stringResource(Res.string.id_simple__secure_selfcustody),
