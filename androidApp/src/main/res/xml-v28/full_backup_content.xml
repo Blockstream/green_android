@@ -1,0 +1,10 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!--
+    Auto Backup rules for API 28-30. Backups are only client-side encrypted when the device has
+    a screen lock, so every path is included only under that condition. API 31+ get the same
+    guarantee from disableIfNoEncryptionCapabilities in data_extraction_rules.xml.
+-->
+<full-backup-content>
+    <include domain="database" path="green.sqlite" requireFlags="clientSideEncryption" />
+    <include domain="sharedpref" path="application_settings.xml" requireFlags="clientSideEncryption" />
+</full-backup-content>

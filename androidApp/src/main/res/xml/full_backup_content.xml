@@ -1,5 +1,10 @@
 <?xml version="1.0" encoding="utf-8"?>
+<!--
+    Auto Backup rules for API 24-27, where cloud backups are never client-side encrypted.
+    The wallet database holds PIN-server credentials in plaintext, so it stays on the device.
+    API 28-30 use xml-v28/full_backup_content.xml; API 31+ use data_extraction_rules.xml.
+-->
 <full-backup-content>
-    <include domain="database" path="green.sqlite" />
     <include domain="sharedpref" path="application_settings.xml" />
+    <exclude domain="database" path="green.sqlite" />
 </full-backup-content>
