@@ -1,6 +1,5 @@
 stages:
   - build
-  - ios
   - test
   - security
   - deploy
@@ -80,56 +79,6 @@ build_default_image:
     - |
       curl -s --request POST --header "PRIVATE-TOKEN: $CI_CANCEL_PIPELINE_TOKEN" \
         "$CI_API_V4_URL/projects/$CI_PROJECT_ID/pipelines/$CI_PIPELINE_ID/cancel"
-
-#####################################
-# iOS Env
-.ios_env:
-  image: macos-15-xcode-16
-  tags:
-    - saas-macos-large-m2pro
-  cache:
-    - key:
-        files:
-          - Gemfile.lock
-      paths:
-        - vendor/bundle
-  before_script:
-    - npm install -g firebase-tools
-    - bundle update --bundler
-    - bundle check --path vendor/bundle || bundle install --path vendor/bundle --jobs $(nproc)
-
-#####################################
-# Build iOS
-
-iosFirebaseAppDistribution:
-  extends: .ios_env
-  stage: ios
-  when: manual
-  script:
-    - 'MESSAGE="Merge Request: !${CI_MERGE_REQUEST_IID} - ${CI_MERGE_REQUEST_TITLE}\\nBranch: ${CI_MERGE_REQUEST_SOURCE_BRANCH_NAME}\\nCommit: ${CI_COMMIT_SHA}"'
-    - bundle exec fastlane ios FirebaseAppDistribution message:"${MESSAGE}"
-
-#####################################
-# Build XCFramework
-xcframework_common:
-  stage: build
-  when: manual
-  artifacts:
-    name: "green_xcframework-$CI_COMMIT_SHORT_SHA"
-    expire_in: 4 days
-    when: on_success
-    paths:
-      - common/build/XCFrameworks/*.zip
-  tags:
-    - osx
-  variables:
-    GIT_SUBMODULE_STRATEGY: recursive
-  script:
-    - cd $CI_PROJECT_DIR
-    - ./gradlew common:assembleXCFramework
-    - cd common/build/XCFrameworks
-    - zip -r debug.zip debug
-    - zip -r release.zip release
 
 #####################################
 # Build Signed APKs

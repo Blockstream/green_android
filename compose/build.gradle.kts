@@ -1,5 +1,3 @@
-import org.jetbrains.kotlin.gradle.plugin.mpp.apple.XCFramework
-
 plugins {
     alias(libs.plugins.kotlinMultiplatform)
     alias(libs.plugins.android.kotlin.multiplatform.library)
@@ -31,18 +29,6 @@ kotlin {
     }
 
     jvm("desktop")
-
-    val xcf = XCFramework()
-    listOf(
-        iosArm64(),
-        iosSimulatorArm64()
-    ).forEach { iosTarget ->
-        iosTarget.binaries.framework {
-            baseName = "ComposeApp"
-            xcf.add(this)
-            isStatic = true
-        }
-    }
 
     sourceSets {
 
@@ -117,10 +103,6 @@ kotlin {
             api(libs.rive.android)
             /** ----------------------------------------------------------------------------------------- */
 
-            implementation(libs.peekaboo.image.picker)
-        }
-
-        iosMain.dependencies {
             implementation(libs.peekaboo.image.picker)
         }
     }

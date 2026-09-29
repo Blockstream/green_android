@@ -22,7 +22,6 @@ plugins {
     alias(libs.plugins.kotlinMultiplatform) apply false
     alias(libs.plugins.kotlinxSerialization) apply false
     alias(libs.plugins.googleServices) apply false
-    alias(libs.plugins.nativeCocoapods) apply false
     alias(libs.plugins.android.kotlin.multiplatform.library) apply false
 }
 

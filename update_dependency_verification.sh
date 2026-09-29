@@ -12,7 +12,6 @@ help_message() {
     -h, --help        Display this help message and exit
     -d, --docker      Run in Docker container
     -o, --overwrite   Add new checksums
-    -i, --ios         Build iOS
     -a, --assemble    Run assemble task to get more dependencies (takes longer)
     -b, --build       Run build task to get more dependencies (takes longer)
     -t, --test        Run test task to get more dependencies (takes longer)
@@ -41,9 +40,6 @@ case $key in
       shift ;;
     -b | --build)
       TASK="assembleDevelopmentDebug"
-      shift ;;
-    -i | --ios)
-      TASK=":compose:assembleXCFramework"
       shift ;;
     --desktop)
       TASK="desktopMainClasses"

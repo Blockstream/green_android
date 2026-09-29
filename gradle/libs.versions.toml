@@ -96,7 +96,6 @@ ktor-client-resources = { module = "io.ktor:ktor-client-resources", version.ref 
 ktor-client-logging = { module = "io.ktor:ktor-client-logging", version.ref = "ktor" }
 ktor-client-okhttp = { module = "io.ktor:ktor-client-okhttp", version.ref = "ktor" }
 ktor-client-cio = { module = "io.ktor:ktor-client-cio", version.ref = "ktor" }
-ktor-client-darwin = { module = "io.ktor:ktor-client-darwin", version.ref = "ktor" }
 ktor-client-java = { module = "io.ktor:ktor-client-java", version.ref = "ktor" }
 blockstream-glsdk = { module = "com.blockstream:glsdk", version.ref = "blockstream-glsdk" }
 blockstream-lwk = { module = "com.blockstream:lwk", version.ref = "blockstream-lwk" }
@@ -122,7 +121,6 @@ mpfilepicker = { module = "com.darkrockstudios:mpfilepicker", version.ref = "mpf
 peekaboo-image-picker = { module = "io.github.onseok:peekaboo-image-picker", version.ref = "peekabooImagePicker" }
 qrose = { module = "io.github.alexzhirkevich:qrose", version.ref = "qrose" }
 kotlincrypto-hash-sha2 = { module = "org.kotlincrypto.hash:sha2", version.ref = "kotlincrypto-hash" }
-sqldelight-native-driver = { module = "app.cash.sqldelight:native-driver", version.ref = "sqldelight" }
 sqldelight-sqlite-driver = { module = "app.cash.sqldelight:sqlite-driver", version.ref = "sqldelight" }
 sqldelight-android-driver = { module = "app.cash.sqldelight:android-driver", version.ref = "sqldelight" }
 sqldelight-coroutines-extensions = { module = "app.cash.sqldelight:coroutines-extensions", version.ref = "sqldelight" }
@@ -183,7 +181,6 @@ kotlinMultiplatform = { id = "org.jetbrains.kotlin.multiplatform", version.ref =
 compose-compiler = { id = "org.jetbrains.kotlin.plugin.compose", version.ref = "kotlin" }
 jetbrainsCompose = { id = "org.jetbrains.compose", version.ref = "jetbrains-compose" }
 kotlinxSerialization = { id = "org.jetbrains.kotlin.plugin.serialization", version.ref = "kotlin" }
-nativeCocoapods = { id = "org.jetbrains.kotlin.native.cocoapods", version.ref = "kotlin" }
 androidLibrary = { id = "com.android.library", version.ref = "android-gradle-plugin" }
 androidApplication = { id = "com.android.application", version.ref = "android-gradle-plugin" }
 google-devtools-ksp = { id = "com.google.devtools.ksp", version.ref = "kotlin-ksp" }
