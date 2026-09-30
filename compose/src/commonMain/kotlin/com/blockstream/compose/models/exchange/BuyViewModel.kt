@@ -12,11 +12,17 @@ import blockstream_green.common.generated.resources.id_select_your_region
 import blockstream_green.common.generated.resources.id_something_went_wrong
 import blockstream_green.common.generated.resources.id_the_address_is_valid
 import blockstream_green.common.generated.resources.id_verify_address
+import com.blockstream.compose.components.AmountFieldFeedback
+import com.blockstream.compose.components.AmountFieldFeedbackSeverity
+import com.blockstream.compose.components.AmountFieldSecondaryValue
+import com.blockstream.compose.components.AmountFieldState
 import com.blockstream.compose.events.Event
 import com.blockstream.compose.events.Events
 import com.blockstream.compose.extensions.launchIn
 import com.blockstream.compose.extensions.previewAccountAsset
 import com.blockstream.compose.extensions.previewWallet
+import com.blockstream.compose.models.amountFieldDenomination
+import com.blockstream.compose.models.initialAmountFieldState
 import com.blockstream.compose.models.send.CreateTransactionViewModelAbstract
 import com.blockstream.compose.navigation.NavAction
 import com.blockstream.compose.navigation.NavData
@@ -48,6 +54,7 @@ import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.flow.debounce
 import kotlinx.coroutines.flow.distinctUntilChanged
 import kotlinx.coroutines.flow.filterNotNull
+import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.flow.onEach
 import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.launch
@@ -96,6 +103,35 @@ abstract class BuyViewModelAbstract(
 
     internal val _onProgressBuy = MutableStateFlow(false)
     val onProgressBuy: StateFlow<Boolean> = _onProgressBuy
+
+    val amountFieldState: StateFlow<AmountFieldState> by lazy {
+        combine(
+            amount,
+            amountFieldDenomination(assetId = accountAsset.map { it?.assetId }),
+            onProgressQuote,
+            quote,
+            amountHint,
+        ) { amount, denomination, onProgressQuote, quote, amountHint ->
+            AmountFieldState(
+                value = amount,
+                denominationLabel = denomination.label,
+                secondaryValue = if (onProgressQuote) {
+                    AmountFieldSecondaryValue.Loading
+                } else {
+                    quote?.destinationAmount?.let {
+                        AmountFieldSecondaryValue.Value("$it ${quote.destinationCurrencyCode}".trim())
+                    } ?: AmountFieldSecondaryValue.Hidden
+                },
+                feedback = amountHint?.let {
+                    AmountFieldFeedback(
+                        severity = AmountFieldFeedbackSeverity.Success,
+                        text = StringHolder.create(it),
+                    )
+                },
+                maxFractionDigits = denomination.maxFractionDigits,
+            )
+        }.stateIn(viewModelScope, SharingStarted.Eagerly, initialAmountFieldState(amount.value))
+    }
 
     fun changeCountry(country: com.blockstream.data.meld.models.Country) {
         this.country.value = country.countryCode.uppercase().also {

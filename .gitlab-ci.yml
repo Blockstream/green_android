@@ -250,7 +250,7 @@ unit_tests:
     - cd $CI_PROJECT_DIR
     #    - ./gradlew lintProductionGoogleRelease
     - cp contrib/blockstream_keys.txt app_keys.txt
-    - ./gradlew test
+    - ./gradlew test :compose:testAndroidHostTest
       -x :androidApp:testProductionGoogleDebugUnitTest
 
 #####################################

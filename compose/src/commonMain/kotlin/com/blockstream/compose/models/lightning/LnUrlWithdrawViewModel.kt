@@ -11,6 +11,13 @@ import blockstream_green.common.generated.resources.id_success
 import blockstream_green.common.generated.resources.id_withdraw
 import blockstream_green.common.generated.resources.id_withdraw_limits_s__s
 import blockstream_green.common.generated.resources.id_you_are_redeeming_funds_from_s
+import com.blockstream.compose.components.AmountFieldFeedback
+import com.blockstream.compose.components.AmountFieldFeedbackSeverity
+import com.blockstream.compose.components.AmountFieldInteraction
+import com.blockstream.compose.components.AmountFieldSecondaryValue
+import com.blockstream.compose.components.AmountFieldState
+import com.blockstream.compose.models.amountFieldDenomination
+import com.blockstream.compose.models.initialAmountFieldState
 import com.blockstream.data.lightning.LnUrlWithdrawData
 import com.blockstream.data.lightning.LnUrlWithdrawOutcome
 import com.blockstream.data.BTC_POLICY_ASSET
@@ -36,11 +43,13 @@ import com.blockstream.compose.utils.StringHolder
 import com.blockstream.utils.Loggable
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.flow.launchIn
 import kotlinx.coroutines.flow.onEach
+import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.launch
 import org.jetbrains.compose.resources.getString
 import kotlin.math.min
@@ -58,6 +67,39 @@ abstract class LnUrlWithdrawViewModelAbstract(greenWallet: GreenWallet) :
     abstract val error: StateFlow<String?>
 
     abstract val redeemMessage: String
+
+    val amountFieldState: StateFlow<AmountFieldState> by lazy {
+        combine(
+            amount,
+            amountFieldDenomination(),
+            exchange,
+            onProgress,
+            error,
+        ) { amount, denomination, exchange, onProgress, error ->
+            AmountFieldState(
+                value = amount,
+                denominationLabel = denomination.label,
+                secondaryValue = if (exchange.isBlank()) {
+                    AmountFieldSecondaryValue.Hidden
+                } else {
+                    AmountFieldSecondaryValue.Value(exchange)
+                },
+                interaction = when {
+                    onProgress -> AmountFieldInteraction.Disabled
+                    isAmountLocked -> AmountFieldInteraction.Locked
+                    else -> AmountFieldInteraction.Editable
+                },
+                canSelectDenomination = true,
+                feedback = error?.let {
+                    AmountFieldFeedback(
+                        severity = AmountFieldFeedbackSeverity.Error,
+                        text = StringHolder.create(it),
+                    )
+                },
+                maxFractionDigits = denomination.maxFractionDigits,
+            )
+        }.stateIn(viewModelScope, SharingStarted.Eagerly, initialAmountFieldState(amount.value))
+    }
 }
 
 class LnUrlWithdrawViewModel(greenWallet: GreenWallet, val requestData: LnUrlWithdrawData) :

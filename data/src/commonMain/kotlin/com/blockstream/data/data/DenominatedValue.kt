@@ -12,7 +12,6 @@ import com.blockstream.data.gdk.GreenJson
 import com.blockstream.data.gdk.data.Balance
 import com.blockstream.data.utils.getBitcoinOrLiquidUnit
 import com.blockstream.data.utils.toAmountLook
-import kotlinx.coroutines.runBlocking
 import kotlinx.serialization.Serializable
 
 @Serializable
@@ -144,11 +143,11 @@ sealed class Denomination {
         getBitcoinOrLiquidUnit(session = session, assetId = assetId, denomination = this)
     }
 
-    fun assetTicker(session: GdkSession, assetId: String?): String = runBlocking { if (this@Denomination is FIAT) {
+    suspend fun assetTickerOrFallback(session: GdkSession, assetId: String?): String = if (this is FIAT) {
         denomination
     } else {
-        assetId.assetTickerOrNull(session = session, denomination = this@Denomination) ?: assetId?.substring(0 until 6) ?: ""
-    }}
+        assetId.assetTickerOrNull(session = session, denomination = this) ?: assetId?.substring(0 until 6) ?: ""
+    }
 
     val isFiat
         get() = this is FIAT

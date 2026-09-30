@@ -7,16 +7,24 @@ import blockstream_green.common.generated.resources.id_limits_s__s
 import blockstream_green.common.generated.resources.id_payment_requested_by_s
 import blockstream_green.common.generated.resources.id_send
 import blockstream_green.common.generated.resources.note_pencil
+import com.blockstream.compose.components.AmountFieldFeedback
+import com.blockstream.compose.components.AmountFieldFeedbackSeverity
+import com.blockstream.compose.components.AmountFieldInteraction
+import com.blockstream.compose.components.AmountFieldSecondaryValue
+import com.blockstream.compose.components.AmountFieldState
 import com.blockstream.compose.events.Event
 import com.blockstream.compose.events.Events
 import com.blockstream.compose.extensions.launchIn
 import com.blockstream.compose.extensions.previewAccountAsset
 import com.blockstream.compose.extensions.previewWallet
+import com.blockstream.compose.models.amountFieldDenomination
+import com.blockstream.compose.models.initialAmountFieldState
 import com.blockstream.compose.models.sheets.NoteType
 import com.blockstream.compose.navigation.NavAction
 import com.blockstream.compose.navigation.NavData
 import com.blockstream.compose.navigation.NavigateDestinations
 import com.blockstream.compose.sideeffects.SideEffects
+import com.blockstream.compose.utils.StringHolder
 import com.blockstream.compose.utils.getStringFromId
 import com.blockstream.data.AddressInputType
 import com.blockstream.data.TransactionSegmentation
@@ -114,6 +122,39 @@ abstract class SendViewModelAbstract(greenWallet: GreenWallet, accountAsset: Acc
     abstract val metadataDescription: StateFlow<String?>
 
     abstract val isNoteEditable: StateFlow<Boolean>
+
+    val amountFieldState: StateFlow<AmountFieldState> by lazy {
+        combine(
+            amount,
+            amountFieldDenomination(assetId = accountAssetBalance.map { it?.assetId }),
+            amountExchange,
+            combine(isAmountLocked, showDenominationSelector, ::Pair),
+            errorAmount,
+        ) { amount, denomination, amountExchange, (isAmountLocked, showDenominationSelector), errorAmount ->
+            AmountFieldState(
+                value = amount,
+                denominationLabel = denomination.label,
+                secondaryValue = if (amountExchange.isBlank()) {
+                    AmountFieldSecondaryValue.Hidden
+                } else {
+                    AmountFieldSecondaryValue.Value(amountExchange)
+                },
+                interaction = if (isAmountLocked) {
+                    AmountFieldInteraction.Locked
+                } else {
+                    AmountFieldInteraction.Editable
+                },
+                canSelectDenomination = showDenominationSelector,
+                feedback = errorAmount?.let {
+                    AmountFieldFeedback(
+                        severity = AmountFieldFeedbackSeverity.Error,
+                        text = StringHolder.create(it),
+                    )
+                },
+                maxFractionDigits = denomination.maxFractionDigits,
+            )
+        }.stateIn(viewModelScope, SharingStarted.Eagerly, initialAmountFieldState(amount.value))
+    }
 }
 
 class SendViewModel(

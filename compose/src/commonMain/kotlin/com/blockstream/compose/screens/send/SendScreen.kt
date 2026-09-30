@@ -44,6 +44,7 @@ import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import blockstream_green.common.generated.resources.Res
 import blockstream_green.common.generated.resources.id_account__asset
 import blockstream_green.common.generated.resources.id_all_coins
+import blockstream_green.common.generated.resources.id_amount
 import blockstream_green.common.generated.resources.id_available
 import blockstream_green.common.generated.resources.id_coin
 import blockstream_green.common.generated.resources.id_coins
@@ -65,9 +66,9 @@ import com.blockstream.data.utils.userNumberFormat
 import com.adamglin.PhosphorIcons
 import com.adamglin.phosphoricons.Regular
 import com.adamglin.phosphoricons.regular.CaretRight
+import com.blockstream.compose.components.AmountFieldAction
 import com.blockstream.compose.components.Banner
 import com.blockstream.compose.components.GreenAccountAsset
-import com.blockstream.compose.components.GreenAmountField
 import com.blockstream.compose.components.GreenButton
 import com.blockstream.compose.components.GreenButtonSize
 import com.blockstream.compose.components.GreenColumn
@@ -75,6 +76,9 @@ import com.blockstream.compose.components.GreenDataLayout
 import com.blockstream.compose.components.GreenNetworkFee
 import com.blockstream.compose.components.GreenTextField
 import com.blockstream.compose.components.OnProgressStyle
+import com.blockstream.compose.components.SendAmountField
+import com.blockstream.compose.components.SendAmountFieldState
+import com.blockstream.compose.components.SendAmountSupportingState
 import com.blockstream.compose.dialogs.TextDialog
 import com.blockstream.compose.events.Events
 import com.blockstream.compose.models.send.CoinSelectionResult
@@ -199,39 +203,44 @@ fun SendScreen(
                     )
                 }
 
-                val amount by viewModel.amount.collectAsStateWithLifecycle()
+                val amountFieldState by viewModel.amountFieldState.collectAsStateWithLifecycle()
                 val amountHint by viewModel.amountHint.collectAsStateWithLifecycle()
-                val amountExchange by viewModel.amountExchange.collectAsStateWithLifecycle()
                 val showAmount by viewModel.showAmount.collectAsStateWithLifecycle()
-                val denomination by viewModel.denomination.collectAsStateWithLifecycle()
-                val errorAmount by viewModel.errorAmount.collectAsStateWithLifecycle()
                 val availableBalance by viewModel.availableBalance.collectAsStateWithLifecycle()
                 val isAmountLocked by viewModel.isAmountLocked.collectAsStateWithLifecycle()
                 val isSendAll by viewModel.isSendAll.collectAsStateWithLifecycle()
                 val supportsSendAll = viewModel.supportsSendAll
-                val showDenominationSelector by viewModel.showDenominationSelector.collectAsStateWithLifecycle()
 
                 AnimatedVisibility(visible = showAmount && accountAssetBalance != null) {
-                    GreenAmountField(
-                        value = amount,
-                        onValueChange = {
-                            viewModel.isSendAll.value = false
-                            viewModel.amount.value = it
+                    val onAmountChange: (String) -> Unit = {
+                        viewModel.isSendAll.value = false
+                        viewModel.amount.value = it
+                    }
+
+                    SendAmountField(
+                        state = SendAmountFieldState(
+                            field = amountFieldState,
+                            supporting = SendAmountSupportingState(
+                                availableBalance = availableBalance.takeIf { !canSelectCoins },
+                                isMaxPayable = accountAssetBalance?.account?.isLightning == true,
+                                showSendAll = supportsSendAll && !canSelectCoins,
+                            ),
+                        ),
+                        onValueChange = onAmountChange,
+                        onAction = { action ->
+                            when (action) {
+                                AmountFieldAction.Clear -> onAmountChange("")
+                                AmountFieldAction.SelectDenomination -> {
+                                    viewModel.postEvent(Events.SelectDenomination)
+                                }
+                                AmountFieldAction.Edit -> Unit
+                            }
                         },
-                        secondaryValue = amountExchange,
-                        assetId = accountAssetBalance?.assetId,
-                        session = viewModel.sessionOrNull,
-                        isAmountLocked = isAmountLocked,
-                        helperText = errorAmount,
-                        denomination = denomination,
-                        sendAll = isSendAll,
-                        supportsSendAll = supportsSendAll && !canSelectCoins,
-                        availableBalance = availableBalance.takeIf { !canSelectCoins },
-                        isMaxPayable = accountAssetBalance?.account?.isLightning == true,
                         onSendAllClick = {
                             viewModel.postEvent(SendViewModel.LocalEvents.ToggleIsSendAll)
                         },
-                        footerContent = {
+                        label = stringResource(Res.string.id_amount),
+                        supportingContent = {
                             GreenColumn(padding = 0, space = 0, modifier = Modifier.fillMaxWidth()) {
                                 if (!amountHint.isNullOrBlank()) {
                                     Row(
@@ -321,9 +330,6 @@ fun SendScreen(
                                 }
                             }
                         },
-                        onDenominationClick = if (showDenominationSelector) {
-                            { viewModel.postEvent(Events.SelectDenomination) }
-                        } else null
                     )
                 }
 

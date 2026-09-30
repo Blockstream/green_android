@@ -1,7 +1,6 @@
 package com.blockstream.compose.screens.send
 
 import androidx.compose.foundation.layout.Arrangement
-import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
@@ -19,7 +18,8 @@ import blockstream_green.common.generated.resources.Res
 import blockstream_green.common.generated.resources.id_available
 import blockstream_green.common.generated.resources.id_next
 import com.blockstream.compose.GreenPreview
-import com.blockstream.compose.components.GreenAmountField
+import com.blockstream.compose.components.AmountField
+import com.blockstream.compose.components.AmountFieldAction
 import com.blockstream.compose.components.GreenButton
 import com.blockstream.compose.components.GreenButtonSize
 import com.blockstream.compose.components.GreenColumn
@@ -28,10 +28,10 @@ import com.blockstream.compose.models.send.SendLightningAmountViewModelAbstract
 import com.blockstream.compose.models.send.SendLightningAmountViewModelPreview
 import com.blockstream.compose.navigation.NavigateDestinations
 import com.blockstream.compose.navigation.getResult
-import com.blockstream.data.data.DenominatedValue
 import com.blockstream.compose.theme.bodyMedium
 import com.blockstream.compose.theme.whiteMedium
 import com.blockstream.compose.utils.SetupScreen
+import com.blockstream.data.data.DenominatedValue
 import org.jetbrains.compose.resources.stringResource
 import org.jetbrains.compose.ui.tooling.preview.Preview
 
@@ -43,12 +43,9 @@ fun SendLightningAmountScreen(
         viewModel.postEvent(Events.SetDenominatedValue(it))
     }
 
-    val amount by viewModel.amount.collectAsStateWithLifecycle()
-    val amountExchange by viewModel.amountExchange.collectAsStateWithLifecycle()
-    val denomination by viewModel.denomination.collectAsStateWithLifecycle()
+    val amountFieldState by viewModel.amountFieldState.collectAsStateWithLifecycle()
     val accountAssetBalance by viewModel.accountAssetBalance.collectAsStateWithLifecycle()
     val isValid by viewModel.isValid.collectAsStateWithLifecycle()
-    val error by viewModel.error.collectAsStateWithLifecycle()
 
     val focusRequester = remember { FocusRequester() }
     val keyboardController = LocalSoftwareKeyboardController.current
@@ -74,19 +71,19 @@ fun SendLightningAmountScreen(
                 modifier = Modifier.weight(1f),
                 verticalArrangement = Arrangement.spacedBy(12.dp),
             ) {
-                GreenAmountField(
-                    value = amount,
+                AmountField(
+                    state = amountFieldState,
                     onValueChange = { viewModel.amount.value = it },
-                    secondaryValue = amountExchange,
-                    showTitle = false,
-                    assetId = accountAssetBalance?.assetId,
-                    session = viewModel.sessionOrNull,
-                    denomination = denomination,
-                    availableBalance = null,
-                    helperText = error,
-                    supportsSendAll = false,
+                    onAction = { action ->
+                        when (action) {
+                            AmountFieldAction.Clear -> viewModel.amount.value = ""
+                            AmountFieldAction.SelectDenomination -> {
+                                viewModel.postEvent(Events.SelectDenomination)
+                            }
+                            AmountFieldAction.Edit -> Unit
+                        }
+                    },
                     focusRequester = focusRequester,
-                    onDenominationClick = { viewModel.postEvent(Events.SelectDenomination) },
                 )
 
                 accountAssetBalance?.balance?.let {

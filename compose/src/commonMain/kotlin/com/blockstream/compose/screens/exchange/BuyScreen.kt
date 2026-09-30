@@ -14,15 +14,17 @@ import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.navigation.get
 import blockstream_green.common.generated.resources.Res
+import blockstream_green.common.generated.resources.id_amount
 import blockstream_green.common.generated.resources.id_buy_s
 import blockstream_green.common.generated.resources.id_exchange
 import com.adamglin.PhosphorIcons
 import com.adamglin.phosphoricons.Regular
 import com.adamglin.phosphoricons.regular.ArrowSquareOut
 import com.blockstream.compose.GreenPreview
+import com.blockstream.compose.components.AmountField
+import com.blockstream.compose.components.AmountFieldAction
 import com.blockstream.compose.components.GreenAccountSelector
 import com.blockstream.compose.components.GreenAlert
-import com.blockstream.compose.components.GreenAmountField
 import com.blockstream.compose.components.GreenButton
 import com.blockstream.compose.components.GreenButtonColor
 import com.blockstream.compose.components.GreenButtonSize
@@ -40,7 +42,6 @@ import com.blockstream.compose.navigation.NavigateDestinations
 import com.blockstream.compose.navigation.bottomsheet.BottomSheetNavigator
 import com.blockstream.compose.navigation.getResult
 import com.blockstream.compose.sideeffects.SideEffects
-import com.blockstream.compose.theme.green20
 import com.blockstream.compose.utils.OpenKeyboard
 import com.blockstream.compose.utils.SetupScreen
 import com.blockstream.data.data.AlertType
@@ -116,22 +117,22 @@ fun BuyScreen(
                 val accountAsset by viewModel.accountAsset.collectAsStateWithLifecycle()
 
                 val amount by viewModel.amount.collectAsStateWithLifecycle()
-                val amountHint by viewModel.amountHint.collectAsStateWithLifecycle()
-                val denomination by viewModel.denomination.collectAsStateWithLifecycle()
+                val amountFieldState by viewModel.amountFieldState.collectAsStateWithLifecycle()
                 val suggestedAmounts by viewModel.suggestedAmounts.collectAsStateWithLifecycle()
 
                 GreenColumn(padding = 0, space = 5) {
-                    GreenAmountField(
-                        value = amount,
+                    AmountField(
+                        state = amountFieldState,
                         onValueChange = viewModel.amount.onValueChange(),
-                        secondaryValue = if (onProgressQuote) null else (quote?.destinationAmount?.let { "$it ${quote?.destinationCurrencyCode}".trim() }
-                            ?: ""),
-                        assetId = accountAsset?.assetId,
-                        session = viewModel.sessionOrNull,
-                        denomination = denomination,
+                        onAction = { action ->
+                            when (action) {
+                                AmountFieldAction.Clear -> viewModel.amount.value = ""
+                                AmountFieldAction.Edit,
+                                AmountFieldAction.SelectDenomination -> Unit
+                            }
+                        },
+                        label = stringResource(Res.string.id_amount),
                         focusRequester = focusRequester,
-                        helperText = amountHint,
-                        helperContainerColor = green20,
                     )
 
                     GreenRow(padding = 0, space = 8) {

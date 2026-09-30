@@ -17,6 +17,7 @@ import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import blockstream_green.common.generated.resources.Res
 import blockstream_green.common.generated.resources.id_account
+import blockstream_green.common.generated.resources.id_amount
 import blockstream_green.common.generated.resources.id_asset_to_buy
 import blockstream_green.common.generated.resources.id_buy
 import blockstream_green.common.generated.resources.id_buy_with_s
@@ -28,10 +29,11 @@ import com.adamglin.PhosphorIcons
 import com.adamglin.phosphoricons.Regular
 import com.adamglin.phosphoricons.regular.ArrowSquareOut
 import com.blockstream.compose.GreenPreview
+import com.blockstream.compose.components.AmountField
+import com.blockstream.compose.components.AmountFieldAction
 import com.blockstream.compose.components.CaretRight
 import com.blockstream.compose.components.GreenAccountAsset
 import com.blockstream.compose.components.GreenAlert
-import com.blockstream.compose.components.GreenAmountField
 import com.blockstream.compose.components.GreenAsset
 import com.blockstream.compose.components.GreenButton
 import com.blockstream.compose.components.GreenButtonSize
@@ -46,9 +48,7 @@ import com.blockstream.compose.navigation.NavigateDestinations
 import com.blockstream.compose.navigation.getResult
 import com.blockstream.compose.theme.bodyMedium
 import com.blockstream.compose.theme.green
-import com.blockstream.compose.theme.green20
 import com.blockstream.compose.theme.labelLarge
-import com.blockstream.compose.theme.md_theme_errorContainer
 import com.blockstream.compose.theme.md_theme_surface
 import com.blockstream.compose.theme.whiteLow
 import com.blockstream.compose.utils.SetupScreen
@@ -203,27 +203,23 @@ fun OnOffRampsScreen(
                             }
                         }
 
-                        val amount by viewModel.amount.collectAsStateWithLifecycle()
-                        val amountExchange by viewModel.amountExchange.collectAsStateWithLifecycle()
-                        val amountError by viewModel.amountError.collectAsStateWithLifecycle()
-                        val amountHint by viewModel.amountHint.collectAsStateWithLifecycle()
-                        val denomination by viewModel.denomination.collectAsStateWithLifecycle()
+                        val amountFieldState by viewModel.amountFieldState.collectAsStateWithLifecycle()
 
                         AnimatedVisibility(visible = buyAsset != null && buyAccount != null) {
 
-                            GreenAmountField(
-                                value = amount,
+                            AmountField(
+                                state = amountFieldState,
                                 onValueChange = viewModel.amount.onValueChange(),
-                                secondaryValue = amountExchange,
-                                assetId = buyAsset?.assetId,
-                                session = viewModel.sessionOrNull,
-                                denomination = denomination,
-                                helperText = amountError ?: amountHint,
-                                helperContainerColor = if (amountError != null) md_theme_errorContainer else green20,
-                                onDenominationClick = {
-                                    viewModel.postEvent(Events.SelectDenomination)
-                                }
-
+                                onAction = { action ->
+                                    when (action) {
+                                        AmountFieldAction.Clear -> viewModel.amount.value = ""
+                                        AmountFieldAction.SelectDenomination -> {
+                                            viewModel.postEvent(Events.SelectDenomination)
+                                        }
+                                        AmountFieldAction.Edit -> Unit
+                                    }
+                                },
+                                label = stringResource(Res.string.id_amount),
                             )
                         }
                     }

@@ -20,6 +20,11 @@ import blockstream_green.common.generated.resources.note_pencil
 import blockstream_green.common.generated.resources.qr_code
 import blockstream_green.common.generated.resources.question
 import blockstream_green.common.generated.resources.text_aa
+import com.blockstream.compose.components.AmountFieldFeedback
+import com.blockstream.compose.components.AmountFieldFeedbackSeverity
+import com.blockstream.compose.components.AmountFieldInteraction
+import com.blockstream.compose.components.AmountFieldSecondaryValue
+import com.blockstream.compose.components.AmountFieldState
 import com.blockstream.compose.events.Event
 import com.blockstream.compose.events.Events
 import com.blockstream.compose.extensions.launchIn
@@ -27,6 +32,8 @@ import com.blockstream.compose.extensions.previewAccountAsset
 import com.blockstream.compose.extensions.previewEnrichedAsset
 import com.blockstream.compose.extensions.previewWallet
 import com.blockstream.compose.models.GreenViewModel
+import com.blockstream.compose.models.amountFieldDenomination
+import com.blockstream.compose.models.initialAmountFieldState
 import com.blockstream.compose.models.sheets.NoteType
 import com.blockstream.compose.navigation.NavAction
 import com.blockstream.compose.navigation.NavData
@@ -78,6 +85,7 @@ import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.flow.filterNotNull
 import kotlinx.coroutines.flow.launchIn
+import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.flow.onEach
 import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.launch
@@ -124,6 +132,55 @@ abstract class ReceiveViewModelAbstract(greenWallet: GreenWallet, accountAssetOr
     abstract val showLedgerAssetWarning: StateFlow<Boolean>
     abstract val asset: StateFlow<EnrichedAsset>
     abstract val feeCommUiState: StateFlow<LightningReceiveAmountState>
+
+    val amountFieldState: StateFlow<AmountFieldState> by lazy {
+        val interaction = combine(accountAsset, receiveAddress, onProgress) { accountAsset, receiveAddress, onProgress ->
+            when {
+                accountAsset?.account?.isLightning == true && receiveAddress != null -> AmountFieldInteraction.ReadOnly
+                onProgress -> AmountFieldInteraction.Disabled
+                else -> AmountFieldInteraction.Editable
+            }
+        }
+
+        val feedback = combine(
+            feeCommUiState,
+            isReverseSubmarineSwap,
+            receiveAmountData,
+        ) { feeState, isReverseSubmarineSwap, receiveAmountData ->
+            AmountFieldFeedback(
+                severity = when (feeState) {
+                    is LightningReceiveAmountState.Info -> AmountFieldFeedbackSeverity.Info
+                    is LightningReceiveAmountState.Recommend -> AmountFieldFeedbackSeverity.Warning
+                    else -> AmountFieldFeedbackSeverity.Error
+                },
+                text = receiveAmountData.error
+                    ?.takeIf { isReverseSubmarineSwap }
+                    ?.let { StringHolder.create(it) },
+            )
+        }
+
+        combine(
+            amount,
+            amountFieldDenomination(assetId = accountAsset.map { it?.assetId }),
+            receiveAmountData,
+            interaction,
+            feedback,
+        ) { amount, denomination, receiveAmountData, interaction, feedback ->
+            AmountFieldState(
+                value = amount,
+                denominationLabel = denomination.label,
+                secondaryValue = if (receiveAmountData.exchange.isBlank()) {
+                    AmountFieldSecondaryValue.Hidden
+                } else {
+                    AmountFieldSecondaryValue.Value(receiveAmountData.exchange)
+                },
+                interaction = interaction,
+                canSelectDenomination = true,
+                feedback = feedback,
+                maxFractionDigits = denomination.maxFractionDigits,
+            )
+        }.stateIn(viewModelScope, SharingStarted.Eagerly, initialAmountFieldState(amount.value))
+    }
 
     internal var pendingAction: PendingAction? = null
 

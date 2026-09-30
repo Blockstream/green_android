@@ -26,6 +26,9 @@ kotlin {
         compileSdk = libs.versions.androidCompileSdk.get().toInt()
         minSdk = libs.versions.androidMinSdk.get().toInt()
         androidResources { enable = true }
+
+        withHostTestBuilder {
+        }
     }
 
     jvm("desktop")
@@ -75,6 +78,10 @@ kotlin {
             implementation(libs.koalaplot.core)
         }
 
+        commonTest.dependencies {
+            implementation(libs.kotlin.test)
+        }
+
         val desktopMain by getting
         desktopMain.dependencies {
             api(compose.desktop.currentOs)
@@ -107,4 +114,3 @@ kotlin {
         }
     }
 }
-

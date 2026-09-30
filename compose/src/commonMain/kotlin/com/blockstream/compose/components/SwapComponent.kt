@@ -26,6 +26,7 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.produceState
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
@@ -423,13 +424,19 @@ private fun SwapCard(
                             )
                         }
 
+                        val fallbackDenominationLabel = denomination?.denomination ?: accountAsset.asset.ticker ?: accountAsset.assetId
+                        val denominationLabel by produceState(
+                            initialValue = fallbackDenominationLabel,
+                            denomination, session, accountAsset.assetId,
+                        ) {
+                            // `value` here would shadow the SwapCard `value: String` amount parameter, so target the receiver explicitly.
+                            this.value = session?.let {
+                                denomination?.assetTickerOrFallback(session = it, assetId = accountAsset.assetId)
+                            } ?: fallbackDenominationLabel
+                        }
+
                         Text(
-                            text = session?.let {
-                                denomination?.assetTicker(
-                                    session = it,
-                                    assetId = accountAsset.assetId
-                                )
-                            } ?: denomination?.denomination ?: accountAsset.asset.ticker ?: accountAsset.assetId,
+                            text = denominationLabel,
                             style = textStyle.copy(color = green),
                             modifier = Modifier.clickable {
                                 onDenominationClick()

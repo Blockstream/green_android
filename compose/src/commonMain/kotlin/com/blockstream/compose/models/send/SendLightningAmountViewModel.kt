@@ -5,15 +5,22 @@ import blockstream_green.common.generated.resources.Res
 import blockstream_green.common.generated.resources.id_bolt12_amount
 import blockstream_green.common.generated.resources.id_lnurl_amount
 import blockstream_green.common.generated.resources.id_send_lightning_bitcoin
+import com.blockstream.compose.components.AmountFieldFeedback
+import com.blockstream.compose.components.AmountFieldFeedbackSeverity
+import com.blockstream.compose.components.AmountFieldSecondaryValue
+import com.blockstream.compose.components.AmountFieldState
 import com.blockstream.compose.events.Event
 import com.blockstream.compose.events.Events
 import com.blockstream.compose.extensions.getNetworkIcon
 import com.blockstream.compose.extensions.launchIn
 import com.blockstream.compose.extensions.previewAccountAsset
 import com.blockstream.compose.extensions.previewWallet
+import com.blockstream.compose.models.amountFieldDenomination
+import com.blockstream.compose.models.initialAmountFieldState
 import com.blockstream.compose.navigation.NavData
 import com.blockstream.compose.navigation.NavigateDestinations
 import com.blockstream.compose.sideeffects.SideEffects
+import com.blockstream.compose.utils.StringHolder
 import com.blockstream.data.AddressInputType
 import com.blockstream.data.TransactionSegmentation
 import com.blockstream.data.TransactionType
@@ -63,6 +70,33 @@ abstract class SendLightningAmountViewModelAbstract(greenWallet: GreenWallet, ac
     abstract val address: String
     abstract val amount: MutableStateFlow<String>
     abstract val amountExchange: StateFlow<String>
+
+    val amountFieldState: StateFlow<AmountFieldState> by lazy {
+        combine(
+            amount,
+            amountFieldDenomination(assetId = accountAssetBalance.map { it?.assetId }),
+            amountExchange,
+            error,
+        ) { amount, denomination, amountExchange, error ->
+            AmountFieldState(
+                value = amount,
+                denominationLabel = denomination.label,
+                secondaryValue = if (amountExchange.isBlank()) {
+                    AmountFieldSecondaryValue.Hidden
+                } else {
+                    AmountFieldSecondaryValue.Value(amountExchange)
+                },
+                canSelectDenomination = true,
+                feedback = error?.let {
+                    AmountFieldFeedback(
+                        severity = AmountFieldFeedbackSeverity.Error,
+                        text = StringHolder.create(it),
+                    )
+                },
+                maxFractionDigits = denomination.maxFractionDigits,
+            )
+        }.stateIn(viewModelScope, SharingStarted.Eagerly, initialAmountFieldState(amount.value))
+    }
 }
 
 class SendLightningAmountViewModel(

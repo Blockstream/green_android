@@ -1,6 +1,5 @@
 package com.blockstream.compose.screens.lightning
 
-import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.material3.Text
@@ -15,7 +14,7 @@ import blockstream_green.common.generated.resources.id_amount_to_receive
 import blockstream_green.common.generated.resources.id_description
 import blockstream_green.common.generated.resources.id_redeem
 import com.blockstream.data.data.DenominatedValue
-import com.blockstream.compose.components.GreenAmountField
+import com.blockstream.compose.components.AmountFieldAction
 import com.blockstream.compose.components.GreenButton
 import com.blockstream.compose.components.GreenColumn
 import com.blockstream.compose.components.GreenTextField
@@ -25,9 +24,7 @@ import com.blockstream.compose.extensions.onValueChange
 import com.blockstream.compose.models.lightning.LnUrlWithdrawViewModelAbstract
 import com.blockstream.compose.navigation.NavigateDestinations
 import com.blockstream.compose.navigation.getResult
-import com.blockstream.compose.theme.bodyMedium
 import com.blockstream.compose.theme.labelLarge
-import com.blockstream.compose.theme.whiteLow
 import com.blockstream.compose.utils.SetupScreen
 import org.jetbrains.compose.resources.stringResource
 
@@ -55,36 +52,23 @@ fun LnUrlWithdrawScreen(
                     .fillMaxWidth()
             )
 
-            val amount by viewModel.amount.collectAsStateWithLifecycle()
-            val exchange by viewModel.exchange.collectAsStateWithLifecycle()
+            val amountFieldState by viewModel.amountFieldState.collectAsStateWithLifecycle()
             val withdrawalLimits by viewModel.withdrawalLimits.collectAsStateWithLifecycle()
-            val denomination by viewModel.denomination.collectAsStateWithLifecycle()
-            val error by viewModel.error.collectAsStateWithLifecycle()
 
-            GreenAmountField(
-                value = amount,
+            LnUrlWithdrawAmountField(
+                state = amountFieldState,
                 onValueChange = viewModel.amount.onValueChange(),
-                title = stringResource(Res.string.id_amount_to_receive),
-                secondaryValue = exchange,
-                session = viewModel.sessionOrNull,
-                denomination = denomination,
-                enabled = !onProgress,
-                isAmountLocked = viewModel.isAmountLocked,
-                helperText = error,
-                footerContent = {
-                    Row(modifier = Modifier.padding(horizontal = 4.dp)) {
-                        Text(
-                            text = withdrawalLimits,
-                            textAlign = TextAlign.Start,
-                            style = bodyMedium,
-                            color = whiteLow,
-                            modifier = Modifier.weight(1f)
-                        )
+                onAction = { action ->
+                    when (action) {
+                        AmountFieldAction.Clear -> viewModel.amount.value = ""
+                        AmountFieldAction.SelectDenomination -> {
+                            viewModel.postEvent(Events.SelectDenomination)
+                        }
+                        AmountFieldAction.Edit -> Unit
                     }
                 },
-                onDenominationClick = {
-                    viewModel.postEvent(Events.SelectDenomination)
-                }
+                withdrawalLimits = withdrawalLimits,
+                label = stringResource(Res.string.id_amount_to_receive),
             )
 
             val description by viewModel.description.collectAsStateWithLifecycle()

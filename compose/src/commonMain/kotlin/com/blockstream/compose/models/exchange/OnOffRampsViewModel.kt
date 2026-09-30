@@ -4,6 +4,13 @@ import androidx.lifecycle.viewModelScope
 import blockstream_green.common.generated.resources.Res
 import blockstream_green.common.generated.resources.id_buy
 import blockstream_green.common.generated.resources.id_type_an_amount_between_s_and_s
+import com.blockstream.compose.components.AmountFieldFeedback
+import com.blockstream.compose.components.AmountFieldFeedbackSeverity
+import com.blockstream.compose.components.AmountFieldSecondaryValue
+import com.blockstream.compose.components.AmountFieldState
+import com.blockstream.compose.models.amountFieldDenomination
+import com.blockstream.compose.models.initialAmountFieldState
+import com.blockstream.compose.utils.StringHolder
 import com.blockstream.data.lightning.LightningSwapInfo
 import com.blockstream.data.data.DenominatedValue
 import com.blockstream.data.data.Denomination
@@ -36,6 +43,7 @@ import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.combine
+import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.flow.onEach
 import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.launch
@@ -67,6 +75,38 @@ abstract class OnOffRampsViewModelAbstract(
     abstract val amountHint: StateFlow<String?>
 
     abstract val isSandboxEnvironment: MutableStateFlow<Boolean>
+
+    val amountFieldState: StateFlow<AmountFieldState> by lazy {
+        combine(
+            amount,
+            amountFieldDenomination(assetId = buyAsset.map { it?.assetId }),
+            amountExchange,
+            amountError,
+            amountHint,
+        ) { amount, denomination, amountExchange, amountError, amountHint ->
+            AmountFieldState(
+                value = amount,
+                denominationLabel = denomination.label,
+                secondaryValue = if (amountExchange.isBlank()) {
+                    AmountFieldSecondaryValue.Hidden
+                } else {
+                    AmountFieldSecondaryValue.Value(amountExchange)
+                },
+                canSelectDenomination = true,
+                feedback = (amountError ?: amountHint)?.let {
+                    AmountFieldFeedback(
+                        severity = if (amountError != null) {
+                            AmountFieldFeedbackSeverity.Error
+                        } else {
+                            AmountFieldFeedbackSeverity.Success
+                        },
+                        text = StringHolder.create(it),
+                    )
+                },
+                maxFractionDigits = denomination.maxFractionDigits,
+            )
+        }.stateIn(viewModelScope, SharingStarted.Eagerly, initialAmountFieldState(amount.value))
+    }
 }
 
 class OnOffRampsViewModel(greenWallet: GreenWallet) :

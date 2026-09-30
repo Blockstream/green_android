@@ -76,9 +76,10 @@ import com.adamglin.phosphoricons.regular.SealCheck
 import com.adamglin.phosphoricons.regular.ShareNetwork
 import com.blockstream.compose.GreenPreview
 import com.blockstream.compose.LocalAppInfo
+import com.blockstream.compose.components.AmountField
+import com.blockstream.compose.components.AmountFieldAction
 import com.blockstream.compose.components.GreenAddress
 import com.blockstream.compose.components.GreenAlert
-import com.blockstream.compose.components.GreenAmountField
 import com.blockstream.compose.components.GreenAsset
 import com.blockstream.compose.components.GreenButton
 import com.blockstream.compose.components.GreenButtonColor
@@ -102,12 +103,10 @@ import com.blockstream.compose.navigation.bottomsheet.BottomSheetNavigator
 import com.blockstream.compose.navigation.getResult
 import com.blockstream.compose.screens.receive.components.LightningReadyBadge
 import com.blockstream.compose.sideeffects.SideEffects
-import com.blockstream.compose.theme.blueSurface
 import com.blockstream.compose.theme.bodyLarge
 import com.blockstream.compose.theme.bodyMedium
 import com.blockstream.compose.theme.labelMedium
 import com.blockstream.compose.theme.orange
-import com.blockstream.compose.theme.orangeSurface
 import com.blockstream.compose.theme.whiteMedium
 import com.blockstream.compose.utils.SetupScreen
 import com.blockstream.compose.utils.appTestTag
@@ -156,7 +155,6 @@ fun ReceiveScreen(
     val showRequestAmount by viewModel.showAmount.collectAsStateWithLifecycle()
     val receiveAddress by viewModel.receiveAddress.collectAsStateWithLifecycle()
     val receiveAddressUri by viewModel.receiveAddressUri.collectAsStateWithLifecycle()
-    val denomination by viewModel.denomination.collectAsStateWithLifecycle()
     val showLightningOnChainAddress by viewModel.showLightningOnChainAddress.collectAsStateWithLifecycle()
     val showLedgerAssetWarning by viewModel.showLedgerAssetWarning.collectAsStateWithLifecycle()
     val buttonEnabled by viewModel.buttonEnabled.collectAsStateWithLifecycle()
@@ -193,7 +191,7 @@ fun ReceiveScreen(
     val focusRequester = remember { FocusRequester() }
 
     val amount by viewModel.amount.collectAsStateWithLifecycle()
-    val receiveAmountData by viewModel.receiveAmountData.collectAsStateWithLifecycle()
+    val amountFieldState by viewModel.amountFieldState.collectAsStateWithLifecycle()
     val showRecoveryConfirmation by viewModel.showRecoveryConfirmation.collectAsStateWithLifecycle()
     val isLightningOrSwap = (accountAsset?.account?.isLightning == true && !showLightningOnChainAddress) || isReverseSubmarineSwap
 
@@ -351,27 +349,28 @@ fun ReceiveScreen(
                     GreenColumn(padding = 0, space = 8) {
                         val state = feeState
 
-                        val currentErrorText = if (isReverseSubmarineSwap) {
-                            receiveAmountData.error
-                        } else null
+                        val hasRichFeedback = !isReverseSubmarineSwap &&
+                            (state is LightningReceiveAmountState.Info ||
+                                state is LightningReceiveAmountState.Recommend ||
+                                state is LightningReceiveAmountState.Error)
 
-                        GreenAmountField(
-                            value = amount,
+                        AmountField(
+                            state = amountFieldState,
                             onValueChange = viewModel.amount.onValueChange(),
-                            secondaryValue = receiveAmountData.exchange,
-                            assetId = accountAsset?.assetId,
-                            session = viewModel.sessionOrNull,
-                            title = if (showRequestAmount) stringResource(Res.string.id_request_amount) else stringResource(Res.string.id_receive_amount),
-
-                            helperText = currentErrorText,
-
-                            helperContainerColor = when (state) {
-                                is LightningReceiveAmountState.Info -> blueSurface
-                                is LightningReceiveAmountState.Recommend -> orangeSurface
-                                else -> null
+                            onAction = { action ->
+                                when (action) {
+                                    AmountFieldAction.Clear -> viewModel.amount.value = ""
+                                    AmountFieldAction.Edit -> viewModel.postEvent(ReceiveViewModel.LocalEvents.ClearLightningInvoice)
+                                    AmountFieldAction.SelectDenomination -> viewModel.postEvent(Events.SelectDenomination)
+                                }
                             },
-
-                            helperContent = if (!isReverseSubmarineSwap && (state is LightningReceiveAmountState.Info || state is LightningReceiveAmountState.Recommend || state is LightningReceiveAmountState.Error)) {
+                            label = if (showRequestAmount) {
+                                stringResource(Res.string.id_request_amount)
+                            } else {
+                                stringResource(Res.string.id_receive_amount)
+                            },
+                            focusRequester = focusRequester,
+                            feedbackContent = if (hasRichFeedback) {
                                 {
                                     when (state) {
                                         // To remove diamond warning icon for this flow
@@ -441,17 +440,6 @@ fun ReceiveScreen(
                                     }
                                 }
                             } else null,
-
-                            enabled = !onProgress,
-                            denomination = denomination,
-                            focusRequester = focusRequester,
-                            isReadyOnly = accountAsset?.account?.isLightning == true && receiveAddress != null,
-                            onEditClick = {
-                                viewModel.postEvent(ReceiveViewModel.LocalEvents.ClearLightningInvoice)
-                            },
-                            onDenominationClick = {
-                                viewModel.postEvent(Events.SelectDenomination)
-                            }
                         )
                     }
                 }

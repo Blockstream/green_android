@@ -11,6 +11,7 @@ import androidx.compose.material3.Text
 import androidx.compose.material3.rememberModalBottomSheetState
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.produceState
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
@@ -82,12 +83,15 @@ fun DenominatedValueItem(
     ) {
         GreenRow(verticalAlignment = Alignment.CenterVertically) {
             Column(modifier = Modifier.weight(1f)) {
-                val title = session?.let {
-                    denominatedValue.denomination.assetTicker(
-                        session = it,
-                        assetId = denominatedValue.assetId
-                    )
-                } ?: denominatedValue.denomination.denomination
+                val fallbackTitle = denominatedValue.denomination.denomination
+                val title by produceState(initialValue = fallbackTitle, denominatedValue, session) {
+                    value = session?.let {
+                        denominatedValue.denomination.assetTickerOrFallback(
+                            session = it,
+                            assetId = denominatedValue.assetId
+                        )
+                    } ?: fallbackTitle
+                }
                 Text(text = title, style = titleSmall)
                 denominatedValue.asLook?.also {
                     Text(text = it, style = bodyLarge)

@@ -49,6 +49,7 @@ val bottom_nav_bg = Color(0xFF2E3033)
 
 val green = md_theme_primary
 val green20 = Color(0x3300f113)
+val positiveAccent = Color(0xFF00C60D)
 
 val red = Color(0xFFEA5262)
 val redDark = Color(0xFF9A0000)
