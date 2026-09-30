@@ -8,6 +8,7 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.CompositionLocalProvider
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.unit.dp
+import com.blockstream.designsystem.ProvideAppTheme
 import com.blockstream.compose.managers.LocalPlatformManager
 import com.blockstream.compose.managers.rememberPlatformManager
 import com.blockstream.data.config.AppInfo
@@ -117,7 +118,8 @@ fun GreenTheme(isLight: Boolean = false, content: @Composable () -> Unit) {
     MaterialTheme(
         colorScheme = colorScheme,
         shapes = GreenShapes,
-        typography = GreenTypography(),
-        content = content
-    )
+        typography = GreenTypography()
+    ) {
+        ProvideAppTheme(isLight = isLight, content = content)
+    }
 }

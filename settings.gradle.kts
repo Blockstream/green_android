@@ -30,6 +30,7 @@ dependencyResolutionManagement {
 include(
     ":androidApp",
     ":compose",
+    ":designsystem",
     ":hardware",
     ":jade",
     ":base-gms",

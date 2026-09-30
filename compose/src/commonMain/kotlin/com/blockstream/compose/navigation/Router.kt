@@ -33,6 +33,7 @@ import com.blockstream.compose.models.assetaccounts.AccountDescriptorViewModel
 import com.blockstream.compose.models.assetaccounts.AssetAccountDetailsViewModel
 import com.blockstream.compose.models.assetaccounts.AssetAccountListViewModel
 import com.blockstream.compose.models.camera.CameraViewModel
+import com.blockstream.compose.models.designsystem.DesignSystemCatalogViewModel
 import com.blockstream.compose.models.devices.DeviceInfoViewModel
 import com.blockstream.compose.models.devices.DeviceListViewModel
 import com.blockstream.compose.models.devices.DeviceScanViewModel
@@ -118,6 +119,7 @@ import com.blockstream.compose.screens.archived.ArchivedAccountsScreen
 import com.blockstream.compose.screens.assetaccounts.AccountDescriptorScreen
 import com.blockstream.compose.screens.assetaccounts.AssetAccountDetailsScreen
 import com.blockstream.compose.screens.assetaccounts.AssetAccountListScreen
+import com.blockstream.compose.screens.designsystem.DesignSystemCatalogScreen
 import com.blockstream.compose.screens.devices.DeviceInfoScreen
 import com.blockstream.compose.screens.devices.DeviceListScreen
 import com.blockstream.compose.screens.devices.DeviceScanScreen
@@ -261,6 +263,9 @@ fun Router(
             }
             appComposable<NavigateDestinations.AppSettings> {
                 AppSettingsScreen(viewModel { AppSettingsViewModel() })
+            }
+            appComposable<NavigateDestinations.DesignSystemCatalog> {
+                DesignSystemCatalogScreen(viewModel { DesignSystemCatalogViewModel() })
             }
             appComposable<NavigateDestinations.SetupNewWallet> {
                 SetupNewWalletScreen(viewModel { SetupNewWalletViewModel() })

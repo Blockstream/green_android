@@ -74,6 +74,9 @@ sealed class NavigateDestinations : NavigateDestination() {
     data object AppSettings : NavigateDestination(unique = true)
 
     @Serializable
+    data object DesignSystemCatalog : NavigateDestination(unique = true)
+
+    @Serializable
     data class Analytics(val isActionRequired: Boolean = false) : NavigateDestination()
 
     @Serializable

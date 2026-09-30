@@ -10,28 +10,24 @@ import androidx.compose.ui.text.font.FontFamily
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.TextUnit
 import androidx.compose.ui.unit.sp
-import blockstream_green.common.generated.resources.Res
-import blockstream_green.common.generated.resources.inter_bold
-import blockstream_green.common.generated.resources.inter_extra_light
-import blockstream_green.common.generated.resources.inter_regular
-import blockstream_green.common.generated.resources.inter_thin
-import blockstream_green.common.generated.resources.monospace_bold
-import blockstream_green.common.generated.resources.monospace_regular
+import com.blockstream.designsystem.generated.resources.Res
+import com.blockstream.designsystem.generated.resources.inter_bold
+import com.blockstream.designsystem.generated.resources.inter_regular
+import com.blockstream.designsystem.generated.resources.roboto_mono_bold
+import com.blockstream.designsystem.generated.resources.roboto_mono_regular
 import org.jetbrains.compose.resources.Font
 
 @Composable
 fun InterFont() = FontFamily(
     Font(Res.font.inter_regular, FontWeight.Normal),
-    Font(Res.font.inter_thin, FontWeight.Thin),
-    Font(Res.font.inter_extra_light, FontWeight.ExtraLight),
     Font(Res.font.inter_bold, FontWeight.Bold),
 )
 
 @Composable
 @Stable
 fun MonospaceFont() = FontFamily(
-    Font(Res.font.monospace_regular, FontWeight.Normal),
-    Font(Res.font.monospace_bold, FontWeight.Bold),
+    Font(Res.font.roboto_mono_regular, FontWeight.Normal),
+    Font(Res.font.roboto_mono_bold, FontWeight.Bold),
 )
 
 @Composable
