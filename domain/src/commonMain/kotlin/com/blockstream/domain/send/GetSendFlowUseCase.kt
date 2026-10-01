@@ -292,11 +292,16 @@ class GetSendFlowUseCase(
             }
         }
 
-        return if (isLightningAddress) {
-            SendFlow.SelectLightningAmount(address = address, account = account)
-        } else {
-            SendFlow.SelectAmount(address = address, account = account)
+        if (isLightningAddress) {
+            return SendFlow.SelectLightningAmount(address = address, account = account)
         }
+
+        // An account passed in by the caller skips the funded accounts lookup above.
+        if (account.balance(session) <= 0) {
+            throw Exception("id_insufficient_funds")
+        }
+
+        return SendFlow.SelectAmount(address = address, account = account)
     }
 
     private fun looksLikeLightningInput(input: String): Boolean {
