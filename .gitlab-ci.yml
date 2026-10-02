@@ -136,8 +136,6 @@ development:
       - unknown_failure
       - stuck_or_timeout_failure
   rules:
-    - if: $CI_PIPELINE_SOURCE == "schedule"
-      when: never
     - if: $CI_COMMIT_BRANCH
   artifacts:
     name: "$CI_PROJECT_NAME-$CI_JOB_NAME-$CI_COMMIT_SHORT_SHA"
@@ -348,8 +346,8 @@ gcp_push_development:
   extends:
     - .gcp_prep
     - .gcp_auth_inline
-  when: manual
-  allow_failure: true
+  rules:
+    - if: $CI_COMMIT_BRANCH
   needs:
     - job: development
       optional: true
@@ -419,30 +417,16 @@ gcp_push_gdk_commit:
 #####################################
 # E2E Tests - Nightly (Scheduled)
 
-e2e:nightly:build:
-  extends: .e2e:build
-  rules:
-    - if: $CI_PIPELINE_SOURCE == "schedule"
-
-e2e:nightly:upload:
-  extends: .e2e:upload
-  variables:
-    APK_NAME: $CI_PROJECT_NAME-$CI_COMMIT_SHA-nightly
-  needs:
-    - e2e:nightly:build
-  rules:
-    - if: $CI_PIPELINE_SOURCE == "schedule"
-
 e2e:nightly:trigger:
   stage: e2e
   needs:
-    - e2e:nightly:upload
+    - gcp_push_development
   rules:
     - if: $CI_PIPELINE_SOURCE == "schedule"
   trigger:
     project: blockstream/green/maestro-blockstream
   variables:
-    UPSTREAM_APK_URL: "https://storage.googleapis.com/green-android-builds/${CI_PROJECT_NAME}-${CI_COMMIT_SHA}-nightly.apk"
+    UPSTREAM_APK_URL: "https://storage.googleapis.com/green-android-builds/${CI_PROJECT_NAME}-${CI_COMMIT_SHA}-development.apk"
     UPSTREAM_APP_ID: "com.greenaddress.greenbits_android_wallet.dev"
     UPSTREAM_COMMIT_SHA: $CI_COMMIT_SHA
     UPSTREAM_MODE: "full"
