@@ -983,6 +983,7 @@ class LoginViewModel constructor(
 
     fun navigate(greenWallet: GreenWallet) {
         if (isWatchOnlyUpgrade) {
+            postSideEffect(SideEffects.Success())
             postSideEffect(SideEffects.NavigateBack())
         } else {
             postSideEffect(SideEffects.NavigateTo(NavigateDestinations.WalletOverview(greenWallet)))

@@ -164,7 +164,7 @@ fun LoginScreen(
                 viewModel.postEvent(NavigateDestinations.Home)
             }
 
-            is SideEffects.NavigateBack -> {
+            is SideEffects.Success -> {
                 NavigateDestinations.Login.setResult(viewModel.greenWallet)
             }
         }
