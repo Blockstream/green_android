@@ -4,7 +4,7 @@
       <verify-metadata>false</verify-metadata>
       <verify-signatures>false</verify-signatures>
       <trusted-artifacts>
-         <trust file="gradle-9.7.1-src.zip"/>
+         <trust file="gradle-9.8.0-src.zip"/>
          <trust file=".*-javadoc[.]jar" regex="true"/>
          <trust file=".*-sources[.]jar" regex="true"/>
          <trust group="^androidx($|([.].*))" regex="true" reason="Trust all AndroidX artifacts"/>
