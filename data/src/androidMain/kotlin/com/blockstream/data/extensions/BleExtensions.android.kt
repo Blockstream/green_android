@@ -5,7 +5,7 @@ import com.juul.kable.PlatformAdvertisement
 import com.juul.kable.ScannerBuilder
 
 actual fun ScannerBuilder.conflate() {
-    preConflate = true
+    bufferCapacity = 1
 }
 
 actual fun PeripheralBuilder.setupJade(mtu: Int) {
