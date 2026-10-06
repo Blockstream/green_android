@@ -7,6 +7,7 @@ import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.material3.CardColors
 import androidx.compose.material3.CardDefaults
@@ -78,7 +79,7 @@ fun GreenCard(
                     helperContent()
                 } else {
                     Row(
-                        verticalAlignment = Alignment.CenterVertically,
+                        verticalAlignment = Alignment.Top,
                         horizontalArrangement = Arrangement.spacedBy(6.dp),
                     ) {
                         if (textValue.isNotBlank()) {
@@ -86,7 +87,9 @@ fun GreenCard(
                                 painter = painterResource(Res.drawable.warning_diamond),
                                 contentDescription = null,
                                 tint = red,
-                                modifier = Modifier.size(16.dp),
+                                modifier = Modifier
+                                    .padding(top = 2.dp)
+                                    .size(16.dp),
                             )
                             Text(text = stringResourceFromId(textValue), style = bodyMedium)
                         }

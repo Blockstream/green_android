@@ -159,6 +159,14 @@ class GetTransactionConfirmationUseCase() {
             }
         }
 
+        if (isAddressVerificationOnDevice) {
+            session.gdkHwWallet?.also { hwWallet ->
+                utxos = utxos?.map { utxo ->
+                    utxo.copy(deviceAddress = utxo.address?.let(hwWallet::displayAddress))
+                }
+            }
+        }
+
         val fee = transaction.fee?.toAmountLook(
             session = session,
             assetId = account.network.policyAsset,

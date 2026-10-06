@@ -105,5 +105,7 @@ abstract class GdkHardwareWallet {
         hwInteraction: HardwareWalletInteraction?
     ): String
 
+    open fun displayAddress(address: String): String = address
+
     abstract fun disconnect()
 }

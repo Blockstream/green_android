@@ -1,13 +1,17 @@
 package com.blockstream.compose.sheets
 
 import androidx.compose.foundation.Image
+import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material3.ExperimentalMaterial3Api
+import androidx.compose.material3.Icon
 import androidx.compose.material3.Text
 import androidx.compose.material3.rememberModalBottomSheetState
 import androidx.compose.material3.rememberTooltipState
@@ -23,15 +27,19 @@ import blockstream_green.common.generated.resources.id_blockstream_app_needs_the
 import blockstream_green.common.generated.resources.id_change
 import blockstream_green.common.generated.resources.id_confirm_on_your_device
 import blockstream_green.common.generated.resources.id_fee
+import blockstream_green.common.generated.resources.id_ledger_shows_this_liquid_address_in
 import blockstream_green.common.generated.resources.id_sent_to
+import blockstream_green.common.generated.resources.id_shown_on_your_ledger
 import blockstream_green.common.generated.resources.id_this_is_a_temporary_swap_address
 import blockstream_green.common.generated.resources.id_this_is_not_the_recipient_address
 import blockstream_green.common.generated.resources.id_to_show_balances_and
+import blockstream_green.common.generated.resources.warning_diamond
 import com.blockstream.compose.GreenPreview
 import com.blockstream.compose.components.GreenAddress
 import com.blockstream.compose.components.GreenAmount
 import com.blockstream.compose.components.GreenBottomSheet
 import com.blockstream.compose.components.GreenColumn
+import com.blockstream.compose.components.GreenDataLayout
 import com.blockstream.compose.components.LearnMoreButton
 import com.blockstream.compose.events.Events
 import com.blockstream.compose.extensions.actionIcon
@@ -41,6 +49,8 @@ import com.blockstream.compose.models.SimpleGreenViewModelPreview
 import com.blockstream.compose.theme.bodyLarge
 import com.blockstream.compose.theme.bodyMedium
 import com.blockstream.compose.theme.bodySmall
+import com.blockstream.compose.theme.orange
+import com.blockstream.compose.theme.orangeSurface
 import com.blockstream.compose.theme.textLow
 import com.blockstream.compose.theme.textMedium
 import com.blockstream.compose.theme.titleSmall
@@ -122,6 +132,10 @@ fun DeviceInteractionBottomSheet(
                             session = viewModel.sessionOrNull,
                             showIcon = true
                         )
+
+                        it.deviceAddress?.takeIf { deviceAddress -> deviceAddress != it.address }?.also { deviceAddress ->
+                            LedgerAddress(address = deviceAddress)
+                        }
                     }
 
                     transactionConfirmation.fee?.also {
@@ -189,6 +203,35 @@ fun DeviceInteractionBottomSheet(
 }
 
 @Composable
+private fun LedgerAddress(address: String) {
+    GreenDataLayout(
+        title = stringResource(Res.string.id_shown_on_your_ledger),
+        helperContainerColor = orangeSurface,
+        helperContent = {
+            Row(
+                verticalAlignment = Alignment.Top,
+                horizontalArrangement = Arrangement.spacedBy(6.dp)
+            ) {
+                Icon(
+                    painter = painterResource(Res.drawable.warning_diamond),
+                    contentDescription = null,
+                    tint = orange,
+                    modifier = Modifier
+                        .padding(top = 2.dp)
+                        .size(16.dp)
+                )
+                Text(
+                    text = stringResource(Res.string.id_ledger_shows_this_liquid_address_in),
+                    style = bodyMedium
+                )
+            }
+        }
+    ) {
+        GreenAddress(address = address)
+    }
+}
+
+@Composable
 @Preview
 fun VerifyOnDeviceTransactionBottomSheetPreview() {
     GreenPreview {
@@ -210,6 +253,27 @@ fun VerifyOnDeviceTransactionBottomSheetPreview() {
                     )
                 ),
                 fee = "1 BTC"
+            ),
+            onDismissRequest = { }
+        )
+    }
+}
+
+@Composable
+@Preview
+fun VerifyOnDeviceLedgerLiquidTransactionBottomSheetPreview() {
+    GreenPreview {
+        DeviceInteractionBottomSheet(
+            viewModel = SimpleGreenViewModelPreview(),
+            transactionConfirmation = TransactionConfirmation(
+                utxos = listOf(
+                    UtxoView(
+                        address = "lq1qqdh6lra2pjvyn8l6rh94td72v4wwq4da9vclg0kgaegquq8drz3xvk54789zdfrdp2euajdttyvzdc0lf6xrx0drefnfp3dzu",
+                        amount = "0.00000100 LBTC",
+                        deviceAddress = "Uwkr8dYptkfV3uXx2Exk7GryyzaxkMz3tCtALfkkqvgmNAJPpcpQKdqQ9pq79fLXjH2NRUjfEmtaDECx"
+                    )
+                ),
+                fee = "0.00000030 LBTC"
             ),
             onDismissRequest = { }
         )

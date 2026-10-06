@@ -142,14 +142,16 @@ fun SwapComponent(
         helperContent = warning?.let { warningText ->
             {
                 Row(
-                    verticalAlignment = Alignment.CenterVertically,
+                    verticalAlignment = Alignment.Top,
                     horizontalArrangement = Arrangement.spacedBy(6.dp)
                 ) {
                     Icon(
                         painter = painterResource(Res.drawable.warning_diamond),
                         contentDescription = null,
                         tint = orange,
-                        modifier = Modifier.size(16.dp)
+                        modifier = Modifier
+                            .padding(top = 2.dp)
+                            .size(16.dp)
                     )
                     Text(text = stringResourceFromId(warningText), style = bodyMedium)
                 }

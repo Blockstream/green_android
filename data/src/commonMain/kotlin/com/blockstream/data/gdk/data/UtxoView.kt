@@ -11,6 +11,7 @@ data class UtxoView constructor(
     val amount: String? = null,
     val amountExchange: String? = null,
     val isChange: Boolean = false,
+    val deviceAddress: String? = null,
 ) : GreenJson<UtxoView>() {
     override fun kSerializer() = serializer()
 

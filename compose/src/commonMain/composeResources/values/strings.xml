@@ -2110,4 +2110,6 @@
     <string name="id_swaps_are_temporarily_unavailable">Swaps are temporarily unavailable.</string>
     <string name="id_no_stuck_swaps_to_reset">No stuck swaps to reset</string>
     <string name="id_multisig_accounts_require_your_jade">Multisig accounts require your Jade.\n\nFrom then on, this wallet can only be accessed with your Jade connected — watch-only access with biometrics will be disabled.</string>
+    <string name="id_shown_on_your_ledger">Shown on your Ledger</string>
+    <string name="id_ledger_shows_this_liquid_address_in">Ledger shows this Liquid address in a different format, but the destination is the same. Verify that it matches your device's display.</string>
 </resources>

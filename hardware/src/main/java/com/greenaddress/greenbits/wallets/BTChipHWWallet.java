@@ -39,6 +39,7 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
+import java.util.Locale;
 import java.util.Map;
 import java.util.concurrent.Executors;
 
@@ -202,6 +203,39 @@ public class BTChipHWWallet extends GdkHardwareWallet {
             return rslt;
         } catch (final Exception e) {
             throw new RuntimeException(e.getMessage());
+        }
+    }
+
+    @NonNull
+    @Override
+    public String displayAddress(@NonNull String address) {
+        // Ledger renders confidential P2WPKH (blech32) addresses as base58check of
+        // confidential prefix || witness version || blinding pubkey || witness program.
+        final String confidentialHrp = address.substring(0, Math.max(address.lastIndexOf('1'), 0)).toLowerCase(Locale.ROOT);
+        final String hrp;
+        final int prefix;
+        switch (confidentialHrp) {
+            case "lq": hrp = "ex"; prefix = Wally.WALLY_CA_PREFIX_LIQUID; break;
+            case "tlq": hrp = "tex"; prefix = Wally.WALLY_CA_PREFIX_LIQUID_TESTNET; break;
+            case "el": hrp = "ert"; prefix = Wally.WALLY_CA_PREFIX_LIQUID_REGTEST; break;
+            default: return address;
+        }
+
+        try {
+            final byte[] scriptPubKey = Wally.addr_segwit_to_bytes(Wally.confidential_addr_to_addr_segwit(address, confidentialHrp, hrp), hrp, 0);
+            if (scriptPubKey.length != Wally.WALLY_SCRIPTPUBKEY_P2WPKH_LEN || scriptPubKey[0] != 0) {
+                return address;
+            }
+            final byte[] blindingKey = Wally.confidential_addr_segwit_to_ec_public_key(address, confidentialHrp, null);
+
+            final ByteArrayOutputStream payload = new ByteArrayOutputStream();
+            payload.write(prefix);
+            payload.write(0);
+            payload.write(blindingKey, 0, blindingKey.length);
+            payload.write(scriptPubKey, 2, scriptPubKey.length - 2);
+            return Wally.base58check_from_bytes(payload.toByteArray());
+        } catch (final Exception e) {
+            return address;
         }
     }
 
