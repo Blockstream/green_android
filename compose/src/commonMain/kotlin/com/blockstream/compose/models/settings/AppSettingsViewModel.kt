@@ -45,6 +45,8 @@ abstract class AppSettingsViewModelAbstract() :
 
     abstract val multiServerValidationFeatureEnabled: Boolean
 
+    abstract val designSystemCatalogEnabled: Boolean
+
     abstract val analyticsFeatureEnabled: Boolean
 
     abstract val experimentalFeatureEnabled: Boolean
@@ -103,6 +105,8 @@ class AppSettingsViewModel : AppSettingsViewModelAbstract() {
 
     override val multiServerValidationFeatureEnabled = appInfo.isDevelopmentOrDebug
 
+    override val designSystemCatalogEnabled = appInfo.isDevelopmentOrDebug
+
     override val analyticsFeatureEnabled = settingsManager.analyticsFeatureEnabled
 
     override val experimentalFeatureEnabled = settingsManager.lightningFeatureEnabled
@@ -144,6 +148,7 @@ class AppSettingsViewModel : AppSettingsViewModelAbstract() {
 
     class LocalEvents {
         object AnalyticsMoreInfo : Events.EventSideEffect(SideEffects.NavigateTo(NavigateDestinations.Analytics()))
+        object OpenDesignSystemCatalog : Events.EventSideEffect(SideEffects.NavigateTo(NavigateDestinations.DesignSystemCatalog))
         object Save : Event
         object AutoSave : Event
         object Cancel : Event
@@ -446,6 +451,7 @@ class AppSettingsViewModelPreview(initValue: Boolean = false) : AppSettingsViewM
     }
 
     override val multiServerValidationFeatureEnabled: Boolean = false
+    override val designSystemCatalogEnabled: Boolean = true
     override val analyticsFeatureEnabled: Boolean = true
     override val experimentalFeatureEnabled: Boolean = true
     override val enhancedPrivacyEnabled: MutableStateFlow<Boolean> = MutableStateFlow(initValue)

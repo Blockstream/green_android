@@ -23,6 +23,9 @@ kotlin {
         compileSdk = libs.versions.androidCompileSdk.get().toInt()
         minSdk = libs.versions.androidMinSdk.get().toInt()
         androidResources { enable = true }
+
+        withHostTestBuilder {
+        }
     }
 
     jvm()
@@ -30,8 +33,15 @@ kotlin {
     sourceSets {
         commonMain.dependencies {
             implementation(compose.runtime)
+            implementation(compose.foundation)
             implementation(compose.ui)
+            implementation(compose.components.uiToolingPreview)
+            implementation(libs.compose.material.ripple)
             api(compose.components.resources)
+        }
+
+        commonTest.dependencies {
+            implementation(libs.kotlin.test)
         }
     }
 }

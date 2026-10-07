@@ -119,6 +119,7 @@ import com.blockstream.compose.screens.archived.ArchivedAccountsScreen
 import com.blockstream.compose.screens.assetaccounts.AccountDescriptorScreen
 import com.blockstream.compose.screens.assetaccounts.AssetAccountDetailsScreen
 import com.blockstream.compose.screens.assetaccounts.AssetAccountListScreen
+import com.blockstream.compose.screens.designsystem.DesignSystemCatalogEntryScreen
 import com.blockstream.compose.screens.designsystem.DesignSystemCatalogScreen
 import com.blockstream.compose.screens.devices.DeviceInfoScreen
 import com.blockstream.compose.screens.devices.DeviceListScreen
@@ -266,6 +267,10 @@ fun Router(
             }
             appComposable<NavigateDestinations.DesignSystemCatalog> {
                 DesignSystemCatalogScreen(viewModel { DesignSystemCatalogViewModel() })
+            }
+            appComposable<NavigateDestinations.DesignSystemCatalogEntry> {
+                val args = it.toRoute<NavigateDestinations.DesignSystemCatalogEntry>()
+                DesignSystemCatalogEntryScreen(viewModel { DesignSystemCatalogViewModel(entryId = args.id, initialIsLight = args.isLight) })
             }
             appComposable<NavigateDestinations.SetupNewWallet> {
                 SetupNewWalletScreen(viewModel { SetupNewWalletViewModel() })

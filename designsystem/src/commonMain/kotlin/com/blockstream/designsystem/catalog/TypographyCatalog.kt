@@ -1,22 +1,22 @@
-package com.blockstream.compose.screens.designsystem
+package com.blockstream.designsystem.catalog
 
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
-import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.unit.dp
 import com.blockstream.designsystem.AppTheme
 import com.blockstream.designsystem.AppTypography
+import com.blockstream.designsystem.components.AppText
 
 private const val SAMPLE = "The quick brown fox jumps over the lazy dog"
 
 @Composable
-internal fun TypographyCatalog() {
+fun TypographyCatalog() {
     Column(verticalArrangement = Arrangement.spacedBy(20.dp)) {
         AppTheme.typography.catalogGroups().forEach { (group, styles) ->
             Column(verticalArrangement = Arrangement.spacedBy(12.dp)) {
-                Text(text = group, style = AppTheme.typography.title.sSemiBold, color = AppTheme.colors.text.primary)
+                AppText(text = group, style = AppTheme.typography.title.sSemiBold, color = AppTheme.colors.text.primary)
                 styles.forEach { (name, style) -> TypographySample(name = name, style = style, uppercase = group == "Overline") }
             }
         }
@@ -26,12 +26,12 @@ internal fun TypographyCatalog() {
 @Composable
 private fun TypographySample(name: String, style: TextStyle, uppercase: Boolean) {
     Column(verticalArrangement = Arrangement.spacedBy(4.dp)) {
-        Text(
+        AppText(
             text = "$name, ${style.fontSize.value.toInt()}/${style.lineHeight.value.toInt()}",
             style = AppTheme.typography.code.s,
             color = AppTheme.colors.text.subtle
         )
-        Text(
+        AppText(
             text = if (uppercase) SAMPLE.uppercase() else SAMPLE,
             style = style,
             color = AppTheme.colors.text.primary

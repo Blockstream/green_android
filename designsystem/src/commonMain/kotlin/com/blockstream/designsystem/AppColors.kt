@@ -197,11 +197,11 @@ val AppColorsLight = AppColors(
         disabled = Color(0xFFE5E5E5),
         onPrimary = Color(0xFFFAFAFA),
         onPrimaryInverted = Color(0xFFFAFAFA),
-        pressed = Color(0xFF00598A),
-        primary = Color(0xFF0084D1),
+        pressed = Color(0xFFE0F2FE),
+        primary = Color(0xFF0069A8),
         primaryInverted = Color(0xFF0A0A0A),
-        primaryInvertedDisabled = Color(0xFFF5F5F5),
-        primaryInvertedPressed = Color(0xFFA0A0A0)
+        primaryInvertedDisabled = Color(0xFFE5E5E5),
+        primaryInvertedPressed = Color(0xFF404040)
     ),
     feedback = AppColors.Feedback(
         info = AppColors.Feedback.Role(
@@ -211,7 +211,7 @@ val AppColorsLight = AppColors(
             stroke = Color(0xFF00BCFF)
         ),
         negative = AppColors.Feedback.Role(
-            accent = Color(0xFFCD4A4C),
+            accent = Color(0xFF82181A),
             fill = Color(0xFFFFD3D3),
             onFill = Color(0xFF82181A),
             stroke = Color(0xFFFF6467)

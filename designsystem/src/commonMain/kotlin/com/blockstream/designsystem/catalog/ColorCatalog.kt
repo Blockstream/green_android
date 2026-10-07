@@ -1,4 +1,4 @@
-package com.blockstream.compose.screens.designsystem
+package com.blockstream.designsystem.catalog
 
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
@@ -8,7 +8,6 @@ import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.shape.RoundedCornerShape
-import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -17,13 +16,14 @@ import androidx.compose.ui.graphics.toArgb
 import androidx.compose.ui.unit.dp
 import com.blockstream.designsystem.AppColors
 import com.blockstream.designsystem.AppTheme
+import com.blockstream.designsystem.components.AppText
 
 @Composable
-internal fun ColorCatalog() {
+fun ColorCatalog() {
     Column(verticalArrangement = Arrangement.spacedBy(20.dp)) {
         AppTheme.colors.catalogGroups().forEach { (group, colors) ->
             Column(verticalArrangement = Arrangement.spacedBy(8.dp)) {
-                Text(text = group, style = AppTheme.typography.title.sSemiBold, color = AppTheme.colors.text.primary)
+                AppText(text = group, style = AppTheme.typography.title.sSemiBold, color = AppTheme.colors.text.primary)
                 colors.forEach { (name, color) -> ColorSwatch(name = name, color = color) }
             }
         }
@@ -41,8 +41,8 @@ private fun ColorSwatch(name: String, color: Color) {
                 .border(1.dp, AppTheme.colors.border.subtle, shape)
         )
         Column {
-            Text(text = name, style = AppTheme.typography.label.mMedium, color = AppTheme.colors.text.primary)
-            Text(text = color.hex(), style = AppTheme.typography.code.s, color = AppTheme.colors.text.subtle)
+            AppText(text = name, style = AppTheme.typography.label.mMedium, color = AppTheme.colors.text.primary)
+            AppText(text = color.hex(), style = AppTheme.typography.code.s, color = AppTheme.colors.text.subtle)
         }
     }
 }

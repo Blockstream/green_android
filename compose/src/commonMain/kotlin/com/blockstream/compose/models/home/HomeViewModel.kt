@@ -7,7 +7,6 @@ import blockstream_green.common.generated.resources.id_app_settings
 import com.adamglin.PhosphorIcons
 import com.adamglin.phosphoricons.Regular
 import com.adamglin.phosphoricons.regular.Gear
-import com.adamglin.phosphoricons.regular.Palette
 import com.blockstream.compose.events.Event
 import com.blockstream.compose.events.Events
 import com.blockstream.compose.extensions.launchIn
@@ -118,15 +117,7 @@ class HomeViewModel(isGetStarted: Boolean = false) : HomeViewModelAbstract(isGet
             _navData.value = NavData(
                 isVisible = !showV5Upgrade,
                 logo = Res.drawable.brand.takeIf { isEmptyWallet == false },
-                actions = listOfNotNull(
-                    NavAction.Icon(
-                        title = "Design system",
-                        imageVector = PhosphorIcons.Regular.Palette,
-                        container = IconContainer.OUTLINED,
-                        testTag = "btn_home_design_system",
-                    ) {
-                        postSideEffect(SideEffects.NavigateTo(NavigateDestinations.DesignSystemCatalog))
-                    }.takeIf { appInfo.isDebug },
+                actions = listOf(
                     // TODO: profile button goes here
                     NavAction.Icon(
                         titleRes = Res.string.id_app_settings,

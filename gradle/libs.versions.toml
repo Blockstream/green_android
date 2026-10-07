@@ -170,6 +170,7 @@ zxing-android-embedded = { module = "com.journeyapps:zxing-android-embedded", ve
 androidx-activity-compose = { module = "androidx.activity:activity-compose" }
 navigation-compose = { module = "org.jetbrains.androidx.navigation:navigation-compose", version.ref = "navigation" }
 compose-backhandler = { module = "org.jetbrains.compose.ui:ui-backhandler", version.ref = "jetbrains-compose" }
+compose-material-ripple = { module = "org.jetbrains.compose.material:material-ripple", version.ref = "jetbrains-compose" }
 ui-tooling-preview = { module = "org.jetbrains.compose.ui:ui-tooling-preview", version.ref = "jetbrains-compose" }
 kotlin-test = { group = "org.jetbrains.kotlin", name = "kotlin-test", version.ref = "kotlin" }
 androidx-runner = { group = "androidx.test", name = "runner", version.ref = "runner" }

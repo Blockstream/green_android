@@ -526,6 +526,33 @@ fun AppSettingsScreen(
                         }
                     }
                 }
+
+                if (viewModel.designSystemCatalogEnabled) {
+                    Text(
+                        text = "Developer",
+                        style = MaterialTheme.typography.labelLarge.copy(
+                            color = MaterialTheme.colorScheme.onSurface.copy(alpha = 0.6f)
+                        ),
+                        modifier = Modifier
+                            .padding(top = 16.dp, bottom = 8.dp)
+                    )
+
+                    SettingsItem(
+                        title = "Design system catalog",
+                        subtitle = "Colours, text styles and components",
+                        onClick = {
+                            viewModel.postEvent(AppSettingsViewModel.LocalEvents.OpenDesignSystemCatalog)
+                        },
+                        rightContent = {
+                            Icon(
+                                imageVector = PhosphorIcons.Regular.CaretRight,
+                                contentDescription = null,
+                                tint = MaterialTheme.colorScheme.onSurface.copy(alpha = 0.6f)
+                            )
+                        },
+                        modifier = Modifier.appTestTag("design_system_catalog_button"),
+                    )
+                }
             }
         }
     }
