@@ -98,13 +98,15 @@ fun SignMessageBottomSheet(
                             DataListItem(
                                 title = StringHolder.create(Res.string.id_message),
                                 data = StringHolder.create(message),
-                                withDataLayout = true
+                                withDataLayout = true,
+                                copyTestTag = "message_copy_button"
                             )
 
                             DataListItem(
                                 title = StringHolder.create(Res.string.id_signature),
                                 data = StringHolder.create(currentSignature),
-                                withDataLayout = true
+                                withDataLayout = true,
+                                copyTestTag = "signature_copy_button"
                             )
                         }
 // Sync with iOS to enable this feature

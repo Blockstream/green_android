@@ -42,6 +42,7 @@ import com.blockstream.compose.theme.whiteHigh
 import com.blockstream.compose.theme.whiteLow
 import com.blockstream.compose.theme.whiteMedium
 import com.blockstream.compose.utils.StringHolder
+import com.blockstream.compose.utils.appTestTag
 import com.blockstream.compose.utils.ifTrue
 import com.blockstream.data.gdk.GdkSession
 import com.blockstream.data.gdk.data.AccountAssetBalance
@@ -66,6 +67,8 @@ fun GreenAccountAsset(
     isSelected: Boolean = false,
     helperText: String? = null,
     isError: Boolean = false,
+    checkboxTestTag: String? = null,
+    assetIconTestTag: String? = null,
     onClick: (() -> Unit)? = null,
 ) {
     GreenDataLayout(
@@ -85,12 +88,14 @@ fun GreenAccountAsset(
                 Checkbox(
                     checked = isSelected,
                     onCheckedChange = { onClick?.invoke() },
-                    modifier = Modifier.padding(end = 8.dp)
+                    modifier = Modifier
+                        .padding(end = 8.dp)
+                        .appTestTag(checkboxTestTag)
                 )
             }
 
             if (withAssetIcon) {
-                Box {
+                Box(modifier = Modifier.appTestTag(assetIconTestTag)) {
                     Image(
                         painter = (accountAssetBalance?.asset?.assetId).assetIcon(
                             session = session,

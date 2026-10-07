@@ -24,6 +24,7 @@ import com.blockstream.compose.theme.whiteHigh
 import com.blockstream.compose.theme.whiteLow
 import com.blockstream.compose.theme.whiteMedium
 import com.blockstream.compose.utils.StringHolder
+import com.blockstream.compose.utils.appTestTag
 import com.blockstream.compose.utils.noRippleClickable
 import kotlinx.coroutines.launch
 
@@ -33,6 +34,7 @@ fun DataListItem(
     data: StringHolder,
     withDivider: Boolean = false,
     withDataLayout: Boolean = false,
+    copyTestTag: String? = null,
 ) {
     val platformManager = LocalPlatformManager.current
     val scope = rememberCoroutineScope()
@@ -49,6 +51,7 @@ fun DataListItem(
                 )
 
                 IconButton(
+                    modifier = Modifier.appTestTag(copyTestTag),
                     onClick = {
                         scope.launch {
                             platformManager.copyToClipboard(content = data.getString())
@@ -77,11 +80,13 @@ fun DataListItem(
                 imageVector = PhosphorIcons.Regular.Copy,
                 contentDescription = "Copy",
                 tint = whiteLow,
-                modifier = Modifier.noRippleClickable {
-                    scope.launch {
-                        platformManager.copyToClipboard(content = data.getString())
+                modifier = Modifier
+                    .noRippleClickable {
+                        scope.launch {
+                            platformManager.copyToClipboard(content = data.getString())
+                        }
                     }
-                }
+                    .appTestTag(copyTestTag)
             )
         }
 

@@ -27,7 +27,8 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.lazy.LazyColumn
-import androidx.compose.foundation.lazy.items
+import androidx.compose.foundation.lazy.itemsIndexed
+import androidx.compose.foundation.selection.toggleable
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Check
@@ -46,6 +47,7 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
+import androidx.compose.ui.semantics.Role
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
@@ -100,6 +102,7 @@ import com.blockstream.compose.theme.whiteHigh
 import com.blockstream.compose.theme.whiteLow
 import com.blockstream.compose.theme.whiteMedium
 import com.blockstream.compose.utils.SetupScreen
+import com.blockstream.compose.utils.appTestTag
 import kotlinx.coroutines.delay
 import org.jetbrains.compose.resources.painterResource
 import org.jetbrains.compose.resources.stringResource
@@ -328,9 +331,10 @@ fun CoinSelectionScreen(
                                 modifier = Modifier.fillMaxWidth(),
                                 verticalArrangement = Arrangement.spacedBy(8.dp)
                             ) {
-                                items(coins) { coin ->
+                                itemsIndexed(coins) { index, coin ->
                                     CoinSelectionCard(
                                         coin = coin,
+                                        index = index,
                                         onClick = {
                                             viewModel.postEvent(
                                                 CoinSelectionViewModelAbstract.LocalEvents.ToggleCoin(
@@ -444,6 +448,7 @@ fun CoinSelectionScreen(
 @Composable
 private fun CoinSelectionCard(
     coin: CoinSelectionListItem,
+    index: Int,
     onClick: () -> Unit,
     onInfoClick: () -> Unit
 ) {
@@ -459,7 +464,11 @@ private fun CoinSelectionCard(
             verticalArrangement = Arrangement.spacedBy(6.dp)
         ) {
             Row(verticalAlignment = Alignment.CenterVertically) {
-                CoinCheckbox(checked = coin.isSelected, onClick = onClick)
+                CoinCheckbox(
+                    checked = coin.isSelected,
+                    onClick = onClick,
+                    modifier = Modifier.appTestTag("coin_checkbox_$index")
+                )
                 Spacer(modifier = Modifier.width(12.dp))
                 Column(
                     modifier = Modifier.weight(1f),
@@ -499,7 +508,10 @@ private fun CoinSelectionCard(
                     }
                 }
                 Spacer(modifier = Modifier.width(6.dp))
-                IconButton(onClick = onInfoClick) {
+                IconButton(
+                    onClick = onInfoClick,
+                    modifier = Modifier.appTestTag("coin_info_button_$index")
+                ) {
                     Icon(
                         painter = painterResource(Res.drawable.info),
                         contentDescription = null,
@@ -513,9 +525,9 @@ private fun CoinSelectionCard(
 }
 
 @Composable
-private fun CoinCheckbox(checked: Boolean, onClick: () -> Unit) {
+private fun CoinCheckbox(checked: Boolean, onClick: () -> Unit, modifier: Modifier = Modifier) {
     Box(
-        modifier = Modifier
+        modifier = modifier
             .size(24.dp)
             .clip(RoundedCornerShape(2.dp))
             .border(
@@ -523,7 +535,7 @@ private fun CoinCheckbox(checked: Boolean, onClick: () -> Unit) {
                 color = if (checked) whiteHigh else md_theme_surfaceCircle,
                 shape = RoundedCornerShape(2.dp)
             )
-            .clickable(onClick = onClick),
+            .toggleable(value = checked, role = Role.Checkbox, onValueChange = { onClick() }),
         contentAlignment = Alignment.Center
     ) {
         AnimatedVisibility(
@@ -577,6 +589,7 @@ fun CoinSelectionCardsPreview() {
                     isConfirmed = true,
                     isSelected = false
                 ),
+                index = 0,
                 onClick = {},
                 onInfoClick = {}
             )
@@ -598,6 +611,7 @@ fun CoinSelectionCardsPreview() {
                     isDust = true,
                     isSelected = false
                 ),
+                index = 1,
                 onClick = {},
                 onInfoClick = {}
             )
@@ -619,6 +633,7 @@ fun CoinSelectionCardsPreview() {
                     isExpired = true,
                     isSelected = true
                 ),
+                index = 2,
                 onClick = {},
                 onInfoClick = {}
             )
@@ -641,6 +656,7 @@ fun CoinSelectionCardsPreview() {
                     isExpired = true,
                     isSelected = false
                 ),
+                index = 3,
                 onClick = {},
                 onInfoClick = {}
             )

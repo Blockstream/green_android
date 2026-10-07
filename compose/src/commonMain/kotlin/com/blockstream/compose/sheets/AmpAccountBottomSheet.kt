@@ -52,6 +52,7 @@ import com.blockstream.compose.theme.bodySmall
 import com.blockstream.compose.theme.labelMedium
 import com.blockstream.compose.theme.whiteMedium
 import com.blockstream.compose.utils.StringHolder
+import com.blockstream.compose.utils.appTestTag
 import com.blockstream.data.Urls
 import com.blockstream.data.extensions.middleTruncate
 import com.blockstream.data.gdk.data.Account
@@ -135,6 +136,8 @@ fun AmpAccountBottomSheet(
                             accountName = ampAccount?.name ?: "AMP Liquid",
                             canCreate = canCreateAmp,
                             isCreating = AccountType.AMP2_ACCOUNT in creatingAccountTypes,
+                            copyTestTag = "amp_copy_button",
+                            createTestTag = "amp_create_button",
                             onCreate = {
                                 viewModel.createAmpAccounts(listOf(AccountType.AMP2_ACCOUNT))
                             },
@@ -152,12 +155,14 @@ fun AmpAccountBottomSheet(
                         color = whiteMedium
                     )
                     val ampLegacyRows: List<Account?> = ampLegacyAccounts.ifEmpty { listOf(null) }
-                    ampLegacyRows.forEach { account ->
+                    ampLegacyRows.forEachIndexed { index, account ->
                         AmpAccountRow(
                             account = account,
                             accountName = account?.name ?: "AMP Liquid",
                             canCreate = canCreateLegacy,
                             isCreating = account == null && AccountType.AMP_LEGACY_ACCOUNT in creatingAccountTypes,
+                            copyTestTag = "amp_legacy_copy_button_$index",
+                            createTestTag = "amp_legacy_create_button",
                             onCreate = {
                                 viewModel.createAmpAccounts(listOf(AccountType.AMP_LEGACY_ACCOUNT))
                             },
@@ -187,6 +192,8 @@ private fun AmpAccountRow(
     accountName: String,
     canCreate: Boolean,
     isCreating: Boolean,
+    copyTestTag: String,
+    createTestTag: String,
     onCreate: () -> Unit,
     onCopy: (Account) -> Unit,
 ) {
@@ -221,13 +228,16 @@ private fun AmpAccountRow(
                 text = stringResource(Res.string.id_create),
                 enabled = !isCreating,
                 onProgress = isCreating,
+                testTag = createTestTag,
                 onClick = onCreate
             )
         } else if (account != null) {
             Icon(
                 imageVector = PhosphorIcons.Regular.Copy,
                 contentDescription = null,
-                modifier = Modifier.clickable { onCopy(account) }
+                modifier = Modifier
+                    .clickable { onCopy(account) }
+                    .appTestTag(copyTestTag)
             )
         }
     }

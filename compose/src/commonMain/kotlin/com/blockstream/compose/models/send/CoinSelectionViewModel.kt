@@ -384,6 +384,7 @@ class CoinSelectionViewModel(
             imageVector = if (isActive) null else PhosphorIcons.Regular.Funnel,
             iconTint = if (isActive) Color.Unspecified else null,
             iconSize = 22.dp,
+            testTag = "coin_filter_button",
             onClick = {
                 postEvent(LocalEvents.OpenFilters)
             }

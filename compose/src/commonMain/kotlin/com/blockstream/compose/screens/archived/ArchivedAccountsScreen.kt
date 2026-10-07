@@ -7,7 +7,7 @@ import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.LazyColumn
-import androidx.compose.foundation.lazy.items
+import androidx.compose.foundation.lazy.itemsIndexed
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
@@ -56,7 +56,7 @@ fun ArchivedAccountsScreen(
                     verticalArrangement = Arrangement.spacedBy(8.dp),
                     contentPadding = PaddingValues(all = 16.dp)
                 ) {
-                    items(archivedAccounts.data() ?: listOf()) { account ->
+                    itemsIndexed(archivedAccounts.data() ?: listOf()) { index, account ->
                         GreenAccountAsset(
                             modifier = Modifier.fillMaxWidth(),
                             accountAssetBalance = account,
@@ -64,6 +64,8 @@ fun ArchivedAccountsScreen(
                             session = viewModel.sessionOrNull,
                             selectable = true,
                             isSelected = selectedAccounts.contains(account.account),
+                            checkboxTestTag = "archived_account_checkbox_$index",
+                            assetIconTestTag = "archived_account_icon_$index",
                             onClick = {
                                 viewModel.toggleAccountSelection(account.account)
                             }

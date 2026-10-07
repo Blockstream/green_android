@@ -62,6 +62,7 @@ import com.blockstream.compose.theme.green
 import com.blockstream.compose.theme.md_theme_surfaceCircle
 import com.blockstream.compose.theme.whiteLow
 import com.blockstream.compose.theme.whiteMedium
+import com.blockstream.compose.utils.appTestTag
 import com.blockstream.data.data.Promo
 import com.blockstream.data.data.PromoCta
 import org.jetbrains.compose.resources.painterResource
@@ -101,7 +102,7 @@ private fun PromoPager(
     Column(modifier = modifier.fillMaxWidth()) {
         HorizontalPager(
             state = pagerState,
-            modifier = Modifier.fillMaxWidth().height(PROMO_HEIGHT.dp),
+            modifier = Modifier.fillMaxWidth().height(PROMO_HEIGHT.dp).appTestTag("promo_banners"),
             pageSpacing = 8.dp,
             key = { index -> promos[index].id },
         ) { page ->
