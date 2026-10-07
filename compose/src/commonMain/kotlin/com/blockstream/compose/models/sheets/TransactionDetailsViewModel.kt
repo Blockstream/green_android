@@ -7,6 +7,7 @@ import com.blockstream.compose.extensions.previewWallet
 import com.blockstream.compose.models.GreenViewModel
 import com.blockstream.compose.utils.StringHolder
 import com.blockstream.data.data.GreenWallet
+import com.blockstream.data.extensions.ifConnected
 import com.blockstream.data.gdk.data.AccountAsset
 import com.blockstream.data.gdk.data.Transaction
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -39,7 +40,7 @@ class TransactionDetailsViewModel(greenWallet: GreenWallet, initialTransaction: 
     override val data = _data.asStateFlow()
 
     init {
-        if (session.isConnected) {
+        session.ifConnected {
             session.networkBackend(network = initialTransaction.network).blockStateFlow.onEach {
                 session.accountBackend(initialTransaction.account).getTransaction(id = initialTransaction.txHash)?.also {
                     _transaction.value = it

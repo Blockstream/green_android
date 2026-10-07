@@ -29,6 +29,7 @@ import com.blockstream.data.SATOSHI_UNIT
 import com.blockstream.data.data.Denomination
 import com.blockstream.data.data.GreenWallet
 import com.blockstream.data.extensions.assetTickerOrNull
+import com.blockstream.data.extensions.ifConnected
 import com.blockstream.data.extensions.isNotBlank
 import com.blockstream.data.extensions.isPolicyAsset
 import com.blockstream.data.gdk.data.AccountAsset
@@ -113,7 +114,7 @@ class TransactionViewModel(transaction: Transaction, greenWallet: GreenWallet) :
     private val _transaction = MutableStateFlow(transaction)
     override val transaction: StateFlow<Transaction> = _transaction
 
-    private val _status: MutableStateFlow<TransactionStatus> = MutableStateFlow(Failed())
+    private val _status: MutableStateFlow<TransactionStatus> = MutableStateFlow(Unconfirmed())
     override val status: StateFlow<TransactionStatus> = _status
 
     override val type: StateFlow<Transaction.Type> = MutableStateFlow(transaction.txType)
@@ -167,22 +168,22 @@ class TransactionViewModel(transaction: Transaction, greenWallet: GreenWallet) :
     init {
         logger.d { "Transaction $transaction" }
 
-        viewModelScope.launch {
-            _status.value = TransactionStatus.create(transaction, session)
-            _navData.value = NavData(
-                title = getString(
-                    when (transaction.txType) {
-                        Transaction.Type.OUT -> Res.string.id_sent
-                        Transaction.Type.REDEPOSIT -> Res.string.id_redeposited
-                        Transaction.Type.MIXED -> Res.string.id_swap
-                        else -> if (status.value.confirmations > 0) Res.string.id_received else Res.string.id_receiving
-                    }
-                ),
-                subtitle = account.name
-            )
-        }
+        session.ifConnected {
+            viewModelScope.launch {
+                _status.value = TransactionStatus.create(transaction, session)
+                _navData.value = NavData(
+                    title = getString(
+                        when (transaction.txType) {
+                            Transaction.Type.OUT -> Res.string.id_sent
+                            Transaction.Type.REDEPOSIT -> Res.string.id_redeposited
+                            Transaction.Type.MIXED -> Res.string.id_swap
+                            else -> if (status.value.confirmations > 0) Res.string.id_received else Res.string.id_receiving
+                        }
+                    ),
+                    subtitle = account.name
+                )
+            }
 
-        if (session.isConnected) {
             session.networkBackend(network = transaction.network).blockStateFlow.onEach {
                 // Fetching the transaction on every block emission can be very expensive for older transactions,
                 // as getTransaction pages through the entire account history. Since you already have the transaction,
