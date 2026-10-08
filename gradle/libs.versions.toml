@@ -124,7 +124,7 @@ kotlincrypto-hash-sha2 = { module = "org.kotlincrypto.hash:sha2", version.ref = 
 sqldelight-sqlite-driver = { module = "app.cash.sqldelight:sqlite-driver", version.ref = "sqldelight" }
 sqldelight-android-driver = { module = "app.cash.sqldelight:android-driver", version.ref = "sqldelight" }
 sqldelight-coroutines-extensions = { module = "app.cash.sqldelight:coroutines-extensions", version.ref = "sqldelight" }
-countly-sdk-android = { module = "com.github.angelix:countly-sdk-android", version.ref = "countly-sdk-android" }
+countly-sdk-android = { module = "com.github.angelix.countly-sdk-android:sdk", version.ref = "countly-sdk-android" }
 guava = { module = "com.google.guava:guava", version.ref = "guava" }
 installreferrer = { module = "com.android.installreferrer:installreferrer", version.ref = "installreferrer" }
 jackson-datatype-json-org = { module = "com.fasterxml.jackson.datatype:jackson-datatype-json-org", version.ref = "jackson" }
