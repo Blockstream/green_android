@@ -30,7 +30,8 @@ app_keys.txt
 
 .kotlin/
 
-.claude/
+.claude/*
+!.claude/skills
 
 **/build/
 !src/**/build/
@@ -39,3 +40,5 @@ captures
 .externalNativeBuild
 .cxx
 report.xml
+
+/.reviews/
