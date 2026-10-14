@@ -65,7 +65,7 @@ fun DesignSystemCatalogScreen(viewModel: DesignSystemCatalogViewModel) {
 fun DesignSystemCatalogEntryScreen(viewModel: DesignSystemCatalogViewModel) {
     val isLight by viewModel.isLight.collectAsStateWithLifecycle()
 
-    SetupScreen(viewModel = viewModel, withPadding = false) {
+    SetupScreen(viewModel = viewModel, withPadding = false, withImePadding = true) {
         ProvideAppTheme(isLight = isLight) {
             AppSurface(modifier = Modifier.fillMaxSize(), color = AppTheme.colors.surface.canvas) {
                 Column(

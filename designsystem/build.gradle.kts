@@ -37,6 +37,7 @@ kotlin {
             implementation(compose.ui)
             implementation(compose.components.uiToolingPreview)
             implementation(libs.compose.material.ripple)
+            implementation(libs.phosphor.icon)
             api(compose.components.resources)
         }
 

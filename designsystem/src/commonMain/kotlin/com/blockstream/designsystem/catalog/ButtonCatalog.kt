@@ -86,7 +86,3 @@ fun ButtonCatalog() {
     }
 }
 
-@Composable
-private fun CatalogLabel(text: String) {
-    AppText(text = text, style = AppTheme.typography.label.mMedium, color = AppTheme.colors.text.subtle)
-}
