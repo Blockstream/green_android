@@ -113,5 +113,11 @@ private fun AppColors.catalogGroups(): List<Pair<String, List<Pair<String, Color
     ),
     "Overlay" to listOf(
         "overlay.scrim" to overlay.scrim
+    ),
+    "Control" to listOf(
+        "control.thumb" to control.thumb,
+        "control.thumbOff" to control.thumbOff,
+        "control.trackOff" to control.trackOff,
+        "control.borderOff" to control.borderOff
     )
 )

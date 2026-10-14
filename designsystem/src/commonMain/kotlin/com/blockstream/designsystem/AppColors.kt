@@ -11,7 +11,8 @@ class AppColors(
     val icon: Icon,
     val action: Action,
     val feedback: Feedback,
-    val overlay: Overlay
+    val overlay: Overlay,
+    val control: Control
 ) {
     @Immutable
     class Text(
@@ -88,6 +89,14 @@ class AppColors(
     class Overlay(
         val scrim: Color
     )
+
+    @Immutable
+    class Control(
+        val thumb: Color,
+        val thumbOff: Color,
+        val trackOff: Color,
+        val borderOff: Color
+    )
 }
 
 val AppColorsDark = AppColors(
@@ -159,6 +168,12 @@ val AppColorsDark = AppColors(
     ),
     overlay = AppColors.Overlay(
         scrim = Color(0xFF181818)
+    ),
+    control = AppColors.Control(
+        thumb = Color(0xFFFAFAFA),
+        thumbOff = Color(0xFFA0A0A0),
+        trackOff = Color(0xFF262626),
+        borderOff = Color(0xFFA0A0A0)
     )
 )
 
@@ -231,5 +246,11 @@ val AppColorsLight = AppColors(
     ),
     overlay = AppColors.Overlay(
         scrim = Color(0xFFF5F5F5)
+    ),
+    control = AppColors.Control(
+        thumb = Color(0xFFFFFFFF),
+        thumbOff = Color(0xFF737373),
+        trackOff = Color(0xFFE5E5E5),
+        borderOff = Color(0xFF737373)
     )
 )
