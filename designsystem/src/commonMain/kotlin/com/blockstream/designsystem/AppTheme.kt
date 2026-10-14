@@ -1,5 +1,6 @@
 package com.blockstream.designsystem
 
+import androidx.compose.foundation.LocalIndication
 import androidx.compose.foundation.text.selection.LocalTextSelectionColors
 import androidx.compose.foundation.text.selection.TextSelectionColors
 import androidx.compose.runtime.Composable
@@ -11,6 +12,7 @@ import androidx.compose.runtime.staticCompositionLocalOf
 import androidx.compose.runtime.structuralEqualityPolicy
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.TextStyle
+import com.blockstream.designsystem.foundation.appRipple
 
 val LocalAppColors = staticCompositionLocalOf { AppColorsDark }
 
@@ -67,6 +69,7 @@ fun ProvideAppTheme(isLight: Boolean, content: @Composable () -> Unit) {
         LocalAppContentColor provides colors.text.primary,
         LocalAppTextStyle provides typography.body.m,
         LocalTextSelectionColors provides selectionColors,
+        LocalIndication provides appRipple(),
         content = content
     )
 }

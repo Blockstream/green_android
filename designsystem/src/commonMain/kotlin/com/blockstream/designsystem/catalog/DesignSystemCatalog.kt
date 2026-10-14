@@ -22,7 +22,8 @@ object DesignSystemCatalog {
         CatalogEntry(id = "typography", title = "Typography", group = CatalogGroup.Foundation) { TypographyCatalog() },
         CatalogEntry(id = "button", title = "Button", group = CatalogGroup.Components) { ButtonCatalog() },
         CatalogEntry(id = "textfield", title = "Text field", group = CatalogGroup.Components) { TextFieldCatalog() },
-        CatalogEntry(id = "switch", title = "Switch", group = CatalogGroup.Components) { SwitchCatalog() }
+        CatalogEntry(id = "switch", title = "Switch", group = CatalogGroup.Components) { SwitchCatalog() },
+        CatalogEntry(id = "checkbox", title = "Checkbox", group = CatalogGroup.Components) { CheckboxCatalog() }
     )
 
     fun entry(id: String): CatalogEntry? = entries.firstOrNull { it.id == id }
