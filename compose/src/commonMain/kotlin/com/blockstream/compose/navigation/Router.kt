@@ -205,6 +205,7 @@ import com.blockstream.compose.sheets.LightningFeeInfoBottomSheet
 import com.blockstream.compose.sheets.LightningNodeBottomSheet
 import com.blockstream.compose.sheets.MeldCountriesBottomSheet
 import com.blockstream.compose.sheets.MenuBottomSheetView
+import com.blockstream.compose.sheets.NetworkPrivacyBottomSheet
 import com.blockstream.compose.sheets.NewJadeConnectedBottomSheet
 import com.blockstream.compose.sheets.NoteBottomSheet
 import com.blockstream.compose.sheets.PassphraseBottomSheet
@@ -852,6 +853,15 @@ fun Router(
                     onDismissRequest = navController.onDismissRequest {
                         args.setResult(true)
                     }
+                )
+            }
+            appBottomSheet<NavigateDestinations.NetworkPrivacy> {
+                val args = it.toRoute<NavigateDestinations.NetworkPrivacy>()
+                NetworkPrivacyBottomSheet(
+                    onConfirm = navController.onDismissRequest {
+                        args.setResult(args.route)
+                    },
+                    onDismissRequest = navController.onDismissRequest()
                 )
             }
             appBottomSheet<NavigateDestinations.RenameAccount> {

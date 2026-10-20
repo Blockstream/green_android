@@ -56,9 +56,11 @@ class MainViewModel : GreenViewModel(), JadeHttpRequestUrlValidator {
             unsafeUrlWarningEmitter?.complete(event.allow)
             unsafeUrlWarningEmitter = null
         } else if (event is LocalEvents.TorWarningResponse) {
-            settingsManager.saveApplicationSettings(
-                settingsManager.getApplicationSettings().copy(tor = true)
-            )
+            if (event.enable) {
+                settingsManager.saveApplicationSettings(
+                    settingsManager.getApplicationSettings().copy(tor = true)
+                )
+            }
             torWarningEmitter?.complete(event.enable)
             torWarningEmitter = null
         }

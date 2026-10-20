@@ -35,9 +35,13 @@ import kotlinx.coroutines.flow.debounce
 import kotlinx.coroutines.flow.launchIn
 import kotlinx.coroutines.flow.onEach
 import kotlinx.coroutines.launch
+import kotlinx.serialization.Serializable
 import org.jetbrains.compose.resources.StringResource
 import org.jetbrains.compose.resources.getString
 import org.koin.core.component.inject
+
+@Serializable
+enum class NetworkRoute { Tor, Proxy }
 
 abstract class AppSettingsViewModelAbstract() :
     GreenViewModel() {
@@ -152,6 +156,8 @@ class AppSettingsViewModel : AppSettingsViewModelAbstract() {
         object Save : Event
         object AutoSave : Event
         object Cancel : Event
+        data class ToggleNetworkRoute(val route: NetworkRoute, val enabled: Boolean) : Event
+        data class EnableNetworkRoute(val route: NetworkRoute) : Event
     }
 
     class LocalSideEffects {
@@ -325,12 +331,19 @@ class AppSettingsViewModel : AppSettingsViewModelAbstract() {
             }
 
             is LocalEvents.AutoSave -> {
-                if (isConfigValid()) {
-                    localeManager.setLocale(locale.value)
-                    val currentSettings = getSettings()
-                    settingsManager.saveApplicationSettings(currentSettings)
-                    appSettings = currentSettings
+                autoSave()
+            }
+
+            is LocalEvents.ToggleNetworkRoute -> {
+                if (event.enabled) {
+                    postSideEffect(SideEffects.NavigateTo(NavigateDestinations.NetworkPrivacy(event.route)))
+                } else {
+                    setNetworkRoute(event.route, false)
                 }
+            }
+
+            is LocalEvents.EnableNetworkRoute -> {
+                setNetworkRoute(event.route, true)
             }
 
             is LocalEvents.Cancel -> {
@@ -345,6 +358,23 @@ class AppSettingsViewModel : AppSettingsViewModelAbstract() {
                 }
             }
         }
+    }
+
+    private fun autoSave() {
+        if (isConfigValid()) {
+            localeManager.setLocale(locale.value)
+            val currentSettings = getSettings()
+            settingsManager.saveApplicationSettings(currentSettings)
+            appSettings = currentSettings
+        }
+    }
+
+    private fun setNetworkRoute(route: NetworkRoute, enabled: Boolean) {
+        when (route) {
+            NetworkRoute.Tor -> torEnabled.value = enabled
+            NetworkRoute.Proxy -> proxyEnabled.value = enabled
+        }
+        autoSave()
     }
 
     private fun getSettings(): ApplicationSettings {

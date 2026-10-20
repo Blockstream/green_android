@@ -86,6 +86,9 @@ import com.blockstream.compose.models.settings.AppSettingsViewModelAbstract.Comp
 import com.blockstream.compose.models.settings.AppSettingsViewModelAbstract.Companion.SCAN_GAP_LIMIT_MAX
 import com.blockstream.compose.models.settings.AppSettingsViewModelAbstract.Companion.SCAN_GAP_LIMIT_MIN
 import com.blockstream.compose.models.settings.AppSettingsViewModelPreview
+import com.blockstream.compose.models.settings.NetworkRoute
+import com.blockstream.compose.navigation.NavigateDestinations
+import com.blockstream.compose.navigation.getResult
 import com.blockstream.compose.screens.settings.components.PersonalElectrumServerSection
 import com.blockstream.compose.screens.settings.components.SettingSwitch
 import com.blockstream.compose.screens.settings.components.SettingsItem
@@ -127,6 +130,10 @@ fun AppSettingsScreen(
     val dialog = LocalDialog.current
     val focusManager = LocalFocusManager.current
 
+    NavigateDestinations.NetworkPrivacy.getResult<NetworkRoute> {
+        viewModel.postEvent(AppSettingsViewModel.LocalEvents.EnableNetworkRoute(it))
+    }
+
     SetupScreen(viewModel = viewModel, withPadding = false, scrollable = false, sideEffectsHandler = {
         if (it is AppSettingsViewModel.LocalSideEffects.UnsavedAppSettings) {
             val openDialogData =
@@ -165,7 +172,9 @@ fun AppSettingsScreen(
                     title = stringResource(Res.string.id_connect_with_tor),
                     subtitle = stringResource(Res.string.id_private_but_less_stable),
                     checked = torEnabled,
-                    onCheckedChange = autoSaveOnBooleanChange(viewModel.torEnabled),
+                    onCheckedChange = {
+                        viewModel.postEvent(AppSettingsViewModel.LocalEvents.ToggleNetworkRoute(NetworkRoute.Tor, it))
+                    },
                     testTag = "tor_switch"
                 )
 
@@ -177,7 +186,9 @@ fun AppSettingsScreen(
                     title = stringResource(Res.string.id_connect_through_a_proxy),
                     subtitle = stringResource(Res.string.id_custom_network_route),
                     checked = proxyEnabled,
-                    onCheckedChange = autoSaveOnBooleanChange(viewModel.proxyEnabled),
+                    onCheckedChange = {
+                        viewModel.postEvent(AppSettingsViewModel.LocalEvents.ToggleNetworkRoute(NetworkRoute.Proxy, it))
+                    },
                     testTag = "proxy_switch"
                 )
 

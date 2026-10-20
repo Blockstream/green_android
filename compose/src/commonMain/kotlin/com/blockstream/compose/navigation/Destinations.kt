@@ -5,6 +5,7 @@ import com.blockstream.compose.models.GreenViewModel
 import com.blockstream.compose.models.jade.JadeQrOperation
 import com.blockstream.compose.models.send.CoinFilter
 import com.blockstream.compose.models.send.CoinSort
+import com.blockstream.compose.models.settings.NetworkRoute
 import com.blockstream.compose.models.settings.WalletSettingsSection
 import com.blockstream.compose.models.sheets.NoteType
 import com.blockstream.data.AddressInputType
@@ -81,6 +82,9 @@ sealed class NavigateDestinations : NavigateDestination() {
 
     @Serializable
     data class Analytics(val isActionRequired: Boolean = false) : NavigateDestination()
+
+    @Serializable
+    data class NetworkPrivacy(val route: NetworkRoute) : NavigateDestination()
 
     @Serializable
     data object SetupNewWallet : NavigateDestination()

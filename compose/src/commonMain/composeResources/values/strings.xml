@@ -220,6 +220,7 @@
     <string name="id_bitcoin_electrum_server">Bitcoin Electrum server</string>
     <string name="id_bitcoin_is_the_worlds_leading">Bitcoin is the world&apos;s leading P2P cryptocurrency network. Select to send and receive bitcoin.</string>
     <string name="id_bitcoin_price">Bitcoin Price</string>
+    <string name="id_bitcoin_price_chart">Bitcoin price chart</string>
     <string name="id_bitcoin_testnet_and_liquid">Bitcoin Testnet and Liquid Testnet</string>
     <string name="id_bitcoin_wallet">Bitcoin wallet.</string>
     <string name="id_bitcoin_wallets">Bitcoin wallets</string>
@@ -379,6 +380,7 @@
     <string name="id_connection_failed_ble">Failed to setup Bluetooth connection. Please try again or re-pair the device in Bluetooth settings.</string>
     <string name="id_connection_failed_device_offline">Unable to connect. Make sure your device is powered on and try again.</string>
     <string name="id_connection_to_device_failed">Connection to device failed! Move closer to the device and try again.</string>
+    <string name="id_connects_directly">Connects directly</string>
     <string name="id_contact_support">Contact Support</string>
     <string name="id_contact_support_at_s_or_visit_s">Contact support at %1$s or visit %2$s</string>
     <string name="id_contact_us">Contact Us</string>
@@ -709,6 +711,7 @@
     <string name="id_go_to_account">Go to Account</string>
     <string name="id_go_to_receive_to_get_your">Go to Receive to get your Account ID.</string>
     <string name="id_go_to_wallet">Go to Wallet</string>
+    <string name="id_goes_through_tor_or_your_proxy">Goes through Tor or your proxy</string>
     <string name="id_got_it_written_down_great_you">Got it written down? Great. You can enter it here. Don&apos;t lose it, it&apos;ll stay the same.</string>
     <string name="id_grant_blockstream_bluetooth">Grant Blockstream Bluetooth permission</string>
     <string name="id_great_you_successfully_backed">Great! You successfully backed up your recovery phrase.</string>
@@ -760,6 +763,7 @@
     <string name="id_i_typed_all_my_recovery_phrase">I typed all my recovery phrase why can&apos;t I continue?</string>
     <string name="id_i_understand_amounts_could_be">I understand amounts could be incorrect</string>
     <string name="id_i_understand_that_asking_for">I understand that asking for support through Tor will reduce my anonymity</string>
+    <string name="id_i_understand_tor_proxy_coverage">I understand</string>
     <string name="id_id">ID</string>
     <string name="id_ideal_for_longterm_bitcoin">Ideal for long-term bitcoin storage</string>
     <string name="id_ideal_for_small_amounts_of">Ideal for small amounts of bitcoin</string>
@@ -1198,6 +1202,7 @@
     <string name="id_proxy_port">Proxy port</string>
     <string name="id_proxy_settings">PROXY SETTINGS</string>
     <string name="id_pseudonymous_identifier_country">Pseudonymous identifier, country</string>
+    <string name="id_push_notifications">Push notifications</string>
     <string name="id_qr_airgapped_mode">QR Airgapped Mode</string>
     <string name="id_qr_code">QR Code</string>
     <string name="id_qr_mode_allows_you_to">QR Mode allows you to communicate with Blockstream app using Jade&apos;s camera and QR codes (instead of USB or Bluetooth).</string>
@@ -1725,6 +1730,7 @@
     <string name="id_updating_firmware">Updating firmware…</string>
     <string name="id_upload_from_gallery">Upload from gallery</string>
     <string name="id_uploading_firmware">Uploading firmware</string>
+    <string name="id_usage_analytics_if_enabled">Usage analytics, if enabled</string>
     <string name="id_use_a_hardware_wallet_as_your">Use a hardware wallet as your third recovery key.</string>
     <string name="id_use_a_public_key">Use a public key</string>
     <string name="id_use_all_available_coins">Use all available coins</string>
@@ -1785,6 +1791,7 @@
     <string name="id_wallet_overview">Wallet Overview</string>
     <string name="id_wallet_pockets">Wallet Pockets</string>
     <string name="id_wallet_settings">Wallet Settings</string>
+    <string name="id_wallet_sync_balances_and_transactions">Wallet sync, balances and transactions</string>
     <string name="id_wallet_transactions">Wallet Transactions</string>
     <string name="id_wallets">Wallets</string>
     <string name="id_warning">Warning!</string>
@@ -1824,6 +1831,7 @@
     <string name="id_whats_collected">What&apos;s collected</string>
     <string name="id_whats_new">What&apos;s new?</string>
     <string name="id_whats_not_collected">What&apos;s NOT collected</string>
+    <string name="id_whats_protected">What&apos;s protected</string>
     <string name="id_where_would_you_like_to">Where would you like to transfer the funds?</string>
     <string name="id_whomever_can_access_your">Whomever can access your recovery phrase, can steal your funds.</string>
     <string name="id_wireless">Wireless</string>
@@ -1936,6 +1944,7 @@
     <string name="id_your_transactions_will_be_shown">Your transactions will be shown here.</string>
     <string name="id_your_twofactor_threshold_is_s">Your Two-Factor threshold is %1$s.</string>
     <string name="id_your_wallet_backup_is_made_of">Your wallet backup is made of 24 words, also known as your mnemonic. Make sure you have a backup and keep it safe. Anyone who finds it can steal your money. You can use it to restore your Blockstream Green wallet on another device in case yours is lost, damaged or stolen.</string>
+    <string name="id_your_wallet_connection_goes_through_tor">Your wallet connection goes through Tor or your proxy. Some features connect directly and can reveal your IP address.</string>
     <string name="id_your_wallet_has_been_created">Your wallet has been created.</string>
     <string name="id_your_wallet_is_locked_for_a">Your wallet is locked for a Two-Factor Authentication reset. The reset will be completed in %1$d days.</string>
     <string name="id_your_wallet_is_locked_under_2fa">Your wallet is locked under 2FA dispute.</string>
