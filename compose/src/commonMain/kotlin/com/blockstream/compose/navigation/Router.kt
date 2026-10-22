@@ -252,10 +252,14 @@ fun Router(
                 fadeIn() + slideInHorizontally()
             },
             popExitTransition = {
-                fadeOut() + slideOutHorizontally(targetOffsetX = {
-                    it
-                })
-            }
+                fadeOut() + slideOutHorizontally(targetOffsetX = { it })
+            },
+            predictivePopEnterTransition = {
+                fadeIn() + slideInHorizontally()
+            },
+            predictivePopExitTransition = {
+                fadeOut() + slideOutHorizontally(targetOffsetX = { it })
+            },
         ) {
             appComposable<NavigateDestinations.Home> {
                 HomeScreen(viewModel { HomeViewModel() })
