@@ -66,7 +66,6 @@ import com.blockstream.data.devices.DeviceBrand
 import com.blockstream.data.extensions.handleException
 import com.blockstream.data.extensions.isNotBlank
 import com.blockstream.data.gdk.data.Network
-import com.blockstream.data.utils.createNewTicketUrl
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.collect
@@ -587,39 +586,7 @@ fun HandleSideEffect(
                 }
 
                 is SideEffects.NavigateTo -> {
-
-                    val navigateTo = when (val destination = it.destination) {
-                        is NavigateDestinations.Support -> {
-                            if (!viewModel.zendeskSdk.isAvailable) {
-                                createNewTicketUrl(
-                                    appInfo = viewModel.appInfo,
-                                    subject = destination.supportData.subject
-                                        ?: viewModel.screenName()
-                                            ?.let { "Android Issue in $it" }
-                                        ?: "Android Error Report",
-                                    supportData = destination.supportData,
-                                ).also {
-                                    appCoroutine.launch {
-                                        openBrowser(
-                                            platformManager = platformManager,
-                                            dialogState = dialog,
-                                            isTor = viewModel.settingsManager.appSettings.tor,
-                                            url = it
-                                        )
-                                    }
-                                }
-                                false
-                            } else {
-                                true
-                            }
-                        }
-
-                        else -> true
-                    }
-
-                    if (navigateTo) {
-                        navigate(navigator, it.destination)
-                    }
+                    navigate(navigator, it.destination)
                 }
             }
         }.collect()

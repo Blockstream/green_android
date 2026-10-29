@@ -12,8 +12,6 @@ data class AppKeys(
     val greenlightKey: String? = null,
     @SerialName("greenlight_cert")
     val greenlightCert: String? = null,
-    @SerialName("zendesk_client_id")
-    val zendeskClientId: String? = null,
 ) : GreenJson<AppKeys>() {
     override fun kSerializer() = serializer()
 

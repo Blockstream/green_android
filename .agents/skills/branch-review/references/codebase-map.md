@@ -13,14 +13,14 @@ Gradle modules from `settings.gradle.kts`:
 - `androidApp`: Android application shell: activity, application, Koin Android modules, deep links, WorkManager workers, FCM handling, and the Room-to-SQLDelight migrator. Flavors: `development`, `productionGoogle`, `productionFDroid`.
 - `compose`: shared Compose UI: screens, bottom sheets, dialogs, components, navigation and ViewModels (`models/`). Source sets `commonMain`, `androidMain`, `desktopMain`.
 - `designsystem`: `AppTheme`, color and typography tokens, and the bundled fonts.
-- `data`: wallet/session managers, the Kotlin GDK and Wally wrappers (`data/.../gdk/`), network backends (GDK, LWK, Greenlight), SQLDelight persistence, settings, assets, Lightning, LWK, swaps, Meld, notifications and the Jade wallet integration. Source sets `commonMain`, `androidMain`, `jvmMain`.
+- `data`: wallet/session managers, the Kotlin GDK and Wally wrappers (`data/.../gdk/`), network backends (GDK, LWK, Greenlight), SQLDelight persistence, settings, assets, Lightning, LWK, swaps, Meld, notifications, Zendesk support tickets and the Jade wallet integration. Source sets `commonMain`, `androidMain`, `jvmMain`.
 - `domain`: use cases for wallet, account, send, receive, transaction, swap, hardware, Meld, notifications and other app workflows. `DomainModule.kt` includes the feature modules (`send/SendModule.kt`, `swap/SwapModule.kt`, ...) and registers the remaining use cases itself.
 - `gdk`: Android library that ships the GDK native libraries. Its `fetchAndroidBinaries` task downloads them along with the SWIG Java bindings (`GDK.java`, `Wally.java`); all of these are gitignored.
 - `jade`: Kotlin Multiplatform Jade client: `JadeAPI`, CBOR request/response types (`api/`), connections (`connection/`) and firmware updates (`firmware/`).
 - `hardware`: Android-only Ledger (`com.btchip`) and Trezor support.
 - `network`: shared `AppHttpClient`.
 - `utils`: logging utilities.
-- `base-gms`, `gms`, `no-gms`: store variants. `base-gms` holds open `GooglePlay` and `InstallReferrer` classes with no-op defaults, and `data` holds the matching `ZendeskSdk` and `fcm/Firebase` classes. `gms` (development and Google flavors) overrides all four; `no-gms` (F-Droid) binds the no-op classes.
+- `base-gms`, `gms`, `no-gms`: store variants. `base-gms` holds open `GooglePlay` and `InstallReferrer` classes with no-op defaults, and `data` holds the matching `fcm/Firebase` class. `gms` (development and Google flavors) overrides all three; `no-gms` (F-Droid) binds the no-op classes.
 - `desktopApp`: Compose Desktop entry points (`Main.kt`, `DevMain.kt`).
 
 Module dependencies run `androidApp` → `compose` → `domain` → `data`. `data` depends on `jade`, `network` and `utils`, and on `gdk` on Android only; `network` depends on `utils`. `compose` also depends on `designsystem` and, on Android, on `hardware` and `base-gms`. `hardware` depends directly on `data` and `gdk`, so GDK and Wally changes reach its Ledger and Trezor code. `base-gms` depends on `data`, `gms` on `base-gms` and `data`, and `no-gms` on `base-gms`; `androidApp` picks `gms` or `no-gms` per flavor, and `desktopApp` depends on `compose`.

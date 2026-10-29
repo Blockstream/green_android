@@ -3,7 +3,6 @@
 package com.blockstream.compose.di
 
 import com.blockstream.data.CountlyBase
-import com.blockstream.data.ZendeskSdk
 import com.blockstream.data.config.AppInfo
 import com.blockstream.data.crypto.GreenKeystore
 import com.blockstream.data.crypto.NoKeystore
@@ -84,9 +83,6 @@ fun initKoinDesktop(appConfig: AppConfig, appInfo: AppInfo) {
             }
             single<GreenKeystore> {
                 NoKeystore()
-            }
-            single {
-                ZendeskSdk()
             }
             single {
                 Firebase()

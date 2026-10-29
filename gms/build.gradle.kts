@@ -8,8 +8,6 @@ android {
 
     defaultConfig {
         minSdk = libs.versions.androidMinSdk.get().toInt()
-
-        consumerProguardFiles("consumer-rules.pro")
     }
     buildFeatures {
         buildConfig = true
@@ -34,9 +32,5 @@ dependencies {
     implementation(platform(libs.firebase.bom))
     implementation(libs.firebase.messaging)
     implementation(libs.installreferrer)
-    /** ----------------------------------------------------------------------------------------- */
-
-    /**  --- Zendesk ---------------------------------------------------------------------------- */
-    implementation(libs.zendesk.support.providers)
     /** ----------------------------------------------------------------------------------------- */
 }

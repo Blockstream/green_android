@@ -81,13 +81,12 @@ class SupportViewModel(type: SupportType, supportData: SupportData, greenWalletO
         doAsync({
             val subject =
                 (if (type == SupportType.FEEDBACK) "Feedback from" else "Bug report from").let { "$it ${appInfo.userAgent} ${supportData.subject ?: ""}".trim() }
-            zendeskSdk.submitNewTicket(
+            zendesk.submitNewTicket(
                 type = type,
                 subject = subject,
                 email = email.value,
                 message = message.value,
-                supportData = supportData.copy(attachLogs = attachLogs.value),
-                autoRetry = false
+                supportData = supportData.copy(attachLogs = attachLogs.value)
             )
         }, onSuccess = {
             postSideEffect(SideEffects.Snackbar(text = StringHolder.create(if (type == SupportType.FEEDBACK) Res.string.id_thank_you_for_your_feedback else Res.string.id_you_will_receive_an_email_from)))

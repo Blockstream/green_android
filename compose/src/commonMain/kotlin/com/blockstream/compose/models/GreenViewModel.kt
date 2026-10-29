@@ -25,7 +25,6 @@ import com.blockstream.compose.utils.StringHolder
 import com.blockstream.data.AddressInputType
 import com.blockstream.data.CountlyBase
 import com.blockstream.data.ViewModelView
-import com.blockstream.data.ZendeskSdk
 import com.blockstream.data.banner.Banner
 import com.blockstream.data.config.AppInfo
 import com.blockstream.data.crypto.GreenKeystore
@@ -72,6 +71,7 @@ import com.blockstream.data.managers.SessionManager
 import com.blockstream.data.managers.SettingsManager
 import com.blockstream.data.managers.WalletSettingsManager
 import com.blockstream.data.utils.generateWalletName
+import com.blockstream.data.zendesk.Zendesk
 import com.blockstream.domain.account.RemoveAccountUseCase
 import com.blockstream.domain.banner.GetBannerUseCase
 import com.blockstream.domain.promo.GetPromoUseCase
@@ -150,7 +150,7 @@ open class GreenViewModel constructor(
     protected val removeAccountUseCase: RemoveAccountUseCase by inject()
     protected val applicationScope: ApplicationScope by inject()
     protected val greenKeystore: GreenKeystore by inject()
-    val zendeskSdk: ZendeskSdk by inject()
+    protected val zendesk: Zendesk by inject()
     private val notificationManager: NotificationManager by inject()
     private val bluetoothManager: BluetoothManager by inject()
     val qaTester: HardwareQATester by inject()

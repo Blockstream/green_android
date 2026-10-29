@@ -58,7 +58,6 @@ rive-android = "11.15.0"
 startup-runtime = "1.2.0"
 uriKmp = "0.0.21"
 workRuntimeKtx = "2.12.0"
-zendesk = "5.4.0"
 state-keeper = "2.6.0"
 turbine = "1.2.1"
 usb-serial = "0f16336a4e"
@@ -97,6 +96,7 @@ ktor-client-logging = { module = "io.ktor:ktor-client-logging", version.ref = "k
 ktor-client-okhttp = { module = "io.ktor:ktor-client-okhttp", version.ref = "ktor" }
 ktor-client-cio = { module = "io.ktor:ktor-client-cio", version.ref = "ktor" }
 ktor-client-java = { module = "io.ktor:ktor-client-java", version.ref = "ktor" }
+ktor-client-mock = { module = "io.ktor:ktor-client-mock", version.ref = "ktor" }
 blockstream-glsdk = { module = "com.blockstream:glsdk", version.ref = "blockstream-glsdk" }
 blockstream-lwk = { module = "com.blockstream:lwk", version.ref = "blockstream-lwk" }
 phosphor-icon = { module = "com.adamglin:phosphor-icon", version.ref = "phosphorIcon" }
@@ -157,13 +157,13 @@ multiplatform-settings = { module = "com.russhwolf:multiplatform-settings", vers
 multiplatform-settings-no-arg = { module = "com.russhwolf:multiplatform-settings-no-arg", version.ref = "multiplatformSettings" }
 multiplatform-settings-make-observable = { module = "com.russhwolf:multiplatform-settings-make-observable", version.ref = "multiplatformSettings" }
 multiplatform-settings-coroutines = { module = "com.russhwolf:multiplatform-settings-coroutines", version.ref = "multiplatformSettings" }
+multiplatform-settings-test = { module = "com.russhwolf:multiplatform-settings-test", version.ref = "multiplatformSettings" }
 okio = { module = "com.squareup.okio:okio", version.ref = "okio" }
 state-keeper = { module = "com.arkivanov.essenty:state-keeper", version.ref = "state-keeper" }
 protobuf-java = { module = "com.google.protobuf:protobuf-java", version.ref = "protobuf-java" }
 review-ktx = { module = "com.google.android.play:review-ktx", version.ref = "review-ktx" }
 rive-android = { module = "app.rive:rive-android", version.ref = "rive-android" }
 uri-kmp = { module = "com.eygraber:uri-kmp", version.ref = "uriKmp" }
-zendesk-support-providers = { module = "com.zendesk:support-providers", version.ref = "zendesk" }
 turbine = { module = "app.cash.turbine:turbine", version.ref = "turbine" }
 usb-serial = { module = "com.github.angelix:UsbSerial", version.ref = "usb-serial" }
 zxing-android-embedded = { module = "com.journeyapps:zxing-android-embedded", version.ref = "zxing-android-embedded" }

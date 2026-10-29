@@ -4,6 +4,7 @@ import co.touchlab.kermit.Logger
 import io.ktor.client.HttpClient
 import io.ktor.client.HttpClientConfig
 import io.ktor.client.call.body
+import io.ktor.client.engine.HttpClientEngine
 import io.ktor.client.plugins.ClientRequestException
 import io.ktor.client.plugins.ServerResponseException
 import io.ktor.client.plugins.contentnegotiation.ContentNegotiation
@@ -65,9 +66,9 @@ inline fun <reified T> NetworkResponse<T>.exception(): Exception {
 }
 
 abstract class AppHttpClient(
-    enableLogging: Boolean = false, configBlock: HttpClientConfig<*>.() -> Unit = {}
+    enableLogging: Boolean = false, configBlock: HttpClientConfig<*>.() -> Unit = {}, engine: HttpClientEngine? = null
 ) {
-    val httpClient: HttpClient = defaultHttpClient(enableLogging, configBlock)
+    val httpClient: HttpClient = defaultHttpClient(enableLogging, configBlock, engine)
 
     suspend inline fun <reified T> get(
         path: String, block: HttpRequestBuilder.() -> Unit = {}
@@ -150,9 +151,9 @@ abstract class AppHttpClient(
 
     companion object {
         private fun defaultHttpClient(
-            enableLogging: Boolean = false, configBlock: HttpClientConfig<*>.() -> Unit = {}
+            enableLogging: Boolean = false, configBlock: HttpClientConfig<*>.() -> Unit = {}, engine: HttpClientEngine? = null
         ): HttpClient {
-            return HttpClient {
+            val config: HttpClientConfig<*>.() -> Unit = {
                 install(Resources)
                 if (enableLogging) {
                     install(Logging) {
@@ -180,6 +181,7 @@ abstract class AppHttpClient(
                 }
                 configBlock()
             }
+            return engine?.let { HttpClient(it, config) } ?: HttpClient(config)
         }
     }
 

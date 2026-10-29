@@ -10,7 +10,6 @@ data class AppConfig(
     val cacheDir: String,
     val greenlightKey: String? = null,
     val greenlightCert: String? = null,
-    val zendeskClientId: String? = null,
     val analyticsFeatureEnabled: Boolean = true,
     val lightningFeatureEnabled: Boolean = true,
     val storeRateEnabled: Boolean = false
@@ -37,7 +36,6 @@ data class AppConfig(
                 cacheDir = cacheDir,
                 greenlightKey = appKeys?.greenlightKey,
                 greenlightCert = appKeys?.greenlightCert,
-                zendeskClientId = appKeys?.zendeskClientId,
                 analyticsFeatureEnabled = analyticsFeatureEnabled,
                 lightningFeatureEnabled = lightningFeatureEnabled && appKeys?.greenlightCert != null,
                 storeRateEnabled = storeRateEnabled
