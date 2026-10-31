@@ -11,7 +11,8 @@ Blockstream App (`green_android`) is a non-custodial Bitcoin, Liquid and Lightni
 ## Build and test
 
 - Debug build: `./gradlew assembleDevelopmentDebug` (production flavor: `assembleProductionGoogleDebug`).
-- Unit tests, as CI runs them: `./gradlew test :compose:testAndroidHostTest -x :androidApp:testProductionGoogleDebugUnitTest`. CI first copies `contrib/blockstream_keys.txt` to the gitignored `app_keys.txt`.
+- Lightning needs the base64 Greenlight credentials. Gradle reads `GREENLIGHT_CERT` and `GREENLIGHT_KEY` from the environment, where CI sets them, or else from `local.properties`. Local builds without them turn Lightning off; CI builds (`CI=true`) fail.
+- Unit tests, as CI runs them: `./gradlew test :compose:testAndroidHostTest -x :androidApp:testProductionGoogleDebugUnitTest`.
 - That command skips the Kotlin Multiplatform modules `data`, `domain`, `jade` and `utils`, which have no `test` task. Run their JVM and Android host tests with `./gradlew :<module>:allTests`.
 - Prefer a single module's tasks while iterating; list them with `./gradlew :<module>:tasks --all`.
 - Gradle dependency verification is enforced through `gradle/verification-metadata.xml`. After adding or upgrading a dependency, run `./update_dependency_verification.sh` (`-b`, `-t` or `--desktop` also resolve the dependencies of the debug build, the tests or the desktop app) and review the checksums it adds. Never bypass verification with `--dependency-verification=lenient` or `off`.

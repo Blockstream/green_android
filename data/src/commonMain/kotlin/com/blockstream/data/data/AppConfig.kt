@@ -1,8 +1,6 @@
 package com.blockstream.data.data
 
-import com.blockstream.utils.Loggable
-
-typealias AppKeysString = String
+import co.touchlab.kermit.Logger
 
 data class AppConfig(
     val isDebug: Boolean,
@@ -14,7 +12,7 @@ data class AppConfig(
     val lightningFeatureEnabled: Boolean = true,
     val storeRateEnabled: Boolean = false
 ) {
-    companion object : Loggable() {
+    companion object {
         fun default(
             isDebug: Boolean,
             filesDir: String,
@@ -22,22 +20,24 @@ data class AppConfig(
             analyticsFeatureEnabled: Boolean,
             lightningFeatureEnabled: Boolean,
             storeRateEnabled: Boolean,
-            appKeysString: AppKeysString?
+            greenlightCert: String?,
+            greenlightKey: String?
         ): AppConfig {
-            val appKeys: AppKeys? = appKeysString?.takeIf { it.isNotBlank() }?.let { AppKeys.fromText(it) }
+            val glCert = greenlightCert?.takeIf { it.isNotBlank() }
+            val glKey = greenlightKey?.takeIf { it.isNotBlank() }
 
-            if (lightningFeatureEnabled && (appKeys?.greenlightCert == null || appKeys.greenlightKey == null)) {
-                logger.i { "Lightning Feature turned off" }
+            if (lightningFeatureEnabled && (glCert == null || glKey == null)) {
+                Logger.i { "Lightning Feature turned off" }
             }
 
             return AppConfig(
                 isDebug = isDebug,
                 filesDir = filesDir,
                 cacheDir = cacheDir,
-                greenlightKey = appKeys?.greenlightKey,
-                greenlightCert = appKeys?.greenlightCert,
+                greenlightKey = glKey,
+                greenlightCert = glCert,
                 analyticsFeatureEnabled = analyticsFeatureEnabled,
-                lightningFeatureEnabled = lightningFeatureEnabled && appKeys?.greenlightCert != null,
+                lightningFeatureEnabled = lightningFeatureEnabled && glCert != null && glKey != null,
                 storeRateEnabled = storeRateEnabled
             )
         }

@@ -27,14 +27,6 @@ if (keystorePropertiesFile.exists()){
     keystoreProperties["keyPassword"] = System.getenv("KEY_PASSWORD") ?: ""
 }
 
-// Load local.properties
-val localPropertiesFile = rootProject.file("local.properties")
-val localProperties = Properties()
-if (localPropertiesFile.exists()) {
-    localProperties.load(FileInputStream(localPropertiesFile))
-}
-
-val appKeys = rootProject.file("app_keys.txt").takeIf { it.exists() }?.readText() ?: ""
 
 android {
     namespace = "com.blockstream.green"
@@ -76,10 +68,6 @@ android {
             manifestPlaceholders["appIcon"] = "@mipmap/ic_launcher_dev"
             manifestPlaceholders["appIconRound"] = "@mipmap/ic_launcher_dev_round"
 
-            // Development PIN code from local.properties
-            val devPinCode = localProperties.getProperty("DEV_PIN_CODE") ?: ""
-            buildConfigField("String", "DEV_PIN_CODE", """"$devPinCode"""")
-            buildConfigField("String", "APP_KEYS", """"$appKeys"""")
         }
 
         create("productionGoogle") {
@@ -91,10 +79,6 @@ android {
             resValue("bool", "feature_rate_google_play", "true")
             manifestPlaceholders["appIcon"] = "@mipmap/ic_launcher"
             manifestPlaceholders["appIconRound"] = "@mipmap/ic_launcher_round"
-
-            // No development PIN for production
-            buildConfigField("String", "DEV_PIN_CODE", "null")
-            buildConfigField("String", "APP_KEYS", """"$appKeys"""")
 
             ndk {
                 abiFilters.addAll(listOf("armeabi-v7a", "arm64-v8a"))
@@ -111,10 +95,6 @@ android {
             resValue("bool", "feature_rate_google_play", "false")
             manifestPlaceholders["appIcon"] = "@mipmap/ic_launcher"
             manifestPlaceholders["appIconRound"] = "@mipmap/ic_launcher_round"
-
-            // No development PIN for production
-            buildConfigField("String", "DEV_PIN_CODE", "null")
-            buildConfigField("String", "APP_KEYS", """"$appKeys"""")
 
             ndk {
                 abiFilters.addAll(listOf("armeabi-v7a", "arm64-v8a"))

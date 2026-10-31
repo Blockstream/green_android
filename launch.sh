@@ -129,13 +129,6 @@ checkout(){
   git status
 }
 
-app_keys(){
-  if [[ ! -f "app_keys.txt" ]]; then
-    echo "app_keys.txt not found, using Blockstream keys"
-    ./gradlew useBlockstreamKeys
-  fi
-}
-
 gdk(){
   if [[ $GDK == "app" ]]; then
       ./gdk/fetch_android_binaries.sh
@@ -177,8 +170,6 @@ fi
 if [[ $GDK != false ]]; then
   gdk $GDK
 fi
-
-app_keys
 
 install
 launch $ADD_WALLET

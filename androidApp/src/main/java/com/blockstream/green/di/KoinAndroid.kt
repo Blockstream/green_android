@@ -17,9 +17,11 @@ import com.blockstream.green.lifecycle.ActivityLifecycle
 import com.blockstream.green.settings.AndroidMigrator
 import com.blockstream.green.utils.QATester
 import com.blockstream.green.utils.installationInfo
+import com.blockstream.green.utils.isDebug
 import com.blockstream.green.utils.isDevelopmentFlavor
 import org.koin.dsl.binds
 import org.koin.dsl.module
+import com.blockstream.data.BuildConfig as DataBuildConfig
 
 fun initKoinAndroid(context: Context) {
     val appInfo = AppInfo(
@@ -27,7 +29,7 @@ fun initKoinAndroid(context: Context) {
         version = BuildConfig.VERSION_NAME,
         isDebug = BuildConfig.DEBUG,
         isDevelopment = isDevelopmentFlavor,
-        developmentPin = BuildConfig.DEV_PIN_CODE,
+        developmentPin = DataBuildConfig.DEV_PIN_CODE.takeIf { isDevelopmentFlavor && isDebug },
         installation = context.installationInfo()
     )
 
@@ -38,7 +40,8 @@ fun initKoinAndroid(context: Context) {
         analyticsFeatureEnabled = context.resources.getBoolean(R.bool.feature_analytics),
         lightningFeatureEnabled = context.resources.getBoolean(R.bool.feature_lightning),
         storeRateEnabled = context.resources.getBoolean(R.bool.feature_rate_google_play),
-        appKeysString = BuildConfig.APP_KEYS
+        greenlightCert = DataBuildConfig.GREENLIGHT_CERT,
+        greenlightKey = DataBuildConfig.GREENLIGHT_KEY
     )
 
     initKoin(

@@ -61,6 +61,17 @@ This will build both release and debug builds.
 
 You can speed up builds by limiting the tasks which run. Use `./gradlew --tasks` to see a list of available tasks.
 
+#### Enable Lightning
+
+Lightning needs a Greenlight developer certificate and its key. A build without them runs with Lightning turned off, except on CI (`CI=true`), where it fails.
+
+Gradle reads each one as the single-line base64 of its PEM file, from the `GREENLIGHT_CERT` and `GREENLIGHT_KEY` environment variables or else from `local.properties`:
+
+```
+GREENLIGHT_CERT=<base64 of the certificate PEM>
+GREENLIGHT_KEY=<base64 of the key PEM>
+```
+
 #### Building with docker (optional)
 
 If you have docker configured and want to build the app in release mode

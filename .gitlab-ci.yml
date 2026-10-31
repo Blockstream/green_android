@@ -110,7 +110,6 @@ production:
   script:
     - cd $CI_PROJECT_DIR
     - echo $ANDROID_KEYSTORE_BASE64 | base64 -d > keystore.jks
-    - cp contrib/blockstream_keys.txt app_keys.txt
     - ./gradlew printLwkVersion assembleProductionGoogleRelease
 
 production_fdroid:
@@ -153,7 +152,6 @@ development:
   script:
     - cd $CI_PROJECT_DIR
     - echo $ANDROID_KEYSTORE_BASE64 | base64 -d > keystore.jks
-    - cp contrib/blockstream_keys.txt app_keys.txt
     - ./gradlew printLwkVersion assembleDevelopmentRelease
 
 production_debug:
@@ -170,7 +168,6 @@ production_debug:
   script:
     - cd $CI_PROJECT_DIR
     - echo $ANDROID_KEYSTORE_BASE64 | base64 -d > keystore.jks
-    - cp contrib/blockstream_keys.txt app_keys.txt
     - ./gradlew assembleProductionGoogleDebug
 
 gdk_commit:
@@ -190,7 +187,6 @@ gdk_commit:
     - echo $ANDROID_KEYSTORE_BASE64 | base64 -d > keystore.jks
     - echo "GDK_COMMIT=$GDK_COMMIT"
     - ./gdk/fetch_android_binaries.sh -c $GDK_COMMIT
-    - cp contrib/blockstream_keys.txt app_keys.txt
     - ./gradlew assembleDevelopmentDebug
 
 #####################################
@@ -218,7 +214,6 @@ build_google_play:
     GIT_SUBMODULE_STRATEGY: recursive
   script:
     - cd $CI_PROJECT_DIR
-    - cp contrib/blockstream_keys.txt app_keys.txt
     - ./gradlew assembleProductionGoogleRelease
 
 build_osx:
@@ -230,7 +225,6 @@ build_osx:
     GIT_SUBMODULE_STRATEGY: recursive
   script:
     - cd $CI_PROJECT_DIR
-    - cp contrib/blockstream_keys.txt app_keys.txt
     - ./gradlew assembleProductionGoogleRelease
 
 #####################################
@@ -252,7 +246,6 @@ unit_tests:
   script:
     - cd $CI_PROJECT_DIR
     #    - ./gradlew lintProductionGoogleRelease
-    - cp contrib/blockstream_keys.txt app_keys.txt
     - ./gradlew test :compose:testAndroidHostTest :designsystem:allTests
       -x :androidApp:testProductionGoogleDebugUnitTest
 
@@ -407,7 +400,6 @@ gcp_push_gdk_commit:
   script:
     - cd $CI_PROJECT_DIR
     - echo $ANDROID_KEYSTORE_BASE64 | base64 -d > keystore.jks
-    - cp contrib/blockstream_keys.txt app_keys.txt
     - ./gradlew assembleDevelopmentRelease
 
 .e2e:upload:

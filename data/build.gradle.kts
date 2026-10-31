@@ -1,3 +1,6 @@
+import java.io.StringReader
+import java.util.Properties
+
 plugins {
     alias(libs.plugins.kotlinMultiplatform)
     alias(libs.plugins.android.kotlin.multiplatform.library)
@@ -17,6 +20,60 @@ sqldelight {
         }
     }
     linkSqlite.set(true)
+}
+
+// BuildConfig for every platform: the base64 Greenlight credentials from the GREENLIGHT_CERT and
+// GREENLIGHT_KEY environment variables, which CI sets, else from local.properties, and DEV_PIN_CODE
+// from local.properties. CI builds fail without the credentials, so no CI build loses Lightning for
+// lack of them; local builds without them run with Lightning turned off. CI builds also fail with a
+// DEV_PIN_CODE, so it is null in every CI build and no release built there contains a PIN.
+val localProperties = providers.fileContents(rootProject.layout.projectDirectory.file("local.properties")).asText.map {
+    Properties().apply { load(StringReader(it)) }
+}
+fun localProperty(name: String) = localProperties.map { it.getProperty(name) ?: "" }.orElse("")
+val greenlightCert = providers.environmentVariable("GREENLIGHT_CERT").orElse(localProperty("GREENLIGHT_CERT"))
+val greenlightKey = providers.environmentVariable("GREENLIGHT_KEY").orElse(localProperty("GREENLIGHT_KEY"))
+val devPinCode = localProperty("DEV_PIN_CODE")
+// The same test settings.gradle.kts uses for the remote build cache: GitLab CI sets CI to "true"
+val isCi = providers.environmentVariable("CI").map { it == "true" }.orElse(false)
+val buildConfigDir = layout.buildDirectory.dir("generated/buildConfig/kotlin")
+val generateBuildConfig by tasks.registering {
+    // Gradle skips this task while its inputs and outputs are unchanged, so each value the file holds is an
+    // input, or a changed local.properties would leave the old one in place. isCi changes nothing in the file,
+    // but a build that switches to CI has to run the checks again.
+    inputs.property("greenlightCert", greenlightCert)
+    inputs.property("greenlightKey", greenlightKey)
+    inputs.property("devPinCode", devPinCode)
+    inputs.property("isCi", isCi)
+    outputs.dir(buildConfigDir)
+
+    doLast {
+        val cert = greenlightCert.get().trim()
+        val key = greenlightKey.get().trim()
+        val pin = devPinCode.get().trim()
+
+        if (isCi.get()) {
+            check(cert.isNotEmpty() && key.isNotEmpty()) { "GREENLIGHT_CERT and GREENLIGHT_KEY must be set on CI" }
+            check(pin.isEmpty()) { "DEV_PIN_CODE must not be set on CI" }
+        }
+
+        fun quoted(value: String) = "\"" + value.replace("\\", "\\\\").replace("\"", "\\\"").replace("$", "\\$") + "\""
+
+        buildConfigDir.get().file("com/blockstream/data/BuildConfig.kt").asFile.apply {
+            parentFile.mkdirs()
+            writeText(
+                """
+                |package com.blockstream.data
+                |
+                |object BuildConfig {
+                |    const val GREENLIGHT_CERT = ${quoted(cert)}
+                |    const val GREENLIGHT_KEY = ${quoted(key)}
+                |    val DEV_PIN_CODE: String? = ${if (pin.isEmpty()) "null" else quoted(pin)}
+                |}
+                |""".trimMargin()
+            )
+        }
+    }
 }
 
 kotlin {
@@ -70,6 +127,8 @@ kotlin {
         }
 
         commonMain {
+            kotlin.srcDir(generateBuildConfig)
+
             dependencies {
                 /**  --- Modules  --- */
                 api(project(":utils"))

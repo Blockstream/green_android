@@ -12,6 +12,7 @@ import com.blockstream.compose.models.MainViewModel
 import com.blockstream.compose.theme.GreenChrome
 import com.blockstream.compose.theme.GreenTheme
 import com.blockstream.compose.utils.compatTestTagsAsResourceId
+import com.blockstream.data.BuildConfig
 import com.blockstream.data.config.AppInfo
 import com.blockstream.data.data.AppConfig
 
@@ -37,10 +38,17 @@ fun setupDesktop() {
         analyticsFeatureEnabled = false,
         lightningFeatureEnabled = false,
         storeRateEnabled = false,
-        appKeysString = null
+        greenlightCert = BuildConfig.GREENLIGHT_CERT,
+        greenlightKey = BuildConfig.GREENLIGHT_KEY
     )
 
-    val appInfo = AppInfo(userAgent = "green_ios", "version", isDebug = true, isDevelopment = true)
+    val appInfo = AppInfo(
+        userAgent = "green_desktop",
+        version = "0.0.0",
+        isDebug = true,
+        isDevelopment = true,
+        developmentPin = BuildConfig.DEV_PIN_CODE.takeIf { appConfig.isDebug }
+    )
 
     initKoinDesktop(
         appConfig = appConfig,
