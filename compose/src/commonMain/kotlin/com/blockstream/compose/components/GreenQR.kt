@@ -145,11 +145,11 @@ fun LegacyGreenQR(
                             data = data ?: "",
                             errorCorrectionLevel = if (isJadeQR) QrErrorCorrectionLevel.Low else QrErrorCorrectionLevel.Auto
                         )
-                        val padding = if (isJadeQR) 0.dp else 18.dp
+                        // White quiet zone for scanners: Lightning and Boltz exports show this card on a dark background.
                         Image(
                             painter = qrCodePainter,
                             contentDescription = "QR",
-                            modifier = Modifier.fillMaxSize().padding(padding)
+                            modifier = Modifier.fillMaxSize().padding(18.dp)
                         )
                     } else if (isVisible) {
                         Image(
