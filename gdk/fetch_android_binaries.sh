@@ -18,12 +18,12 @@ _EOF_
 }
 
 # ----- Vars
-TAGNAME="release_0.78.0"
+TAGNAME="release_0.78.1"
 NAME="gdk-$TAGNAME"
 TARBALL="${NAME}.tar.gz"
 # The version of gdk to fetch and its sha256 checksum for integrity checking
 URL="https://github.com/Blockstream/gdk/releases/download/${TAGNAME}/${TARBALL}"
-SHA256="d6c0757dc6df5aa10366362a47d666a3f82d75967766a7473a74079cb0a930ba"
+SHA256="961884e9ef7dc2aed1857add943eefd0bd34a5f0b53b166cdb60474a15371ff1"
 VALIDATE_CHECKSUM=true
 COMMIT=false
 GCLOUD_URL="https://storage.googleapis.com/green-gdk-builds/gdk-"
