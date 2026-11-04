@@ -9,17 +9,22 @@ import com.blockstream.glsdk.Handle
 import com.blockstream.glsdk.LnUrlPayRequest
 import com.blockstream.glsdk.LnUrlWithdrawRequest
 import com.blockstream.glsdk.LnUrlWithdrawRequestData
+import com.blockstream.glsdk.Network
 import com.blockstream.glsdk.Node
 import com.blockstream.glsdk.NodeBuilder
 import com.blockstream.glsdk.NodeEventListener
 import com.blockstream.glsdk.OnchainReceiveResponse
 import com.blockstream.glsdk.OnchainSendResponse
+import com.blockstream.glsdk.Scheduler
 import com.blockstream.glsdk.Signer
 import com.blockstream.glsdk.listPayments
 import com.blockstream.glsdk.resolveInput
 import com.blockstream.glsdk.use
 import com.blockstream.utils.LogBucket
 import com.blockstream.utils.Loggable
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.IO
+import kotlinx.coroutines.withContext
 import kotlin.uuid.ExperimentalUuidApi
 import kotlin.uuid.Uuid
 
@@ -83,7 +88,8 @@ class GreenlightSdk constructor(private val nodeRpc: Node) {
 
     fun onchainReceive(): OnchainReceiveResponse = nodeRpc.onchainReceive()
 
-    fun onchainSend(toAddress: String): OnchainSendResponse = nodeRpc.onchainSend(destination = toAddress, amountOrAll = "all")
+    fun onchainSend(toAddress: String): OnchainSendResponse =
+        nodeRpc.onchainSend(destination = toAddress, amountOrAll = "all", satPerVbyte = null, utxos = null)
 
     fun credentials() = nodeRpc.credentials()
 
@@ -107,13 +113,23 @@ class GreenlightSdk constructor(private val nodeRpc: Node) {
         fun config(greenlightKeys: GreenlightKeys) =
             Config().withDeveloperCert(greenlightKeys.developerCert ?: throw Exception("No developer cert provided"))
 
-        suspend fun restoreCredentials(mnemonic: String, greenlightKeys: GreenlightKeys): ByteArray {
-            return NodeBuilder(config = config(greenlightKeys)).recover(mnemonic = mnemonic).use { node ->
+        // Asks Greenlight whether the Lightning account of this mnemonic's node may be offered to the
+        // user. It works before the node is registered.
+        suspend fun isLightningAvailable(mnemonic: String): Boolean = withContext(Dispatchers.IO) {
+            val nodeId = Signer(phrase = mnemonic).use { it.nodeId() }
+            Scheduler(network = Network.BITCOIN).use { it.lightningAvailable(nodeId = nodeId) }
+        }
+
+        suspend fun restoreCredentials(mnemonic: String, greenlightKeys: GreenlightKeys): ByteArray = withContext(Dispatchers.IO) {
+            NodeBuilder(config = config(greenlightKeys)).recover(mnemonic = mnemonic).use { node ->
                 node.credentials()
             }
         }
 
-        suspend fun connect(
+        // connect and startSigner block their caller rather than switch to Dispatchers.IO, because
+        // withContext drops its result when the caller is cancelled, which would leak the running
+        // node or signer.
+        fun connect(
             mnemonic: String,
             credentials: ByteArray?,
             isRestoreOnly: Boolean,
@@ -132,12 +148,13 @@ class GreenlightSdk constructor(private val nodeRpc: Node) {
                 else -> builder.registerOrRecover(mnemonic = mnemonic, inviteCode = null)
 
             }
+
             return GreenlightSdk(node)
         }
 
         // Starts only the signer (no full node connect) so it can co-sign in-flight operations
         // for a node already registered on this device. Caller must stop() the returned Handle.
-        suspend fun startSigner(mnemonic: String, credentials: ByteArray): Handle {
+        fun startSigner(mnemonic: String, credentials: ByteArray): Handle {
             val signer = Signer(phrase = mnemonic).authenticate(creds = Credentials.load(raw = credentials))
             logger.i { "Starting signer" }
             return signer.start()

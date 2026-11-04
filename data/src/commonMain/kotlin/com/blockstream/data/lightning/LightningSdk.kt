@@ -16,6 +16,7 @@ import com.blockstream.utils.LogBucket
 import com.blockstream.utils.Loggable
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.IO
 import kotlinx.coroutines.channels.BufferOverflow
 import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -143,7 +144,8 @@ class LightningSdk constructor(
 
     private suspend fun parseBoltOrLNUrl(input: String?): LightningInputType? = try {
         if (!input.isNullOrBlank()) {
-            resolveInput(input).toLightningInputType()?.also {
+            // resolveInput blocks while it fetches LNURL and Lightning Address data
+            withContext(Dispatchers.IO) { resolveInput(input) }.toLightningInputType()?.also {
                 inputTypeCache = input to it
             }
         } else {

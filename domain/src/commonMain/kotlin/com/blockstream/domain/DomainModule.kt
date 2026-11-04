@@ -7,6 +7,7 @@ import com.blockstream.domain.bitcoinpricehistory.ObserveBitcoinPriceHistory
 import com.blockstream.domain.hardware.DisableHardwareWatchOnlyUseCase
 import com.blockstream.domain.hardware.EnableHardwareWatchOnlyUseCase
 import com.blockstream.domain.hardware.VerifyAddressUseCase
+import com.blockstream.domain.lightning.IsLightningAvailableUseCase
 import com.blockstream.domain.lightning.LightningNodeIdUseCase
 import com.blockstream.domain.meld.CreateCryptoQuoteUseCase
 import com.blockstream.domain.meld.CreateCryptoWidgetUseCase
@@ -36,6 +37,7 @@ val domainModule = module {
     includes(walletModule)
     includes(accountModule)
     singleOf(::LightningNodeIdUseCase)
+    singleOf(::IsLightningAvailableUseCase)
     singleOf(::VerifyAddressUseCase)
     singleOf(::EnableHardwareWatchOnlyUseCase)
     singleOf(::DisableHardwareWatchOnlyUseCase)
