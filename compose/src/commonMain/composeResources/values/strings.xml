@@ -623,6 +623,10 @@
     <string name="id_lightning_beta_disclaimer">While your underlying funds remain secure, you may experience occasional payment failures or temporary delays when accessing your balance during network updates.\n\nWe recommend only using funds that you don't need immediate, urgent access to.</string>
     <string name="id_lightning_funding_fees">Lightning Funding &amp; Fees</string>
     <string name="id_lightning_is_unavailable">Lightning is unavailable</string>
+    <string name="id_lightning_is_at_capacity">Lightning Is at Capacity</string>
+    <string name="id_we_are_rolling_out_lightning_access">We are rolling out Lightning access as capacity becomes available. Please try again soon.</string>
+    <string name="id_couldnt_enable_lightning">Couldn’t Enable Lightning</string>
+    <string name="id_we_are_unable_to_enable_lightning">We are unable to enable Lightning on your wallet at this time. Please try again soon.</string>
     <string name="id_expiration">Expiration</string>
     <string name="id_expires_s">Expires %1$s</string>
     <string name="id_explore_your_wallet">Explore Your Wallet</string>

@@ -38,6 +38,7 @@ import com.blockstream.compose.extensions.previewWallet
 import com.blockstream.compose.looks.AccountTypeLook
 import com.blockstream.compose.models.GreenViewModel
 import com.blockstream.compose.models.jade.JadeQrOperation
+import com.blockstream.compose.models.lightning.lightningGateDialog
 import com.blockstream.compose.navigation.NavData
 import com.blockstream.compose.navigation.NavigateDestinations
 import com.blockstream.compose.navigation.NavigateDestinations.ChooseAccountType
@@ -748,7 +749,7 @@ class WalletSettingsViewModel(
             if (appInfo.isDebug) {
                 it.printStackTrace()
             }
-            postSideEffect(SideEffects.ErrorDialog(error = it, supportData = errorReport(it)))
+            postSideEffect(it.lightningGateDialog() ?: SideEffects.ErrorDialog(error = it, supportData = errorReport(it)))
         })
     }
 

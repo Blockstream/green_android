@@ -22,6 +22,14 @@ class WalletSettingsManager(
         return getString(walletId = walletId, key = KEY_LIGHTNING_NODE_ID)
     }
 
+    suspend fun setLightningAvailableNodeId(walletId: String, nodeId: String) {
+        setString(walletId = walletId, key = KEY_LIGHTNING_AVAILABLE_NODE_ID, nodeId)
+    }
+
+    suspend fun getLightningAvailableNodeId(walletId: String): String? {
+        return getString(walletId = walletId, key = KEY_LIGHTNING_AVAILABLE_NODE_ID)
+    }
+
     suspend fun setTotalBalanceInFiat(walletId: String, enabled: Boolean) {
         setBoolean(walletId = walletId, key = KEY_TOTAL_BALANCE_IN_FIAT, enabled)
     }
@@ -69,6 +77,7 @@ class WalletSettingsManager(
         const val TRUE_VALUE = "true"
         const val FALSE_VALUE = "false"
         const val KEY_LIGHTNING_NODE_ID = "lightning_node_id"
+        const val KEY_LIGHTNING_AVAILABLE_NODE_ID = "lightning_available_node_id"
         const val KEY_TOTAL_BALANCE_IN_FIAT = "total_balance_in_fiat"
     }
 }

@@ -113,11 +113,14 @@ class GreenlightSdk constructor(private val nodeRpc: Node) {
         fun config(greenlightKeys: GreenlightKeys) =
             Config().withDeveloperCert(greenlightKeys.developerCert ?: throw Exception("No developer cert provided"))
 
-        // Asks Greenlight whether the Lightning account of this mnemonic's node may be offered to the
-        // user. It works before the node is registered.
-        suspend fun isLightningAvailable(mnemonic: String): Boolean = withContext(Dispatchers.IO) {
-            val nodeId = Signer(phrase = mnemonic).use { it.nodeId() }
+        // Asks Greenlight whether the Lightning account of this node may be offered to the user.
+        // It works before the node is registered.
+        suspend fun isLightningAvailable(nodeId: ByteArray): Boolean = withContext(Dispatchers.IO) {
             Scheduler(network = Network.BITCOIN).use { it.lightningAvailable(nodeId = nodeId) }
+        }
+
+        suspend fun nodeId(mnemonic: String): ByteArray = withContext(Dispatchers.IO) {
+            Signer(phrase = mnemonic).use { it.nodeId() }
         }
 
         suspend fun restoreCredentials(mnemonic: String, greenlightKeys: GreenlightKeys): ByteArray = withContext(Dispatchers.IO) {

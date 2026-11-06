@@ -1,5 +1,5 @@
 /**
- * Instrumented tests for GreenlightSdk.isLightningAvailable. glsdk ships its native library only
+ * Instrumented tests for GreenlightSdk.nodeId and isLightningAvailable. glsdk ships its native library only
  * as Android .so files, so these run on a device and ask the live Greenlight scheduler.
  *
  * The answer for an unregistered node is advisory and depends on the Lightning provider's
@@ -18,13 +18,13 @@ class GreenlightAvailabilityTest {
 
     @Test
     fun greenlightAnswersForAValidMnemonic() = runTest {
-        GreenlightSdk.isLightningAvailable(mnemonic = BIP39_TEST_VECTOR)
+        GreenlightSdk.isLightningAvailable(nodeId = GreenlightSdk.nodeId(mnemonic = BIP39_TEST_VECTOR))
     }
 
     @Test
     fun rejectsAnInvalidMnemonic() = runTest {
         assertFailsWith<Exception> {
-            GreenlightSdk.isLightningAvailable(mnemonic = "not a mnemonic")
+            GreenlightSdk.nodeId(mnemonic = "not a mnemonic")
         }
     }
 

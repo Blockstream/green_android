@@ -7,6 +7,7 @@ import blockstream_green.common.generated.resources.id_new_account_created
 import com.blockstream.compose.events.Events
 import com.blockstream.compose.looks.AccountTypeLook
 import com.blockstream.compose.models.GreenViewModel
+import com.blockstream.compose.models.lightning.lightningGateDialog
 import com.blockstream.compose.sideeffects.SideEffect
 import com.blockstream.compose.sideeffects.SideEffects
 import com.blockstream.compose.utils.StringHolder
@@ -93,7 +94,7 @@ abstract class AddAccountViewModelAbstract(greenWallet: GreenWallet, val assetId
             if (appInfo.isDebug) {
                 it.printStackTrace()
             }
-            postSideEffect(SideEffects.ErrorDialog(error = it, supportData = errorReport(it)))
+            postSideEffect(it.lightningGateDialog() ?: SideEffects.ErrorDialog(error = it, supportData = errorReport(it)))
         })
     }
 

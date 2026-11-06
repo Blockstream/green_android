@@ -18,6 +18,7 @@ import com.blockstream.data.gdk.device.HardwareWalletInteraction
 import com.blockstream.data.gdk.params.SubAccountParams
 import com.blockstream.domain.hardware.DisableHardwareWatchOnlyUseCase
 import com.blockstream.domain.hardware.EnableHardwareWatchOnlyUseCase
+import com.blockstream.domain.lightning.GateLightningActivationUseCase
 import com.blockstream.domain.lightning.LightningNodeIdUseCase
 import com.blockstream.domain.wallet.SaveGreenlightMnemonicAndCredentialsUseCase
 import com.blockstream.utils.Loggable
@@ -30,7 +31,8 @@ class CreateAccountUseCase(
     private val saveGreenlightMnemonicAndCredentialsUseCase: SaveGreenlightMnemonicAndCredentialsUseCase,
     private val hasHistoryUseCase: HasHistoryUseCase,
     private val disableHardwareWatchOnlyUseCase: DisableHardwareWatchOnlyUseCase,
-    private val enableHardwareWatchOnlyUseCase: EnableHardwareWatchOnlyUseCase
+    private val enableHardwareWatchOnlyUseCase: EnableHardwareWatchOnlyUseCase,
+    private val gateLightningActivationUseCase: GateLightningActivationUseCase
 ) : Loggable() {
 
     suspend operator fun invoke(
@@ -54,7 +56,24 @@ class CreateAccountUseCase(
         return (if (accountType.isLightning()) {
             val isEmptyWallet = session.accounts.value.isEmpty()
 
+            // An already connected node is an existing account, which the capacity gate leaves alone
+            val derivedNodeId = if (session.hasLightning) {
+                null
+            } else {
+                gateLightningActivationUseCase(
+                    session = session,
+                    wallet = wallet,
+                    mnemonic = mnemonic ?: session.deriveLightningMnemonic()
+                )
+            }
+
             session.initLightningIfNeeded(mnemonic = mnemonic)
+
+            if (derivedNodeId != null) {
+                check(session.lightningNodeId.equals(derivedNodeId, ignoreCase = true)) {
+                    "Lightning node id doesn't match the derived node id"
+                }
+            }
 
             // Save Lightning mnemonic
             if (!wallet.isEphemeral) {
