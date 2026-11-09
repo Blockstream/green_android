@@ -8,9 +8,11 @@ import com.blockstream.data.lightning.GreenlightSdk
 import com.blockstream.data.managers.WalletSettingsManager
 import com.blockstream.data.utils.toHex
 
-class LightningAtCapacityException : Exception("Lightning is at capacity")
+sealed class LightningGateException(message: String) : Exception(message)
 
-class LightningAvailabilityUnknownException : Exception("Lightning availability is unknown")
+class LightningAtCapacityException : LightningGateException("Lightning is at capacity")
+
+class LightningAvailabilityUnknownException : LightningGateException("Lightning availability is unknown")
 
 class GateLightningActivationUseCase(
     private val walletSettingsManager: WalletSettingsManager,

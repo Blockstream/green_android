@@ -10,17 +10,18 @@ import com.blockstream.compose.sideeffects.SideEffects
 import com.blockstream.compose.utils.StringHolder
 import com.blockstream.domain.lightning.LightningAtCapacityException
 import com.blockstream.domain.lightning.LightningAvailabilityUnknownException
+import com.blockstream.domain.lightning.LightningGateException
 
-fun Throwable.lightningGateDialog(): SideEffects.Dialog? = when (this) {
-    is LightningAtCapacityException -> SideEffects.Dialog(
-        title = StringHolder.create(Res.string.id_lightning_is_at_capacity),
-        message = StringHolder.create(Res.string.id_we_are_rolling_out_lightning_access)
-    )
+fun Throwable.lightningGateDialog(): SideEffects.Dialog? = (this as? LightningGateException)?.let {
+    when (it) {
+        is LightningAtCapacityException -> SideEffects.Dialog(
+            title = StringHolder.create(Res.string.id_lightning_is_at_capacity),
+            message = StringHolder.create(Res.string.id_we_are_rolling_out_lightning_access)
+        )
 
-    is LightningAvailabilityUnknownException -> SideEffects.Dialog(
-        title = StringHolder.create(Res.string.id_couldnt_enable_lightning),
-        message = StringHolder.create(Res.string.id_we_are_unable_to_enable_lightning)
-    )
-
-    else -> null
+        is LightningAvailabilityUnknownException -> SideEffects.Dialog(
+            title = StringHolder.create(Res.string.id_couldnt_enable_lightning),
+            message = StringHolder.create(Res.string.id_we_are_unable_to_enable_lightning)
+        )
+    }
 }
