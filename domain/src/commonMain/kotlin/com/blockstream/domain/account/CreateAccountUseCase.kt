@@ -69,10 +69,9 @@ class CreateAccountUseCase(
 
             session.initLightningIfNeeded(mnemonic = mnemonic)
 
-            if (derivedNodeId != null) {
-                check(session.lightningNodeId.equals(derivedNodeId, ignoreCase = true)) {
-                    "Lightning node id doesn't match the derived node id"
-                }
+            if (derivedNodeId != null && !session.lightningNodeId.equals(derivedNodeId, ignoreCase = true)) {
+                session.resetLightning()
+                error("Lightning node id doesn't match the derived node id")
             }
 
             // Save Lightning mnemonic

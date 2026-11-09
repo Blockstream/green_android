@@ -2006,6 +2006,25 @@ class GdkSession constructor(
         }
     }
 
+    suspend fun resetLightning() {
+        hasLightning = false
+        _lightningAccount = null
+        _isLightningLoadingStateFlow.value = false
+        _derivedHwLightningMnemonic = null
+
+        val backend = networkBackendsMutex.withLock {
+            networkBackends[lightning].also {
+                networkBackendsStateFlow.update { it - lightning }
+            }
+        }
+        tryCatch { backend?.disconnect() }
+
+        lightningManager.release(lightningSdkOrNull)
+        lightningSdkOrNull = null
+
+        updateAccountsAndBalances()
+    }
+
     suspend fun updateAccount(
         account: Account,
         isHidden: Boolean,

@@ -408,7 +408,7 @@ class WalletSettingsViewModel(
                 accountSettings += listOfNotNull(
                     WalletSetting.Lightning(enabled = session.hasLightning)
                         .takeIf {
-                            session.supportsLightning()
+                            session.supportsLightning() && (session.hasLightning || !session.isTestnet)
                         },
                     WalletSetting.Swaps.takeIf {
                         isSwapAvailableUseCase.invoke(wallet = greenWallet, session = session) && greenWallet.isHardware
