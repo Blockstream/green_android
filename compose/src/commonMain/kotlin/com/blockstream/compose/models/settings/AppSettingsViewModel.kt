@@ -51,6 +51,8 @@ abstract class AppSettingsViewModelAbstract() :
 
     abstract val designSystemCatalogEnabled: Boolean
 
+    abstract val designV2Enabled: MutableStateFlow<Boolean>
+
     abstract val analyticsFeatureEnabled: Boolean
 
     abstract val experimentalFeatureEnabled: Boolean
@@ -111,6 +113,8 @@ class AppSettingsViewModel : AppSettingsViewModelAbstract() {
 
     override val designSystemCatalogEnabled = appInfo.isDevelopmentOrDebug
 
+    override val designV2Enabled = MutableStateFlow(settingsManager.isDesignV2Enabled())
+
     override val analyticsFeatureEnabled = settingsManager.analyticsFeatureEnabled
 
     override val experimentalFeatureEnabled = settingsManager.lightningFeatureEnabled
@@ -158,6 +162,7 @@ class AppSettingsViewModel : AppSettingsViewModelAbstract() {
         object Cancel : Event
         data class ToggleNetworkRoute(val route: NetworkRoute, val enabled: Boolean) : Event
         data class EnableNetworkRoute(val route: NetworkRoute) : Event
+        data class SetDesignV2(val enabled: Boolean) : Event
     }
 
     class LocalSideEffects {
@@ -261,6 +266,10 @@ class AppSettingsViewModel : AppSettingsViewModelAbstract() {
 
         setupGapLimitValidation()
 
+        settingsManager.isDesignV2EnabledFlow().onEach {
+            designV2Enabled.value = it
+        }.launchIn(viewModelScope)
+
         bootstrap()
     }
 
@@ -344,6 +353,10 @@ class AppSettingsViewModel : AppSettingsViewModelAbstract() {
 
             is LocalEvents.EnableNetworkRoute -> {
                 setNetworkRoute(event.route, true)
+            }
+
+            is LocalEvents.SetDesignV2 -> {
+                settingsManager.setDesignV2Enabled(event.enabled)
             }
 
             is LocalEvents.Cancel -> {
@@ -482,6 +495,7 @@ class AppSettingsViewModelPreview(initValue: Boolean = false) : AppSettingsViewM
 
     override val multiServerValidationFeatureEnabled: Boolean = false
     override val designSystemCatalogEnabled: Boolean = true
+    override val designV2Enabled: MutableStateFlow<Boolean> = MutableStateFlow(false)
     override val analyticsFeatureEnabled: Boolean = true
     override val experimentalFeatureEnabled: Boolean = true
     override val enhancedPrivacyEnabled: MutableStateFlow<Boolean> = MutableStateFlow(initValue)

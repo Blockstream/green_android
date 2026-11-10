@@ -563,6 +563,17 @@ fun AppSettingsScreen(
                         },
                         modifier = Modifier.appTestTag("design_system_catalog_button"),
                     )
+
+                    val designV2Enabled by viewModel.designV2Enabled.collectAsStateWithLifecycle()
+                    SettingSwitch(
+                        title = "Design V2",
+                        subtitle = "Render migrated screens with the new design system",
+                        checked = designV2Enabled,
+                        onCheckedChange = {
+                            viewModel.postEvent(AppSettingsViewModel.LocalEvents.SetDesignV2(it))
+                        },
+                        testTag = "design_v2_switch"
+                    )
                 }
             }
         }

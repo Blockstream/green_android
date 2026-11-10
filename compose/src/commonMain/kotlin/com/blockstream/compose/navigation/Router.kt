@@ -1,9 +1,5 @@
 package com.blockstream.compose.navigation
 
-import androidx.compose.animation.fadeIn
-import androidx.compose.animation.fadeOut
-import androidx.compose.animation.slideInHorizontally
-import androidx.compose.animation.slideOutHorizontally
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.CompositionLocalProvider
@@ -109,6 +105,8 @@ import com.blockstream.compose.models.wallet.WalletDeleteViewModel
 import com.blockstream.compose.models.wallet.WalletNameViewModel
 import com.blockstream.compose.navigation.bottomsheet.onDismissRequest
 import com.blockstream.compose.navigation.dialogs.GenericDialog
+import com.blockstream.compose.designv2.designVersion
+import com.blockstream.compose.designv2.NavTransitionsV2
 import com.blockstream.compose.screens.HomeScreen
 import com.blockstream.compose.screens.add.Account2of3Screen
 import com.blockstream.compose.screens.add.ChooseAccountTypeScreen
@@ -234,32 +232,20 @@ fun Router(
     startDestination: NavigateDestination = NavigateDestinations.Home,
 ) {
 
+    val transitions = designVersion<NavTransitionSpec>(NavTransitions, NavTransitionsV2)
+
     CompositionLocalProvider(
         LocalInnerPadding provides innerPadding
     ) {
         NavHost(
             navController = navController,
             startDestination = startDestination,
-            enterTransition = {
-                fadeIn() + slideInHorizontally(initialOffsetX = {
-                    it / 2
-                })
-            },
-            exitTransition = {
-                fadeOut() + slideOutHorizontally()
-            },
-            popEnterTransition = {
-                fadeIn() + slideInHorizontally()
-            },
-            popExitTransition = {
-                fadeOut() + slideOutHorizontally(targetOffsetX = { it })
-            },
-            predictivePopEnterTransition = {
-                fadeIn() + slideInHorizontally()
-            },
-            predictivePopExitTransition = {
-                fadeOut() + slideOutHorizontally(targetOffsetX = { it })
-            },
+            enterTransition = transitions.enter,
+            exitTransition = transitions.exit,
+            popEnterTransition = transitions.popEnter,
+            popExitTransition = transitions.popExit,
+            predictivePopEnterTransition = transitions.predictivePopEnter,
+            predictivePopExitTransition = transitions.predictivePopExit
         ) {
             appComposable<NavigateDestinations.Home> {
                 HomeScreen(viewModel { HomeViewModel() })

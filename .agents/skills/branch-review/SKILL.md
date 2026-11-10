@@ -36,6 +36,7 @@ The review file is a living document. Keep updating it as the branch tip changes
 4. Compare the current tip with the latest commit already recorded in the notes.
 5. If the tip changed, add a new top section for the new commit or commits.
 6. Preserve older sections. They show whether follow-up commits actually addressed earlier findings.
+7. If the diff touches a screen or component that has a redesigned counterpart (`git grep -nE "DesignVersion|designVersion|LocalDesignV2"`), run the `redesign-parity` skill and add its report to the notes.
 
 ## Ask For Missing Context
 

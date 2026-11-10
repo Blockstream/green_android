@@ -9,15 +9,10 @@ import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.imePadding
-import androidx.compose.material3.Badge
-import androidx.compose.material3.BadgedBox
-import androidx.compose.material3.Icon
-import androidx.compose.material3.NavigationBar
-import androidx.compose.material3.NavigationBarItem
+import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.SnackbarHost
 import androidx.compose.material3.SnackbarHostState
-import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.derivedStateOf
@@ -46,10 +41,12 @@ import com.adamglin.phosphoricons.regular.House
 import com.adamglin.phosphoricons.regular.ShieldCheck
 import com.blockstream.compose.components.GreenTopAppBar
 import com.blockstream.compose.models.MainViewModel
-import com.blockstream.compose.theme.bodyMedium
+import com.blockstream.compose.designv2.BottomNavigationBarV2
+import com.blockstream.compose.designv2.DesignVersion
+import com.blockstream.compose.designv2.designVersion
 import com.blockstream.compose.utils.HandleSideEffect
+import com.blockstream.designsystem.AppTheme
 import org.jetbrains.compose.resources.StringResource
-import org.jetbrains.compose.resources.stringResource
 import kotlin.reflect.KClass
 
 sealed class TopLevelRoute(val name: StringResource, val icon: ImageVector, val klass: KClass<*>) {
@@ -139,6 +136,8 @@ fun AppScaffold(
 
     Scaffold(
         // modifier = Modifier.nestedScroll(scrollBehavior.nestedScrollConnection),
+        containerColor = designVersion(MaterialTheme.colorScheme.background, AppTheme.colors.surface.canvas),
+        contentColor = MaterialTheme.colorScheme.onBackground,
         topBar = {
             GreenTopAppBar(
                 hasBackStack = currentBackStack.size > 2,
@@ -168,61 +167,28 @@ fun AppScaffold(
                     enter = fadeIn() + slideInVertically(initialOffsetY = { it }),
                     exit = fadeOut() + slideOutVertically(targetOffsetY = { it })
                 ) {
-                    NavigationBar {
-                        TopLevelRoutes.forEach { topLevelRoute ->
-                            NavigationBarItem(
-                                icon = {
-                                    BadgedBox(
-                                        badge = {
-                                            if (topLevelRoute is TopLevelRoute.Security && navData.showBadge) {
-                                                Badge()
-                                            }
-                                        }
-                                    ) {
-                                        Icon(
-                                            imageVector = topLevelRoute.icon,
-                                            contentDescription = topLevelRoute.name.key
-                                        )
-                                    }
-                                },
-                                label = {
-                                    Text(stringResource(topLevelRoute.name), style = bodyMedium)
-                                },
-                                selected = currentDestination?.hierarchy?.any {
-                                    it.hasRoute(
-                                        when (topLevelRoute) {
-                                            TopLevelRoute.Home -> NavigateDestinations.WalletOverview::class
-                                            TopLevelRoute.Transact -> NavigateDestinations.Transact::class
-                                            TopLevelRoute.Security -> NavigateDestinations.Security::class
-                                            TopLevelRoute.Settings -> NavigateDestinations.WalletSettings::class
-                                        }
-                                    )
-                                } == true,
-                                onClick = {
-                                    val destination = when (topLevelRoute) {
-                                        TopLevelRoute.Home -> NavigateDestinations.WalletOverview(
-                                            greenWallet = greenWallet,
-                                            isBottomNav = true
-                                        )
-
-                                        TopLevelRoute.Transact -> NavigateDestinations.Transact(
-                                            greenWallet = greenWallet
-                                        )
-
-                                        TopLevelRoute.Security -> NavigateDestinations.Security(
-                                            greenWallet = greenWallet
-                                        )
-
-                                        TopLevelRoute.Settings -> NavigateDestinations.WalletSettings(
-                                            greenWallet = greenWallet
-                                        )
-                                    }
-
-                                    navigate(destination)
-                                }
-                            )
-                        }
+                    val isSelected: (TopLevelRoute) -> Boolean = { topLevelRoute ->
+                        currentDestination?.hierarchy?.any { it.hasRoute(topLevelRoute.klass) } == true
                     }
+                    val onSelect: (TopLevelRoute) -> Unit = { topLevelRoute ->
+                        navigate(
+                            when (topLevelRoute) {
+                                TopLevelRoute.Home -> NavigateDestinations.WalletOverview(
+                                    greenWallet = greenWallet,
+                                    isBottomNav = true
+                                )
+
+                                TopLevelRoute.Transact -> NavigateDestinations.Transact(greenWallet = greenWallet)
+                                TopLevelRoute.Security -> NavigateDestinations.Security(greenWallet = greenWallet)
+                                TopLevelRoute.Settings -> NavigateDestinations.WalletSettings(greenWallet = greenWallet)
+                            }
+                        )
+                    }
+
+                    DesignVersion(
+                        v1 = { BottomNavigationBar(isSelected, onSelect, showSecurityBadge = navData.showBadge) },
+                        v2 = { BottomNavigationBarV2(isSelected, onSelect, showSecurityBadge = navData.showBadge) }
+                    )
                 }
             }
         }

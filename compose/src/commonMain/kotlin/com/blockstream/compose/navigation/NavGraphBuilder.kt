@@ -13,6 +13,7 @@ import com.blockstream.compose.models.jade.JadeQrOperation
 import com.blockstream.compose.models.settings.WalletSettingsSection
 import com.blockstream.compose.models.sheets.NoteType
 import com.blockstream.compose.navigation.bottomsheet.bottomSheet
+import com.blockstream.compose.designv2.ScreenSurface
 import com.blockstream.data.AddressInputType
 import com.blockstream.data.SupportType
 import com.blockstream.data.data.DenominatedValue
@@ -93,7 +94,9 @@ inline fun <reified T : Any> NavGraphBuilder.appComposable(noinline content: @Co
         CompositionLocalProvider(
             LocalNavBackStackEntry provides it
         ) {
-            content(this, it)
+            ScreenSurface {
+                content(this, it)
+            }
         }
     }
 }

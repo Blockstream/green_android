@@ -4,6 +4,8 @@ import android.content.Intent
 import android.content.res.Configuration
 import android.os.Bundle
 import android.util.Base64
+import android.view.KeyEvent
+import android.widget.Toast
 import androidx.activity.compose.setContent
 import androidx.activity.enableEdgeToEdge
 import androidx.appcompat.app.AppCompatActivity
@@ -52,6 +54,8 @@ class GreenActivity : AppCompatActivity() {
     private val settingsManager by inject<SettingsManager>()
 
     private val mainViewModel: MainViewModel by viewModel()
+
+    private var lastVolumeDownAt = 0L
 
     override fun onCreate(savedInstanceState: Bundle?) {
         installSplashScreen()
@@ -190,6 +194,24 @@ class GreenActivity : AppCompatActivity() {
         countly.onStop()
     }
 
+    override fun dispatchKeyEvent(event: KeyEvent): Boolean {
+        if (appInfo.isDevelopmentOrDebug &&
+            event.keyCode == KeyEvent.KEYCODE_VOLUME_DOWN &&
+            event.action == KeyEvent.ACTION_DOWN &&
+            event.repeatCount == 0
+        ) {
+            if (event.eventTime - lastVolumeDownAt < DESIGN_V2_TOGGLE_WINDOW_MS) {
+                lastVolumeDownAt = 0L
+                val enabled = !settingsManager.isDesignV2Enabled()
+                settingsManager.setDesignV2Enabled(enabled)
+                Toast.makeText(this, if (enabled) "Design V2 on" else "Design V2 off", Toast.LENGTH_SHORT).show()
+            } else {
+                lastVolumeDownAt = event.eventTime
+            }
+        }
+        return super.dispatchKeyEvent(event)
+    }
+
     override fun onConfigurationChanged(newConfig: Configuration) {
         super.onConfigurationChanged(newConfig)
         countly.onConfigurationChanged(newConfig)
@@ -240,6 +262,8 @@ class GreenActivity : AppCompatActivity() {
         const val OPEN_WALLET = "OPEN_WALLET"
         const val WALLET = "WALLET"
         const val DEVICE_ID = "DEVICE_ID"
+
+        private const val DESIGN_V2_TOGGLE_WINDOW_MS = 400L
 
         const val ENABLE_TESTNET = "ENABLE_TESTNET"
         const val ENABLE_TOR = "ENABLE_TOR"

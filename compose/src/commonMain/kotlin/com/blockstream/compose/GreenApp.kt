@@ -58,6 +58,8 @@ import com.blockstream.data.managers.BluetoothManager
 import com.blockstream.data.managers.DeviceManager
 import com.blockstream.data.managers.LifecycleManager
 import com.blockstream.data.managers.SettingsManager
+import com.blockstream.compose.designv2.LocalDesignV2
+import com.blockstream.compose.designv2.rememberDesignV2Enabled
 import com.russhwolf.settings.ExperimentalSettingsApi
 import com.russhwolf.settings.ObservableSettings
 import com.russhwolf.settings.Settings
@@ -140,10 +142,13 @@ fun GreenApp(mainViewModel: MainViewModel, modifier: Modifier = Modifier) {
         }
     }
 
+    val designV2 = rememberDesignV2Enabled(appInfo, mainViewModel.settingsManager)
+
     CompositionLocalProvider(
         LocalPlatformManager provides platformManager,
         LocalAppInfo provides appInfo,
-        LocalNavigator provides navController
+        LocalNavigator provides navController,
+        LocalDesignV2 provides designV2
     ) {
         val biometricsState = rememberBiometricsState()
 

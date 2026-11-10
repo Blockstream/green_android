@@ -29,6 +29,7 @@ Blockstream App (`green_android`) is a non-custodial Bitcoin, Liquid and Lightni
 - Style new and changed UI with the `designsystem` tokens, `AppTheme.colors` and `AppTheme.typography`, which `GreenTheme` provides. Don't hard-code colors, text styles or fonts, and don't reach for `MaterialTheme` values when a token exists.
 - Reuse components before writing new ones. Shared ones live in `compose/src/commonMain/kotlin/com/blockstream/compose/components` (`GreenButton`, `GreenCard`, `GreenTextField`, `GreenTopAppBar`, `GreenBottomSheet` and more); feature-specific ones in `compose/.../screens/<feature>/components`. When one almost fits, extend it rather than adding a near-duplicate.
 - Put a new component in `components/` when more than one feature uses it, and in the feature's `screens/<feature>/components` otherwise.
+- Screens are being migrated to the new design system behind the `LocalDesignV2` flag, which production builds never enable. `docs/redesign.md` covers where redesigned code goes, how to name and switch it, and the rules it follows.
 
 ## Skills
 
@@ -36,4 +37,5 @@ Task-specific workflows live in `.agents/skills/`; Claude Code reads them throug
 
 - `branch-review`: review a branch or merge request and keep its running review notes.
 - `qa-handoff`: write the QA handoff notes for a branch.
+- `redesign-parity`: check that a change to a migrated screen reaches both its legacy and its redesigned version; temporary, for the design system migration.
 - `update-agent-docs`: check this file, the skills and the codebase map against the code and fix stale claims; run it after changing modules, Gradle builds or CI commands.

@@ -95,6 +95,15 @@ class SettingsManager constructor(
         settings[KEY_V5_UPGRADE] = true
     }
 
+    fun isDesignV2Enabled(): Boolean = settings.getBoolean(KEY_DESIGN_V2, false)
+
+    @OptIn(ExperimentalSettingsApi::class)
+    fun isDesignV2EnabledFlow() = settings.getBooleanFlow(KEY_DESIGN_V2, false)
+
+    fun setDesignV2Enabled(enabled: Boolean) {
+        settings[KEY_DESIGN_V2] = enabled
+    }
+
     fun getCountlyDeviceId(): String {
         return settings[KEY_COUNTLY_DEVICE_ID] ?: run {
             Uuid.random().toString().also {
@@ -156,5 +165,6 @@ class SettingsManager constructor(
         const val KEY_WALLET_COUNTER = "wallet_counter"
         const val KEY_COUNTRY = "country"
         const val KEY_V5_UPGRADE = "v5_upgrade"
+        const val KEY_DESIGN_V2 = "design_v2"
     }
 }

@@ -53,6 +53,7 @@ import com.blockstream.compose.theme.whiteLow
 import com.blockstream.compose.utils.OpenKeyboard
 import com.blockstream.compose.utils.SetupScreen
 import com.blockstream.compose.utils.appTestTag
+import com.blockstream.compose.designv2.DesignVersion
 import com.blockstream.compose.utils.stringResourceFromIdOrNull
 import com.blockstream.data.Urls
 import com.blockstream.data.data.DenominatedValue
@@ -209,14 +210,25 @@ fun SwapScreen(
         } else {
             val onProgress by viewModel.onProgress.collectAsStateWithLifecycle()
 
-            SwapsUnavailable(
-                hasSwaps = uiState.hasSwaps,
-                onProgress = onProgress,
-                onResetClick = {
-                    viewModel.resetSwaps()
+            val onResetClick = { viewModel.resetSwaps() }
+            val onLearnMoreClick = { viewModel.postEvent(Events.OpenBrowser(Urls.HELP_SWAPS_UNAVAILABLE)) }
+
+            DesignVersion(
+                v1 = {
+                    SwapsUnavailable(
+                        hasSwaps = uiState.hasSwaps,
+                        onProgress = onProgress,
+                        onResetClick = onResetClick,
+                        onLearnMoreClick = onLearnMoreClick
+                    )
                 },
-                onLearnMoreClick = {
-                    viewModel.postEvent(Events.OpenBrowser(Urls.HELP_SWAPS_UNAVAILABLE))
+                v2 = {
+                    SwapsUnavailableV2(
+                        hasSwaps = uiState.hasSwaps,
+                        onProgress = onProgress,
+                        onResetClick = onResetClick,
+                        onLearnMoreClick = onLearnMoreClick
+                    )
                 }
             )
         }
