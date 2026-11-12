@@ -40,9 +40,9 @@ import com.blockstream.compose.models.exchange.BuyViewModel
 import com.blockstream.compose.models.exchange.OnOffRampsViewModel
 import com.blockstream.compose.models.home.HomeViewModel
 import com.blockstream.compose.models.jade.JadeQRViewModel
+import com.blockstream.compose.models.lightning.EnabledLightningViewModel
 import com.blockstream.compose.models.lightning.LightningInvoiceState
 import com.blockstream.compose.models.lightning.LightningInvoiceViewModel
-import com.blockstream.compose.models.lightning.EnabledLightningViewModel
 import com.blockstream.compose.models.lightning.LightningOnboardingViewModel
 import com.blockstream.compose.models.lightning.LnUrlAuthViewModel
 import com.blockstream.compose.models.lightning.LnUrlWithdrawViewModel
@@ -79,8 +79,8 @@ import com.blockstream.compose.models.send.SendLightningAmountViewModel
 import com.blockstream.compose.models.send.SendLightningConfirmViewModel
 import com.blockstream.compose.models.send.SendViewModel
 import com.blockstream.compose.models.send.SweepViewModel
-import com.blockstream.compose.models.settings.AppSettingsViewModel
 import com.blockstream.compose.models.settings.AmpAccountViewModel
+import com.blockstream.compose.models.settings.AppSettingsViewModel
 import com.blockstream.compose.models.settings.SwapsSettingsViewModel
 import com.blockstream.compose.models.settings.TwoFactorAuthenticationViewModel
 import com.blockstream.compose.models.settings.TwoFactorSetupViewModel
@@ -129,8 +129,8 @@ import com.blockstream.compose.screens.exchange.OnOffRampsScreen
 import com.blockstream.compose.screens.jade.JadePinUnlockScreen
 import com.blockstream.compose.screens.jade.JadeQRScreen
 import com.blockstream.compose.screens.lightning.EnabledLightningScreen
-import com.blockstream.compose.screens.lightning.LightningOnboardingScreen
 import com.blockstream.compose.screens.lightning.LightningInvoiceScreen
+import com.blockstream.compose.screens.lightning.LightningOnboardingScreen
 import com.blockstream.compose.screens.lightning.LnUrlAuthScreen
 import com.blockstream.compose.screens.lightning.LnUrlWithdrawScreen
 import com.blockstream.compose.screens.lightning.RecoverFundsScreen
@@ -172,18 +172,18 @@ import com.blockstream.compose.screens.settings.TwoFactorSetupScreen
 import com.blockstream.compose.screens.settings.WalletSettingsScreen
 import com.blockstream.compose.screens.settings.WatchOnlyScreen
 import com.blockstream.compose.screens.support.SupportScreen
+import com.blockstream.compose.screens.swap.SwapAssetsBottomSheet
 import com.blockstream.compose.screens.swap.SwapScreen
 import com.blockstream.compose.screens.transaction.TransactionScreen
 import com.blockstream.compose.screens.twofactor.ReEnable2FAScreen
-import com.blockstream.compose.sheets.AccountRenameBottomSheet
-import com.blockstream.compose.sheets.AmpAccountBottomSheet
-import com.blockstream.compose.sheets.AccountsBottomSheet
 import com.blockstream.compose.sheets.AboutBottomSheet
+import com.blockstream.compose.sheets.AccountRenameBottomSheet
+import com.blockstream.compose.sheets.AccountsBottomSheet
+import com.blockstream.compose.sheets.AmpAccountBottomSheet
 import com.blockstream.compose.sheets.AnalyticsBottomSheet
 import com.blockstream.compose.sheets.AskJadeUnlockBottomSheet
 import com.blockstream.compose.sheets.AssetDetailsBottomSheet
 import com.blockstream.compose.sheets.AssetsAccountsBottomSheet
-import com.blockstream.compose.screens.swap.SwapAssetsBottomSheet
 import com.blockstream.compose.sheets.AssetsBottomSheet
 import com.blockstream.compose.sheets.Bip39PassphraseBottomSheet
 import com.blockstream.compose.sheets.BuyQuotesBottomSheet
@@ -940,8 +940,8 @@ fun Router(
             appBottomSheet<NavigateDestinations.CoinFilters> {
                 val args = it.toRoute<NavigateDestinations.CoinFilters>()
                 CoinFilterBottomSheet(
-                    selectedFilters = args.selectedFilters.toSet(),
-                    availableFilters = args.availableFilters,
+                    selectedFilters = args.selectedFilters.list.toSet(),
+                    availableFilters = args.availableFilters.list,
                     selectedSort = args.selectedSort,
                     onDismissRequest = navController.onDismissRequest()
                 )

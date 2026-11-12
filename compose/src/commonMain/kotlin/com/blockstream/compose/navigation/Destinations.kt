@@ -3,7 +3,7 @@ package com.blockstream.compose.navigation
 import com.blockstream.compose.events.Event
 import com.blockstream.compose.models.GreenViewModel
 import com.blockstream.compose.models.jade.JadeQrOperation
-import com.blockstream.compose.models.send.CoinFilter
+import com.blockstream.compose.models.send.CoinFilterList
 import com.blockstream.compose.models.send.CoinSort
 import com.blockstream.compose.models.settings.NetworkRoute
 import com.blockstream.compose.models.settings.WalletSettingsSection
@@ -15,8 +15,6 @@ import com.blockstream.data.data.DenominatedValue
 import com.blockstream.data.data.EnrichedAsset
 import com.blockstream.data.data.EnrichedAssetList
 import com.blockstream.data.data.GreenWallet
-import com.blockstream.data.lightning.LnUrlAuthData
-import com.blockstream.data.lightning.LnUrlWithdrawData
 import com.blockstream.data.data.MenuEntryList
 import com.blockstream.data.data.PopTo
 import com.blockstream.data.data.SetupArgs
@@ -31,6 +29,8 @@ import com.blockstream.data.gdk.data.AccountAssetList
 import com.blockstream.data.gdk.data.AssetBalance
 import com.blockstream.data.gdk.data.AssetBalanceList
 import com.blockstream.data.gdk.data.Network
+import com.blockstream.data.lightning.LnUrlAuthData
+import com.blockstream.data.lightning.LnUrlWithdrawData
 import com.blockstream.data.transaction.TransactionConfirmation
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.IO
@@ -436,8 +436,8 @@ sealed class NavigateDestinations : NavigateDestination() {
 
     @Serializable
     data class CoinFilters(
-        val selectedFilters: List<CoinFilter>,
-        val availableFilters: List<CoinFilter>,
+        val selectedFilters: CoinFilterList,
+        val availableFilters: CoinFilterList,
         val selectedSort: CoinSort
     ) : NavigateDestination()
 

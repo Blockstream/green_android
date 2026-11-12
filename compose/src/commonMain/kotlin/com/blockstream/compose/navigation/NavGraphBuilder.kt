@@ -10,10 +10,13 @@ import androidx.navigation.NavGraphBuilder
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.dialog
 import com.blockstream.compose.models.jade.JadeQrOperation
+import com.blockstream.compose.models.send.CoinFilterList
+import com.blockstream.compose.models.send.CoinSort
 import com.blockstream.compose.models.settings.WalletSettingsSection
 import com.blockstream.compose.models.sheets.NoteType
 import com.blockstream.compose.navigation.bottomsheet.bottomSheet
 import com.blockstream.compose.designv2.ScreenSurface
+import com.blockstream.compose.models.settings.NetworkRoute
 import com.blockstream.data.AddressInputType
 import com.blockstream.data.SupportType
 import com.blockstream.data.data.DenominatedValue
@@ -21,8 +24,6 @@ import com.blockstream.data.data.Denomination
 import com.blockstream.data.data.EnrichedAsset
 import com.blockstream.data.data.EnrichedAssetList
 import com.blockstream.data.data.GreenWallet
-import com.blockstream.data.lightning.LnUrlAuthData
-import com.blockstream.data.lightning.LnUrlWithdrawData
 import com.blockstream.data.data.MenuEntryList
 import com.blockstream.data.data.PopTo
 import com.blockstream.data.data.Promo
@@ -40,6 +41,8 @@ import com.blockstream.data.gdk.data.AssetBalanceList
 import com.blockstream.data.gdk.data.Network
 import com.blockstream.data.gdk.data.Transaction
 import com.blockstream.data.gdk.data.TwoFactorReset
+import com.blockstream.data.lightning.LnUrlAuthData
+import com.blockstream.data.lightning.LnUrlWithdrawData
 import com.blockstream.data.transaction.TransactionConfirmation
 import kotlin.io.encoding.ExperimentalEncodingApi
 import kotlin.reflect.typeOf
@@ -71,6 +74,7 @@ val AppTypeMap = mapOf(
     typeOf<PopTo?>() to CustomNavType.create<PopTo>(),
     typeOf<WalletSettingsSection>() to CustomNavType.create<WalletSettingsSection>(),
     typeOf<AddressInputType?>() to CustomNavType.create<AddressInputType>(),
+    typeOf<AddressInputType>() to CustomNavType.create<AddressInputType>(),
     typeOf<DeviceModel?>() to CustomNavType.create<DeviceModel>(),
     typeOf<DeviceModel>() to CustomNavType.create<DeviceModel>(),
     typeOf<SupportType>() to CustomNavType.create<SupportType>(),
@@ -83,7 +87,10 @@ val AppTypeMap = mapOf(
     typeOf<com.blockstream.data.meld.data.QuotesResponse>() to CustomNavType.create<com.blockstream.data.meld.data.QuotesResponse>(),
     typeOf<EnrichedAsset>() to CustomNavType.create<EnrichedAsset>(),
     typeOf<EnrichedAssetList>() to CustomNavType.create<EnrichedAssetList>(),
-    typeOf<AccountAssetList>() to CustomNavType.create<AccountAssetList>()
+    typeOf<AccountAssetList>() to CustomNavType.create<AccountAssetList>(),
+    typeOf<CoinFilterList>() to CustomNavType.create<CoinFilterList>(),
+    typeOf<CoinSort>() to CustomNavType.create<CoinSort>(),
+    typeOf<NetworkRoute>() to CustomNavType.create<NetworkRoute>(),
 )
 
 inline fun <reified T : Any> NavGraphBuilder.appComposable(noinline content: @Composable (AnimatedContentScope.(NavBackStackEntry) -> Unit)) {

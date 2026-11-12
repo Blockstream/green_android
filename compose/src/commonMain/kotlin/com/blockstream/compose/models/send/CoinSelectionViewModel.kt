@@ -1,9 +1,8 @@
 package com.blockstream.compose.models.send
 
-import androidx.lifecycle.viewModelScope
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.unit.dp
-import kotlinx.serialization.Serializable
+import androidx.lifecycle.viewModelScope
 import blockstream_green.common.generated.resources.Res
 import blockstream_green.common.generated.resources.funnel_outline_active
 import blockstream_green.common.generated.resources.id_coin_selection
@@ -31,9 +30,13 @@ import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.launch
+import kotlinx.serialization.Serializable
 import kotlinx.serialization.json.JsonElement
 import org.jetbrains.compose.resources.getString
 import org.koin.core.component.inject
+
+@Serializable
+data class CoinFilterList(val list: List<CoinFilter>)
 
 @Serializable
 enum class CoinFilter {
@@ -397,8 +400,8 @@ class CoinSelectionViewModel(
         postSideEffect(
             SideEffects.NavigateTo(
                 NavigateDestinations.CoinFilters(
-                    selectedFilters = selectedFilters.value.toList(),
-                    availableFilters = availableFilters.value,
+                    selectedFilters = CoinFilterList(selectedFilters.value.toList()),
+                    availableFilters = CoinFilterList(availableFilters.value),
                     selectedSort = selectedSort.value
                 )
             )
