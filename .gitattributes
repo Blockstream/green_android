@@ -1,0 +1,5 @@
+# Shell scripts keep LF line endings on every checkout. Git for Windows converts text to CRLF by
+# default, which bash cannot run (gdk/fetch_android_binaries.sh fails during the Gradle build).
+*.sh text eol=lf
+gradlew text eol=lf
+contrib/gradlew text eol=lf
