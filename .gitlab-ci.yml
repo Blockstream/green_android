@@ -7,6 +7,11 @@ stages:
   - e2e
 
 include:
+  - component: $CI_SERVER_FQDN/infrastructure/devops/gitlab-components/gcp-wif-auth/gcp-auth@v1
+    inputs:
+      service_account_email: green-android-builds-uploader@green-backend.iam.gserviceaccount.com
+      pool_id: gitlab-protected-env
+      disable_auth_job: true
   - template: Jobs/SAST.gitlab-ci.yml
   - template: Jobs/Secret-Detection.gitlab-ci.yml
   - template: Jobs/Dependency-Scanning.v2.gitlab-ci.yml
@@ -309,26 +314,14 @@ sign_google_play:
   tags:
     - k8s # Simple, non-resource intensive jobs
 
-.gcp_auth_inline:
-  id_tokens:
-    GITLAB_OIDC_TOKEN:
-      aud: https://gl.blockstream.io
-  variables:
-    POOL_ID: gitlab-2f4bb583
-    PROVIDER_ID: gitlab
-    SERVICE_ACCOUNT_EMAIL: green-android-builds-uploader@green-backend.iam.gserviceaccount.com
-  before_script:
-    - echo ${GITLAB_OIDC_TOKEN} > .ci_job_jwt_file
-    - gcloud iam workload-identity-pools create-cred-config "projects/697214616889/locations/global/workloadIdentityPools/${POOL_ID}/providers/${PROVIDER_ID}"
-      --service-account="${SERVICE_ACCOUNT_EMAIL}"
-      --output-file=.gcp_temp_cred.json
-      --credential-source-file=.ci_job_jwt_file
-    - gcloud auth login --cred-file=.gcp_temp_cred.json --update-adc
-
 gcp_push_production:
+  environment:
+    name: release-downloads
+    deployment_tier: production
+    action: start
   extends:
     - .gcp_prep
-    - .gcp_auth_inline
+    - .gcp_wif_login
   when: manual
   allow_failure: true
   needs:
@@ -343,11 +336,20 @@ gcp_push_production:
     - echo "https://storage.googleapis.com/$GCS_BUCKET/$APK_NAME.apk"
 
 gcp_push_development:
+  environment:
+    name: release-downloads
+    deployment_tier: production
+    action: start
   extends:
     - .gcp_prep
-    - .gcp_auth_inline
+    - .gcp_wif_login
   rules:
+    # The nightly E2E run (e2e:nightly:trigger) needs this upload: fail hard.
+    - if: $CI_PIPELINE_SOURCE == "schedule"
+    # Only release-downloads deployers may upload; for others this job fails
+    # without failing the branch pipeline.
     - if: $CI_COMMIT_BRANCH
+      allow_failure: true
   needs:
     - job: development
       optional: true
@@ -360,9 +362,16 @@ gcp_push_development:
     - echo "https://storage.googleapis.com/$GCS_BUCKET/$APK_NAME.apk"
 
 gcp_push_gdk_commit:
+  environment:
+    name: release-downloads
+    deployment_tier: production
+    action: start
+  # Only release-downloads deployers may upload; for others this job fails
+  # without failing the branch pipeline.
+  allow_failure: true
   extends:
     - .gcp_prep
-    - .gcp_auth_inline
+    - .gcp_wif_login
   needs:
     - job: gdk_commit
       optional: true
@@ -402,7 +411,7 @@ gcp_push_gdk_commit:
     - ./gradlew assembleDevelopmentRelease
 
 .e2e:upload:
-  extends: .gcp_auth_inline
+  extends: .gcp_wif_login
   stage: e2e
   image: harbor.blockstream.io/google/blockstream/public/gcloud-docker:27.3-504.0.1
   tags:
@@ -441,6 +450,10 @@ e2e:release:build:
     - if: $CI_COMMIT_TAG =~ /^release_\d+\.\d+\.\d+/
 
 e2e:release:upload:
+  environment:
+    name: release-downloads
+    deployment_tier: production
+    action: start
   extends: .e2e:upload
   variables:
     APK_NAME: $CI_PROJECT_NAME-$CI_COMMIT_TAG
