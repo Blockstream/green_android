@@ -13,14 +13,14 @@ data class NetworkBitcoinPriceData(
 
     @SerialName("prices_day")
     val dailyPrices: List<List<Double?>> = emptyList()
-        get() = field.sortedBy { it[0] }
+        get() = field.sortedBy { it.getOrNull(0) }
 
     @SerialName("prices_full")
     val fullPrices: List<List<Double?>> = emptyList()
-        get() = field.sortedBy { it[0] }
+        get() = field.sortedBy { it.getOrNull(0) }
 
     @SerialName("prices_month")
     val monthlyPrices: List<List<Double?>> = emptyList()
-        get() = field.sortedBy { it[0] }
+        get() = field.sortedBy { it.getOrNull(0) }
 }
 

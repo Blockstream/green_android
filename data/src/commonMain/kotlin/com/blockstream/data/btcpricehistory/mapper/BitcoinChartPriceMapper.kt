@@ -6,11 +6,12 @@ import com.blockstream.data.btcpricehistory.model.NetworkBitcoinPriceData
 import com.blockstream.data.btcpricehistory.model.timeAgoInMillis
 import kotlin.time.Clock
 
-fun NetworkBitcoinPriceData.asChartData(): BitcoinChartData {
+fun NetworkBitcoinPriceData.asChartData(): BitcoinChartData? {
     val data = this
     val prices = mutableMapOf<BitcoinChartPeriod, List<Pair<Long, Float>>>() //timestamp, price
 
     val dailyPrices = data.dailyPrices.mapAndSortNotNullPrices()
+    val currentPrice = dailyPrices.lastOrNull()?.second ?: return null
     val monthlyPrices = data.monthlyPrices.mapAndSortNotNullPrices()
     val fullPrices = data.fullPrices.mapAndSortNotNullPrices()
 
@@ -21,7 +22,6 @@ fun NetworkBitcoinPriceData.asChartData(): BitcoinChartData {
     prices[BitcoinChartPeriod.ONE_YEAR] = fullPrices.filter { it.first >= BitcoinChartPeriod.ONE_YEAR.timeAgoInMillis() }
     prices[BitcoinChartPeriod.FIVE_YEAR] = fullPrices.filter { it.first >= BitcoinChartPeriod.FIVE_YEAR.timeAgoInMillis() }
 
-    val currentPrice = dailyPrices.last().second
     val lastRefreshedAt = Clock.System.now().toEpochMilliseconds()
 
     return BitcoinChartData(
