@@ -38,7 +38,6 @@ import com.blockstream.compose.components.GreenButtonColor
 import com.blockstream.compose.components.GreenButtonSize
 import com.blockstream.compose.components.GreenButtonType
 import com.blockstream.compose.components.GreenColumn
-import com.blockstream.compose.components.Promo
 import com.blockstream.compose.components.Rive
 import com.blockstream.compose.components.RiveAnimation
 import com.blockstream.compose.events.Events
@@ -90,12 +89,6 @@ fun HomeScreen(
                             horizontalAlignment = Alignment.CenterHorizontally,
                             verticalArrangement = Arrangement.SpaceAround
                         ) {
-
-                            Promo(
-                                viewModel = viewModel,
-                                withAnimation = true,
-                                modifier = Modifier.padding(top = 16.dp)
-                            )
 
                             Column(modifier = Modifier.padding(vertical = 32.dp)) {
                                 Text(

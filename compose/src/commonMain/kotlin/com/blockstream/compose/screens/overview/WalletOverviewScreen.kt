@@ -40,6 +40,7 @@ import com.blockstream.compose.components.GreenColumn
 import com.blockstream.compose.components.GreenSpacer
 import com.blockstream.compose.components.ListHeader
 import com.blockstream.compose.components.Promo
+import com.blockstream.compose.components.TransactionActionButtons
 import com.blockstream.compose.components.WalletBalance
 import com.blockstream.compose.dialogs.AppRateDialog
 import com.blockstream.compose.dialogs.ArchivedAccountsDialog
@@ -52,6 +53,8 @@ import com.blockstream.compose.models.overview.WalletOverviewViewModel
 import com.blockstream.compose.models.overview.WalletOverviewViewModelAbstract
 import com.blockstream.compose.models.settings.DenominationExchangeRateViewModel
 import com.blockstream.compose.navigation.LocalInnerPadding
+import com.blockstream.compose.navigation.NavigateDestinations
+import com.blockstream.compose.navigation.getResult
 import com.blockstream.compose.screens.overview.components.BitcoinPriceChart
 import com.blockstream.compose.sideeffects.SideEffects
 import com.blockstream.compose.theme.bodyLarge
@@ -61,9 +64,11 @@ import com.blockstream.compose.theme.titleLarge
 import com.blockstream.compose.theme.whiteMedium
 import com.blockstream.compose.utils.OnScreenFocus
 import com.blockstream.compose.utils.SetupScreen
+import com.blockstream.compose.utils.SwapUtils
 import com.blockstream.compose.utils.bottom
 import com.blockstream.compose.utils.noRippleClickable
 import com.blockstream.compose.utils.plus
+import com.blockstream.data.data.GreenWallet
 import kotlinx.coroutines.delay
 import org.jetbrains.compose.resources.stringResource
 import kotlin.time.DurationUnit
@@ -73,6 +78,10 @@ import kotlin.time.toDuration
 fun WalletOverviewScreen(
     viewModel: WalletOverviewViewModelAbstract
 ) {
+
+    NavigateDestinations.Login.getResult<GreenWallet> {
+        SwapUtils.navigateToDeviceScanOrJadeQr(viewModel)
+    }
 
     var denominationExchangeRateViewModel by remember {
         mutableStateOf<DenominationExchangeRateViewModel?>(null)
@@ -144,6 +153,10 @@ fun WalletOverviewScreen(
             val isWalletOnboarding by viewModel.showWalletOnboarding.collectAsStateWithLifecycle()
             val alerts by viewModel.alerts.collectAsStateWithLifecycle()
             val assets by viewModel.assets.collectAsStateWithLifecycle()
+            val isMainnet = viewModel.greenWallet.isMainnet
+            val isSwapAvailable by viewModel.isSwapAvailable.collectAsStateWithLifecycle()
+            val isMultisigWatchOnly by viewModel.isMultisigWatchOnly.collectAsStateWithLifecycle()
+            val promos by viewModel.promos.collectAsStateWithLifecycle()
             val innerPadding = LocalInnerPadding.current
 
             val listState = rememberLazyListState()
@@ -172,6 +185,28 @@ fun WalletOverviewScreen(
                             modifier = Modifier
                                 .padding(bottom = 6.dp), alertType = it, viewModel = viewModel
                         )
+                    }
+
+                    item(key = "ButtonsRow") {
+                        TransactionActionButtons(
+                            modifier = Modifier.padding(top = 16.dp),
+                            showBuyButton = isMainnet,
+                            showSwapButton = isSwapAvailable,
+                            isSendEnabled = !isMultisigWatchOnly,
+                            onBuy = viewModel::onBuy,
+                            onSend = viewModel::onSend,
+                            onReceive = viewModel::onReceive,
+                            onSwap = viewModel::onSwap
+                        )
+                    }
+
+                    if (promos.isNotEmpty()) {
+                        item(key = "Promo") {
+                            Promo(
+                                viewModel = viewModel,
+                                modifier = Modifier.padding(top = 8.dp, bottom = 8.dp)
+                            )
+                        }
                     }
 
                     item(key = "AssetsHeader") {
@@ -221,16 +256,10 @@ fun WalletOverviewScreen(
                         BitcoinPriceChart(
                             viewModel.bitcoinChartData,
                             onClickRetry = { viewModel.refetchBitcoinPriceHistory() },
-                            onClickBuyNow = { viewModel.navigateToBuy() }
+                            onClickBuyNow = { viewModel.onBuy() }
                         )
                     }
 
-                    item(key = "Promo") {
-                        Promo(
-                            viewModel = viewModel,
-                            modifier = Modifier.padding(top = 8.dp)
-                        )
-                    }
                 }
             }
 

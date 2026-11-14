@@ -79,7 +79,7 @@ import kotlin.math.absoluteValue
 fun BitcoinPriceChart(
     pricesState: StateFlow<DataState<BitcoinChartData>?>,
     onClickRetry: () -> Unit,
-    onClickBuyNow: () -> Unit,
+    onClickBuyNow: (() -> Unit)? = null,
 ) {
     val chartPrices by pricesState.collectAsStateWithLifecycle()
     var chartPeriod by remember { mutableStateOf(BitcoinChartPeriod.ONE_DAY) }
@@ -117,13 +117,15 @@ fun BitcoinPriceChart(
             chartPeriod = it
         })
 
-        GreenButton(
-            text = stringResource(Res.string.id_buy_now),
-            onClick = onClickBuyNow,
-            modifier = Modifier.fillMaxWidth()
-                .appTestTag("buy_now_button"),
-            size = GreenButtonSize.BIG,
-        )
+        onClickBuyNow?.also { onClick ->
+            GreenButton(
+                text = stringResource(Res.string.id_buy_now),
+                onClick = onClick,
+                modifier = Modifier.fillMaxWidth()
+                    .appTestTag("buy_now_button"),
+                size = GreenButtonSize.BIG,
+            )
+        }
     }
 }
 

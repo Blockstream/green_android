@@ -8,6 +8,7 @@ import com.blockstream.data.data.CredentialType
 import com.blockstream.data.data.ExceptionWithSupportData
 import com.blockstream.data.data.GreenWallet
 import com.blockstream.data.data.Promo
+import com.blockstream.data.data.parsePromosV2
 import com.blockstream.data.data.SetupArgs
 import com.blockstream.data.database.Database
 import com.blockstream.data.database.wallet.LoginCredentials
@@ -65,7 +66,7 @@ abstract class CountlyBase(
     private var _torProxy: String? = null
     private var _appSettingsAsString: String? = null
     private var _cachedBanners: List<Banner>? = null
-    private var _cachedPromos: List<Promo>? = null
+    private var _cachedPromosV2: List<Promo>? = null
     private val _remoteConfigUpdateEvent =
         MutableSharedFlow<Unit>(replay = 1, onBufferOverflow = BufferOverflow.DROP_OLDEST)
 
@@ -144,7 +145,7 @@ abstract class CountlyBase(
         logger.d { "remoteConfigUpdated" }
         _remoteConfigUpdate = Clock.System.now()
         _cachedBanners = null
-        _cachedPromos = null
+        _cachedPromosV2 = null
         _remoteConfigUpdateEvent.tryEmit(Unit)
     }
 
@@ -255,7 +256,7 @@ abstract class CountlyBase(
         device.deviceBrand.brand.let { segmentation[PARAM_BRAND] = it }
         device.gdkHardwareWallet?.also {
             segmentation[PARAM_FIRMWARE] = it.firmwareVersion ?: ""
-            segmentation[PARAM_MODEL] = it.model
+            segmentation[PARAM_MODEL] = it.analyticsModel
         }
         segmentation[PARAM_CONNECTION] = if (device.isUsb) USB else BLE
 
@@ -799,20 +800,17 @@ abstract class CountlyBase(
         return _cachedBanners
     }
 
-    fun getRemoteConfigValueForPromos(): List<Promo>? {
-        if (_cachedPromos == null) {
-            _cachedPromos = try {
-                getRemoteConfigValueAsString("promos")?.let {
-                    logger.d { "getRemoteConfigValueForPromos $it" }
-                    JsonConverter.JsonDeserializer.decodeFromString<List<Promo>>(it)
-                } ?: listOf()
+    fun getRemoteConfigValueForPromosV2(): List<Promo>? {
+        if (_cachedPromosV2 == null) {
+            _cachedPromosV2 = try {
+                getRemoteConfigValueAsJsonArray("promos_v2")?.let(::parsePromosV2) ?: listOf()
             } catch (e: Exception) {
-                e.printStackTrace()
+                logger.w { "Unable to parse promos_v2: ${e.message}" }
                 null
             }
         }
 
-        return _cachedPromos
+        return _cachedPromosV2
     }
 
     fun getRemoteConfigForOnOffRamps() = getRemoteConfigValueAsBoolean("feature_on_off_ramps")
@@ -834,10 +832,6 @@ abstract class CountlyBase(
 
     fun promoAction(session: GdkSession?, screenName: String?, promo: Promo) {
         eventRecord(Events.PROMO_ACTION.toString(), promoSegmentation(session, screenName, promo))
-    }
-
-    fun promoOpen(session: GdkSession?, screenName: String?, promo: Promo) {
-        eventRecord(Events.PROMO_OPEN.toString(), promoSegmentation(session, screenName, promo))
     }
 
     fun promoView(session: GdkSession?, screenName: String?, promo: Promo) {
@@ -944,7 +938,6 @@ abstract class CountlyBase(
 
         PROMO_IMPRESSION("promo_impression"),
         PROMO_DISMISS("promo_dismiss"),
-        PROMO_OPEN("promo_open"),
         PROMO_ACTION("promo_action"),
 
         BUY_INITIATE("buy_initiate"),

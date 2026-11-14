@@ -3,8 +3,8 @@ package com.blockstream.compose.screens.add
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.rememberScrollState
@@ -30,11 +30,14 @@ import blockstream_green.common.generated.resources.id_added_already
 import blockstream_green.common.generated.resources.id_archived_account
 import blockstream_green.common.generated.resources.id_archived_accounts
 import blockstream_green.common.generated.resources.id_asset
+import blockstream_green.common.generated.resources.id_cancel
 import blockstream_green.common.generated.resources.id_choose_security_policy
 import blockstream_green.common.generated.resources.id_continue
 import blockstream_green.common.generated.resources.id_hide_advanced_options
+import blockstream_green.common.generated.resources.id_multisig_accounts_require_your_jade
 import blockstream_green.common.generated.resources.id_show_advanced_options
 import blockstream_green.common.generated.resources.id_there_is_already_an_archived
+import blockstream_green.common.generated.resources.id_watchonly
 import blockstream_green.common.generated.resources.id_you_cannot_add_more_than_one
 import blockstream_green.common.generated.resources.id_you_cannot_add_more_than_one_amp_account
 import com.blockstream.compose.GreenPreview
@@ -121,6 +124,22 @@ fun ChooseAccountTypeScreen(
                                     )
                                 )
                             }
+                        )
+                    )
+                }
+            }
+
+            is ChooseAccountTypeViewModel.LocalSideEffects.JadeWoDisableDialog -> {
+                launch {
+                    dialog.openDialog(
+                        OpenDialogData(
+                            title = StringHolder.create(Res.string.id_watchonly),
+                            message = StringHolder.create(Res.string.id_multisig_accounts_require_your_jade),
+                            primaryText = getString(Res.string.id_continue),
+                            onPrimary = {
+                                viewModel.postEvent(it.event)
+                            },
+                            secondaryText = getString(Res.string.id_cancel)
                         )
                     )
                 }

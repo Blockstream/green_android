@@ -21,13 +21,17 @@ import com.blockstream.compose.navigation.NavigateToWallet
 import com.blockstream.compose.sideeffects.SideEffects
 import com.blockstream.data.Urls
 import com.blockstream.data.banner.Banner
+import com.blockstream.data.btcpricehistory.model.BitcoinChartData
+import com.blockstream.data.data.DataState
 import com.blockstream.data.data.GreenWallet
-import com.blockstream.data.data.Promo
 import com.blockstream.data.extensions.logException
+import com.blockstream.data.extensions.tryCatch
+import com.blockstream.domain.bitcoinpricehistory.ObserveBitcoinPriceHistory
 import com.blockstream.utils.Loggable
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.StateFlow
+import kotlinx.coroutines.flow.collectLatest
 import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.flow.filterNotNull
 import kotlinx.coroutines.flow.flowOf
@@ -42,11 +46,17 @@ abstract class HomeViewModelAbstract(val isGetStarted: Boolean = false) : GreenV
     abstract val isEmptyWallet: StateFlow<Boolean?>
     abstract val allWallets: StateFlow<List<WalletListLook>?>
     abstract val showV5Upgrade: StateFlow<Boolean>
+    abstract val bitcoinChartData: StateFlow<DataState<BitcoinChartData>?>
+    abstract fun refetchBitcoinPriceHistory()
 }
 
 class HomeViewModel(isGetStarted: Boolean = false) : HomeViewModelAbstract(isGetStarted = isGetStarted) {
 
     private val navigateToWallet: NavigateToWallet by inject()
+
+    private val refreshBitcoinPriceState = MutableStateFlow(0)
+
+    private val observeBitcoinPriceHistory: ObserveBitcoinPriceHistory by inject()
 
     class LocalEvents {
         object GetStarted : Event
@@ -89,6 +99,14 @@ class HomeViewModel(isGetStarted: Boolean = false) : HomeViewModelAbstract(isGet
         }
     }.stateIn(viewModelScope, SharingStarted.WhileSubscribed(), null)
 
+    override val bitcoinChartData: StateFlow<DataState<BitcoinChartData>?> =
+        observeBitcoinPriceHistory.observe()
+            .stateIn(viewModelScope, SharingStarted.WhileSubscribed(5000L), null)
+
+    override fun refetchBitcoinPriceHistory() {
+        refreshBitcoinPriceState.value++
+    }
+
     init {
         viewModelScope.launch(context = logException()) {
             // Update Remote Config when app is initiated, that's the easiest way
@@ -116,6 +134,14 @@ class HomeViewModel(isGetStarted: Boolean = false) : HomeViewModelAbstract(isGet
                 )
             )
         }.launchIn(this)
+
+        if (!isGetStarted) {
+            viewModelScope.launch {
+                refreshBitcoinPriceState.collectLatest {
+                    tryCatch { observeBitcoinPriceHistory(ObserveBitcoinPriceHistory.Params("USD")) }
+                }
+            }
+        }
 
         bootstrap()
     }
@@ -200,9 +226,14 @@ class HomeViewModelPreview(
 
     override val showV5Upgrade: StateFlow<Boolean> = MutableStateFlow(true)
 
+    override val bitcoinChartData: StateFlow<DataState<BitcoinChartData>?> = MutableStateFlow(null)
+
+    override fun refetchBitcoinPriceHistory() {
+        // No-op
+    }
+
     init {
         banner.value = Banner.preview3
-        promo.value = Promo.preview6
     }
 
     companion object {

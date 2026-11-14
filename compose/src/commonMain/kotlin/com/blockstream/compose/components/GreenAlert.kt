@@ -19,12 +19,15 @@ import blockstream_green.common.generated.resources.id_2fa_dispute_in_progress
 import blockstream_green.common.generated.resources.id_2fa_reset_in_progress
 import blockstream_green.common.generated.resources.id_back_up_now
 import blockstream_green.common.generated.resources.id_back_up_your_wallet_now
+import blockstream_green.common.generated.resources.id_get_support
 import blockstream_green.common.generated.resources.id_learn_more
 import blockstream_green.common.generated.resources.id_lightning_account
+import blockstream_green.common.generated.resources.id_lightning_is_unavailable
 import blockstream_green.common.generated.resources.id_lightning_service_is_undergoing
 import blockstream_green.common.generated.resources.id_network_issues_detected_you_may
 import blockstream_green.common.generated.resources.id_passphrase_protected
 import blockstream_green.common.generated.resources.id_reenable_2fa
+import blockstream_green.common.generated.resources.id_some_app_files_are_missing
 import blockstream_green.common.generated.resources.id_some_coins_are_no_longer_2fa_protected
 import blockstream_green.common.generated.resources.id_system_message
 import blockstream_green.common.generated.resources.id_the_lightning_service_is
@@ -54,8 +57,10 @@ import com.blockstream.compose.theme.orangeSurface
 import com.blockstream.compose.theme.titleSmall
 import com.blockstream.compose.theme.whiteMedium
 import com.blockstream.compose.utils.appTestTag
+import com.blockstream.data.SupportType
 import com.blockstream.data.data.AlertType
 import com.blockstream.data.data.SetupArgs
+import com.blockstream.data.data.SupportData
 import org.jetbrains.compose.resources.stringResource
 import org.jetbrains.compose.ui.tooling.preview.Preview
 
@@ -204,6 +209,28 @@ fun GreenAlert(modifier: Modifier = Modifier, alertType: AlertType, viewModel: G
                 message = stringResource(if (alertType.maintenance) Res.string.id_lightning_service_is_undergoing else Res.string.id_the_lightning_service_is),
                 icon = PhosphorIcons.Regular.Lightning,
                 isBlue = true
+            )
+        }
+
+        is AlertType.LightningUnavailable -> {
+            GreenAlert(
+                modifier = modifier,
+                title = stringResource(Res.string.id_lightning_is_unavailable),
+                message = stringResource(Res.string.id_some_app_files_are_missing),
+                icon = PhosphorIcons.Regular.Lightning,
+                primaryButton = stringResource(Res.string.id_get_support),
+                onPrimaryClick = {
+                    viewModel.postEvent(
+                        NavigateDestinations.Support(
+                            type = SupportType.INCIDENT,
+                            supportData = SupportData.create(
+                                subject = "Lightning unavailable",
+                                session = viewModel.sessionOrNull
+                            ),
+                            greenWalletOrNull = viewModel.greenWalletOrNull
+                        )
+                    )
+                }
             )
         }
 

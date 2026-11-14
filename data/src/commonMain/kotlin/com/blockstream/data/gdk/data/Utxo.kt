@@ -29,4 +29,4 @@ data class Utxo(
     override fun kSerializer() = serializer()
 }
 
-fun Utxo.shortOutpoint(): String = "${txHash.take(8)}...${txHash.takeLast(8)}:$index"
+fun Utxo.shortOutpoint(): String = "${txHash.take(4)}...${txHash.takeLast(4)}:$index"

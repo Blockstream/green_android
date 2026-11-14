@@ -175,6 +175,8 @@ class NetworkAssetManager constructor(private val isMainnet: Boolean, private va
                         icons.remove(it.key)
                     }
 
+                    cacheAssets(countlyAssetsFlow.value.map { it.assetId }, provider)
+
                     _status.cacheStatus = CacheStatus.Latest
                     _status.updatedAt = Clock.System.now().also {
                         logger.i { "Liquid Assets updated at $it" }

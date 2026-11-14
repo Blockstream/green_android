@@ -22,6 +22,7 @@ import com.blockstream.compose.components.GreenColumn
 import com.blockstream.compose.components.OnProgressStyle
 import com.blockstream.compose.components.Rive
 import com.blockstream.compose.components.RiveAnimation
+import com.blockstream.compose.components.SlowLoginMessage
 import com.blockstream.compose.events.Events
 import com.blockstream.compose.models.onboarding.SetupNewWalletViewModel
 import com.blockstream.compose.models.onboarding.SetupNewWalletViewModelAbstract
@@ -46,6 +47,8 @@ fun SetupNewWalletScreen(
         }
     }
 
+    val showSlowLoginMessage by viewModel.showSlowLoginMessage.collectAsStateWithLifecycle()
+
     SetupScreen(
         viewModel = viewModel,
         withPadding = true,
@@ -53,7 +56,14 @@ fun SetupNewWalletScreen(
         onProgressStyle = OnProgressStyle.Full(
             bluBackground = false,
             riveAnimation = RiveAnimation.ROCKET
-        )
+        ),
+        progressDescriptionContent = if (showSlowLoginMessage) {
+            {
+                SlowLoginMessage {
+                    viewModel.postEvent(Events.OpenStatusPage)
+                }
+            }
+        } else null
     ) {
         val onProgress by viewModel.onProgress.collectAsStateWithLifecycle()
 

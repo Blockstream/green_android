@@ -32,6 +32,7 @@ import com.blockstream.data.gdk.data.AccountAsset
 import com.blockstream.data.gdk.data.AccountBalance
 import com.blockstream.data.gdk.data.Transaction
 import com.blockstream.data.utils.toAmountLook
+import com.blockstream.domain.send.SendActionAvailability
 import com.blockstream.domain.swap.IsSwapAvailableUseCase
 import com.blockstream.domain.swap.IsSwapsEnabledUseCase
 import com.blockstream.domain.transaction.GetAccountTransactionsUseCase
@@ -159,14 +160,8 @@ class AssetAccountDetailsViewModel(
         viewModelScope, SharingStarted.WhileSubscribed(5000L), settingsManager.appSettings.hideAmounts
     )
 
-    override val isSendEnabled: StateFlow<Boolean> = combine(accountBalance, isMultisigWatchOnly) { accountBalance, isMultisigWatchOnly ->
-        if (isMultisigWatchOnly) {
-            false
-        } else if (accountAsset.account.isLightning) {
-             (session.lightningSdkOrNull?.balanceOnChannel() ?: 0) > 0
-        } else {
-            accountBalance.balance(session, assetId = accountAsset.assetId) > 0
-        }
+    override val isSendEnabled: StateFlow<Boolean> = isMultisigWatchOnly.map {
+        SendActionAvailability.isEnabled(isMultisigWatchOnly = it)
     }.stateIn(viewModelScope, SharingStarted.WhileSubscribed(5000), false)
 
     override val lightningInfo: StateFlow<LightningInfoLook?> = ((if (accountAsset.account.isLightning) {

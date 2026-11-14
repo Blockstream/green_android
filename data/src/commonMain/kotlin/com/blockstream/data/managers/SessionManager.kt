@@ -26,6 +26,7 @@ import kotlinx.atomicfu.locks.ReentrantLock
 import kotlinx.atomicfu.locks.withLock
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.Job
 import kotlinx.coroutines.SupervisorJob
 import kotlinx.coroutines.channels.BufferOverflow
 import kotlinx.coroutines.flow.MutableSharedFlow
@@ -72,11 +73,15 @@ class SessionManager constructor(
         }
     }
 
+    private var torNetworkSessionJob: Job? = null
+
     private var torEnabled: Boolean by Delegates.observable(settingsManager.appSettings.tor) { _, oldValue, newValue ->
         if (oldValue != newValue) {
             if (newValue) {
                 startTorNetworkSessionIfNeeded()
             } else {
+                torNetworkSessionJob?.cancel()
+                torNetworkSessionJob = null
                 _torProxy.value = null
                 _torProxyProgress.value = TorEvent(progress = 100)
                 torNetworkSession.disconnectAsync(LogoutReason.USER_ACTION)
@@ -334,9 +339,10 @@ class SessionManager constructor(
         val applicationSettings = settingsManager.getApplicationSettings()
         // If user provides a "sock5://", handle it as Orbot proxy, no need to start GDK TOR session
         if (applicationSettings.tor && applicationSettings.proxyUrl?.startsWith("socks5://") != true) {
-            if (!torNetworkSession.isConnected) {
+            // isConnected is only set on login, which this session never does
+            if (torNetworkSessionJob?.isActive != true && torNetworkSession.activeGdkNetworks.isEmpty()) {
                 // Re-initiate connection
-                scope.launch(context = logException(countly)) {
+                torNetworkSessionJob = scope.launch(context = logException(countly)) {
                     gdk.networks().bitcoinElectrum.also { network ->
                         torNetworkSession.connect(network = network, initNetworks = listOf(network))
                     }

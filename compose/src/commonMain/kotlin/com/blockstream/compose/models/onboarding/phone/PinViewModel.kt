@@ -12,6 +12,7 @@ import com.blockstream.compose.extensions.launchIn
 import com.blockstream.compose.models.GreenViewModel
 import com.blockstream.compose.navigation.NavigateDestinations
 import com.blockstream.compose.sideeffects.SideEffects
+import com.blockstream.compose.utils.observeIsSlow
 import com.blockstream.domain.wallet.NewWalletUseCase
 import com.blockstream.domain.wallet.RestoreWalletUseCase
 import com.blockstream.utils.Loggable
@@ -28,6 +29,7 @@ abstract class PinViewModelAbstract(
 
     override fun segmentation(): HashMap<String, Any>? = setupArgs.let { countly.onBoardingSegmentation(setupArgs = it) }
     abstract val rocketAnimation: StateFlow<Boolean>
+    abstract val showSlowLoginMessage: StateFlow<Boolean>
 }
 
 class PinViewModel constructor(
@@ -39,6 +41,8 @@ class PinViewModel constructor(
     private val checkRecoveryPhraseUseCase: CheckRecoveryPhraseUseCase by inject()
     override val rocketAnimation: MutableStateFlow<Boolean> =
         MutableStateFlow(false)
+    private val isNetworkLoginStage = MutableStateFlow(false)
+    override val showSlowLoginMessage = observeIsSlow(isNetworkLoginStage)
 
     class LocalEvents {
         class SetPin(val pin: String) : Event
@@ -128,9 +132,11 @@ class PinViewModel constructor(
 
         }, preAction = {
             onProgress.value = true
+            isNetworkLoginStage.value = true
             rocketAnimation.value = true
         }, postAction = {
             onProgress.value = it == null
+            isNetworkLoginStage.value = false
             rocketAnimation.value = it == null
         }, onSuccess = {
             postSideEffect(SideEffects.NavigateTo(NavigateDestinations.WalletOverview(it)))
@@ -154,9 +160,11 @@ class PinViewModel constructor(
 
         }, preAction = {
             onProgress.value = true
+            isNetworkLoginStage.value = true
             rocketAnimation.value = true
         }, postAction = {
             onProgress.value = it == null
+            isNetworkLoginStage.value = false
             rocketAnimation.value = it == null
         }, onSuccess = {
             postSideEffect(SideEffects.NavigateTo(NavigateDestinations.WalletOverview(it)))
@@ -170,6 +178,7 @@ class PinViewModelPreview(setupArgs: SetupArgs) : PinViewModelAbstract(setupArgs
 
     override val rocketAnimation: MutableStateFlow<Boolean>
         get() = MutableStateFlow(false)
+    override val showSlowLoginMessage: StateFlow<Boolean> = MutableStateFlow(false)
 
     companion object {
         fun preview() = PinViewModelPreview(SetupArgs(mnemonic = "neutral inherit learn"))

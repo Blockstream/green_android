@@ -22,6 +22,7 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.unit.DpOffset
 import androidx.compose.ui.unit.dp
@@ -118,6 +119,7 @@ fun ActionMenu(
             }
 
             actionsMenu.forEach {
+                val title = it.title ?: it.titleRes?.let { titleRes -> stringResource(titleRes) }
                 TextButton(
                     onClick = it.onClick,
                     modifier = Modifier.align(Alignment.CenterVertically).appTestTag(it.titleRes?.key ?: it.title),
@@ -132,17 +134,21 @@ fun ActionMenu(
                             Icon(
                                 painter = painterResource(icon),
                                 contentDescription = null,
-                                modifier = Modifier.size(18.dp)
+                                tint = it.iconTint ?: MaterialTheme.colorScheme.onSurface,
+                                modifier = Modifier.size(it.iconSize)
                             )
                         }
                         it.imageVector?.also { imageVector ->
                             Icon(
                                 imageVector = imageVector,
                                 contentDescription = null,
-                                modifier = Modifier.size(18.dp)
+                                tint = it.iconTint ?: MaterialTheme.colorScheme.onSurface,
+                                modifier = Modifier.size(it.iconSize)
                             )
                         }
-                        Text(text = it.title ?: stringResource(it.titleRes!!), style = labelMedium)
+                        title?.also {
+                            Text(text = it, style = labelMedium)
+                        }
                     }
                 }
             }

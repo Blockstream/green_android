@@ -350,11 +350,17 @@ class BuyViewModel(greenWallet: GreenWallet, initialAccountAsset: AccountAsset? 
                 if (amount.isBlank()) {
                     null
                 } else {
+                    val normalizedAmount = UserInput.parseUserInput(
+                        session = session,
+                        input = amount,
+                        denomination = denomination.value
+                    ).amount
+
                     meldUseCase.createCryptoQuoteUseCase(
                         session = session,
                         country = country.value,
                         enrichedAsset = accountAsset.value!!.asset,
-                        amount = amount,
+                        amount = normalizedAmount,
                         denomination = denomination.value,
                         greenWallet = greenWallet
                     ).dataOrThrow()

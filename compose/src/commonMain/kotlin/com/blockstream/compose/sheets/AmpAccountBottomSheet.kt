@@ -27,27 +27,37 @@ import blockstream_green.common.generated.resources.id_amp
 import blockstream_green.common.generated.resources.id_amp_account
 import blockstream_green.common.generated.resources.id_amp_accounts_allow_you_to_send
 import blockstream_green.common.generated.resources.id_amp_legacy
+import blockstream_green.common.generated.resources.id_cancel
+import blockstream_green.common.generated.resources.id_continue
 import blockstream_green.common.generated.resources.id_create
 import blockstream_green.common.generated.resources.id_create_amp_account
 import blockstream_green.common.generated.resources.id_create_an_amp_account
 import blockstream_green.common.generated.resources.id_creating_amp_account
 import blockstream_green.common.generated.resources.id_learn_more
+import blockstream_green.common.generated.resources.id_multisig_accounts_require_your_jade
 import blockstream_green.common.generated.resources.id_share_your_amp_id
+import blockstream_green.common.generated.resources.id_watchonly
 import com.adamglin.PhosphorIcons
 import com.adamglin.phosphoricons.Regular
 import com.adamglin.phosphoricons.regular.Copy
+import com.blockstream.compose.LocalDialog
 import com.blockstream.compose.components.GreenBottomSheet
 import com.blockstream.compose.components.GreenButton
 import com.blockstream.compose.components.GreenButtonSize
 import com.blockstream.compose.events.Events
+import com.blockstream.compose.models.settings.AmpAccountViewModel
 import com.blockstream.compose.models.settings.AmpAccountViewModelAbstract
+import com.blockstream.compose.sideeffects.OpenDialogData
 import com.blockstream.compose.theme.bodySmall
 import com.blockstream.compose.theme.labelMedium
 import com.blockstream.compose.theme.whiteMedium
+import com.blockstream.compose.utils.StringHolder
 import com.blockstream.data.Urls
 import com.blockstream.data.extensions.middleTruncate
 import com.blockstream.data.gdk.data.Account
 import com.blockstream.data.gdk.data.AccountType
+import kotlinx.coroutines.launch
+import org.jetbrains.compose.resources.getString
 import org.jetbrains.compose.resources.stringResource
 
 @Composable
@@ -66,6 +76,8 @@ fun AmpAccountBottomSheet(
     val hasAmpAccounts = ampAccount != null || ampLegacyAccounts.isNotEmpty()
     val isCreating = creatingAccountTypes.isNotEmpty()
 
+    val dialog = LocalDialog.current
+
     GreenBottomSheet(
         title = if (hasAmpAccounts) stringResource(Res.string.id_amp_account) else stringResource(Res.string.id_create_an_amp_account),
         subtitle = if (hasAmpAccounts) {
@@ -77,7 +89,26 @@ fun AmpAccountBottomSheet(
         bottomPadding = 64.dp,
         viewModel = viewModel,
         sheetState = rememberModalBottomSheetState(skipPartiallyExpanded = false),
-        onDismissRequest = onDismissRequest
+        onDismissRequest = onDismissRequest,
+        sideEffectHandler = {
+            when (it) {
+                is AmpAccountViewModel.LocalSideEffects.JadeWoDisableDialog -> {
+                    launch {
+                        dialog.openDialog(
+                            OpenDialogData(
+                                title = StringHolder.create(Res.string.id_watchonly),
+                                message = StringHolder.create(Res.string.id_multisig_accounts_require_your_jade),
+                                primaryText = getString(Res.string.id_continue),
+                                onPrimary = {
+                                    viewModel.createAmpAccounts(accountTypes = it.accountTypes, actionConfirmed = true)
+                                },
+                                secondaryText = getString(Res.string.id_cancel)
+                            )
+                        )
+                    }
+                }
+            }
+        }
     ) {
         Column(
             verticalArrangement = Arrangement.spacedBy(16.dp),
@@ -105,7 +136,7 @@ fun AmpAccountBottomSheet(
                             canCreate = canCreateAmp,
                             isCreating = AccountType.AMP2_ACCOUNT in creatingAccountTypes,
                             onCreate = {
-                                viewModel.createAmpAccount(AccountType.AMP2_ACCOUNT)
+                                viewModel.createAmpAccounts(listOf(AccountType.AMP2_ACCOUNT))
                             },
                             onCopy = {
                                 viewModel.copyAmpAccountId(it)
@@ -128,7 +159,7 @@ fun AmpAccountBottomSheet(
                             canCreate = canCreateLegacy,
                             isCreating = account == null && AccountType.AMP_LEGACY_ACCOUNT in creatingAccountTypes,
                             onCreate = {
-                                viewModel.createAmpAccount(AccountType.AMP_LEGACY_ACCOUNT)
+                                viewModel.createAmpAccounts(listOf(AccountType.AMP_LEGACY_ACCOUNT))
                             },
                             onCopy = {
                                 viewModel.copyAmpAccountId(it)

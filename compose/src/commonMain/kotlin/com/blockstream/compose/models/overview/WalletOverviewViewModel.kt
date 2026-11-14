@@ -57,7 +57,7 @@ import org.koin.core.component.inject
 
 abstract class WalletOverviewViewModelAbstract(
     greenWallet: GreenWallet
-) : WalletBalanceViewModel(greenWallet = greenWallet) {
+) : TransactionActionsViewModel(greenWallet = greenWallet) {
 
     override fun screenName(): String = "HomeTab"
     abstract val alerts: StateFlow<List<AlertType>>
@@ -88,14 +88,6 @@ abstract class WalletOverviewViewModelAbstract(
                 )
             )
         }
-    }
-
-    fun navigateToBuy() {
-        postEvent(
-            NavigateDestinations.Buy(
-                greenWallet = greenWallet,
-            )
-        )
     }
 
     fun dismissWalletOnboarding() {
@@ -165,7 +157,7 @@ class WalletOverviewViewModel(
         MutableStateFlow(showWalletOnboarding)
 
     override val assets: StateFlow<DataState<List<AssetBalance>>> =
-        combine(getWalletAssetsUseCase.observe(), hideAmounts) { assets, hideAmounts ->
+        combine(walletAssets, hideAmounts) { assets, hideAmounts ->
             assets.mapSuccess { assets ->
                 assets.assets.map {
                     AssetBalance.create(
@@ -197,7 +189,7 @@ class WalletOverviewViewModel(
     }.stateIn(viewModelScope + Dispatchers.Default, SharingStarted.Eagerly, listOf())
 
     private val _systemMessage: MutableStateFlow<AlertType?> = MutableStateFlow(null)
-    private val _twoFactorState: MutableStateFlow<AlertType?> = MutableStateFlow(null)
+    private val _twoFactorState: MutableStateFlow<List<AlertType>> = MutableStateFlow(listOf())
 
     private val hideWalletBackupAlert = MutableStateFlow(false)
 
@@ -213,20 +205,26 @@ class WalletOverviewViewModel(
         hideWalletBackupAlert,
         session.walletTotalBalance
     ) { greenWallet, twoFactorState, systemMessage, expired2FA, failedNetworkLogins, lspHeath, banner, hideWalletBackupAlert, walletTotalBalance ->
-        listOfNotNull(
-            if (!greenWallet.isRecoveryConfirmed && !hideWalletBackupAlert && walletTotalBalance > 0) AlertType.RecoveryIsUnconfirmed(
-                withCloseButton = true
-            ) else null,
-            twoFactorState,
-            systemMessage,
-            if (expired2FA.isNotEmpty()) AlertType.ReEnable2FA else null,
-            if (greenWallet.isBip39Ephemeral) AlertType.EphemeralBip39 else null,
-            banner?.let { AlertType.Banner(it) },
-            if (session.isTestnet) AlertType.TestnetWarning else null,
-            AlertType.FailedNetworkLogin.takeIf { failedNetworkLogins.isNotEmpty() },
-            lspHeath?.takeIf { it != LightningHealthStatus.OPERATIONAL }
-                ?.let { AlertType.LspStatus(maintenance = it == LightningHealthStatus.MAINTENANCE) },
-        )
+        buildList {
+            if (!greenWallet.isRecoveryConfirmed && !hideWalletBackupAlert && walletTotalBalance > 0) {
+                add(AlertType.RecoveryIsUnconfirmed(withCloseButton = true))
+            }
+            // Order follows iOS WalletDataModel.fetchAlertCards(), with the 2FA cards kept on top.
+            addAll(twoFactorState)
+            addAll(
+                listOfNotNull(
+                    if (expired2FA.isNotEmpty()) AlertType.ReEnable2FA else null,
+                    if (greenWallet.isBip39Ephemeral) AlertType.EphemeralBip39 else null,
+                    if (session.isTestnet) AlertType.TestnetWarning else null,
+                    banner?.let { AlertType.Banner(it) },
+                    AlertType.FailedNetworkLogin.takeIf { failedNetworkLogins.isNotEmpty() },
+                    systemMessage,
+                    lspHeath?.takeIf { it != LightningHealthStatus.OPERATIONAL }
+                        ?.let { AlertType.LspStatus(maintenance = it == LightningHealthStatus.MAINTENANCE) },
+                    AlertType.LightningUnavailable.takeIf { session.lightningFailedToInitialize },
+                )
+            )
+        }
     }.filter { session.isConnected }
         .stateIn(viewModelScope, SharingStarted.WhileSubscribed(5000L), listOf())
 
@@ -245,7 +243,6 @@ class WalletOverviewViewModel(
         object Refresh : Event
         object DenominationExchangeRate : Event
         object OpenOptionsMenu : Event
-        object MenuNewAccountClick : Event
     }
 
     class LocalSideEffects {
@@ -268,20 +265,18 @@ class WalletOverviewViewModel(
                 }
             }.launchIn(this)
 
-            // Support only for Bitcoin
-            session.bitcoinMultisig?.let { network ->
-                session.twoFactorReset(network).filter { session.isConnected }.onEach {
-                    _twoFactorState.value = if (it?.isActive == true) {
-                        if (it.isDisputed == true) {
-                            AlertType.Dispute2FA(network, it)
-                        } else {
-                            AlertType.Reset2FA(network, it)
+            session.activeGdkNetworks.filter { it.is2faNetwork }.takeIf { it.isNotEmpty() }
+                ?.let { networks ->
+                    combine(networks.map { network -> session.twoFactorReset(network).map { network to it } }) {
+                        it.toList()
+                    }.filter { session.isConnected }.onEach { resets ->
+                        _twoFactorState.value = resets.mapNotNull { (network, twoFactorReset) ->
+                            if (twoFactorReset?.isActive != true) null
+                            else if (twoFactorReset.isDisputed == true) AlertType.Dispute2FA(network, twoFactorReset)
+                            else AlertType.Reset2FA(network, twoFactorReset)
                         }
-                    } else {
-                        null
-                    }
-                }.launchIn(this)
-            }
+                    }.launchIn(this)
+                }
 
             session.eventsSharedFlow.onEach {
                 when (it) {
@@ -335,11 +330,6 @@ class WalletOverviewViewModel(
                 postSideEffect(SideEffects.OpenDialog())
             }
 
-            is LocalEvents.MenuNewAccountClick -> {
-                postEvent(Events.ChooseAccountType())
-                countly.accountNew(session)
-            }
-
             is LocalEvents.Refresh -> {
                 sessionOrNull?.refresh()
                 refreshState.value++
@@ -387,6 +377,8 @@ class WalletOverviewViewModelPreview(val isEmpty: Boolean = false, val isHardwar
     )
 
     override val archivedAccounts: StateFlow<Int> = MutableStateFlow(1)
+
+    override val isSwapAvailable: StateFlow<Boolean> = MutableStateFlow(true)
 
     override val bitcoinChartData: StateFlow<DataState<BitcoinChartData>?> = MutableStateFlow(
         null

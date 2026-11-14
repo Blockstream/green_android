@@ -3,44 +3,21 @@ package com.blockstream.domain.promo
 import com.blockstream.data.data.Promo
 import com.blockstream.data.database.Database
 import com.blockstream.data.devices.DeviceModel
-import com.blockstream.data.managers.PromoManager
-import com.blockstream.data.managers.SettingsManager
 import com.blockstream.jade.Loggable
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
 
-class GetPromoUseCase(val promoManager: PromoManager, private val database: Database, val settingsManager: SettingsManager) {
-
-    suspend operator fun invoke(screenName: String?, previousPromo: Promo?): Promo? {
-        return withContext(context = Dispatchers.Default) {
-            val promos = promoManager.promos.value
-
-            promos
-                .filterNot {
-                    // Filter closed promos
-                    settingsManager.isPromoDismissed(it.id)
-                }
-                .filter {
-                    // Filter closed promos
-                    filterTarget(it)
-                }
-                .filter {
-                    // Filter based on screen name
-                    (it.screens == null || it.screens!!.contains(screenName) || it.screens!!.contains("*"))
-                }
-                .let {
-                    // Search for the already displayed promo, else give priority to those with screen name, else "*"
-                    it.find { it == previousPromo } ?: it.find { it.screens?.contains(screenName) == true }
-                    ?: it.firstOrNull()
-                }
-        }
+class GetPromoUseCase(
+    private val database: Database,
+) {
+    suspend operator fun invoke(promos: List<Promo>): List<Promo> = withContext(Dispatchers.Default) {
+        promos
+            .filter { filterTarget(it) }
     }
 
     private suspend fun filterTarget(promo: Promo): Boolean {
-
         return when (promo.target) {
             TARGET_ONLY_SWW -> {
-                // user with only software wallets
                 database.getWallets(isHardware = true).isEmpty()
             }
 

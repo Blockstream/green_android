@@ -18,6 +18,7 @@ import com.blockstream.data.gdk.device.GdkHardwareWallet;
 import com.blockstream.data.gdk.device.HardwareWalletInteraction;
 import com.blockstream.data.gdk.device.SignMessageResult;
 import com.blockstream.data.gdk.device.SignTransactionResult;
+import com.blockstream.jade.api.AssetInfo;
 import com.blockstream.libwally.Wally;
 import com.google.common.base.Joiner;
 import com.google.protobuf.ByteString;
@@ -127,7 +128,7 @@ public class TrezorHWWallet extends GdkHardwareWallet {
 
     @NonNull
     @Override
-    public SignTransactionResult signTransaction(@NonNull Network network, @NonNull String transaction, @NonNull List<InputOutput> inputs, @NonNull List<InputOutput> outputs, @Nullable Map<String, String> transactions, boolean useAeProtocol, @Nullable HardwareWalletInteraction hwInteraction) {
+    public SignTransactionResult signTransaction(@NonNull Network network, @NonNull String transaction, @NonNull List<InputOutput> inputs, @NonNull List<InputOutput> outputs, @Nullable Map<String, String> transactions, boolean useAeProtocol, @Nullable HardwareWalletInteraction hwInteraction, @NonNull List<AssetInfo> assetInfo) {
         if(network.isLiquid()){
             throw new RuntimeException(network.getCanonicalName() + " is not supported");
         }

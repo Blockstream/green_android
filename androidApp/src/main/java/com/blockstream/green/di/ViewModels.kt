@@ -35,7 +35,6 @@ import com.blockstream.compose.models.onboarding.watchonly.WatchOnlyMultisigView
 import com.blockstream.compose.models.onboarding.watchonly.WatchOnlySinglesigViewModel
 import com.blockstream.compose.models.overview.SecurityViewModel
 import com.blockstream.compose.models.overview.WalletOverviewViewModel
-import com.blockstream.compose.models.promo.PromoViewModel
 import com.blockstream.compose.models.receive.ReceiveViewModel
 import com.blockstream.compose.models.receive.RequestAmountViewModel
 import com.blockstream.compose.models.recovery.RecoveryCheckViewModel
@@ -133,9 +132,6 @@ val viewModels = module {
     }
     viewModel {
         JadeGenuineCheckViewModel(getOrNull(), getOrNull())
-    }
-    viewModel {
-        PromoViewModel(get(), getOrNull())
     }
     viewModel {
         AssetDetailsViewModel(get(), get(), get())

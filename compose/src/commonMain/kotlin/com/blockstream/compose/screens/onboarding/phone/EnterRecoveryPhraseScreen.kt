@@ -62,6 +62,7 @@ import com.blockstream.compose.components.OnProgressStyle
 import com.blockstream.compose.components.PasteButton
 import com.blockstream.compose.components.RiveAnimation
 import com.blockstream.compose.components.ScanQrButton
+import com.blockstream.compose.components.SlowLoginMessage
 import com.blockstream.compose.dialogs.TextDialog
 import com.blockstream.compose.events.Events
 import com.blockstream.compose.managers.LocalPlatformManager
@@ -125,12 +126,21 @@ fun EnterRecoveryPhraseScreen(
         }
     }
 
+    val showSlowLoginMessage by viewModel.showSlowLoginMessage.collectAsStateWithLifecycle()
+
     SetupScreen(
         viewModel = viewModel,
         withPadding = false,
         withBottomInsets = false,
         verticalArrangement = Arrangement.SpaceBetween,
-        onProgressStyle = OnProgressStyle.Full(bluBackground = false, riveAnimation = RiveAnimation.ROCKET)
+        onProgressStyle = OnProgressStyle.Full(bluBackground = false, riveAnimation = RiveAnimation.ROCKET),
+        progressDescriptionContent = if (showSlowLoginMessage) {
+            {
+                SlowLoginMessage {
+                    viewModel.postEvent(Events.OpenStatusPage)
+                }
+            }
+        } else null
     ) {
         Text(
             stringResource(Res.string.id_enter_your_recovery_phrase),

@@ -39,6 +39,15 @@ kotlin {
         commonTest.dependencies {
             implementation(libs.kotlin.test)
             implementation(libs.kotlinx.coroutines.test)
+            implementation(libs.koin.test)
+        }
+
+        jvmTest.dependencies {
+            implementation(libs.sqldelight.sqlite.driver)
+        }
+
+        jvmTest.dependencies {
+            implementation(libs.mockk)
         }
 
         androidMain.dependencies {

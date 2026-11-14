@@ -64,5 +64,5 @@ object Urls {
     const val LEDGER_SUPPORTED_ASSETS = "https://docs.blockstream.com/green/hww/hww-index.html#ledger-supported-assets"
     const val BLUETOOTH_PERMISSIONS = "https://developer.android.com/guide/topics/connectivity/bluetooth/permissions"
     const val SECURITY_WATCH_ONLY = "https://blkstrm.com/watchonly"
-
+    const val STATUS_PAGE = "https://status.blockstream.com"
 }

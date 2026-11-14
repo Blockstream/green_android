@@ -5,9 +5,8 @@ import androidx.compose.foundation.verticalScroll
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.tooling.preview.Preview
-import com.blockstream.data.data.Promo
-import com.blockstream.compose.models.SimpleGreenViewModelPreview
 import com.blockstream.compose.GreenPreview
+import com.blockstream.data.data.Promo
 
 @Composable
 @Preview
@@ -16,29 +15,10 @@ fun PromoPreview() {
         GreenColumn(
             modifier = Modifier.verticalScroll(rememberScrollState())
         ) {
-            Promo(
+            PromoCard(
                 promo = Promo.preview1,
-                viewModel = SimpleGreenViewModelPreview()
-            )
-            Promo(
-                promo = Promo.preview2,
-                viewModel = SimpleGreenViewModelPreview()
-            )
-            Promo(
-                promo = Promo.preview3,
-                viewModel = SimpleGreenViewModelPreview()
-            )
-            Promo(
-                promo = Promo.preview4,
-                viewModel = SimpleGreenViewModelPreview()
-            )
-            Promo(
-                promo = Promo.preview5,
-                viewModel = SimpleGreenViewModelPreview()
-            )
-            Promo(
-                promo = Promo.preview6,
-                viewModel = SimpleGreenViewModelPreview()
+                onDismiss = {},
+                onAction = {},
             )
         }
     }

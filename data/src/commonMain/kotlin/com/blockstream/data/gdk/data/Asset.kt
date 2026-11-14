@@ -3,8 +3,10 @@ package com.blockstream.data.gdk.data
 import com.blockstream.data.BTC_POLICY_ASSET
 import com.blockstream.data.gdk.GdkSession
 import com.blockstream.data.gdk.GreenJson
+import com.blockstream.jade.api.IssuancePrevout
 import kotlinx.serialization.SerialName
 import kotlinx.serialization.Serializable
+import kotlinx.serialization.json.JsonObject
 
 @Serializable
 data class Asset constructor(
@@ -18,6 +20,11 @@ data class Asset constructor(
     val ticker: String? = null,
     @SerialName("entity")
     val entity: Entity? = null,
+    // Registry contract as published, needed by Jade to authenticate the asset metadata
+    @SerialName("contract")
+    val contract: JsonObject? = null,
+    @SerialName("issuance_prevout")
+    val issuancePrevout: IssuancePrevout? = null,
 ) : GreenJson<Asset>() {
 
     val isBitcoin

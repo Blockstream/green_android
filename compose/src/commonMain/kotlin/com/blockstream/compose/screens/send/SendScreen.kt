@@ -1,19 +1,31 @@
 package com.blockstream.compose.screens.send
 
 import androidx.compose.animation.AnimatedVisibility
+import androidx.compose.animation.fadeIn
+import androidx.compose.animation.fadeOut
+import androidx.compose.animation.scaleIn
+import androidx.compose.animation.scaleOut
 import androidx.compose.foundation.Image
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.height
+import androidx.compose.foundation.layout.heightIn
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.foundation.verticalScroll
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.Check
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
+import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.material3.minimumInteractiveComponentSize
 import androidx.compose.runtime.Composable
@@ -23,23 +35,24 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.clip
 import androidx.compose.ui.text.input.ImeAction
 import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import blockstream_green.common.generated.resources.Res
-import blockstream_green.common.generated.resources.id_change
 import blockstream_green.common.generated.resources.id_account__asset
+import blockstream_green.common.generated.resources.id_all_coins
+import blockstream_green.common.generated.resources.id_available
+import blockstream_green.common.generated.resources.id_coin
+import blockstream_green.common.generated.resources.id_coins
 import blockstream_green.common.generated.resources.id_comment
-import blockstream_green.common.generated.resources.id_d_coin_selected
-import blockstream_green.common.generated.resources.id_d_coins_selected
 import blockstream_green.common.generated.resources.id_description
 import blockstream_green.common.generated.resources.id_fee_rate
 import blockstream_green.common.generated.resources.id_lightning_account
 import blockstream_green.common.generated.resources.id_next
 import blockstream_green.common.generated.resources.id_recipient
-import blockstream_green.common.generated.resources.id_select_your_coins
 import blockstream_green.common.generated.resources.id_set_custom_fee_rate
 import blockstream_green.common.generated.resources.pencil_simple_line
 import com.blockstream.data.data.DenominatedValue
@@ -47,12 +60,16 @@ import com.blockstream.data.data.FeePriority
 import com.blockstream.data.extensions.isNotBlank
 import com.blockstream.data.gdk.data.AccountAssetBalance
 import com.blockstream.data.utils.DecimalFormat
+import com.blockstream.data.utils.FEE_RATE_DECIMALS
+import com.blockstream.data.utils.userNumberFormat
+import com.adamglin.PhosphorIcons
+import com.adamglin.phosphoricons.Regular
+import com.adamglin.phosphoricons.regular.CaretRight
 import com.blockstream.compose.components.Banner
 import com.blockstream.compose.components.GreenAccountAsset
 import com.blockstream.compose.components.GreenAmountField
 import com.blockstream.compose.components.GreenButton
 import com.blockstream.compose.components.GreenButtonSize
-import com.blockstream.compose.components.GreenButtonType
 import com.blockstream.compose.components.GreenColumn
 import com.blockstream.compose.components.GreenDataLayout
 import com.blockstream.compose.components.GreenNetworkFee
@@ -67,11 +84,13 @@ import com.blockstream.compose.models.send.SendViewModelAbstract
 import com.blockstream.compose.navigation.NavigateDestinations
 import com.blockstream.compose.navigation.getResult
 import com.blockstream.compose.theme.bodyMedium
+import com.blockstream.compose.theme.green
 import com.blockstream.compose.theme.labelLarge
 import com.blockstream.compose.theme.md_theme_onError
 import com.blockstream.compose.theme.md_theme_onErrorContainer
 import com.blockstream.compose.theme.whiteHigh
 import com.blockstream.compose.theme.whiteLow
+import com.blockstream.compose.theme.whiteMedium
 import com.blockstream.compose.utils.AnimatedNullableVisibility
 import com.blockstream.compose.utils.SetupScreen
 import com.blockstream.compose.utils.toPainter
@@ -111,12 +130,15 @@ fun SendScreen(
             title = stringResource(Res.string.id_set_custom_fee_rate),
             label = stringResource(Res.string.id_fee_rate),
             placeholder = "0${decimalSymbol}00",
-            initialText = viewModel.customFeeRate.value?.toString() ?: "",
+            initialText = viewModel.customFeeRate.value?.let {
+                userNumberFormat(decimals = FEE_RATE_DECIMALS, withDecimalSeparator = false).format(it)
+            } ?: "",
             keyboardOptions = KeyboardOptions.Default.copy(
                 keyboardType = KeyboardType.Decimal,
                 imeAction = ImeAction.Done
             ),
-            supportingText = "Fee rate per vbyte"
+            supportingText = "Fee rate per vbyte",
+            maxFractionDigits = FEE_RATE_DECIMALS
         ) { value ->
             customFeeDialog = null
 
@@ -203,24 +225,100 @@ fun SendScreen(
                         helperText = errorAmount,
                         denomination = denomination,
                         sendAll = isSendAll,
-                        supportsSendAll = supportsSendAll,
-                        availableBalance = availableBalance,
+                        supportsSendAll = supportsSendAll && !canSelectCoins,
+                        availableBalance = availableBalance.takeIf { !canSelectCoins },
                         isMaxPayable = accountAssetBalance?.account?.isLightning == true,
                         onSendAllClick = {
                             viewModel.postEvent(SendViewModel.LocalEvents.ToggleIsSendAll)
                         },
                         footerContent = {
-                            Row(
-                                modifier = Modifier.padding(horizontal = 2.dp),
-                                horizontalArrangement = Arrangement.spacedBy(8.dp)
-                            ) {
-                                Text(
-                                    text = amountHint ?: "",
-                                    textAlign = TextAlign.Start,
-                                    modifier = Modifier.weight(1f),
-                                    style = bodyMedium,
-                                    color = whiteLow
-                                )
+                            GreenColumn(padding = 0, space = 0, modifier = Modifier.fillMaxWidth()) {
+                                if (!amountHint.isNullOrBlank()) {
+                                    Row(
+                                        modifier = Modifier.padding(horizontal = 2.dp),
+                                        horizontalArrangement = Arrangement.spacedBy(8.dp)
+                                    ) {
+                                        Text(
+                                            text = amountHint ?: "",
+                                            textAlign = TextAlign.Start,
+                                            modifier = Modifier.weight(1f),
+                                            style = bodyMedium,
+                                            color = whiteLow
+                                        )
+                                    }
+                                }
+
+                                if (canSelectCoins) {
+                                    Spacer(Modifier.height(4.dp))
+                                    Row(
+                                        modifier = Modifier.fillMaxWidth(),
+                                        horizontalArrangement = Arrangement.SpaceBetween,
+                                        verticalAlignment = Alignment.CenterVertically
+                                    ) {
+                                        Row(
+                                            modifier = Modifier
+                                                .clip(MaterialTheme.shapes.small)
+                                                .clickable(enabled = !isAmountLocked) {
+                                                    viewModel.postEvent(SendViewModel.LocalEvents.ToggleIsSendAll)
+                                                }
+                                                .heightIn(min = 40.dp)
+                                                .padding(horizontal = 8.dp),
+                                            horizontalArrangement = Arrangement.spacedBy(4.dp),
+                                            verticalAlignment = Alignment.CenterVertically
+                                        ) {
+                                            Text(
+                                                text = stringResource(Res.string.id_available),
+                                                style = bodyMedium,
+                                                color = whiteMedium
+                                            )
+                                            Text(
+                                                text = availableBalance ?: "",
+                                                style = bodyMedium,
+                                                color = if (isAmountLocked) whiteMedium else green
+                                            )
+                                            AnimatedVisibility(
+                                                visible = isSendAll,
+                                                enter = fadeIn() + scaleIn(),
+                                                exit = fadeOut() + scaleOut()
+                                            ) {
+                                                Icon(
+                                                    imageVector = Icons.Filled.Check,
+                                                    contentDescription = null,
+                                                    tint = green,
+                                                    modifier = Modifier.size(16.dp)
+                                                )
+                                            }
+                                        }
+
+                                        Row(
+                                            modifier = Modifier
+                                                .clip(MaterialTheme.shapes.small)
+                                                .clickable {
+                                                    viewModel.postEvent(SendViewModel.LocalEvents.OpenCoinSelection)
+                                                }
+                                                .heightIn(min = 40.dp)
+                                                .padding(horizontal = 8.dp),
+                                            horizontalArrangement = Arrangement.spacedBy(4.dp),
+                                            verticalAlignment = Alignment.CenterVertically
+                                        ) {
+                                            Text(
+                                                text = if (selectedUtxosCount > 0) {
+                                                    "$selectedUtxosCount ${stringResource(if (selectedUtxosCount == 1) Res.string.id_coin else Res.string.id_coins)}"
+                                                } else {
+                                                    stringResource(Res.string.id_all_coins)
+                                                },
+                                                style = bodyMedium,
+                                                color = whiteMedium
+                                            )
+                                            Icon(
+                                                imageVector = PhosphorIcons.Regular.CaretRight,
+                                                contentDescription = null,
+                                                tint = whiteMedium,
+                                                modifier = Modifier.size(16.dp)
+                                            )
+                                        }
+                                    }
+                                }
                             }
                         },
                         onDenominationClick = if (showDenominationSelector) {
@@ -316,49 +414,6 @@ fun SendScreen(
                             .padding(vertical = 8.dp),
                     ) {
                         Text(text = it)
-                    }
-                }
-            }
-
-            AnimatedVisibility(visible = canSelectCoins) {
-                if (selectedUtxosCount > 0) {
-                    val selectedCoinsText = stringResource(
-                        if (selectedUtxosCount == 1) Res.string.id_d_coin_selected else Res.string.id_d_coins_selected,
-                        selectedUtxosCount
-                    )
-                    Row(
-                        modifier = Modifier
-                            .fillMaxWidth()
-                            .padding(horizontal = 4.dp),
-                        verticalAlignment = Alignment.CenterVertically
-                    ) {
-                        Text(
-                            text = selectedCoinsText,
-                            style = bodyMedium,
-                            color = whiteLow,
-                            modifier = Modifier.weight(1f)
-                        )
-
-                        GreenButton(
-                            text = stringResource(Res.string.id_change),
-                            type = GreenButtonType.TEXT,
-                            size = GreenButtonSize.SMALL,
-                        ) {
-                            viewModel.postEvent(SendViewModel.LocalEvents.OpenCoinSelection)
-                        }
-                    }
-                } else {
-                    Row(
-                        modifier = Modifier.fillMaxWidth(),
-                        horizontalArrangement = Arrangement.Center
-                    ) {
-                        GreenButton(
-                            text = stringResource(Res.string.id_select_your_coins),
-                            type = GreenButtonType.TEXT,
-                            size = GreenButtonSize.SMALL
-                        ) {
-                            viewModel.postEvent(SendViewModel.LocalEvents.OpenCoinSelection)
-                        }
                     }
                 }
             }

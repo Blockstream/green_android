@@ -1,4 +1,4 @@
-@file:OptIn(ExperimentalApi::class)
+@file:OptIn(ExperimentalKableApi::class)
 
 package com.blockstream.data.devices
 
@@ -11,7 +11,7 @@ import com.blockstream.data.gdk.device.HardwareConnectInteraction
 import com.blockstream.data.jade.JadeHWWallet
 import com.blockstream.utils.Loggable
 import com.blockstream.jade.firmware.FirmwareUpdateState
-import com.juul.kable.ExperimentalApi
+import com.juul.kable.ExperimentalKableApi
 import com.juul.kable.Peripheral
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers

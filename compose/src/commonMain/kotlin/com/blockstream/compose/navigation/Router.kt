@@ -61,7 +61,6 @@ import com.blockstream.compose.models.onboarding.watchonly.WatchOnlySinglesigVie
 import com.blockstream.compose.models.overview.SecurityViewModel
 import com.blockstream.compose.models.overview.TransactViewModel
 import com.blockstream.compose.models.overview.WalletOverviewViewModel
-import com.blockstream.compose.models.promo.PromoViewModel
 import com.blockstream.compose.models.receive.ReceiveChooseAccountViewModel
 import com.blockstream.compose.models.receive.ReceiveChooseAssetViewModel
 import com.blockstream.compose.models.receive.ReceiveViewModel
@@ -91,8 +90,10 @@ import com.blockstream.compose.models.settings.TwoFactorSetupViewModel
 import com.blockstream.compose.models.settings.WalletSettingsSection
 import com.blockstream.compose.models.settings.WalletSettingsViewModel
 import com.blockstream.compose.models.settings.WatchOnlyCredentialsSettingsViewModel
+import com.blockstream.compose.models.settings.WatchOnlyViewModel
 import com.blockstream.compose.models.sheets.AnalyticsViewModel
 import com.blockstream.compose.models.sheets.AssetDetailsViewModel
+import com.blockstream.compose.models.sheets.CoinInfoViewModel
 import com.blockstream.compose.models.sheets.JadeFirmwareUpdateViewModel
 import com.blockstream.compose.models.sheets.LightningNodeViewModel
 import com.blockstream.compose.models.sheets.MeldCountriesViewModel
@@ -144,7 +145,6 @@ import com.blockstream.compose.screens.onboarding.watchonly.WatchOnlySinglesigSc
 import com.blockstream.compose.screens.overview.SecurityScreen
 import com.blockstream.compose.screens.overview.TransactScreen
 import com.blockstream.compose.screens.overview.WalletOverviewScreen
-import com.blockstream.compose.screens.promo.PromoScreen
 import com.blockstream.compose.screens.receive.ReceiveChooseAccountScreen
 import com.blockstream.compose.screens.receive.ReceiveChooseAssetScreen
 import com.blockstream.compose.screens.receive.ReceiveScreen
@@ -170,6 +170,7 @@ import com.blockstream.compose.screens.settings.SwapsSettingsScreen
 import com.blockstream.compose.screens.settings.TwoFactorAuthenticationScreen
 import com.blockstream.compose.screens.settings.TwoFactorSetupScreen
 import com.blockstream.compose.screens.settings.WalletSettingsScreen
+import com.blockstream.compose.screens.settings.WatchOnlyScreen
 import com.blockstream.compose.screens.support.SupportScreen
 import com.blockstream.compose.screens.swap.SwapScreen
 import com.blockstream.compose.screens.transaction.TransactionScreen
@@ -188,6 +189,8 @@ import com.blockstream.compose.sheets.BuyQuotesBottomSheet
 import com.blockstream.compose.sheets.Call2ActionBottomSheet
 import com.blockstream.compose.sheets.CameraBottomSheet
 import com.blockstream.compose.sheets.CoinFilterBottomSheet
+import com.blockstream.compose.sheets.CoinInfoBottomSheet
+import com.blockstream.compose.sheets.CoinSortBottomSheet
 import com.blockstream.compose.sheets.CountriesBottomSheet
 import com.blockstream.compose.sheets.DenominationBottomSheet
 import com.blockstream.compose.sheets.DeviceInteractionBottomSheet
@@ -737,16 +740,6 @@ fun Router(
                     )
                 })
             }
-            appComposable<NavigateDestinations.Promo> {
-                val args = it.toRoute<NavigateDestinations.Promo>()
-                PromoScreen(
-                    viewModel = viewModel {
-                        PromoViewModel(
-                            args.promo,
-                            args.greenWalletOrNull
-                        )
-                    })
-            }
             appComposable<NavigateDestinations.Support> {
                 val args = it.toRoute<NavigateDestinations.Support>()
                 SupportScreen(viewModel {
@@ -934,8 +927,36 @@ fun Router(
             appBottomSheet<NavigateDestinations.CoinFilters> {
                 val args = it.toRoute<NavigateDestinations.CoinFilters>()
                 CoinFilterBottomSheet(
-                    selectedFilter = args.selectedFilter,
+                    selectedFilters = args.selectedFilters.toSet(),
                     availableFilters = args.availableFilters,
+                    selectedSort = args.selectedSort,
+                    onDismissRequest = navController.onDismissRequest()
+                )
+            }
+            appBottomSheet<NavigateDestinations.CoinSortSheet> {
+                val args = it.toRoute<NavigateDestinations.CoinSortSheet>()
+                CoinSortBottomSheet(
+                    selectedSort = args.selectedSort,
+                    onDismissRequest = navController.onDismissRequest()
+                )
+            }
+            appBottomSheet<NavigateDestinations.CoinInfo> {
+                val args = it.toRoute<NavigateDestinations.CoinInfo>()
+                CoinInfoBottomSheet(
+                    viewModel = viewModel {
+                        CoinInfoViewModel(
+                            greenWallet = args.greenWallet,
+                            selectedAccountAsset = args.accountAsset,
+                            amount = args.amount,
+                            amountFiat = args.amountFiat,
+                            isConfirmed = args.isConfirmed,
+                            txHash = args.txHash,
+                            outputIndex = args.outputIndex,
+                            scriptType = args.scriptType,
+                            blockHeight = args.blockHeight,
+                            isBlinded = args.isBlinded
+                        )
+                    },
                     onDismissRequest = navController.onDismissRequest()
                 )
             }
@@ -1019,6 +1040,14 @@ fun Router(
                             greenWallet = args.greenWallet,
                             accountAsset = args.accountAsset
                         )
+                    }
+                )
+            }
+            appComposable<NavigateDestinations.WatchOnly> {
+                val args = it.toRoute<NavigateDestinations.WatchOnly>()
+                WatchOnlyScreen(
+                    viewModel = viewModel {
+                        WatchOnlyViewModel(greenWallet = args.greenWallet)
                     }
                 )
             }

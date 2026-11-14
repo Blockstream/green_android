@@ -13,25 +13,12 @@ include:
   - template: Jobs/Dependency-Scanning.v2.gitlab-ci.yml
 
 variables:
-  GRADLE_USER_HOME: "${CI_PROJECT_DIR}/.gradle"
   GRADLE_OPTS: "-Dorg.gradle.daemon=true -Dorg.gradle.parallel=true"
   FF_USE_FASTZIP: "true"
   ANDROID_IMAGE: blockstream/green_android
   HOMEBREW_NO_AUTO_UPDATE: 1
   SAST_EXCLUDED_PATHS: "spec, test, tests, tmp, vendor, node_modules, .git"
   AST_ENABLE_MR_PIPELINES: "false"
-
-cache:
-  - key:
-      files:
-        - gradle/wrapper/gradle-wrapper.properties
-        - gradle/libs.versions.toml
-      prefix: "$CI_PROJECT_NAME-$CI_COMMIT_REF_SLUG"
-    paths:
-      - "$CI_PROJECT_DIR/.gradle/caches"
-      - "$CI_PROJECT_DIR/.gradle/wrapper"
-    policy: pull-push # Pull at start, push if job succeeds
-    when: on_success
 
 # Defaults applied to all jobs unless overridden
 default:
@@ -148,6 +135,7 @@ xcframework_common:
 
 production:
   stage: build
+  when: manual
   tags:
     - cloud
   retry:
@@ -167,9 +155,8 @@ production:
   script:
     - cd $CI_PROJECT_DIR
     - echo $ANDROID_KEYSTORE_BASE64 | base64 -d > keystore.jks
-    - ./gradlew useBlockstreamKeys
-    - ./gradlew printLwkVersion
-    - ./gradlew assembleProductionGoogleRelease
+    - cp contrib/blockstream_keys.txt app_keys.txt
+    - ./gradlew printLwkVersion assembleProductionGoogleRelease
 
 production_fdroid:
   stage: build
@@ -198,7 +185,10 @@ development:
       - runner_system_failure
       - unknown_failure
       - stuck_or_timeout_failure
-  when: manual
+  rules:
+    - if: $CI_PIPELINE_SOURCE == "schedule"
+      when: never
+    - if: $CI_COMMIT_BRANCH
   artifacts:
     name: "$CI_PROJECT_NAME-$CI_JOB_NAME-$CI_COMMIT_SHORT_SHA"
     expire_in: 7 days
@@ -210,15 +200,12 @@ development:
   script:
     - cd $CI_PROJECT_DIR
     - echo $ANDROID_KEYSTORE_BASE64 | base64 -d > keystore.jks
-    - ./gradlew useBlockstreamKeys
-    - ./gradlew printLwkVersion
-    - ./gradlew assembleDevelopmentRelease
+    - cp contrib/blockstream_keys.txt app_keys.txt
+    - ./gradlew printLwkVersion assembleDevelopmentRelease
 
 production_debug:
   stage: build
   when: manual
-  cache:
-    policy: pull
   artifacts:
     name: "$CI_PROJECT_NAME-$CI_JOB_NAME-$CI_COMMIT_SHORT_SHA"
     expire_in: 7 days
@@ -230,7 +217,7 @@ production_debug:
   script:
     - cd $CI_PROJECT_DIR
     - echo $ANDROID_KEYSTORE_BASE64 | base64 -d > keystore.jks
-    - ./gradlew useBlockstreamKeys
+    - cp contrib/blockstream_keys.txt app_keys.txt
     - ./gradlew assembleProductionGoogleDebug
 
 gdk_commit:
@@ -242,8 +229,6 @@ gdk_commit:
     paths:
       - androidApp/build/outputs/apk/development/debug/*.apk
   when: manual
-  cache:
-    policy: pull
   variables:
     GDK_COMMIT: master
     GIT_SUBMODULE_STRATEGY: recursive
@@ -252,7 +237,7 @@ gdk_commit:
     - echo $ANDROID_KEYSTORE_BASE64 | base64 -d > keystore.jks
     - echo "GDK_COMMIT=$GDK_COMMIT"
     - ./gdk/fetch_android_binaries.sh -c $GDK_COMMIT
-    - ./gradlew useBlockstreamKeys
+    - cp contrib/blockstream_keys.txt app_keys.txt
     - ./gradlew assembleDevelopmentDebug
 
 #####################################
@@ -280,7 +265,7 @@ build_google_play:
     GIT_SUBMODULE_STRATEGY: recursive
   script:
     - cd $CI_PROJECT_DIR
-    - ./gradlew useBlockstreamKeys
+    - cp contrib/blockstream_keys.txt app_keys.txt
     - ./gradlew assembleProductionGoogleRelease
 
 build_osx:
@@ -292,7 +277,7 @@ build_osx:
     GIT_SUBMODULE_STRATEGY: recursive
   script:
     - cd $CI_PROJECT_DIR
-    - ./gradlew useBlockstreamKeys
+    - cp contrib/blockstream_keys.txt app_keys.txt
     - ./gradlew assembleProductionGoogleRelease
 
 #####################################
@@ -308,16 +293,15 @@ unit_tests:
       - runner_system_failure
       - unknown_failure
       - stuck_or_timeout_failure
-  cache:
-    policy: pull
   variables:
     GIT_SUBMODULE_STRATEGY: recursive
   needs: []
   script:
     - cd $CI_PROJECT_DIR
-    - ./gradlew useBlockstreamKeys
     #    - ./gradlew lintProductionGoogleRelease
+    - cp contrib/blockstream_keys.txt app_keys.txt
     - ./gradlew test
+      -x :androidApp:testProductionGoogleDebugUnitTest
 
 #####################################
 # SECURITY
@@ -330,6 +314,23 @@ secret_detection:
 
 dependency-scanning:
   stage: security
+
+"dependency-scanning:gradle-resolution":
+  stage: test
+  needs: []
+  image:
+    name: blockstream/green_android@sha256:8e981cb6fa31a7846f3e1941471e7ce50d05c7dfde1c643513e865e9e083b88e
+    entrypoint: [""]
+  services:
+    - name: $DS_ANALYZER_IMAGE
+      alias: ds-analyzer
+      command:
+        - /analyzer
+        - dependency-resolution-service
+        - --project-types
+        - gradle
+        - --checkout-timeout
+        - "180"
 
 #####################################
 # Sign production build
@@ -355,7 +356,7 @@ sign_google_play:
 # Upload to GCS bucket
 .gcp_prep:
   stage: upload
-  image: blockstream/gcloud-docker:27.3-504.0.1
+  image: harbor.blockstream.io/google/blockstream/public/gcloud-docker:27.3-504.0.1
   cache: []
   tags:
     - k8s # Simple, non-resource intensive jobs
@@ -397,6 +398,8 @@ gcp_push_development:
   extends:
     - .gcp_prep
     - .gcp_auth_inline
+  when: manual
+  allow_failure: true
   needs:
     - job: development
       optional: true
@@ -447,13 +450,13 @@ gcp_push_gdk_commit:
   script:
     - cd $CI_PROJECT_DIR
     - echo $ANDROID_KEYSTORE_BASE64 | base64 -d > keystore.jks
-    - ./gradlew useBlockstreamKeys
+    - cp contrib/blockstream_keys.txt app_keys.txt
     - ./gradlew assembleDevelopmentRelease
 
 .e2e:upload:
   extends: .gcp_auth_inline
   stage: e2e
-  image: blockstream/gcloud-docker:27.3-504.0.1
+  image: harbor.blockstream.io/google/blockstream/public/gcloud-docker:27.3-504.0.1
   tags:
     - k8s
   variables:

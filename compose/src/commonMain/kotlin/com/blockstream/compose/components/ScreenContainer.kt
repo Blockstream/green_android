@@ -58,6 +58,8 @@ fun ScreenContainer(
     verticalArrangement: Arrangement.Vertical = Arrangement.Top,
     horizontalAlignment: Alignment.Horizontal = Alignment.Start,
     modifier: Modifier = Modifier,
+    /** Custom progress content; used with [OnProgressStyle.Full]. */
+    progressDescriptionContent: (@Composable () -> Unit)? = null,
     content: @Composable ColumnScope.(innerPadding: PaddingValues) -> Unit
 ) {
     val onProgress by viewModel.onProgress.collectAsStateWithLifecycle()
@@ -136,8 +138,12 @@ fun ScreenContainer(
                             )
                         }
 
-                        onProgressDescription?.also {
-                            Text(text = it, style = titleMedium)
+                        if (progressDescriptionContent != null) {
+                            progressDescriptionContent()
+                        } else {
+                            onProgressDescription?.also {
+                                Text(text = it, style = titleMedium)
+                            }
                         }
                     }
                 }

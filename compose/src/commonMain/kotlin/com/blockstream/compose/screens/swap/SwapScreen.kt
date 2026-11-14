@@ -24,8 +24,8 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import blockstream_green.common.generated.resources.Res
-import blockstream_green.common.generated.resources.id_fee_rate
 import blockstream_green.common.generated.resources.id_continue
+import blockstream_green.common.generated.resources.id_fee_rate
 import blockstream_green.common.generated.resources.id_have_a_stuck_swap
 import blockstream_green.common.generated.resources.id_learn_more
 import blockstream_green.common.generated.resources.id_new_swaps_are_temporarily_disabled
@@ -40,7 +40,6 @@ import com.blockstream.compose.components.GreenButtonType
 import com.blockstream.compose.components.GreenColumn
 import com.blockstream.compose.components.NetworkFeeLine
 import com.blockstream.compose.components.SwapComponent
-import com.blockstream.domain.swap.isSwapPairSupported
 import com.blockstream.compose.dialogs.TextDialog
 import com.blockstream.compose.events.Events
 import com.blockstream.compose.models.send.CreateTransactionViewModelAbstract
@@ -60,8 +59,10 @@ import com.blockstream.data.data.DenominatedValue
 import com.blockstream.data.data.FeePriority
 import com.blockstream.data.gdk.data.AccountAssetBalance
 import com.blockstream.data.gdk.data.AssetBalance
-import com.blockstream.data.swap.SwapErrorSide
 import com.blockstream.data.utils.DecimalFormat
+import com.blockstream.data.utils.FEE_RATE_DECIMALS
+import com.blockstream.data.utils.userNumberFormat
+import com.blockstream.domain.swap.isSwapPairSupported
 import org.jetbrains.compose.resources.painterResource
 import org.jetbrains.compose.resources.stringResource
 import org.jetbrains.compose.ui.tooling.preview.Preview
@@ -95,12 +96,15 @@ fun SwapScreen(
             title = stringResource(Res.string.id_set_custom_fee_rate),
             label = stringResource(Res.string.id_fee_rate),
             placeholder = "0${decimalSymbol}00",
-            initialText = viewModel.customFeeRate.value?.toString() ?: "",
+            initialText = viewModel.customFeeRate.value?.let {
+                userNumberFormat(decimals = FEE_RATE_DECIMALS, withDecimalSeparator = false).format(it)
+            } ?: "",
             keyboardOptions = KeyboardOptions.Default.copy(
                 keyboardType = KeyboardType.Decimal,
                 imeAction = ImeAction.Done
             ),
-            supportingText = "Fee rate per vbyte"
+            supportingText = "Fee rate per vbyte",
+            maxFractionDigits = FEE_RATE_DECIMALS
         ) { value ->
             customFeeDialog = null
 

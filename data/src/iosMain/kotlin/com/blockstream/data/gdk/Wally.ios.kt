@@ -35,6 +35,7 @@ import gdk.bip39_mnemonic_validate
 import gdk.bip85_get_bip39_entropy
 import gdk.ext_key
 import gdk.wally_aes_cbc_with_ecdh_key
+import gdk.wally_bzero
 import gdk.wally_ec_private_key_verify
 import gdk.wally_ec_sig_to_der
 import gdk.wally_free_string
@@ -50,6 +51,7 @@ import kotlinx.cinterop.allocPointerTo
 import kotlinx.cinterop.convert
 import kotlinx.cinterop.memScoped
 import kotlinx.cinterop.ptr
+import kotlinx.cinterop.sizeOf
 import kotlinx.cinterop.toCValues
 import kotlinx.cinterop.toKString
 import kotlinx.cinterop.usePinned
@@ -236,6 +238,14 @@ class IOSWally : Wally {
             val bip85 = ByteArray(HMAC_SHA512_LEN).toUByteArray()
             val bip85Mnemonic = allocPointerTo<ByteVar>()
 
+            defer {
+                // Wipe the master seed, derived entropy and native master key; the arena
+                // frees the ext_key without zeroing it
+                seed512.fill(0u)
+                bip85.fill(0u)
+                wally_bzero(bip32Key.ptr, sizeOf<ext_key>().convert())
+            }
+
             seed512.usePinned { byteArray ->
                 val seed512Pointer = byteArray.addressOf(0)
 
@@ -352,8 +362,16 @@ class IOSWally : Wally {
         }
     }
 
-    override fun psbtBase64Verify(psbt: String): Boolean {
-        TODO()
+    override fun psbtIsBase64(psbt: String): Boolean {
+        TODO("Not yet implemented")
+    }
+
+    override fun psbtIsBinary(psbt: ByteArray): Boolean {
+        TODO("Not yet implemented")
+    }
+
+    override fun psbtToV0(psbt: String): String {
+        TODO("Not yet implemented")
     }
 }
 

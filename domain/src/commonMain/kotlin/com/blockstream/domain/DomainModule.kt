@@ -2,7 +2,10 @@ package com.blockstream.domain
 
 import com.blockstream.domain.account.accountModule
 import com.blockstream.domain.banner.GetBannerUseCase
+import com.blockstream.domain.bitcoinpricehistory.BitcoinPriceHistoryCache
 import com.blockstream.domain.bitcoinpricehistory.ObserveBitcoinPriceHistory
+import com.blockstream.domain.hardware.DisableHardwareWatchOnlyUseCase
+import com.blockstream.domain.hardware.EnableHardwareWatchOnlyUseCase
 import com.blockstream.domain.hardware.VerifyAddressUseCase
 import com.blockstream.domain.lightning.LightningNodeIdUseCase
 import com.blockstream.domain.meld.CreateCryptoQuoteUseCase
@@ -34,6 +37,8 @@ val domainModule = module {
     includes(accountModule)
     singleOf(::LightningNodeIdUseCase)
     singleOf(::VerifyAddressUseCase)
+    singleOf(::EnableHardwareWatchOnlyUseCase)
+    singleOf(::DisableHardwareWatchOnlyUseCase)
     singleOf(::CreateCryptoQuoteUseCase)
     singleOf(::CreateCryptoWidgetUseCase)
     singleOf(::DefaultValuesUseCase)
@@ -42,6 +47,7 @@ val domainModule = module {
     singleOf(::GetPromoUseCase)
     factoryOf(::GetWalletTransactionsUseCase)
     factoryOf(::GetAccountTransactionsUseCase)
+    singleOf(::BitcoinPriceHistoryCache)
     factoryOf(::ObserveBitcoinPriceHistory)
     factoryOf(::GetLastSuccessfulPurchaseExchange)
     factoryOf(::GetWalletAssetsUseCase)

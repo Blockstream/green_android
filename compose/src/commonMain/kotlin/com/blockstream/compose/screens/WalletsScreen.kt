@@ -27,6 +27,7 @@ import androidx.compose.ui.input.pointer.pointerInput
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import blockstream_green.common.generated.resources.Res
+import blockstream_green.common.generated.resources.id_bitcoin_price
 import blockstream_green.common.generated.resources.id_my_wallets
 import blockstream_green.common.generated.resources.id_set_up_a_new_wallet
 import com.adamglin.PhosphorIcons
@@ -34,14 +35,15 @@ import com.adamglin.phosphoricons.Regular
 import com.adamglin.phosphoricons.regular.CaretRight
 import com.blockstream.compose.components.GreenCard
 import com.blockstream.compose.components.GreenColumn
-import com.blockstream.compose.components.Promo
 import com.blockstream.compose.looks.wallet.WalletListLook
 import com.blockstream.compose.models.home.HomeViewModel
 import com.blockstream.compose.models.home.HomeViewModelAbstract
 import com.blockstream.compose.navigation.NavigateDestinations
+import com.blockstream.compose.screens.overview.components.BitcoinPriceChart
 import com.blockstream.compose.theme.titleSmall
 import com.blockstream.compose.theme.whiteLow
 import com.blockstream.compose.theme.whiteMedium
+import com.blockstream.compose.utils.OnScreenFocus
 import com.blockstream.compose.views.WalletListItem
 import com.blockstream.compose.views.WalletListItemCallbacks
 import com.blockstream.data.data.GreenWallet
@@ -91,6 +93,8 @@ fun WalletsScreen(
     val isEmptyWallet by viewModel.isEmptyWallet.collectAsStateWithLifecycle()
     val allWallets by viewModel.allWallets.collectAsStateWithLifecycle()
 
+    OnScreenFocus(viewModel::refetchBitcoinPriceHistory)
+
     val callbacks = WalletSectionCallbacks(onWalletClick = { wallet ->
         swipedWalletId = null
         viewModel.postEvent(
@@ -137,10 +141,6 @@ fun WalletsScreen(
                 modifier = Modifier.weight(1f),
                 verticalArrangement = Arrangement.spacedBy(6.dp),
             ) {
-                item {
-                    Promo(viewModel = viewModel, modifier = Modifier.padding(top = 16.dp))
-                }
-
                 allWallets?.takeIf { it.isNotEmpty() }?.also {
                     walletSection(
                         title = Res.string.id_my_wallets,
@@ -148,6 +148,22 @@ fun WalletsScreen(
                         callbacks = callbacks,
                         swipedWalletId = swipedWalletId,
                         onSwipe = { id -> swipedWalletId = id }
+                    )
+                }
+
+                item(key = "BitcoinPriceHeader") {
+                    Text(
+                        text = stringResource(Res.string.id_bitcoin_price),
+                        style = titleSmall,
+                        color = whiteLow,
+                        modifier = Modifier.padding(top = 16.dp)
+                    )
+                }
+
+                item(key = "BitcoinPriceChart") {
+                    BitcoinPriceChart(
+                        pricesState = viewModel.bitcoinChartData,
+                        onClickRetry = { viewModel.refetchBitcoinPriceHistory() }
                     )
                 }
             }

@@ -32,6 +32,7 @@ import com.blockstream.compose.navigation.NavData
 import com.blockstream.compose.navigation.NavigateDestinations
 import com.blockstream.compose.sideeffects.SideEffect
 import com.blockstream.compose.sideeffects.SideEffects
+import com.blockstream.compose.utils.observeIsSlow
 import com.blockstream.domain.wallet.RestoreWalletUseCase
 import com.blockstream.utils.Loggable
 import kotlinx.coroutines.CompletableDeferred
@@ -69,6 +70,7 @@ abstract class EnterRecoveryPhraseViewModelAbstract(val setupArgs: SetupArgs) :
     abstract val hintMessage: MutableStateFlow<String>
 
     abstract val bip39WordList: List<String>
+    abstract val showSlowLoginMessage: StateFlow<Boolean>
 }
 
 class EnterRecoveryPhraseViewModel(setupArgs: SetupArgs, stateKeeper: StateKeeper = StateKeeperDispatcher()) :
@@ -96,6 +98,8 @@ class EnterRecoveryPhraseViewModel(setupArgs: SetupArgs, stateKeeper: StateKeepe
     override val hintMessage: MutableStateFlow<String> = MutableStateFlow("")
 
     override val bip39WordList: List<String> by lazy { wally.getBip39WordList() }
+    private val isNetworkLoginStage = MutableStateFlow(false)
+    override val showSlowLoginMessage = observeIsSlow(isNetworkLoginStage)
 
     override val isLoginRequired: Boolean
         get() = setupArgs.isAddAccount()
@@ -387,6 +391,7 @@ class EnterRecoveryPhraseViewModel(setupArgs: SetupArgs, stateKeeper: StateKeepe
 
                 val pin = randomChars(15)
 
+                isNetworkLoginStage.value = true
                 restoreWalletUseCase.invoke(
                     session = session, setupArgs = setupArgs, pin = pin, greenWallet = greenWalletOrNull, cipher = cipher
                 )
@@ -398,6 +403,9 @@ class EnterRecoveryPhraseViewModel(setupArgs: SetupArgs, stateKeeper: StateKeepe
                     throw e
                 }
             }
+        }, postAction = {
+            onProgress.value = false
+            isNetworkLoginStage.value = false
         }, onSuccess = {
             if (it != null) {
                 postSideEffect(SideEffects.NavigateTo(NavigateDestinations.WalletOverview(it)))
@@ -440,6 +448,7 @@ class EnterRecoveryPhraseViewModelPreview(setupArgs: SetupArgs) :
     override val hintMessage: MutableStateFlow<String> = MutableStateFlow("")
 
     override val bip39WordList: List<String> = listOf()
+    override val showSlowLoginMessage: StateFlow<Boolean> = MutableStateFlow(false)
 
     companion object {
         fun preview() = EnterRecoveryPhraseViewModelPreview(SetupArgs())

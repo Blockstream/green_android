@@ -9,7 +9,7 @@ import kotlin.test.assertNull
 class MeldLocalDataSourceTest {
 
     @Test
-    fun `test cache operations`() {
+    fun testCacheOperations() {
         val dataSource = MeldLocalDataSource()
         val mockCountries = listOf(
             Country("US", "United States", emptyList(), "https://example.com/us.png"),

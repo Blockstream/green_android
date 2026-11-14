@@ -1,14 +1,18 @@
 package com.blockstream.data.gdk.data
 
-import com.blockstream.data.extensions.tryCatchNull
 import com.blockstream.data.gdk.GreenJson
+import com.blockstream.data.gdk.JsonConverter.Companion.JsonDeserializer
+import kotlinx.serialization.DeserializationStrategy
+import kotlinx.serialization.KSerializer
 import kotlinx.serialization.SerialName
 import kotlinx.serialization.Serializable
-import kotlinx.serialization.json.Json
+import kotlinx.serialization.descriptors.PrimitiveKind
+import kotlinx.serialization.descriptors.PrimitiveSerialDescriptor
+import kotlinx.serialization.encoding.Decoder
+import kotlinx.serialization.encoding.Encoder
+import kotlinx.serialization.json.JsonContentPolymorphicSerializer
 import kotlinx.serialization.json.JsonElement
-import kotlinx.serialization.json.intOrNull
-import kotlinx.serialization.json.jsonObject
-import kotlinx.serialization.json.jsonPrimitive
+import kotlinx.serialization.json.JsonObject
 
 @Serializable
 data class AuthHandlerStatus constructor(
@@ -30,9 +34,8 @@ data class AuthHandlerStatus constructor(
     @SerialName("required_data")
     val requiredData: DeviceRequiredData? = null,
 
-    // Wait for a fix #535
     @SerialName("auth_data")
-    val authData: JsonElement? = null,
+    val authData: AuthData? = null,
 ) : GreenJson<AuthHandlerStatus>() {
     override fun keepJsonElement() = true
 
@@ -40,10 +43,33 @@ data class AuthHandlerStatus constructor(
 
     fun isSms() = method == "sms"
 
-    val progress: Int?
-        get() = tryCatchNull { authData?.jsonObject?.get("estimated_progress")?.jsonPrimitive?.intOrNull }
-
     companion object {
-        fun from(jsonString: String): AuthHandlerStatus = Json.decodeFromString(jsonString)
+        fun from(jsonString: String): AuthHandlerStatus = JsonDeserializer.decodeFromString(jsonString)
     }
+}
+
+// GDK emits auth_data either as an object or as a bare boolean
+@Serializable(with = AuthDataSerializer::class)
+sealed class AuthData {
+    @Serializable
+    data class Data(
+        @SerialName("telegram_url")
+        val telegramUrl: String? = null,
+        @SerialName("estimated_progress")
+        val estimatedProgress: Int? = null,
+    ) : AuthData()
+
+    @Serializable(with = EnabledSerializer::class)
+    data class Enabled(val value: Boolean) : AuthData()
+}
+
+object AuthDataSerializer : JsonContentPolymorphicSerializer<AuthData>(AuthData::class) {
+    override fun selectDeserializer(element: JsonElement): DeserializationStrategy<AuthData> =
+        if (element is JsonObject) AuthData.Data.serializer() else EnabledSerializer
+}
+
+object EnabledSerializer : KSerializer<AuthData.Enabled> {
+    override val descriptor = PrimitiveSerialDescriptor("AuthDataEnabled", PrimitiveKind.BOOLEAN)
+    override fun deserialize(decoder: Decoder) = AuthData.Enabled(decoder.decodeBoolean())
+    override fun serialize(encoder: Encoder, value: AuthData.Enabled) = encoder.encodeBoolean(value.value)
 }

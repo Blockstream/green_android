@@ -17,6 +17,7 @@ import com.blockstream.data.gdk.device.GdkHardwareWallet;
 import com.blockstream.data.gdk.device.HardwareWalletInteraction;
 import com.blockstream.data.gdk.device.SignMessageResult;
 import com.blockstream.data.gdk.device.SignTransactionResult;
+import com.blockstream.jade.api.AssetInfo;
 import com.blockstream.libwally.Wally;
 import com.btchip.BTChipConstants;
 import com.btchip.BTChipDongle;
@@ -267,7 +268,7 @@ public class BTChipHWWallet extends GdkHardwareWallet {
 
     @NonNull
     @Override
-    public synchronized SignTransactionResult signTransaction(@NonNull Network network, @NonNull String transaction, @NonNull List<InputOutput> inputs, @NonNull List<InputOutput> outputs, @Nullable Map<String, String> transactions, boolean useAeProtocol, @Nullable HardwareWalletInteraction hwInteraction) {
+    public synchronized SignTransactionResult signTransaction(@NonNull Network network, @NonNull String transaction, @NonNull List<InputOutput> inputs, @NonNull List<InputOutput> outputs, @Nullable Map<String, String> transactions, boolean useAeProtocol, @Nullable HardwareWalletInteraction hwInteraction, @NonNull List<AssetInfo> assetInfo) {
 
         final byte[] txBytes = Wally.hex_to_bytes(transaction);
 

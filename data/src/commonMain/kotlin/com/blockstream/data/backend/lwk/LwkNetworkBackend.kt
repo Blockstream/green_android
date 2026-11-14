@@ -339,6 +339,7 @@ class LwkNetworkBackend constructor(
             gaAuthHandler = this,
             network = network,
             gdkHwWallet = null,
+            assetsProvider = null,
             gdk = gdk,
             getTwoFactorConfig = {
                 gdk.getTwoFactorConfig(gaSession)

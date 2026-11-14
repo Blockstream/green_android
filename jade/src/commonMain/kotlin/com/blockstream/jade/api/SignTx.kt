@@ -17,6 +17,8 @@ data class SignTransactionRequestParams(
     @SerialName("trusted_commitments")
     val trustedCommitments: List<Commitment?>? = null,
     val change: List<ChangeOutput?>? = null,
+    @SerialName("asset_info")
+    val assetInfo: List<AssetInfo>? = null,
 ) : JadeSerializer<SignTransactionRequestParams>() {
     override fun kSerializer(): KSerializer<SignTransactionRequestParams> = serializer()
     override fun encodeDefaultsValues(): Boolean = false

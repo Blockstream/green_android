@@ -4,7 +4,6 @@ import com.blockstream.data.extensions.isNotBlank
 import com.blockstream.data.gdk.GreenJson
 import kotlinx.serialization.SerialName
 import kotlinx.serialization.Serializable
-import okio.internal.commonToUtf8String
 import kotlin.io.encoding.Base64
 
 @Serializable
@@ -21,7 +20,7 @@ data class AppKeys(
     companion object {
         fun fromText(text: String): AppKeys? = text.takeIf { it.isNotBlank() }?.let {
             try {
-                json.decodeFromString(Base64.decode(it).commonToUtf8String())
+                json.decodeFromString(Base64.decode(it).decodeToString())
             } catch (e: Exception) {
                 e.printStackTrace()
                 null

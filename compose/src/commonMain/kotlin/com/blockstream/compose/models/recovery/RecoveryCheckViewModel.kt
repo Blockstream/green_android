@@ -122,6 +122,16 @@ class RecoveryCheckViewModel(setupArgs: SetupArgs) : RecoveryCheckViewModelAbstr
 
     private fun handleLastPageNavigation() {
         when {
+            setupArgs.isAddAccount() -> {
+                postSideEffect(
+                    SideEffects.NavigateTo(
+                        NavigateDestinations.ReviewAddAccount(
+                            setupArgs = setupArgs.pageOne()
+                        )
+                    )
+                )
+            }
+
             setupArgs.greenWallet == null -> {
                 postSideEffect(
                     SideEffects.NavigateTo(

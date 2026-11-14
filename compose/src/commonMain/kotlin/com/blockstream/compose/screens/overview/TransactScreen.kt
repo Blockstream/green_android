@@ -50,6 +50,7 @@ import com.blockstream.compose.utils.bottom
 import com.blockstream.compose.utils.plus
 import com.blockstream.compose.utils.reachedBottom
 import com.blockstream.data.data.GreenWallet
+import com.blockstream.domain.send.SendActionAvailability
 import kotlinx.coroutines.delay
 import org.jetbrains.compose.resources.stringResource
 import org.jetbrains.compose.ui.tooling.preview.Preview
@@ -83,7 +84,7 @@ fun TransactScreen(viewModel: TransactViewModelAbstract) {
         ) {
 
             val isMainnet = viewModel.greenWallet.isMainnet
-            val isSwapAvailable = viewModel.isSwapAvailable
+            val isSwapAvailable by viewModel.isSwapAvailable.collectAsStateWithLifecycle()
             val transactions by viewModel.transactions.collectAsStateWithLifecycle()
             val isMultisigWatchOnly by viewModel.isMultisigWatchOnly.collectAsStateWithLifecycle()
             val innerPadding = LocalInnerPadding.current
@@ -116,7 +117,7 @@ fun TransactScreen(viewModel: TransactViewModelAbstract) {
                         modifier = Modifier.padding(top = 16.dp),
                         showBuyButton = isMainnet,
                         showSwapButton = isSwapAvailable,
-                        isSendEnabled = !isMultisigWatchOnly,
+                        isSendEnabled = SendActionAvailability.isEnabled(isMultisigWatchOnly = isMultisigWatchOnly),
                         onBuy = viewModel::onBuy,
                         onSend = viewModel::onSend,
                         onReceive = viewModel::onReceive,

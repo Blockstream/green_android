@@ -1,5 +1,6 @@
 package com.blockstream.jade
 
+import com.blockstream.jade.api.AssetInfo
 import com.blockstream.jade.api.AuthRequest
 import com.blockstream.jade.api.AuthRequestParams
 import com.blockstream.jade.api.BlindingFactorRequest
@@ -262,7 +263,8 @@ class JadeAPI internal constructor(
         txn: ByteArray,
         inputs: List<TxInput>,
         trustedCommitments: List<Commitment?>,
-        change: List<ChangeOutput?>
+        change: List<ChangeOutput?>,
+        assetInfo: List<AssetInfo>
     ): SignedTransactionInputs {
         // 1st message contains txn and number of inputs we are going to send.
         // Reply ok if that corresponds to the expected number of inputs (n).
@@ -273,7 +275,8 @@ class JadeAPI internal constructor(
                 txn = txn,
                 numInput = inputs.size,
                 trustedCommitments = trustedCommitments,
-                change = change
+                change = change,
+                assetInfo = assetInfo
             )
         )
 

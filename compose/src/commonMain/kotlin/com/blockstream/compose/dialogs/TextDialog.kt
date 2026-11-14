@@ -58,6 +58,7 @@ fun TextDialog(
     suffixText: String? = null,
     isPassword: Boolean = false,
     keyboardOptions: KeyboardOptions? = null,
+    maxFractionDigits: Int? = null,
     onDismissRequest: (text: String?) -> Unit
 ) {
     Dialog(
@@ -97,7 +98,8 @@ fun TextDialog(
                 val formatter = remember {
                     DecimalFormatter(
                         decimalSeparator = DecimalFormat.DecimalSeparator.first(),
-                        groupingSeparator = DecimalFormat.GroupingSeparator.first()
+                        groupingSeparator = DecimalFormat.GroupingSeparator.first(),
+                        maxFractionDigits = maxFractionDigits ?: Int.MAX_VALUE
                     )
                 }
 

@@ -58,6 +58,71 @@ class JsonConverterUnitTest {
     }
 
     @Test
+    fun liquid_core_descriptors_and_slip132_pubkeys_are_masked() {
+        val json =
+            """{"result":{"subaccounts":[{"pointer":0,"core_descriptors":["ct(slip77(privacy),elwpkh([e51e604d/84'/1776'/0']privacy/0/*))#xdlf33c5"],"slip132_extended_pubkey":"privacy"}]}}"""
+
+        jsonConverter.mask(json)!!.also {
+            assertFalse(hasSensitiveData(it))
+            assertTrue(it.contains("\"pointer\":0"))
+        }
+    }
+
+    @Test
+    fun watch_only_descriptor_credentials_are_masked() {
+        val json = """{"core_descriptors":["privacy"],"slip132_extended_pubkeys":["privacy"]}"""
+
+        assertFalse(hasSensitiveData(jsonConverter.mask(json)!!))
+    }
+
+    @Test
+    fun xpubs_blinders_addresses_scripts_and_txids_are_masked() {
+        val json =
+            """{"xpub":"privacy","xpubs":["privacy"],"amountblinder":"privacy","amountblinders":["privacy"],"assetblinder":"privacy","assetblinders":["privacy"],"blinding_key":"privacy","blinding_nonce":"privacy","nonces":["privacy"],"address":"privacy","addresses":["privacy"],"addressee":{"address":"privacy","satoshi":1000},"addressees":[{"address":"privacy"}],"script":"privacy","scripts":["privacy"],"scriptpubkey":"privacy","txhash":"privacy","txid":"privacy","fee_rate":1000}"""
+
+        jsonConverter.mask(json)!!.also {
+            assertFalse(hasSensitiveData(it))
+            assertTrue(it.contains("\"fee_rate\":1000"))
+        }
+    }
+
+    @Test
+    fun gauth_secret_in_twofactor_config_is_masked() {
+        val json =
+            """{"all_methods":["email","gauth"],"email":{"confirmed":true,"enabled":true},"gauth":{"confirmed":false,"data":"otpauth://totp/Green%20Bitcoin?secret=privacy","enabled":false}}"""
+
+        jsonConverter.mask(json)!!.also {
+            assertFalse(hasSensitiveData(it))
+            assertTrue(it.contains("\"email\":{\"confirmed\":true,\"enabled\":true}"))
+        }
+    }
+
+    @Test
+    fun descriptors_in_non_json_payloads_are_masked() {
+        val notJson = """Error while handling {"core_descriptors":["privacy"]}"""
+
+        assertFalse(hasSensitiveData(jsonConverter.mask(notJson)!!))
+    }
+
+    @Test
+    fun non_json_descriptor_with_key_origin_brackets_is_not_partially_masked() {
+        val notJson =
+            """Error while handling {"core_descriptors":["ct(slip77(privacy),elwpkh([e51e604d/84'/1776'/0']privacy/0/*))#xdlf33c5"]}"""
+
+        jsonConverter.mask(notJson)!!.also {
+            assertFalse(hasSensitiveData(it))
+            assertFalse(it.contains("xdlf33c5"))
+        }
+    }
+
+    @Test
+    fun non_json_payloads_without_secrets_are_preserved() {
+        val notJson = """Error while handling {"fee_rate":1000}"""
+
+        assertEquals(notJson, jsonConverter.mask(notJson))
+    }
+
+    @Test
     fun secrets_nested_in_arrays_are_masked() {
         val json = """{"wallets":[{"name":"a","mnemonic":"privacy"},{"name":"b","seed":"privacy"}]}"""
 

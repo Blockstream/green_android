@@ -11,6 +11,7 @@ sealed class WalletSetting {
     data class ButtonEvent(val title: String, val event: Event, val isPrimary: Boolean = false) : WalletSetting()
     data class DenominationExchangeRate(val unit: String, val currency: String, val exchange: String) : WalletSetting()
     data object ArchivedAccounts : WalletSetting()
+    data object WatchOnly : WalletSetting()
     data object SetupEmailRecovery : WalletSetting()
     data class RequestRecovery(val network: Network) : WalletSetting()
     data object RequestRecoveryTransactions : WalletSetting()

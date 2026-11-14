@@ -36,8 +36,11 @@ import com.blockstream.data.gdk.data.Network
 import com.blockstream.data.gdk.data.ProcessedTransactionDetails
 import com.blockstream.data.gdk.params.BroadcastTransactionParams
 import com.blockstream.data.gdk.params.CreateTransactionParams
+import com.blockstream.data.utils.FEE_RATE_DECIMALS
+import com.blockstream.data.utils.gdkNumberFormat
 import com.blockstream.data.utils.ifNotNull
 import com.blockstream.data.utils.toAmountLook
+import com.blockstream.data.utils.userNumberFormat
 import com.blockstream.domain.send.GetSendFlowUseCase
 import com.blockstream.domain.send.SendUseCase
 import com.blockstream.utils.Loggable
@@ -236,12 +239,18 @@ abstract class CreateTransactionViewModelAbstract(
         if (amount == null) {
             _customFeeRate.value = minFee
         } else {
-            (amount.toDoubleOrNull() ?: 0.0).also {
-                if (it < minFee) {
-                    postSideEffect(SideEffects.ErrorSnackbar(Exception("id_fee_rate_must_be_at_least_s|$minFee")))
-                } else {
-                    _customFeeRate.value = it
-                }
+            val parsedAmount = try {
+                userNumberFormat(decimals = FEE_RATE_DECIMALS, withDecimalSeparator = false)
+                    .parseTo(amount, gdkNumberFormat(decimals = FEE_RATE_DECIMALS))
+                    ?.second
+            } catch (e: Exception) {
+                null
+            } ?: 0.0
+
+            if (parsedAmount < minFee) {
+                postSideEffect(SideEffects.ErrorSnackbar(Exception("id_fee_rate_must_be_at_least_s|$minFee")))
+            } else {
+                _customFeeRate.value = parsedAmount
             }
         }
 

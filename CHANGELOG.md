@@ -5,6 +5,56 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/).
 
 ## [Unreleased]
 
+## [5.7.1] - 2026-11-04
+
+### Changed
+
+- Update GDK to version 0.78.1
+
+## [5.7.0] - 2026-09-16
+
+### Added
+
+- Bitcoin price chart to the wallet list
+- Transaction actions to the Home screen
+- Manual coin selection filters and transaction notes
+- Blockstream status page link when login takes longer than expected
+- Pass Liquid asset information to Jade when signing transactions
+
+### Changed
+
+- Re-enable 2of2 and 2of3 multisig account creation
+- Retire hardware watch-only access when a multisig account is created
+- Move Legacy SegWit accounts under Advanced options and show AMP2 by default
+- Update promotional banners on the Home screen
+- Improve fee rate input formatting and validation, and accept comma as a decimal separator
+- Replace deprecated Electrum server default placeholders
+- Disable cloud backup on devices without encryption capabilities
+- Align account type labels with iOS
+- Update GDK to version 0.78.0
+- Update Android dependencies and build tooling
+- Make attaching logs to support requests opt-in
+
+### Fixed
+
+- Show 2FA reset banners for every multisig network and detect expired 2FA at login
+- Fix Lightning invoice sharing
+- Restore the Wallet Details entry in wallet settings
+- Fix incorrect AMP0 asset names on the Home screen
+- Keep TLS for clearnet personal Electrum servers when Tor is enabled
+- Stop reconnecting the Tor network session on every foreground
+- Disable Lightning instead of crashing when the Lightning SDK fails to load
+- Mark magic-routing swaps as paid across retried flows
+- Fail closed when the Jade HTTP request validator is not registered
+- Keep the wallet balance in loading until the Lightning node state is known
+- Enable Send for newly created wallets
+- Focus the Receive amount field and make the entire field tappable
+- Match iOS account type labels and home screen layout
+- Fix `account_create` analytics when Create Account reactivates a hidden account
+- Improve Keystore error handling to avoid unnecessarily invalidating biometric wallet credentials
+- Native memory leak in wally bindings
+- Improve redaction of sensitive data in support logs
+
 ## [5.6.1] - 2026-08-26
 
 ### Changed

@@ -13,6 +13,7 @@ import androidx.compose.runtime.getValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalFocusManager
 import androidx.compose.ui.text.input.ImeAction
+import androidx.compose.ui.text.style.TextOverflow
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import blockstream_green.common.generated.resources.Res
 import blockstream_green.common.generated.resources.id_bitcoin_electrum_server
@@ -78,7 +79,14 @@ fun PersonalElectrumServerSection(
                             viewModel.personalBitcoinElectrumServerError
                         ),
                         modifier = Modifier.fillMaxWidth().appTestTag("bitcoin_electrum_server_textfield"),
-                        placeholder = { Text(AppSettingsViewModelAbstract.DEFAULT_BITCOIN_ELECTRUM_URL) },
+                        placeholder = {
+                            Text(
+                                AppSettingsViewModelAbstract.DEFAULT_BITCOIN_ELECTRUM_URL,
+                                style = MaterialTheme.typography.bodySmall,
+                                maxLines = 1,
+                                overflow = TextOverflow.Ellipsis
+                            )
+                        },
                         singleLine = true,
                         isError = bitcoinError != null,
                         supportingText = {
@@ -115,7 +123,14 @@ fun PersonalElectrumServerSection(
                             viewModel.personalLiquidElectrumServerError
                         ),
                         modifier = Modifier.fillMaxWidth().appTestTag("liquid_electrum_server_textfield"),
-                        placeholder = { Text(AppSettingsViewModelAbstract.DEFAULT_LIQUID_ELECTRUM_URL) },
+                        placeholder = {
+                            Text(
+                                AppSettingsViewModelAbstract.DEFAULT_LIQUID_ELECTRUM_URL,
+                                style = MaterialTheme.typography.bodySmall,
+                                maxLines = 1,
+                                overflow = TextOverflow.Ellipsis
+                            )
+                        },
                         singleLine = true,
                         isError = liquidError != null,
                         supportingText = {
@@ -159,7 +174,14 @@ fun PersonalElectrumServerSection(
                                 }
                             },
                             modifier = Modifier.fillMaxWidth().appTestTag("bitcoin_testnet_electrum_server_textfield"),
-                            placeholder = { Text(AppSettingsViewModelAbstract.DEFAULT_TESTNET_ELECTRUM_URL) },
+                            placeholder = {
+                                Text(
+                                    AppSettingsViewModelAbstract.DEFAULT_TESTNET_ELECTRUM_URL,
+                                    style = MaterialTheme.typography.bodySmall,
+                                    maxLines = 1,
+                                    overflow = TextOverflow.Ellipsis
+                                )
+                            },
                             singleLine = true,
                             keyboardOptions = KeyboardOptions.Default.copy(
                                 imeAction = ImeAction.Done
@@ -198,7 +220,14 @@ fun PersonalElectrumServerSection(
                                 }
                             },
                             modifier = Modifier.fillMaxWidth().appTestTag("liquid_testnet_electrum_server_textfield"),
-                            placeholder = { Text(AppSettingsViewModelAbstract.DEFAULT_TESTNET_LIQUID_ELECTRUM_URL) },
+                            placeholder = {
+                                Text(
+                                    AppSettingsViewModelAbstract.DEFAULT_TESTNET_LIQUID_ELECTRUM_URL,
+                                    style = MaterialTheme.typography.bodySmall,
+                                    maxLines = 1,
+                                    overflow = TextOverflow.Ellipsis
+                                )
+                            },
                             singleLine = true,
                             keyboardOptions = KeyboardOptions.Default.copy(
                                 imeAction = ImeAction.Done

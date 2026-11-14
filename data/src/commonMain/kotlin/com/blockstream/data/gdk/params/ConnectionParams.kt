@@ -32,4 +32,21 @@ data class ConnectionParams constructor(
     override fun encodeDefaultsValues() = false
 
     override fun kSerializer() = serializer()
+
+    companion object {
+        /**
+         * Routes a personal Electrum server between electrum_url and electrum_onion_url.
+         *
+         * GDK prefers electrum_onion_url when use_tor is set and always dials it without
+         * TLS, which is only correct for actual onion services. A clearnet server stays in
+         * electrum_url (dialed through the Tor proxy with electrum_tls honored); returning
+         * an empty string overrides the network's default onion server so the personal
+         * server is still the one used.
+         */
+        fun electrumOnionUrl(electrumUrl: String?, useTor: Boolean): String? = when {
+            electrumUrl == null || !useTor -> null
+            electrumUrl.substringBefore(":").endsWith(".onion", ignoreCase = true) -> electrumUrl
+            else -> ""
+        }
+    }
 }

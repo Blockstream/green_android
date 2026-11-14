@@ -47,7 +47,7 @@ class SupportViewModel(type: SupportType, supportData: SupportData, greenWalletO
 
     override val email: MutableStateFlow<String> = MutableStateFlow("")
     override val message: MutableStateFlow<String> = MutableStateFlow("")
-    override val attachLogs: MutableStateFlow<Boolean> = MutableStateFlow(true)
+    override val attachLogs: MutableStateFlow<Boolean> = MutableStateFlow(false)
     override val isTorEnabled: MutableStateFlow<Boolean> = MutableStateFlow(false)
     override val torAcknowledged: MutableStateFlow<Boolean> = MutableStateFlow(false)
 

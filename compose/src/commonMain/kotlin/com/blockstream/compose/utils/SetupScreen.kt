@@ -27,6 +27,7 @@ fun SetupScreen(
     horizontalAlignment: Alignment.Horizontal = Alignment.Start,
     onProgressStyle: OnProgressStyle = OnProgressStyle.Top,
     sideEffectsHandler: suspend CoroutineScope.(sideEffect: SideEffect) -> Unit = {},
+    progressDescriptionContent: (@Composable () -> Unit)? = null,
     content: @Composable (ColumnScope.(innerPadding: PaddingValues) -> Unit)? = null
 ) {
 
@@ -47,6 +48,7 @@ fun SetupScreen(
             onProgressStyle = onProgressStyle,
             verticalArrangement = verticalArrangement,
             horizontalAlignment = horizontalAlignment,
+            progressDescriptionContent = progressDescriptionContent,
             content = it
         )
     }

@@ -20,10 +20,13 @@ import com.blockstream.compose.navigation.NavAction
 import com.blockstream.compose.navigation.NavData
 import com.blockstream.compose.navigation.NavigateDestinations
 import com.blockstream.compose.sideeffects.SideEffects
+import com.blockstream.compose.utils.observeIsSlow
 import com.blockstream.domain.wallet.NewWalletUseCase
 import kotlinx.coroutines.CompletableDeferred
 import kotlinx.coroutines.CoroutineStart
 import kotlinx.coroutines.async
+import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.onEach
 import kotlinx.coroutines.launch
 import org.jetbrains.compose.resources.getString
@@ -32,6 +35,8 @@ import org.koin.core.component.inject
 abstract class SetupNewWalletViewModelAbstract(greenWalletOrNull: GreenWallet? = null) :
     GreenViewModel(greenWalletOrNull = greenWalletOrNull) {
     override fun screenName(): String = "SetupNewWallet"
+
+    abstract val showSlowLoginMessage: StateFlow<Boolean>
 
     fun onSetupNewWallet() {
         postEvent(SetupNewWalletViewModel.LocalEvents.SetupMobileWallet)
@@ -43,6 +48,9 @@ abstract class SetupNewWalletViewModelAbstract(greenWalletOrNull: GreenWallet? =
 class SetupNewWalletViewModel(greenWalletOrNull: GreenWallet? = null) :
     SetupNewWalletViewModelAbstract(greenWalletOrNull = greenWalletOrNull) {
     private val newWalletUseCase: NewWalletUseCase by inject()
+
+    private val isNetworkLoginStage = MutableStateFlow(false)
+    override val showSlowLoginMessage = observeIsSlow(isNetworkLoginStage)
 
     private var _activeEvent: Event? = null
 
@@ -174,6 +182,7 @@ class SetupNewWalletViewModel(greenWalletOrNull: GreenWallet? = null) :
                     biometricsCipherProvider.await()
                 } else return@doAsync null
 
+                isNetworkLoginStage.value = true
                 newWalletUseCase.invoke(
                     session = session,
                     cipher = cipher,
@@ -190,6 +199,7 @@ class SetupNewWalletViewModel(greenWalletOrNull: GreenWallet? = null) :
             onProgress.value = true
         }, postAction = {
             onProgress.value = false
+            isNetworkLoginStage.value = false
         }, onSuccess = { greenWallet ->
             if (greenWallet != null) {
                 postSideEffect(
@@ -229,6 +239,7 @@ class SetupNewWalletViewModel(greenWalletOrNull: GreenWallet? = null) :
 }
 
 class SetupNewWalletViewModelPreview() : SetupNewWalletViewModelAbstract() {
+    override val showSlowLoginMessage: StateFlow<Boolean> = MutableStateFlow(false)
 
     companion object {
         fun preview() = SetupNewWalletViewModelPreview()

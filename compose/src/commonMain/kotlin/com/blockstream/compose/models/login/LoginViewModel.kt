@@ -29,6 +29,7 @@ import com.blockstream.compose.sideeffects.SideEffect
 import com.blockstream.compose.sideeffects.SideEffects
 import com.blockstream.compose.utils.SetupDevelopmentEnv
 import com.blockstream.compose.utils.StringHolder
+import com.blockstream.compose.utils.observeIsSlow
 import com.blockstream.data.Urls
 import com.blockstream.data.banner.Banner
 import com.blockstream.data.crypto.KeystoreInvalidatedException
@@ -68,7 +69,7 @@ import com.blockstream.data.gdk.device.DeviceResolver
 import com.blockstream.data.gdk.params.LoginCredentialsParams
 import com.blockstream.data.lightning.GreenlightMnemonicAndCredentials
 import com.blockstream.data.managers.DeviceManager
-import com.blockstream.data.usecases.EnableHardwareWatchOnlyUseCase
+import com.blockstream.domain.hardware.EnableHardwareWatchOnlyUseCase
 import com.blockstream.domain.lightning.LightningNodeIdUseCase
 import com.blockstream.domain.wallet.SaveDerivedBoltzMnemonicUseCase
 import com.blockstream.domain.wallet.SaveGreenlightMnemonicAndCredentialsUseCase
@@ -112,6 +113,7 @@ abstract class LoginViewModelAbstract(
     abstract val passwordCredentials: StateFlow<DataState<LoginCredentials>>
     abstract val lightningMnemonic: StateFlow<DataState<LoginCredentials>>
     abstract val showRestoreWithRecovery: StateFlow<Boolean>
+    abstract val showSlowLoginMessage: StateFlow<Boolean>
 }
 
 class LoginViewModel constructor(
@@ -137,6 +139,11 @@ class LoginViewModel constructor(
     override val isEmergencyRecoveryPhrase = MutableStateFlow(false)
     override val tor = sessionManager.torProxyProgress
     override val applicationSettings = settingsManager.appSettingsStateFlow
+    override val showSlowLoginMessage = observeIsSlow(
+        combine(onProgress, tor, applicationSettings, isDeviceInteractionInProgress) { progress, torEvent, settings, interacting ->
+            progress && (!settings.tor || torEvent.progress >= 100) && !interacting
+        }.stateIn(viewModelScope, SharingStarted.WhileSubscribed(), false)
+    )
 
     private val _error = MutableStateFlow<String?>(null)
     override val error = _error.asStateFlow()
@@ -1018,6 +1025,7 @@ class LoginViewModelPreview(
         MutableStateFlow(if (withPasswprdCredentials) DataState.Success(previewLoginCredentials()) else DataState.Empty)
     override val lightningMnemonic: StateFlow<DataState<LoginCredentials>> = MutableStateFlow(DataState.Empty)
     override val showRestoreWithRecovery = MutableStateFlow(false)
+    override val showSlowLoginMessage: StateFlow<Boolean> = MutableStateFlow(false)
 
     init {
         banner.value = Banner.preview3

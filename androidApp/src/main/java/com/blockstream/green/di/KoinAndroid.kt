@@ -16,6 +16,7 @@ import com.blockstream.green.data.CountlyNoOp
 import com.blockstream.green.lifecycle.ActivityLifecycle
 import com.blockstream.green.settings.AndroidMigrator
 import com.blockstream.green.utils.QATester
+import com.blockstream.green.utils.installationInfo
 import com.blockstream.green.utils.isDevelopmentFlavor
 import org.koin.dsl.binds
 import org.koin.dsl.module
@@ -26,7 +27,8 @@ fun initKoinAndroid(context: Context) {
         version = BuildConfig.VERSION_NAME,
         isDebug = BuildConfig.DEBUG,
         isDevelopment = isDevelopmentFlavor,
-        developmentPin = BuildConfig.DEV_PIN_CODE
+        developmentPin = BuildConfig.DEV_PIN_CODE,
+        installation = context.installationInfo()
     )
 
     val appConfig = AppConfig.default(

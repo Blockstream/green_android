@@ -16,14 +16,6 @@ private fun processId(id: String): Pair<String, Array<String>> {
         val formatArgs = id.split("|").drop(1).toTypedArray()
 
         return res to formatArgs
-    } else if (id.contains("Breez SDK error", ignoreCase = true)) {
-        val message = try {
-            id.substring(id.indexOf("message: "))
-        } catch (e: Exception) {
-            id.replace("Breez SDK error:", "")
-        }
-
-        return "id_an_unidentified_error_occurred" to arrayOf(message)
     }
 
     return id to arrayOf()

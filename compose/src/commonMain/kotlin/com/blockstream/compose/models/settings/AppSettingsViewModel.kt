@@ -77,10 +77,10 @@ abstract class AppSettingsViewModelAbstract() :
         const val SCAN_GAP_LIMIT_MIN = 1
         const val SCAN_GAP_LIMIT_MAX = 1000
         const val DEFAULT_SCAN_GAP_LIMIT = "20"
-        const val DEFAULT_BITCOIN_ELECTRUM_URL = "blockstream.info:700"
-        const val DEFAULT_LIQUID_ELECTRUM_URL = "blockstream.info:995"
-        const val DEFAULT_TESTNET_ELECTRUM_URL = "blockstream.info:993"
-        const val DEFAULT_TESTNET_LIQUID_ELECTRUM_URL = "blockstream.info:465"
+        const val DEFAULT_BITCOIN_ELECTRUM_URL = "bitcoin-mainnet.blockstream.info:50002"
+        const val DEFAULT_LIQUID_ELECTRUM_URL = "elements-mainnet.blockstream.info:50002"
+        const val DEFAULT_TESTNET_ELECTRUM_URL = "bitcoin-testnet.blockstream.info:50002"
+        const val DEFAULT_TESTNET_LIQUID_ELECTRUM_URL = "elements-testnet.blockstream.info:50002"
 
         const val DEFAULT_IP_AND_PORT = "192.168.1.10:9050"
 

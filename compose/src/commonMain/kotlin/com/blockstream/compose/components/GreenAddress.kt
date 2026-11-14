@@ -26,6 +26,7 @@ import com.blockstream.compose.utils.ifTrue
 @Composable
 fun GreenAddress(
     address: String,
+    modifier: Modifier = Modifier,
     textAlign: TextAlign? = null,
     showCopyIcon: Boolean = false,
     maxLines: Int = Int.MAX_VALUE,
@@ -72,11 +73,11 @@ fun GreenAddress(
     }
 
     if (onCopyClick == null) {
-        CopyContainer(value = address, withSelection = false) {
+        CopyContainer(modifier = modifier, value = address, withSelection = false) {
             content()
         }
     } else {
-        Box(modifier = Modifier.clickable {
+        Box(modifier = modifier.clickable {
             onCopyClick(address)
         }) {
             content()

@@ -6,7 +6,8 @@ class AppInfo constructor(
     val isDebug: Boolean,
     val isDevelopment: Boolean,
     val isTest: Boolean = false,
-    val developmentPin: String? = null // For details - check SetupDevelopmentEnv.kt
+    val developmentPin: String? = null, // For details - check SetupDevelopmentEnv.kt
+    val installation: String? = null
 ) {
     val type
         get() = if (isDebug) "debug" else "release"

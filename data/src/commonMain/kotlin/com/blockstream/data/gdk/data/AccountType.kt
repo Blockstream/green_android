@@ -47,7 +47,10 @@ enum class AccountType(val gdkType: String) {
 
     fun isAmp() = this == AMP2_ACCOUNT
 
-    fun isMutlisig() = !isSinglesig() && !isLightning()
+    fun isMutlisig() = when (this) {
+        STANDARD, AMP2_ACCOUNT, AMP_LEGACY_ACCOUNT, TWO_OF_THREE -> true
+        else -> false
+    }
 
     companion object {
         fun byGDKType(name: String) = when (name) {

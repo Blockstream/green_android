@@ -74,11 +74,15 @@ class GetWalletAssetsUseCase(private val session: GdkSession) : DataStateObserva
             .drop(1)
             .map { }
 
+        val lightningTriggers = session.isLightningLoading
+            .filter { !it }
+            .map { }
+
         // Emits nothing itself; the refresh writes to the cache that get() exposes, and lives only
         // while observe() is collected. Debounced once over the merged triggers so a burst from
         // either source — or both arriving together — collapses into a single doWork.
         val refresh = flow<DataState<Assets>> {
-            merge(networkEventTriggers, accountTriggers)
+            merge(networkEventTriggers, accountTriggers, lightningTriggers)
                 .debounce(750)
                 .collect {
                     doWork(Unit)

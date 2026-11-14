@@ -5,7 +5,8 @@ import androidx.compose.ui.text.input.TextFieldValue
 
 class DecimalFormatter(
     val decimalSeparator: Char,
-    val groupingSeparator: Char
+    val groupingSeparator: Char,
+    val maxFractionDigits: Int = Int.MAX_VALUE
 ) {
     fun cleanup(input: TextFieldValue): TextFieldValue {
         val originalSize = input.text.length
@@ -29,9 +30,14 @@ class DecimalFormatter(
         val sb = StringBuilder()
 
         var hasDecimalSep = false
+        var fractionDigits = 0
 
         for (char in input) {
             if (char.isDigit()) {
+                if (hasDecimalSep) {
+                    if (fractionDigits >= maxFractionDigits) continue
+                    fractionDigits++
+                }
                 sb.append(char)
                 continue
             }

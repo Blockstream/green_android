@@ -221,6 +221,7 @@ class GdkSession constructor(
     private var _walletTotalBalanceSharedFlow = MutableStateFlow(-1L)
     private val _accountsAndBalanceUpdatedSharedFlow = MutableSharedFlow<Unit>(replay = 0)
     private var _failedNetworksStateFlow: MutableStateFlow<List<Network>> = MutableStateFlow(listOf())
+    private val _isLightningLoadingStateFlow = MutableStateFlow(false)
 
     val networkBackendsStateFlow : StateFlow<Map<Network, NetworkBackend>>
         field = MutableStateFlow<Map<Network, NetworkBackend>>(emptyMap())
@@ -245,6 +246,8 @@ class GdkSession constructor(
     val accountsAndBalanceUpdated get() = _accountsAndBalanceUpdatedSharedFlow.asSharedFlow()
 
     val failedNetworks get() = _failedNetworksStateFlow.asStateFlow()
+
+    val isLightningLoading get() = _isLightningLoadingStateFlow.asStateFlow()
 
     @OptIn(ExperimentalCoroutinesApi::class)
     val systemMessage: StateFlow<List<Pair<Network, String>>> =
@@ -641,7 +644,7 @@ class GdkSession constructor(
             gapLimit = if (network.isSinglesig && applicationSettings.customGapLimitEnabled) applicationSettings.electrumServerGapLimit?.coerceAtLeast(1) else null,
             electrumTls = if (electrumUrl.isNotBlank()) applicationSettings.personalElectrumServerTls else true,
             electrumUrl = electrumUrl,
-            electrumOnionUrl = electrumUrl.takeIf { useTor },
+            electrumOnionUrl = ConnectionParams.electrumOnionUrl(electrumUrl = electrumUrl, useTor = useTor),
             // blobServerUrl = "wss://green-blobserver.staging.blockstream.com/ws".takeIf { appInfo.isDevelopment && network.isSinglesig && network.isTestnet },
             // blobServerOnionUrl = null,
         ).also {
@@ -652,8 +655,11 @@ class GdkSession constructor(
     // Use it only for connected sessions
     fun supportsLightning() = supportsLightning(isWatchOnly = isWatchOnlyValue, device = device)
 
+    val lightningFailedToInitialize
+        get() = lightningManager.failedToInitialize
+
     private fun supportsLightning(isWatchOnly: Boolean, device: GreenDevice?): Boolean {
-        return ephemeralWallet == null && appConfig.lightningFeatureEnabled && !isWatchOnly && (device == null || device.deviceModel?.supportsLightningMnemonicDerivation == true)
+        return ephemeralWallet == null && appConfig.lightningFeatureEnabled && !isWatchOnly && (device == null || device.deviceModel?.supportsLightningMnemonicDerivation == true) && lightningManager.isAvailable
     }
 
     fun networks(isTestnet: Boolean, isWatchOnly: Boolean, device: GreenDevice?): List<Network> {
@@ -771,6 +777,7 @@ class GdkSession constructor(
         // Clear Lightning
         hasLightning = false
         _lightningAccount = null
+        _isLightningLoadingStateFlow.value = false
 
         lightningManager.release(lightningSdkOrNull)
         lightningSdkOrNull = null
@@ -880,38 +887,38 @@ class GdkSession constructor(
             prepareHttpRequest()
         }
 
+        val urlValidator = requireNotNull(sessionManager.httpRequestUrlValidator) { "httpRequestUrlValidator must be registered before device HTTP requests" }
+
         val urls = details.jsonObject["urls"]?.jsonArray?.map {
             it.jsonPrimitive.content
         } ?: listOf()
 
-        sessionManager.httpRequestUrlValidator?.also { urlValidator ->
-            val isUrlSafe = urls.filter { it.isNotBlank() }.all { url ->
-                BlockstreamWhitelistedUrls.any { blockstreamUrl ->
-                    url.startsWith(blockstreamUrl)
-                }
+        val isUrlSafe = urls.filter { it.isNotBlank() }.all { url ->
+            BlockstreamWhitelistedUrls.any { blockstreamUrl ->
+                url.startsWith(blockstreamUrl)
             }
+        }
 
-            val servers = urls.map {
-                it.server()
+        val servers = urls.map {
+            it.server()
+        }
+
+        if (!settingsManager.appSettings.tor && urls.filter { it.isNotBlank() }.all { it.contains(".onion") }) {
+            if (urlValidator.torWarning()) {
+                // reconnect to enable tor
+                prepareHttpRequest()
             }
+        }
 
-            if (!settingsManager.appSettings.tor && urls.filter { it.isNotBlank() }.all { it.contains(".onion") }) {
-                if (urlValidator.torWarning()) {
-                    // reconnect to enable tor
-                    prepareHttpRequest()
-                }
-            }
-
-            if (!isUrlSafe && !(settingsManager.isAllowCustomPinServer(urls) || _tempAllowedServers.containsAll(servers))) {
-                if (urlValidator.unsafeUrlWarning(urls)) {
-                    _tempAllowedServers.addAll(servers)
-                } else {
-                    return buildJsonObject {
-                        putJsonObject("body") {
-                            putJsonObject("error") {
-                                put("code", -237)
-                                put("message", "id_action_canceled")
-                            }
+        if (!isUrlSafe && !(settingsManager.isAllowCustomPinServer(urls) || _tempAllowedServers.containsAll(servers))) {
+            if (urlValidator.unsafeUrlWarning(urls)) {
+                _tempAllowedServers.addAll(servers)
+            } else {
+                return buildJsonObject {
+                    putJsonObject("body") {
+                        putJsonObject("error") {
+                            put("code", -237)
+                            put("message", "id_action_canceled")
                         }
                     }
                 }
@@ -1544,6 +1551,8 @@ class GdkSession constructor(
 
                 // SmartDiscovery only for SW wallets, on HW ln mnemonic is not available
                 if (hasLightning || ((isRestore || (isSmartDiscovery && !isHardwareWallet)) && settingsManager.isLightningAvailable())) {
+                    _isLightningLoadingStateFlow.value = true
+
                     // Make it async to speed up login process
                     val job = scope.async {
                         try {
@@ -1569,6 +1578,8 @@ class GdkSession constructor(
                             if (!isRestore && !isSmartDiscovery) {
                                 _failedNetworksStateFlow.value += listOfNotNull(lightning)
                             }
+                        } finally {
+                            _isLightningLoadingStateFlow.value = false
                         }
                     }
 
@@ -1741,6 +1752,15 @@ class GdkSession constructor(
         )
 
         updateSystemMessage()
+
+        // The block notification that also triggers this arrives before the 2FA config is cached.
+        scanExpired2FA()
+    }
+
+    private suspend fun scanExpired2FA() {
+        loggedInGdkNetworkBackends.filter { it.network.is2faNetwork }.forEach { backend ->
+            tryCatch { backend.scanExpired2FA() }
+        }
     }
 
     fun updateLiquidAssets() {
@@ -1904,7 +1924,7 @@ class GdkSession constructor(
     override suspend fun getAssets(params: GetAssetsParams) =
         (activeLiquid ?: liquid)?.let { (networkBackend(it) as AssetsProvider).getAssets(params) }
 
-    fun setupDefaultAccounts(): Job {
+    fun setupDefaultAccounts(archiveDefaultAccounts: Boolean = true): Job {
         return scope.launch {
             // Create Singlesig Segwit accounts
             val accountType = AccountType.BIP84_SEGWIT
@@ -1926,16 +1946,18 @@ class GdkSession constructor(
             // Be sure to update all accounts so that we properly calculate balances
             updateAccountsAndBalances().join()
 
-            // Archive default gdk legacy accounts with no history
-            accounts.value.filter {
-                (it.type == AccountType.BIP44_LEGACY || it.type == AccountType.BIP49_SEGWIT_WRAPPED) && !it.hasHistory(
-                    this@GdkSession
-                )
-            }.forEach { account ->
-                logger.d { "Archive ${account.name}" }
-                updateAccount(
-                    account = account, isHidden = true, resetAccountName = account.type.title()
-                )
+            if (archiveDefaultAccounts) {
+                // Archive default gdk legacy accounts with no history
+                accounts.value.filter {
+                    (it.type == AccountType.BIP44_LEGACY || it.type == AccountType.BIP49_SEGWIT_WRAPPED) && !it.hasHistory(
+                        this@GdkSession
+                    )
+                }.forEach { account ->
+                    logger.d { "Archive ${account.name}" }
+                    updateAccount(
+                        account = account, isHidden = true, resetAccountName = account.type.title()
+                    )
+                }
             }
         }
     }
@@ -1957,7 +1979,7 @@ class GdkSession constructor(
         }
     }
 
-    private suspend fun getAccounts(network: Network? = null, refresh: Boolean = false): List<Account> {
+    suspend fun getAccounts(network: Network? = null, refresh: Boolean = false): List<Account> {
         return (network?.let { mapOf(it to networkBackend(network)) } ?: networkBackends).mapLoggedIn { backend ->
             backend.getAccounts(refresh = refresh)
         }.flatten().sorted()
@@ -2041,6 +2063,8 @@ class GdkSession constructor(
                 updateAccountsAndBalances(refresh = true)
 
                 updateLiquidAssets()
+
+                scanExpired2FA()
             }
         }
     }

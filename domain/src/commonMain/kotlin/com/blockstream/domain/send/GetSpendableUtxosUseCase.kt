@@ -11,6 +11,7 @@ data class SpendableUtxo(
     val utxo: Utxo,
     val isDust: Boolean,
     val isExpired: Boolean,
+    val isLegacyRecovery: Boolean,
     // GDK expects the original UTXO JSON in CreateTransactionParams.
     val rawUtxo: JsonElement
 ) {
@@ -33,13 +34,15 @@ class GetSpendableUtxosUseCase {
                 SpendableUtxo(
                     assetId = accountAsset.assetId,
                     utxo = utxo,
-                    isDust = !accountAsset.account.isLiquid && utxo.satoshi < DUST_COIN_THRESHOLD_SATS,
+                    isDust = accountAsset.account.isBitcoin && utxo.satoshi < DUST_COIN_THRESHOLD_SATS,
                     isExpired = canExpire2FA && utxo.expiryHeight?.let { it <= blockHeight } == true,
+                    isLegacyRecovery = accountAsset.account.isBitcoin &&
+                        accountAsset.account.type == AccountType.STANDARD &&
+                        utxo.addressType != CSV_ADDRESS_TYPE,
                     rawUtxo = rawUtxo
                 )
             }
             .filterNot { it.utxo.userStatus == LOCKED_USER_STATUS }
-            .filter { (it.utxo.blockHeight ?: 0L) > 0L }
             .sortedBy { it.utxo.blockHeight ?: 0L }
     }
 
@@ -48,5 +51,6 @@ class GetSpendableUtxosUseCase {
         // This is not GDK's network dust limit.
         const val DUST_COIN_THRESHOLD_SATS = 1092L
         private const val LOCKED_USER_STATUS = 1
+        private const val CSV_ADDRESS_TYPE = "csv"
     }
 }

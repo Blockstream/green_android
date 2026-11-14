@@ -1,23 +1,27 @@
 package com.blockstream.compose.events
 
+import com.blockstream.compose.navigation.NavigateDestination
+import com.blockstream.compose.sideeffects.OpenBrowserType
+import com.blockstream.compose.sideeffects.SideEffect
+import com.blockstream.compose.sideeffects.SideEffects
+import com.blockstream.data.Urls
 import com.blockstream.data.crypto.PlatformCipher
 import com.blockstream.data.data.DenominatedValue
 import com.blockstream.data.data.GreenWallet
 import com.blockstream.data.data.LogoutReason
-import com.blockstream.data.data.PopTo
+import com.blockstream.data.data.Promo
 import com.blockstream.data.gdk.data.Account
 import com.blockstream.data.gdk.data.AccountAsset
 import com.blockstream.data.gdk.data.Network
-import com.blockstream.compose.navigation.NavigateDestination
-import com.blockstream.compose.sideeffects.SideEffect
-import com.blockstream.compose.sideeffects.SideEffects
 
 object Events {
     open class EventSideEffect(override val sideEffect: SideEffect) : EventWithSideEffect
-    open class OpenBrowser(val url: String) : EventWithSideEffect {
+    open class OpenBrowser(val url: String, val type: OpenBrowserType = OpenBrowserType.IN_APP) : EventWithSideEffect {
         override val sideEffect
-            get() = SideEffects.OpenBrowser(url)
+            get() = SideEffects.OpenBrowser(url, type)
     }
+
+    object OpenStatusPage : OpenBrowser(Urls.STATUS_PAGE, type = OpenBrowserType.OPEN_SYSTEM)
 
     open class NavigateTo(val destination: NavigateDestination) : EventWithSideEffect {
         override val sideEffect
@@ -31,7 +35,6 @@ object Events {
     object DismissWalletBackupAlert : Event
     object ReconnectFailedNetworks : Event
     data class Transaction(val transaction: com.blockstream.data.gdk.data.Transaction) : Event
-    data class ChooseAccountType(val isFirstAccount: Boolean = false, val popTo: PopTo? = null) : Event
     data class HandleUserInput(val data: String, val isQr: Boolean = false) : Event
     object Continue : Event
     object SwapSetup : Event
@@ -40,10 +43,9 @@ object Events {
     data class SwapInitiate(val from: Network, val to: Network) : Event
     data class SwapReceive(val from: Network, val to: Network) : Event
     data class SwapToggle(val from: Network, val to: Network) : Event
-    object PromoImpression : Event
-    object PromoDismiss : Event
-    object PromoOpen : Event
-    object PromoAction : Event
+    data class PromoImpression(val promo: Promo) : Event
+    data class PromoDismiss(val promo: Promo) : Event
+    data class PromoAction(val promo: Promo) : Event
     object BannerDismiss : Event
     object BannerAction : Event
     object SelectDenomination : Event

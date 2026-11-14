@@ -1,6 +1,7 @@
 package com.blockstream.compose.models.overview
 
 import androidx.lifecycle.viewModelScope
+import com.blockstream.data.data.DataState
 import com.blockstream.data.data.GreenWallet
 import com.blockstream.data.gdk.data.Assets
 import com.blockstream.data.utils.getFiatCurrency
@@ -10,6 +11,7 @@ import com.blockstream.compose.extensions.launchIn
 import com.blockstream.compose.models.GreenViewModel
 import com.blockstream.compose.models.IPostEvent
 import com.blockstream.domain.wallet.GetWalletAssetsUseCase
+import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.StateFlow
@@ -39,6 +41,11 @@ open class WalletBalanceViewModel(greenWallet: GreenWallet) :
 
     protected val refreshState = MutableStateFlow(0)
 
+    protected val walletAssets: Flow<DataState<Assets>> =
+        combine(getWalletAssetsUseCase.observe(), session.isLightningLoading) { assets, isLightningLoading ->
+            if (isLightningLoading) DataState.Loading else assets
+        }
+
     override val hideAmounts: StateFlow<Boolean> = settingsManager.appSettingsStateFlow.map {
         it.hideAmounts
     }.stateIn(
@@ -62,7 +69,7 @@ open class WalletBalanceViewModel(greenWallet: GreenWallet) :
         }.launchIn(this)
 
         combine(
-            getWalletAssetsUseCase.observe(),
+            walletAssets,
             hideAmounts,
             session.settings()
         ) { walletAssets, _, _ ->

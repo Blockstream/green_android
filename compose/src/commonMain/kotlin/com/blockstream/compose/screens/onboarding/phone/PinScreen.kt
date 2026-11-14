@@ -28,6 +28,8 @@ import com.blockstream.compose.components.GreenButton
 import com.blockstream.compose.components.GreenButtonSize
 import com.blockstream.compose.components.OnProgressStyle
 import com.blockstream.compose.components.RiveAnimation
+import com.blockstream.compose.components.SlowLoginMessage
+import com.blockstream.compose.events.Events
 import com.blockstream.compose.theme.bodyLarge
 import com.blockstream.compose.theme.titleLarge
 import com.blockstream.compose.utils.SetupScreen
@@ -48,11 +50,19 @@ fun PinScreen(
     val snackbar = LocalSnackbar.current
 
     val rocketAnimation by viewModel.rocketAnimation.collectAsStateWithLifecycle()
+    val showSlowLoginMessage by viewModel.showSlowLoginMessage.collectAsStateWithLifecycle()
 
     SetupScreen(
         viewModel = viewModel,
         withPadding = false,
-        onProgressStyle = OnProgressStyle.Full(bluBackground = false, riveAnimation = if (rocketAnimation) RiveAnimation.ROCKET else null)
+        onProgressStyle = OnProgressStyle.Full(bluBackground = false, riveAnimation = if (rocketAnimation) RiveAnimation.ROCKET else null),
+        progressDescriptionContent = if (showSlowLoginMessage) {
+            {
+                SlowLoginMessage {
+                    viewModel.postEvent(Events.OpenStatusPage)
+                }
+            }
+        } else null
     ) {
         Column(
             modifier = Modifier

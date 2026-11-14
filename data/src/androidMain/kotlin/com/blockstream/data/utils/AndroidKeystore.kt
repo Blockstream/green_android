@@ -16,6 +16,7 @@ import com.blockstream.data.data.EncryptedData
 import com.blockstream.utils.Loggable
 import java.security.KeyStore
 import java.security.KeyStoreException
+import java.security.UnrecoverableKeyException
 import javax.crypto.BadPaddingException
 import javax.crypto.Cipher
 import javax.crypto.KeyGenerator
@@ -63,18 +64,13 @@ class AndroidKeystore(val context: Context) : GreenKeystore {
     }
 
     private fun isKeyStoreValid(keystoreAlias: String): Boolean {
-        try {
+        return try {
             getEncryptionCipher(keystoreAlias)
-            return true
-        } catch (e: KeyPermanentlyInvalidatedException) {
-            e.printStackTrace()
-            return false
+            true
         } catch (e: Exception) {
-            e.printStackTrace()
+            logger.e(e) { "Keystore validity check failed for $keystoreAlias" }
+            keyRemainsValid(e)
         }
-
-        // Even if we weren't able to get the Cipher, we expect the key to be valid
-        return true
     }
 
     @VisibleForTesting(otherwise = VisibleForTesting.PRIVATE)
@@ -235,6 +231,23 @@ class AndroidKeystore(val context: Context) : GreenKeystore {
     }
 
     companion object : Loggable() {
+        /**
+         * Whether a key that raised [exception] while creating a cipher is still considered
+         * valid. The biometrics key is shared by every wallet's biometric credentials, so
+         * reporting it invalid leads to it being deleted and recreated, permanently
+         * invalidating all of them. Only exceptions that provably mean the key is unusable
+         * report it as invalid; anything unrecognised retains the key, as the error still
+         * surfaces to the caller when the cipher is actually created.
+         */
+        @VisibleForTesting
+        fun keyRemainsValid(exception: Exception): Boolean = when (exception) {
+            is KeyPermanentlyInvalidatedException -> false
+            is UnrecoverableKeyException -> false
+            // The key exists but requires user authentication (eg. device was unlocked with face)
+            is UserNotAuthenticatedException -> true
+            else -> true
+        }
+
         private const val TRANSFORMATION =
             "${KeyProperties.KEY_ALGORITHM_AES}/${KeyProperties.BLOCK_MODE_CBC}/${KeyProperties.ENCRYPTION_PADDING_PKCS7}"
         private const val ANDROID_KEYSTORE = "AndroidKeyStore"

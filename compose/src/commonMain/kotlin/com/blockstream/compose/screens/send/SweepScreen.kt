@@ -32,6 +32,8 @@ import com.blockstream.data.data.ScanResult
 import com.blockstream.data.gdk.data.AccountAssetBalance
 import com.blockstream.data.gdk.data.AccountAssetBalanceList
 import com.blockstream.data.utils.DecimalFormat
+import com.blockstream.data.utils.FEE_RATE_DECIMALS
+import com.blockstream.data.utils.userNumberFormat
 import com.blockstream.compose.components.GreenAccountAsset
 import com.blockstream.compose.components.GreenAmount
 import com.blockstream.compose.components.GreenColumn
@@ -81,12 +83,15 @@ fun SweepScreen(
             title = stringResource(Res.string.id_set_custom_fee_rate),
             label = stringResource(Res.string.id_fee_rate),
             placeholder = "0${decimalSymbol}00",
-            initialText = viewModel.customFeeRate.value?.toString() ?: "",
+            initialText = viewModel.customFeeRate.value?.let {
+                userNumberFormat(decimals = FEE_RATE_DECIMALS, withDecimalSeparator = false).format(it)
+            } ?: "",
             keyboardOptions = KeyboardOptions.Default.copy(
                 keyboardType = KeyboardType.Decimal,
                 imeAction = ImeAction.Done
             ),
-            supportingText = "Fee rate per vbyte"
+            supportingText = "Fee rate per vbyte",
+            maxFractionDigits = FEE_RATE_DECIMALS
         ) { value ->
             customFeeDialog = null
 

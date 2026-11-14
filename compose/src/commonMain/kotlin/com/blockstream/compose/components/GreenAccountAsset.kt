@@ -31,7 +31,7 @@ import com.blockstream.compose.GreenPreview
 import com.blockstream.compose.extensions.assetIcon
 import com.blockstream.compose.extensions.nameStringHolder
 import com.blockstream.compose.extensions.policyIcon
-import com.blockstream.compose.extensions.policyRes
+import com.blockstream.compose.extensions.policyAndType
 import com.blockstream.compose.extensions.previewAccountAsset
 import com.blockstream.compose.theme.bodyMedium
 import com.blockstream.compose.theme.labelLarge
@@ -171,7 +171,7 @@ fun GreenAccountAsset(
                             // Account Policy
                             if (withAccountName) {
                                 Text(
-                                    text = accountAssetBalance.account.policyRes(session).uppercase(),
+                                    text = accountAssetBalance.account.policyAndType(session).uppercase(),
                                     style = labelMedium.copy(fontSize = 8.sp, lineHeight = 12.sp),
                                     maxLines = 1,
                                     overflow = TextOverflow.Ellipsis,

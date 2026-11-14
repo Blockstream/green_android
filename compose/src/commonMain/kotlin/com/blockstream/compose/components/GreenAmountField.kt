@@ -2,6 +2,7 @@ package com.blockstream.compose.components
 
 import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.foundation.clickable
+import androidx.compose.foundation.interaction.MutableInteractionSource
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
@@ -33,6 +34,7 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.SolidColor
 import androidx.compose.ui.layout.onGloballyPositioned
 import androidx.compose.ui.platform.LocalDensity
+import androidx.compose.ui.platform.LocalSoftwareKeyboardController
 import androidx.compose.ui.text.TextRange
 import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.input.ImeAction
@@ -68,6 +70,7 @@ import com.blockstream.data.data.Denomination
 import com.blockstream.data.extensions.isNotBlank
 import com.blockstream.data.gdk.GdkSession
 import com.blockstream.data.utils.DecimalFormat
+import com.blockstream.data.utils.FIAT_DECIMALS
 import org.jetbrains.compose.resources.painterResource
 import org.jetbrains.compose.resources.stringResource
 import org.jetbrains.compose.ui.tooling.preview.Preview
@@ -108,10 +111,11 @@ fun GreenAmountField(
         )
     )
 
-    val formatter = remember {
+    val formatter = remember(denomination) {
         DecimalFormatter(
             decimalSeparator = DecimalFormat.DecimalSeparator.first(),
-            groupingSeparator = DecimalFormat.GroupingSeparator.first()
+            groupingSeparator = DecimalFormat.GroupingSeparator.first(),
+            maxFractionDigits = if (denomination.isFiat) FIAT_DECIMALS else Int.MAX_VALUE
         )
     }
 
@@ -145,6 +149,11 @@ fun GreenAmountField(
     Column {
         val isEditable = enabled && !isAmountLocked
 
+        val internalFocusRequester = remember { FocusRequester() }
+        val fieldFocusRequester = focusRequester ?: internalFocusRequester
+        val fieldInteractionSource = remember { MutableInteractionSource() }
+        val keyboardController = LocalSoftwareKeyboardController.current
+
         val density = LocalDensity.current
         var startRowWidth by remember { mutableStateOf(0.dp) }
         var endRowWidth by remember { mutableStateOf(0.dp) }
@@ -156,7 +165,17 @@ fun GreenAmountField(
             helperContent = helperContent,
             helperContainerColor = helperContainerColor,
         ) {
-            Box {
+            Box(
+                modifier = Modifier.ifTrue(isEditable && !isReadyOnly) {
+                    it.clickable(
+                        interactionSource = fieldInteractionSource,
+                        indication = null
+                    ) {
+                        runCatching { fieldFocusRequester.requestFocus() }
+                        keyboardController?.show()
+                    }
+                }
+            ) {
 
                 GradientEdgeBox(
                     startSolidWidth = max(startRowWidth, endRowWidth),
@@ -185,9 +204,8 @@ fun GreenAmountField(
                             ),
                             cursorBrush = SolidColor(colors.cursorColor),
                             modifier = Modifier
-                                .ifTrue(focusRequester != null) {
-                                    it.focusRequester(focusRequester!!)
-                                }
+                                .fillMaxWidth()
+                                .focusRequester(fieldFocusRequester)
                                 .appTestTag("amount")
                         )
 

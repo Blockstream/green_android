@@ -6,6 +6,7 @@ import com.blockstream.data.gdk.data.Account
 import com.blockstream.data.gdk.data.Device
 import com.blockstream.data.gdk.data.InputOutput
 import com.blockstream.data.gdk.data.Network
+import com.blockstream.jade.api.AssetInfo
 import com.blockstream.jade.firmware.FirmwareInteraction
 import kotlinx.coroutines.CompletableDeferred
 import kotlinx.coroutines.flow.StateFlow
@@ -40,6 +41,9 @@ abstract class GdkHardwareWallet {
 
     abstract val model: DeviceModel
 
+    open val analyticsModel: String
+        get() = model.deviceModel
+
     abstract val device: Device
 
     // Return the base58check encoded xpubs for each path in paths
@@ -67,7 +71,8 @@ abstract class GdkHardwareWallet {
         outputs: List<InputOutput>,
         transactions: Map<String, String>?,
         useAeProtocol: Boolean,
-        hwInteraction: HardwareWalletInteraction?
+        hwInteraction: HardwareWalletInteraction?,
+        assetInfo: List<AssetInfo>
     ): SignTransactionResult
 
     abstract fun getBlindingFactors(

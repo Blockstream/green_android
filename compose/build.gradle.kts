@@ -117,11 +117,6 @@ kotlin {
             api(libs.rive.android)
             /** ----------------------------------------------------------------------------------------- */
 
-            /**  --- media3 ----------------------------------------------------------------------------- */
-            implementation(libs.androidx.media3.exoplayer)
-            implementation(libs.androidx.media3.ui)
-            /** ----------------------------------------------------------------------------------------- */
-
             implementation(libs.peekaboo.image.picker)
         }
 

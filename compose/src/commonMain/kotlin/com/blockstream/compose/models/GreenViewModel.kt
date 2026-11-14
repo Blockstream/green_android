@@ -12,13 +12,13 @@ import blockstream_green.common.generated.resources.id_swap_is_in_progress
 import blockstream_green.common.generated.resources.id_unstable_internet_connection
 import blockstream_green.common.generated.resources.id_you_dont_have_a_lightning
 import blockstream_green.common.generated.resources.id_your_device_was_disconnected
-import com.blockstream.data.lightning.LightningInputType
 import com.blockstream.compose.events.Event
 import com.blockstream.compose.events.EventWithSideEffect
 import com.blockstream.compose.events.Events
 import com.blockstream.compose.extensions.launchIn
 import com.blockstream.compose.navigation.NavigateDestination
 import com.blockstream.compose.navigation.NavigateDestinations
+import com.blockstream.compose.sideeffects.OpenBrowserType
 import com.blockstream.compose.sideeffects.SideEffect
 import com.blockstream.compose.sideeffects.SideEffects
 import com.blockstream.compose.utils.StringHolder
@@ -54,7 +54,6 @@ import com.blockstream.data.extensions.cleanup
 import com.blockstream.data.extensions.createLoginCredentials
 import com.blockstream.data.extensions.ifConnected
 import com.blockstream.data.extensions.isNotBlank
-import com.blockstream.data.extensions.logException
 import com.blockstream.data.extensions.objectId
 import com.blockstream.data.gdk.GdkSession
 import com.blockstream.data.gdk.TwoFactorResolver
@@ -65,6 +64,7 @@ import com.blockstream.data.gdk.data.Network
 import com.blockstream.data.gdk.device.DeviceResolver
 import com.blockstream.data.gdk.device.GdkHardwareWallet
 import com.blockstream.data.gdk.device.HardwareWalletInteraction
+import com.blockstream.data.lightning.LightningInputType
 import com.blockstream.data.managers.BluetoothManager
 import com.blockstream.data.managers.NotificationManager
 import com.blockstream.data.managers.PromoManager
@@ -80,6 +80,10 @@ import com.blockstream.jade.firmware.FirmwareUpdateState
 import com.blockstream.jade.firmware.FirmwareUpgradeRequest
 import com.blockstream.jade.firmware.HardwareQATester
 import com.blockstream.utils.Loggable
+import com.github.michaelbull.retry.policy.constantDelay
+import com.github.michaelbull.retry.policy.plus
+import com.github.michaelbull.retry.policy.stopAtAttempts
+import com.github.michaelbull.retry.retry
 import kotlinx.coroutines.CompletableDeferred
 import kotlinx.coroutines.Deferred
 import kotlinx.coroutines.Dispatchers
@@ -92,6 +96,7 @@ import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.flow.drop
 import kotlinx.coroutines.flow.flowOf
 import kotlinx.coroutines.flow.onEach
+import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.isActive
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.runBlocking
@@ -104,10 +109,6 @@ import org.koin.core.component.inject
 import kotlin.time.Duration
 import kotlin.time.Duration.Companion.minutes
 import kotlin.uuid.ExperimentalUuidApi
-import com.github.michaelbull.retry.retry
-import com.github.michaelbull.retry.policy.constantDelay
-import com.github.michaelbull.retry.policy.plus
-import com.github.michaelbull.retry.policy.stopAtAttempts
 
 open class SimpleGreenViewModel(
     greenWalletOrNull: GreenWallet? = null,
@@ -221,11 +222,15 @@ open class GreenViewModel constructor(
     val banner: MutableStateFlow<Banner?> = MutableStateFlow(null)
     val closedBanners = mutableListOf<Banner>()
 
-    val promo: MutableStateFlow<Promo?> = MutableStateFlow(null)
-    private var promoImpression: Boolean = false
+    private val _promos = MutableStateFlow<List<Promo>>(emptyList())
+    val promos: StateFlow<List<Promo>> = _promos.asStateFlow()
+    private val promoImpressionIds = mutableSetOf<String>()
 
     private var _deviceRequest: CompletableDeferred<String>? = null
     private var _bootstrapped: Boolean = false
+
+    // excluded from slow-login timing
+    val isDeviceInteractionInProgress = MutableStateFlow(false)
 
     open val isLoginRequired: Boolean = greenWalletOrNull != null
 
@@ -376,7 +381,7 @@ open class GreenViewModel constructor(
 
     protected open fun initPromo() {
         promoManager.promos.onEach {
-            promo.value = getPromoUseCase(screenName = screenName(), previousPromo = promo.value)
+            _promos.value = getPromoUseCase(it)
         }.launchIn(this)
     }
 
@@ -445,34 +450,15 @@ open class GreenViewModel constructor(
             }
 
             is Events.PromoImpression -> {
-                promo.value?.also {
-                    if (!promoImpression) {
-                        promoImpression = true
-                        countly.promoView(sessionOrNull, screenName(), it)
-                    }
-                }
-            }
-
-            is Events.PromoOpen -> {
-                promo.value?.also {
-                    countly.promoOpen(sessionOrNull, screenName(), it)
-                    postSideEffect(
-                        SideEffects.NavigateTo(
-                            NavigateDestinations.Promo(
-                                promo = it,
-                                greenWalletOrNull = greenWalletOrNull
-                            )
-                        )
-                    )
+                if (promoImpressionIds.add(event.promo.id)) {
+                    countly.promoView(sessionOrNull, screenName(), event.promo)
                 }
             }
 
             is Events.PromoDismiss -> {
-                promo.value?.also {
-                    settingsManager.dismissPromo(it.id)
-                    countly.promoDismiss(sessionOrNull, screenName(), it)
-                }
-                promo.value = null
+                promoManager.dismissPromo(event.promo.id)
+                _promos.update { promos -> promos.filterNot { it.id == event.promo.id } }
+                countly.promoDismiss(sessionOrNull, screenName(), event.promo)
             }
 
             is Events.BannerDismiss -> {
@@ -483,26 +469,17 @@ open class GreenViewModel constructor(
             }
 
             is Events.PromoAction -> {
-                promo.value?.also { promo ->
-                    promo.link?.also { link ->
-                        countly.promoAction(
-                            session = sessionOrNull,
-                            screenName = screenName(),
-                            promo = promo
-                        )
-                        if (link == "green://onofframps" && greenWalletOrNull != null) {
-                            postSideEffect(
-                                SideEffects.NavigateTo(
-                                    NavigateDestinations.OnOffRamps(
-                                        greenWallet = greenWallet
-                                    )
-                                )
-                            )
-                        } else {
-                            postSideEffect(SideEffects.OpenBrowser(url = link))
-                        }
-                    }
-                }
+                countly.promoAction(
+                    session = sessionOrNull,
+                    screenName = screenName(),
+                    promo = event.promo
+                )
+                postSideEffect(
+                    SideEffects.OpenBrowser(
+                        url = event.promo.cta.url,
+                        type = OpenBrowserType.OPEN_SYSTEM
+                    )
+                )
             }
 
             is Events.BannerAction -> {
@@ -613,21 +590,6 @@ open class GreenViewModel constructor(
                             )
                         )
                     )
-                }
-            }
-
-            is Events.ChooseAccountType -> {
-                postSideEffect(
-                    SideEffects.NavigateTo(
-                        NavigateDestinations.ChooseAccountType(
-                            greenWallet = greenWallet,
-                            popTo = event.popTo
-                        )
-                    )
-                )
-
-                if (event.isFirstAccount) {
-                    countly.firstAccount(session)
                 }
             }
 
@@ -828,6 +790,16 @@ open class GreenViewModel constructor(
         isMasterBlindingKeyRequest: Boolean,
         completable: CompletableDeferred<Boolean>?
     ) {
+        isDeviceInteractionInProgress.value = true
+        if (completable != null) {
+            viewModelScope.launch {
+                runCatching { completable.await() }
+                isDeviceInteractionInProgress.value = false
+            }
+        } else {
+            isDeviceInteractionInProgress.value = false
+        }
+
         postSideEffect(
             SideEffects.RequestDeviceInteraction(
                 deviceId = sessionOrNull?.device?.connectionIdentifier,
@@ -839,18 +811,28 @@ open class GreenViewModel constructor(
     }
 
     final override fun requestPassphrase(deviceBrand: DeviceBrand?): String {
-        return CompletableDeferred<String>().let {
-            _deviceRequest = it
-            postSideEffect(SideEffects.NavigateTo(NavigateDestinations.DevicePassphrase))
-            runBlocking { it.await() }
+        isDeviceInteractionInProgress.value = true
+        return try {
+            CompletableDeferred<String>().let {
+                _deviceRequest = it
+                postSideEffect(SideEffects.NavigateTo(NavigateDestinations.DevicePassphrase))
+                runBlocking { it.await() }
+            }
+        } finally {
+            isDeviceInteractionInProgress.value = false
         }
     }
 
     final override fun requestPinMatrix(deviceBrand: DeviceBrand?): String? {
-        return CompletableDeferred<String>().let {
-            _deviceRequest = it
-            postSideEffect(SideEffects.NavigateTo(NavigateDestinations.DevicePin))
-            runBlocking { it.await() }
+        isDeviceInteractionInProgress.value = true
+        return try {
+            CompletableDeferred<String>().let {
+                _deviceRequest = it
+                postSideEffect(SideEffects.NavigateTo(NavigateDestinations.DevicePin))
+                runBlocking { it.await() }
+            }
+        } finally {
+            isDeviceInteractionInProgress.value = false
         }
     }
 

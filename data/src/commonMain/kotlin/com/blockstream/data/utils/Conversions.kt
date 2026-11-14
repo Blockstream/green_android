@@ -12,6 +12,11 @@ import com.blockstream.data.gdk.GdkSession
 import com.blockstream.data.gdk.data.Balance
 import kotlinx.coroutines.runBlocking
 
+const val FIAT_DECIMALS = 2
+
+// customFeeRate * 1000 -> sat/kvbyte Long, so 3 decimals is the actual limit of precision that matters
+const val FEE_RATE_DECIMALS = 3
+
 // Use it for GDK purposes
 // Lowercase & replace μbtc -> ubtc
 fun getUnit(session: GdkSession) = session.settings().value?.unit ?: BTC_UNIT
@@ -74,9 +79,10 @@ fun userNumberFormat(
     withDecimalSeparator: Boolean,
     withGrouping: Boolean = false,
     withMinimumDigits: Boolean = false,
+    minimumDecimals: Int? = null,
     locale: String? = null
 ) = DecimalFormat(locale).apply {
-    minimumFractionDigits = if (withDecimalSeparator || withMinimumDigits) decimals else 0
+    minimumFractionDigits = minimumDecimals ?: (if (withDecimalSeparator || withMinimumDigits) decimals else 0)
     maximumFractionDigits = decimals
     isDecimalSeparatorAlwaysShown = withDecimalSeparator
     isGroupingUsed = withGrouping
@@ -84,7 +90,13 @@ fun userNumberFormat(
 
 fun Long.feeRateWithUnit(): String {
     val feePerByte = this / 1000.0
-    return userNumberFormat(decimals = 2, withDecimalSeparator = true, withGrouping = true, withMinimumDigits = true).format(feePerByte)
+    // Always show at least 2 decimals, but don't truncate a more precise custom fee rate
+    return userNumberFormat(
+        decimals = FEE_RATE_DECIMALS,
+        withDecimalSeparator = true,
+        withGrouping = true,
+        minimumDecimals = 2
+    ).format(feePerByte)
         .let {
             "$it sats / vbyte"
         }

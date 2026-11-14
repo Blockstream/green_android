@@ -9,7 +9,6 @@ import com.blockstream.data.gdk.GdkSession
 import com.blockstream.data.gdk.params.LoginCredentialsParams
 import com.blockstream.data.managers.SessionManager
 import com.blockstream.data.managers.SettingsManager
-import com.blockstream.data.managers.WalletSettingsManager
 import com.blockstream.data.usecases.SetBiometricsUseCase
 import com.blockstream.data.usecases.SetPinUseCase
 import com.blockstream.data.utils.generateWalletName
@@ -21,7 +20,6 @@ class RestoreWalletUseCase(
     private val countly: CountlyBase,
     private val sessionManager: SessionManager,
     private val settingsManager: SettingsManager,
-    private val walletSettingsManager: WalletSettingsManager,
     private val setPinUseCase: SetPinUseCase,
     private val setBiometricsUseCase: SetBiometricsUseCase,
     private val lightningNodeIdUseCase: LightningNodeIdUseCase,

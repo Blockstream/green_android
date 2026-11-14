@@ -13,5 +13,6 @@ sealed class AlertType {
     data class Banner(val banner: com.blockstream.data.banner.Banner) : AlertType()
     data object FailedNetworkLogin : AlertType()
     data class LspStatus(val maintenance: Boolean) : AlertType()
+    data object LightningUnavailable : AlertType()
     data object ReEnable2FA : AlertType()
 }

@@ -52,7 +52,7 @@ fun commonModules(appConfig: AppConfig): List<Module> {
             Database(get(), get())
         }
         single {
-            PromoManager(get(), get(), get())
+            PromoManager(get(), get())
         }
         single {
             SettingsManager(
@@ -88,7 +88,7 @@ fun commonModules(appConfig: AppConfig): List<Module> {
                 }
             )
 
-            LightningManager(greenlightKeys, get(), get(), get(), get(), get())
+            LightningManager(greenlightKeys, get(), get(), get(), get(), get(), get())
         }
         singleOf(::WalletSettingsManager)
         singleOf(::SessionManager)
@@ -97,5 +97,4 @@ fun commonModules(appConfig: AppConfig): List<Module> {
         factoryOf(::NetworkAssetManager)
     })
 }
-
 

@@ -1,4 +1,4 @@
-package com.blockstream.data.usecases
+package com.blockstream.domain.hardware
 
 import com.blockstream.data.crypto.GreenKeystore
 import com.blockstream.data.data.CredentialType
@@ -19,20 +19,17 @@ class EnableHardwareWatchOnlyUseCase(
         greenWallet: GreenWallet,
         session: GdkSession,
     ) {
+        check(!greenWallet.isEphemeral) { "Ephemeral wallets are not supported" }
 
-        if (!session.isHardwareWallet) {
-            throw Exception("Not a hardware wallet session")
-        }
+        check(session.isHardwareWallet) { "Not a hardware wallet session" }
 
-        if (session.isWatchOnlyValue) {
-            throw Exception("Watch only session is not supported")
-        }
+        check(!session.isWatchOnlyValue) { "Watch only session is not supported" }
 
         // Only if all accounts are singlesig you can enable
-        if (session.allAccounts.value.all { it.isSinglesig }) {
+        if (session.getAccounts(refresh = false).all { !it.isMultisig }) {
 
             // Wait for setup to gets completed so that the active account is set
-            session.setupDefaultAccounts().join()
+            session.setupDefaultAccounts(archiveDefaultAccounts = false).join()
 
             val multipleWatchOnlyCredentials =
                 session.accounts.value.filter { it.isSinglesig && !it.hidden }.groupBy { it.network }.mapValues {

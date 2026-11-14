@@ -13,6 +13,7 @@ import com.blockstream.compose.navigation.NavigateDestinations
 import com.blockstream.compose.sideeffects.SideEffect
 import com.blockstream.compose.sideeffects.SideEffects
 import com.blockstream.data.BTC_POLICY_ASSET
+import com.blockstream.data.data.CredentialType
 import com.blockstream.data.data.EnrichedAsset
 import com.blockstream.data.data.GreenWallet
 import com.blockstream.data.data.PopTo
@@ -70,13 +71,17 @@ class ChooseAccountTypeViewModel(greenWallet: GreenWallet, initAsset: AssetBalan
 
     class LocalEvents {
         data class SetAsset(val asset: AssetBalance) : Event
-        data class ChooseAccountType(val accountType: AccountType) : Event
+        data class ChooseAccountType(val accountType: AccountType, val actionConfirmed: Boolean = false) : Event
         data class CreateAccount(val accountType: AccountType) : Event
         data class CreateLightningAccount(val lightningMnemonic: String) : Event, Redact
     }
 
     class LocalSideEffects {
         class ArchivedAccountDialog(event: Event) : SideEffects.SideEffectEvent(event) {
+            constructor(sideEffect: SideEffect) : this(Events.EventSideEffect(sideEffect))
+        }
+
+        class JadeWoDisableDialog(event: Event) : SideEffects.SideEffectEvent(event) {
             constructor(sideEffect: SideEffect) : this(Events.EventSideEffect(sideEffect))
         }
     }
@@ -113,42 +118,34 @@ class ChooseAccountTypeViewModel(greenWallet: GreenWallet, initAsset: AssetBalan
                         canBeAdded = !session.hasAmpLegacyAccount
                     )
                 } else if (asset.asset.isLightning) {
-                if (session.supportsLightning() && settingsManager.isLightningAvailable() && !session.isTestnet) {
-                    list += AccountTypeLook(
-                        AccountType.LIGHTNING,
-                        canBeAdded = !session.hasLightning
-                    )
-                }
-            } else {
-                // Check if singlesig networks are available in this session
-                if ((isBitcoin && session.bitcoinSinglesig != null) || (!isBitcoin && session.liquidSinglesig != null)) {
-                    list += listOf(
-                        AccountType.BIP84_SEGWIT,
-                        AccountType.BIP49_SEGWIT_WRAPPED
-                    ).map { AccountTypeLook(it) }
-                }
+                    if (session.supportsLightning() && settingsManager.isLightningAvailable() && !session.isTestnet) {
+                        list += AccountTypeLook(
+                            AccountType.LIGHTNING, canBeAdded = !session.hasLightning
+                        )
+                    }
+                } else {
+                    // Check if singlesig networks are available in this session
+                    val hasSinglesig = (isBitcoin && session.bitcoinSinglesig != null) || (!isBitcoin && session.liquidSinglesig != null)
+                    if (hasSinglesig) {
+                        list += AccountTypeLook(AccountType.BIP84_SEGWIT)
+                    }
 
-                // Check if multisig networks are available in this session
-                if (
-                    (isBitcoin && session.bitcoinMultisig != null && session.allAccounts.value.any { it.isMultisig && it.isBitcoin }) ||
-                    (isLiquid && session.liquidMultisig != null && session.allAccounts.value.any { it.isMultisig && it.isLiquid && !it.isAmp && !it.isAmpLegacy })
-                ) {
-
-                    list += AccountTypeLook(AccountType.STANDARD)
-
-                    if (isBitcoin) {
+                    // Check if multisig networks are available in this session
+                    if (isBitcoin && session.bitcoinMultisig != null) {
                         list += AccountTypeLook(AccountType.TWO_OF_THREE)
                     }
 
-                    // Move AMP account creation top level
-                    //else {
-                    //    AccountTypeLook(AccountType.AMP_ACCOUNT)
-                    // }
+                    if ((isBitcoin && session.bitcoinMultisig != null) || (isLiquid && session.liquidMultisig != null)) {
+                        list += AccountTypeLook(AccountType.STANDARD)
+                    }
+
+                    if (hasSinglesig) {
+                        list += AccountTypeLook(AccountType.BIP49_SEGWIT_WRAPPED)
+                    }
                 }
-            }
 
                 defaultAccountTypes.value = list.filter {
-                    it.accountType == AccountType.BIP84_SEGWIT || it.accountType == AccountType.BIP49_SEGWIT_WRAPPED || it.accountType == AccountType.LIGHTNING || (it.accountType == AccountType.AMP_LEGACY_ACCOUNT && asset.asset.isAmp)
+                    it.accountType == AccountType.BIP84_SEGWIT || it.accountType == AccountType.LIGHTNING || it.accountType == AccountType.STANDARD || it.accountType == AccountType.TWO_OF_THREE || it.accountType == AccountType.AMP2_ACCOUNT || (it.accountType == AccountType.AMP_LEGACY_ACCOUNT && asset.asset.isAmpLegacy)
                 }
 
                 allAccountTypes.value = list
@@ -188,7 +185,7 @@ class ChooseAccountTypeViewModel(greenWallet: GreenWallet, initAsset: AssetBalan
             }
 
             is LocalEvents.ChooseAccountType -> {
-                chooseAccountType(event.accountType)
+                chooseAccountType(accountType = event.accountType, actionConfirmed = event.actionConfirmed)
             }
 
             is LocalEvents.CreateAccount -> {
@@ -209,58 +206,76 @@ class ChooseAccountTypeViewModel(greenWallet: GreenWallet, initAsset: AssetBalan
         }
     }
 
-    private suspend fun chooseAccountType(accountType: AccountType) = tryCatch {
-        val network = networkForAccountType(accountType, asset.value.asset)
+    private suspend fun chooseAccountType(accountType: AccountType, actionConfirmed: Boolean = false) = tryCatch {
 
-        var sideEffect: SideEffect? = null
-        var event: Event? = null
-
-        if (accountType == AccountType.TWO_OF_THREE) {
-            sideEffect = SideEffects.NavigateTo(
-                NavigateDestinations.AddAccount2of3(
-                    SetupArgs(
-                        greenWallet = greenWallet,
-                        assetId = asset.value.assetId,
-                        network = network,
-                        accountType = AccountType.TWO_OF_THREE,
-                        popTo = popTo
+        if (accountType.isMutlisig() && !actionConfirmed && database.getLoginCredential(
+                id = greenWallet.id,
+                credentialType = CredentialType.KEYSTORE_HW_WATCHONLY_CREDENTIALS
+            ) != null
+        ) {
+            // Show Jade WO Disable dialog
+            postSideEffect(
+                LocalSideEffects.JadeWoDisableDialog(
+                    LocalEvents.ChooseAccountType(
+                        accountType = accountType,
+                        actionConfirmed = true
                     )
                 )
             )
         } else {
-            if (accountType.isLightning()) {
-                sideEffect = if (session.isHardwareWallet) {
-                    SideEffects.NavigateTo(
-                        NavigateDestinations.JadeQR(
-                            greenWalletOrNull = greenWalletOrNull,
-                            operation = JadeQrOperation.LightningMnemonicExport,
-                            deviceModel = DeviceModel.BlockstreamGeneric
+
+            val network = networkForAccountType(accountType, asset.value.asset)
+
+            var sideEffect: SideEffect? = null
+            var event: Event? = null
+
+            if (accountType == AccountType.TWO_OF_THREE) {
+                sideEffect = SideEffects.NavigateTo(
+                    NavigateDestinations.AddAccount2of3(
+                        SetupArgs(
+                            greenWallet = greenWallet,
+                            assetId = asset.value.assetId,
+                            network = network,
+                            accountType = AccountType.TWO_OF_THREE,
+                            popTo = popTo
                         )
                     )
+                )
+            } else {
+                if (accountType.isLightning()) {
+                    sideEffect = if (session.isHardwareWallet) {
+                        SideEffects.NavigateTo(
+                            NavigateDestinations.JadeQR(
+                                greenWalletOrNull = greenWalletOrNull,
+                                operation = JadeQrOperation.LightningMnemonicExport,
+                                deviceModel = DeviceModel.BlockstreamGeneric
+                            )
+                        )
+                    } else {
+                        SideEffects.NavigateTo(
+                            NavigateDestinations.LightningOnboarding(greenWallet = greenWallet)
+                        )
+                    }
                 } else {
-                    SideEffects.NavigateTo(
-                        NavigateDestinations.LightningOnboarding(greenWallet = greenWallet)
-                    )
+                    event = LocalEvents.CreateAccount(accountType)
+                }
+            }
+
+            // Check if account is already archived
+            if (isAccountAlreadyArchived(network, accountType)) {
+                if (event != null) {
+                    postSideEffect(LocalSideEffects.ArchivedAccountDialog(event))
+                }
+
+                if (sideEffect != null) {
+                    postSideEffect(LocalSideEffects.ArchivedAccountDialog(sideEffect))
                 }
             } else {
-                event = LocalEvents.CreateAccount(accountType)
-            }
-        }
-
-        // Check if account is already archived
-        if (isAccountAlreadyArchived(network, accountType)) {
-            if (event != null) {
-                postSideEffect(LocalSideEffects.ArchivedAccountDialog(event))
-            }
-
-            if (sideEffect != null) {
-                postSideEffect(LocalSideEffects.ArchivedAccountDialog(sideEffect))
-            }
-        } else {
-            if (event != null) {
-                postEvent(event)
-            } else if (sideEffect != null) {
-                postSideEffect(sideEffect)
+                if (event != null) {
+                    postEvent(event)
+                } else if (sideEffect != null) {
+                    postSideEffect(sideEffect)
+                }
             }
         }
     }

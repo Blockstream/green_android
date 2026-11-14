@@ -12,7 +12,6 @@ import com.blockstream.gms.GooglePlayImpl
 import com.blockstream.gms.InstallReferrerImpl
 import com.blockstream.gms.ZendeskSdkAndroid
 import com.google.android.play.core.review.ReviewManagerFactory
-import okio.internal.commonToUtf8String
 import org.koin.dsl.binds
 import org.koin.dsl.module
 import kotlin.io.encoding.Base64
@@ -25,7 +24,7 @@ val gmsModule = module {
 
     single {
         val apiKey = get<AppConfig>().zendeskClientId?.let { base64 ->
-            Base64.decode(base64).commonToUtf8String()
+            Base64.decode(base64).decodeToString()
         } ?: ""
         ZendeskSdkAndroid(get(), get(), get(), get(), get(), apiKey)
     } binds (arrayOf(ZendeskSdk::class))

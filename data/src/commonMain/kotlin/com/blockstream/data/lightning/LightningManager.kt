@@ -1,5 +1,6 @@
 package com.blockstream.data.lightning
 
+import com.blockstream.data.CountlyBase
 import com.blockstream.data.config.AppInfo
 import com.blockstream.data.data.AppConfig
 import com.blockstream.data.di.ApplicationScope
@@ -31,6 +32,7 @@ class LightningManager constructor(
     private val scope: ApplicationScope,
     private val gdk: Gdk,
     val firebase: FcmCommon,
+    private val countly: CountlyBase,
 ) {
     private val bridges = mutableMapOf<String, LightningSdk>()
     private val references = mutableMapOf<LightningSdk, Int>()
@@ -39,8 +41,11 @@ class LightningManager constructor(
 
     val logs = StringBuilder()
 
-    init {
-        if (appConfig.lightningFeatureEnabled) {
+    var failedToInitialize = false
+        private set
+
+    val isAvailable: Boolean by lazy {
+        appConfig.lightningFeatureEnabled && runCatching {
             setLogger(LogLevel.DEBUG, object : LogListener {
                 val excludedTargets = listOf("tower", "h2")
 
@@ -57,10 +62,16 @@ class LightningManager constructor(
                     }
                 }
             })
-        }
+        }.onFailure {
+            failedToInitialize = true
+            logger.e(it) { "Failed to initialize glsdk, Lightning is disabled" }
+            countly.recordException(Exception("Failed to initialize glsdk (${appInfo.installation})", it))
+        }.isSuccess
     }
-    
+
     suspend fun getLightningBridge(loginData: LoginData): LightningSdk {
+        check(isAvailable) { "Lightning is not available" }
+
         val file = "${gdk.dataDir}/breezSdk/${loginData.xpubHashId}/0"
 
         return mutex.withLock {

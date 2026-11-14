@@ -204,9 +204,10 @@ fun ReceiveScreen(
             || (isReverseSubmarineSwap && receiveAddress == null))
             && !isReceiveSwapUnavailable
 
-    LaunchedEffect(showAmountField, showRequestAmount, isReverseSubmarineSwap, receiveAddress) {
+    LaunchedEffect(showAmountField, showRequestAmount, isLightningOrSwap, receiveAddress) {
+        // Not on on-chain receive, the keyboard would cover the address and QR.
         if (showAmountField
-            && (showRequestAmount || (isReverseSubmarineSwap && receiveAddress == null))
+            && (showRequestAmount || (isLightningOrSwap && receiveAddress == null))
             && amount.isBlank()
         ) {
             runCatching { focusRequester.requestFocus() }

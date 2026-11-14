@@ -72,6 +72,7 @@ import blockstream_green.common.generated.resources.id_there_is_already_an_archi
 import blockstream_green.common.generated.resources.id_touch_to_display
 import blockstream_green.common.generated.resources.id_verify_the_authenticity_of
 import blockstream_green.common.generated.resources.id_version
+import blockstream_green.common.generated.resources.id_wallet_details
 import blockstream_green.common.generated.resources.sign_out
 import com.adamglin.PhosphorIcons
 import com.adamglin.phosphoricons.Regular
@@ -129,6 +130,7 @@ import com.blockstream.compose.utils.bottom
 import com.blockstream.compose.utils.ifTrue
 import com.blockstream.compose.utils.plus
 import com.blockstream.data.SupportType
+import com.blockstream.data.data.GreenWallet
 import com.blockstream.data.data.LogoutReason
 import com.blockstream.data.data.SupportData
 import com.blockstream.data.data.TwoFactorMethod
@@ -263,6 +265,10 @@ fun WalletSettingsScreen(
                 viewModel.postEvent(LocalEvents.CreateLightningAccount(result.mnemonic))
             }
         }
+    }
+
+    NavigateDestinations.Login.getResult<GreenWallet> {
+        viewModel.executePendingAction()
     }
 
     val items by viewModel.items.collectAsStateWithLifecycle()
@@ -403,6 +409,17 @@ fun WalletSettingsScreen(
                                 viewModel.postEvent(LocalEvents.DenominationExchangeRate)
                             },
                             testTag = "denomination"
+                        )
+                    }
+
+                    WalletSetting.WatchOnly -> {
+                        Setting(
+                            title = stringResource(Res.string.id_wallet_details),
+                            imageVector = PhosphorIcons.Regular.CaretRight,
+                            modifier = Modifier.clickable {
+                                viewModel.postEvent(LocalEvents.WatchOnly)
+                            },
+                            testTag = "wallet_details"
                         )
                     }
 

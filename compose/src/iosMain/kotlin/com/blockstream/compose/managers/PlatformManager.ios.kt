@@ -3,10 +3,10 @@ package com.blockstream.compose.managers
 import androidx.compose.runtime.Composable
 import com.arkivanov.essenty.statekeeper.StateKeeper
 import com.arkivanov.essenty.statekeeper.StateKeeperDispatcher
-import com.blockstream.data.extensions.logException
-import com.blockstream.data.platformFileSystem
 import com.blockstream.compose.models.GreenViewModel
 import com.blockstream.compose.sideeffects.OpenBrowserType
+import com.blockstream.data.extensions.logException
+import com.blockstream.data.platformFileSystem
 import com.preat.peekaboo.image.picker.SelectionMode
 import com.preat.peekaboo.image.picker.rememberImagePickerLauncher
 import io.github.vinceglb.filekit.PlatformFile
@@ -85,10 +85,6 @@ actual class PlatformManager(val application: UIApplication) {
 
     }
 
-    actual suspend fun shareFile(path: String, file: PlatformFile?) {
-
-    }
-
     actual fun hasFlash(): Boolean = AVCaptureDevice.defaultDeviceWithMediaType(AVMediaTypeVideo)?.hasTorch == true
 
     actual suspend fun scanQrFromImage(file: String): String? {
@@ -157,6 +153,9 @@ actual class PlatformManager(val application: UIApplication) {
     }
 
     actual fun setSecureScreen(isSecure: Boolean) {
+    }
+
+    actual suspend fun shareFile(path: String?, file: PlatformFile?) {
     }
 }
 

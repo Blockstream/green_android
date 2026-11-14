@@ -273,14 +273,14 @@ class DeviceConnectionManagerAndroid constructor(
                 ).await()
 
                 if (isPositive != null) {
-                    return onLedgerConnected(device, network, dongle, fw.toString(), disconnectEvent, interaction)
+                    return onLedgerConnected(device, network, dongle, "${fw.major}.${fw.minor}.${fw.patch}", disconnectEvent, interaction)
                 } else {
                     throw Exception("Firmware version is not supported. Please update device.")
                 }
 
             }
 
-            return onLedgerConnected(device, network, dongle, fw.toString(), disconnectEvent, interaction)
+            return onLedgerConnected(device, network, dongle, "${fw.major}.${fw.minor}.${fw.patch}", disconnectEvent, interaction)
 
         } catch (e: BTChipException) {
             e.printStackTrace()

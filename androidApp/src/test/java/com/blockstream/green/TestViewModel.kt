@@ -5,13 +5,18 @@ import co.touchlab.kermit.Logger
 import co.touchlab.kermit.StaticConfig
 import com.blockstream.compose.models.GreenViewModel
 import com.blockstream.data.CountlyBase
+import com.blockstream.data.btcpricehistory.BitcoinPriceHistoryRepository
 import com.blockstream.data.config.AppInfo
 import com.blockstream.data.database.Database
 import com.blockstream.data.managers.PromoManager
 import com.blockstream.data.managers.SessionManager
 import com.blockstream.data.managers.SettingsManager
+import com.blockstream.domain.bitcoinpricehistory.BitcoinPriceHistoryCache
+import com.blockstream.domain.bitcoinpricehistory.ObserveBitcoinPriceHistory
 import com.blockstream.domain.promo.GetPromoUseCase
+import com.blockstream.network.NetworkResponse
 import com.blockstream.utils.Loggable.Companion.COMBINED_LOG_QUALIFIER
+import io.mockk.coEvery
 import io.mockk.every
 import io.mockk.mockk
 import io.mockk.mockkClass
@@ -59,7 +64,16 @@ open class TestViewModel<VM : GreenViewModel> : KoinTest {
                 module {
                     single { AppInfo("green_test", "1.0.0-test", true, true) }
 
-                    single { GetPromoUseCase(get(), get(), get()) }
+                    single { GetPromoUseCase(get()) }
+
+                    single {
+                        ObserveBitcoinPriceHistory(
+                            mockk<BitcoinPriceHistoryRepository> {
+                                coEvery { getPriceHistory(any()) } returns NetworkResponse.Error(0, "test")
+                            },
+                            BitcoinPriceHistoryCache()
+                        )
+                    }
 
                     // Bucketed Loggables (e.g. Lightning) resolve their logger via this qualifier.
                     // Provide a no-op writer so tests don't depend on the file-logging module.

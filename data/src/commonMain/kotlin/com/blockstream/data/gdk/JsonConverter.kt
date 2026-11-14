@@ -24,7 +24,29 @@ class JsonConverter(
             "device_key",
             "master_blinding_key",
             "pin_data",
-            "encrypted_data"
+            "encrypted_data",
+            "core_descriptors",
+            "slip132_extended_pubkey",
+            "slip132_extended_pubkeys",
+            "xpub",
+            "xpubs",
+            "amountblinder",
+            "amountblinders",
+            "assetblinder",
+            "assetblinders",
+            "blinding_key",
+            "blinding_nonce",
+            "nonces",
+            "address",
+            "addresses",
+            "addressee",
+            "addressees",
+            "script",
+            "scripts",
+            "scriptpubkey",
+            "txhash",
+            "txid",
+            "gauth"
         )
 
     private fun shouldPrint(jsonString: String?): Boolean {
@@ -87,7 +109,8 @@ class JsonConverter(
         }
 
         // Redacting over the parsed tree masks a value whole, whatever its type and however it is
-        // escaped or spaced. Payloads that are not valid JSON fall back to a textual match.
+        // escaped or spaced. Payloads that are not valid JSON cannot be redacted precisely, so they
+        // are dropped as a whole rather than risking a partially masked secret.
         return try {
             JsonDeserializer.encodeToString(JsonDeserializer.parseToJsonElement(jsonString).redact())
         } catch (_: Exception) {
@@ -103,13 +126,8 @@ class JsonConverter(
 
     private fun isSensitive(key: String) = maskFields.any { key.endsWith(it) }
 
-    private fun maskText(jsonString: String): String {
-        var processed = jsonString
-        for (mask in maskFields) {
-            processed = processed.replace(Regex("(?<=$mask\":\")(.*?)(?=\")"), RedactedValue)
-        }
-        return processed
-    }
+    private fun maskText(jsonString: String): String =
+        if (maskFields.any { Regex("\"\\w*$it\"\\s*:").containsMatchIn(jsonString) }) RedactedValue else jsonString
 
     companion object : Loggable(bucket = null) {
         const val SkipLogAmountConversions = true

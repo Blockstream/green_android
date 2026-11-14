@@ -1,15 +1,20 @@
 package com.blockstream.data.gdk
 
 import com.blockstream.data.gdk.JsonConverter.Companion.JsonDeserializer
+import com.blockstream.data.gdk.data.AuthData
 import com.blockstream.data.gdk.data.AuthHandlerStatus
 import com.blockstream.data.gdk.data.DeviceRequiredData
 import com.blockstream.data.gdk.data.Network
 import com.blockstream.data.gdk.data.TwoFactorConfig
 import com.blockstream.data.gdk.device.DeviceResolver
 import com.blockstream.data.gdk.device.GdkHardwareWallet
+import com.blockstream.data.managers.AssetsProvider
 import com.blockstream.utils.Loggable
 import kotlinx.coroutines.CompletableDeferred
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.IO
 import kotlinx.coroutines.runBlocking
+import kotlinx.coroutines.withContext
 import kotlinx.serialization.json.JsonElement
 import kotlinx.serialization.json.decodeFromJsonElement
 
@@ -31,7 +36,7 @@ fun TwoFactorResolver.selectTwoFactorMethod(method: String): TwoFactorResolver {
 }
 
 interface HardwareWalletResolver {
-    fun requestDataFromDevice(network: Network, requiredData: DeviceRequiredData): CompletableDeferred<String>
+    suspend fun requestDataFromDevice(network: Network, requiredData: DeviceRequiredData): String
 }
 
 interface BcurResolver {
@@ -43,6 +48,7 @@ class AuthHandler constructor(
     private var gaAuthHandler: GAAuthHandler,
     private val network: Network,
     private val gdkHwWallet: GdkHardwareWallet?,
+    private val assetsProvider: AssetsProvider?,
     private val gdk: GdkBinding,
     private val getTwoFactorConfig: (suspend () -> TwoFactorConfig?)
 ) {
@@ -59,7 +65,7 @@ class AuthHandler constructor(
     private fun destroy() = gdk.destroyAuthHandler(gaAuthHandler)
 
     fun hardwareWalletResolverOrDefault(hardwareWalletResolver: HardwareWalletResolver? = null): HardwareWalletResolver? {
-        return hardwareWalletResolver ?: gdkHwWallet?.let { gdkHwWallet -> DeviceResolver(gdkHwWallet) }
+        return hardwareWalletResolver ?: gdkHwWallet?.let { gdkHwWallet -> DeviceResolver(gdkHwWallet, assetsProvider = assetsProvider) }
     }
 
     suspend fun resolve(
@@ -72,7 +78,7 @@ class AuthHandler constructor(
 
                 val authHandlerStatus: AuthHandlerStatus = gdk.getAuthHandlerStatus(gaAuthHandler)
 
-                authHandlerStatus.progress?.also { bcurResolver?.progress(it) }
+                (authHandlerStatus.authData as? AuthData.Data)?.estimatedProgress?.also { bcurResolver?.progress(it) }
 
                 when (authHandlerStatus.status) {
                     CALL -> {
@@ -122,8 +128,9 @@ class AuthHandler constructor(
                                 val dataFromDevice: String?
 
                                 try {
-                                    dataFromDevice =
-                                        runBlocking { it.requestDataFromDevice(network, authHandlerStatus.requiredData).await() }
+                                    dataFromDevice = withContext(Dispatchers.IO) {
+                                        it.requestDataFromDevice(network, authHandlerStatus.requiredData)
+                                    }
                                 } catch (e: Exception) {
                                     // eg. signing a message in Trezor on testnet network
                                     if (e.message?.lowercase()?.contains("cancelled") == true) {

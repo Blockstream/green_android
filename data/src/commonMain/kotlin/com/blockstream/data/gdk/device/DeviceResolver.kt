@@ -3,25 +3,26 @@ package com.blockstream.data.gdk.device
 import com.blockstream.data.gdk.HardwareWalletResolver
 import com.blockstream.data.gdk.data.DeviceRequiredData
 import com.blockstream.data.gdk.data.DeviceResolvedData
+import com.blockstream.data.gdk.data.InputOutput
 import com.blockstream.data.gdk.data.Network
-import kotlinx.coroutines.CompletableDeferred
+import com.blockstream.data.jade.assetInfoForOutputs
+import com.blockstream.data.managers.AssetsProvider
+import com.blockstream.jade.api.AssetInfo
 
-class DeviceResolver constructor(
+class DeviceResolver(
     private val gdkHardwareWallet: GdkHardwareWallet,
-    private val hwInteraction: HardwareWalletInteraction? = null
+    private val hwInteraction: HardwareWalletInteraction? = null,
+    private val assetsProvider: AssetsProvider? = null
 ) : HardwareWalletResolver {
 
-    override fun requestDataFromDevice(network: Network, requiredData: DeviceRequiredData): CompletableDeferred<String> {
-        return CompletableDeferred<String>().also { deferred ->
-            try {
-                deferred.complete(requestData(network, requiredData))
-            } catch (e: Exception) {
-                deferred.completeExceptionally(e)
-            }
-        }
+    // Registry metadata so the device can display tickers and precision-formatted amounts
+    private suspend fun assetInfo(network: Network, outputs: List<InputOutput>): List<AssetInfo> {
+        return assetsProvider?.let {
+            assetInfoForOutputs(outputs = outputs, policyAsset = network.policyAsset, assetsProvider = it)
+        } ?: listOf()
     }
 
-    private fun requestData(network: Network, requiredData: DeviceRequiredData): String {
+    override suspend fun requestDataFromDevice(network: Network, requiredData: DeviceRequiredData): String {
 
         return when (requiredData.action) {
             "get_xpubs" -> {
@@ -53,14 +54,17 @@ class DeviceResolver constructor(
             }
 
             "sign_tx" -> {
+                val outputs = requiredData.transactionOutputs!!
+
                 gdkHardwareWallet.signTransaction(
                     network = network,
                     transaction = requiredData.transaction!!,
                     inputs = requiredData.transactionInputs!!,
-                    outputs = requiredData.transactionOutputs!!,
+                    outputs = outputs,
                     transactions = requiredData.signingTransactions,
                     useAeProtocol = requiredData.useAeProtocol ?: false,
                     hwInteraction = hwInteraction,
+                    assetInfo = assetInfo(network, outputs),
                 ).let {
                     DeviceResolvedData(
                         signatures = it.signatures,

@@ -59,7 +59,6 @@ import com.blockstream.compose.components.GreenColumn
 import com.blockstream.compose.components.GreenRow
 import com.blockstream.compose.components.ListHeader
 import com.blockstream.compose.components.OnProgressStyle
-import com.blockstream.compose.components.Promo
 import com.blockstream.compose.events.Events
 import com.blockstream.compose.models.overview.SecurityViewModel
 import com.blockstream.compose.models.overview.SecurityViewModel.LocalSideEffects
@@ -334,11 +333,6 @@ fun SecurityScreen(viewModel: SecurityViewModelAbstract) {
                 }
 
 
-                item(key = "Promo") {
-                    Promo(
-                        viewModel = viewModel
-                    )
-                }
             }
         }
     }

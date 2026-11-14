@@ -75,6 +75,7 @@ import com.blockstream.compose.components.GreenRow
 import com.blockstream.compose.components.GreenSpacer
 import com.blockstream.compose.components.OnProgressStyle
 import com.blockstream.compose.components.RichWatchOnlyButton
+import com.blockstream.compose.components.SlowLoginMessage
 import com.blockstream.compose.events.Events
 import com.blockstream.compose.extensions.icon
 import com.blockstream.compose.extensions.onValueChange
@@ -183,6 +184,7 @@ fun LoginScreen(
                 ) {
                     val applicationSettings by viewModel.applicationSettings.collectAsStateWithLifecycle()
                     val tor by viewModel.tor.collectAsStateWithLifecycle()
+                    val showSlowLoginMessage by viewModel.showSlowLoginMessage.collectAsStateWithLifecycle()
 
                     val isLogging = tor.progress == 100 || !applicationSettings.tor
                     Box {
@@ -218,10 +220,16 @@ fun LoginScreen(
 
                     GreenSpacer(32)
 
-                    Text(
-                        text = stringResource(if (isLogging) Res.string.id_logging_in else Res.string.id_connecting_through_tor),
-                        style = titleLarge,
-                    )
+                    if (isLogging && showSlowLoginMessage) {
+                        SlowLoginMessage {
+                            viewModel.postEvent(Events.OpenStatusPage)
+                        }
+                    } else {
+                        Text(
+                            text = stringResource(if (isLogging) Res.string.id_logging_in else Res.string.id_connecting_through_tor),
+                            style = titleLarge,
+                        )
+                    }
 
                     if (applicationSettings.tor) {
                         GreenSpacer(16)

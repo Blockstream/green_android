@@ -3,17 +3,19 @@ package com.blockstream.compose.models.add
 import androidx.lifecycle.viewModelScope
 import blockstream_green.common.generated.resources.Res
 import blockstream_green.common.generated.resources.id_creating_your_s_account
+import blockstream_green.common.generated.resources.id_new_account_created
+import com.blockstream.compose.events.Events
+import com.blockstream.compose.looks.AccountTypeLook
+import com.blockstream.compose.models.GreenViewModel
+import com.blockstream.compose.sideeffects.SideEffect
+import com.blockstream.compose.sideeffects.SideEffects
+import com.blockstream.compose.utils.StringHolder
 import com.blockstream.data.data.EnrichedAsset
 import com.blockstream.data.data.GreenWallet
 import com.blockstream.data.data.PopTo
 import com.blockstream.data.gdk.data.AccountAsset
 import com.blockstream.data.gdk.data.AccountType
 import com.blockstream.data.gdk.data.Network
-import com.blockstream.compose.events.Events
-import com.blockstream.compose.looks.AccountTypeLook
-import com.blockstream.compose.models.GreenViewModel
-import com.blockstream.compose.sideeffects.SideEffect
-import com.blockstream.compose.sideeffects.SideEffects
 import com.blockstream.domain.account.CreateAccountUseCase
 import com.blockstream.utils.Loggable
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -59,12 +61,17 @@ abstract class AddAccountViewModelAbstract(greenWallet: GreenWallet, val assetId
                 network = network,
                 mnemonic = mnemonic,
                 xpub = xpub,
-                hwInteraction = this
+                hwInteraction = this,
+                trackAnalytics = false
             )
         }, postAction = {
             onProgress.value = it == null
         }, onSuccess = {
             accountCreated = true
+
+            // Track the account type the user selected in this flow, regardless of whether
+            // it was newly created or an existing hidden account was reactivated.
+            countly.createAccount(session, it)
 
             val accountAsset = AccountAsset.fromAccountAsset(
                 account = it,
@@ -75,6 +82,8 @@ abstract class AddAccountViewModelAbstract(greenWallet: GreenWallet, val assetId
             // or setActiveAccount
             postEvent(Events.SetAccountAsset(accountAsset))
             postSideEffect(SideEffects.AccountCreated(accountAsset))
+
+            postSideEffect(SideEffects.Snackbar(StringHolder.create(Res.string.id_new_account_created)))
 
             postSideEffect(SideEffects.NavigateToRoot(popTo = popTo))
         }, onError = {

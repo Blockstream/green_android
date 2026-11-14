@@ -80,8 +80,8 @@ data class UserInput(
                     } else {
                         null
                     }
-                    userNumberFormat = userNumberFormat(decimals = 2, withDecimalSeparator = true, withGrouping = true, locale = locale)
-                    gdkNumberFormat = gdkNumberFormat(decimals = 2, withDecimalSeparator = true)
+                    userNumberFormat = userNumberFormat(decimals = FIAT_DECIMALS, withDecimalSeparator = true, withGrouping = true, locale = locale)
+                    gdkNumberFormat = gdkNumberFormat(decimals = FIAT_DECIMALS, withDecimalSeparator = true)
                 }
 
                 assetId != null && !assetId.isPolicyAsset(session) -> { // Asset

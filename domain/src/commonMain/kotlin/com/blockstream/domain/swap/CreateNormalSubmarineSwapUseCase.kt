@@ -5,6 +5,7 @@ package com.blockstream.domain.swap
 import com.blockstream.data.data.GreenWallet
 import com.blockstream.data.data.SwapType
 import com.blockstream.data.database.Database
+import com.blockstream.data.database.wallet.BoltzSwaps
 import com.blockstream.data.extensions.letTryCatch
 import com.blockstream.data.gdk.GdkSession
 import com.blockstream.data.gdk.data.Account
@@ -103,7 +104,7 @@ class CreateNormalSubmarineSwapUseCase(
             createSubmarine(session = session, account = account, input = normalizedInput, refundAddress = refundAddress)
         } catch (hint: LwkException.MagicRoutingHint) {
             val swap = SwapDetails(
-                swapId = Uuid.generateV7().toString(),
+                swapId = magicSwapId(boltzSwap),
                 address = hint.address,
                 fromAmount = hint.amount.toLong(),
                 fromAssetId = account.network.policyAsset,
@@ -218,6 +219,17 @@ class CreateNormalSubmarineSwapUseCase(
 
     private fun instructionDedupKey(input: String, amountSats: Long?): String =
         "$input|amountSats=$amountSats"
+
+    companion object {
+        /**
+         * The swap id a magic-routing [SwapDetails] must carry. When an unpaid magic swap is
+         * already stored for this invoice, its id is reused so that the funding transaction's
+         * tx_hash is written onto that row and marks the invoice as paid; a fresh id is only
+         * generated when a new row is about to be stored under it.
+         */
+        internal fun magicSwapId(existingUnpaidSwap: BoltzSwaps?): String =
+            existingUnpaidSwap?.takeIf { it.is_magic }?.id ?: Uuid.generateV7().toString()
+    }
 
     /**
      * Routes submarine-swap creation by funding network: Bitcoin onchain uses [Lwk.btcToLn]

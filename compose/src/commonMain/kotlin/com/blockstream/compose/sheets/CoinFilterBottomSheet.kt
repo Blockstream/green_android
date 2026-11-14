@@ -1,135 +1,169 @@
 package com.blockstream.compose.sheets
 
+import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.clickable
-import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
-import androidx.compose.material3.HorizontalDivider
+import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.Icon
+import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.material3.rememberModalBottomSheetState
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.graphics.vector.ImageVector
+import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import blockstream_green.common.generated.resources.Res
-import blockstream_green.common.generated.resources.check_circle
 import blockstream_green.common.generated.resources.id_2fa_expired
-import blockstream_green.common.generated.resources.id_all
-import blockstream_green.common.generated.resources.id_all_available_coins
-import blockstream_green.common.generated.resources.id_amount_below_the_dust_threshold_s
+import blockstream_green.common.generated.resources.id_apply
+import blockstream_green.common.generated.resources.id_coin_type_d_of_d
 import blockstream_green.common.generated.resources.id_dust
-import blockstream_green.common.generated.resources.id_filters
-import blockstream_green.common.generated.resources.id_timelock_passed_spend_to_refresh_protection
+import blockstream_green.common.generated.resources.id_filter
+import blockstream_green.common.generated.resources.id_legacy_recovery
+import blockstream_green.common.generated.resources.id_reset
+import com.adamglin.PhosphorIcons
+import com.adamglin.phosphoricons.Regular
+import com.adamglin.phosphoricons.regular.ArrowsCounterClockwise
+import com.adamglin.phosphoricons.regular.Coins
+import com.adamglin.phosphoricons.regular.Warning
 import com.blockstream.compose.components.GreenBottomSheet
-import com.blockstream.compose.components.GreenRow
+import com.blockstream.compose.components.GreenButton
+import com.blockstream.compose.components.GreenButtonSize
+import com.blockstream.compose.components.GreenButtonType
+import com.blockstream.compose.components.GreenColumn
 import com.blockstream.compose.models.send.CoinFilter
+import com.blockstream.compose.models.send.CoinFilterResult
+import com.blockstream.compose.models.send.CoinSort
 import com.blockstream.compose.navigation.NavigateDestinations
 import com.blockstream.compose.navigation.setResult
-import com.blockstream.compose.theme.bodySmall
+import com.blockstream.compose.theme.blueOutline
+import com.blockstream.compose.theme.blueSurface
+import com.blockstream.compose.theme.bodyMedium
 import com.blockstream.compose.theme.green
-import com.blockstream.compose.theme.titleSmall
+import com.blockstream.compose.theme.md_theme_outline
 import com.blockstream.compose.theme.whiteHigh
-import com.blockstream.compose.theme.whiteLow
-import com.blockstream.domain.send.GetSpendableUtxosUseCase
-import org.jetbrains.compose.resources.painterResource
+import com.blockstream.compose.theme.whiteMedium
 import org.jetbrains.compose.resources.stringResource
 
 @Composable
 fun CoinFilterBottomSheet(
-    selectedFilter: CoinFilter,
+    selectedFilters: Set<CoinFilter>,
     availableFilters: List<CoinFilter>,
+    selectedSort: CoinSort,
     onDismissRequest: () -> Unit
 ) {
+    var pendingFilters by remember { mutableStateOf(selectedFilters) }
+
     GreenBottomSheet(
-        title = stringResource(Res.string.id_filters),
-        withHorizontalPadding = false,
+        title = stringResource(Res.string.id_filter),
+        titleTextAlign = TextAlign.Start,
         sheetState = rememberModalBottomSheetState(skipPartiallyExpanded = true),
         onDismissRequest = onDismissRequest
     ) {
-        Column {
-            val filters = listOf(CoinFilter.ALL) + availableFilters
-            filters.forEachIndexed { index, filter ->
-                CoinFilterRow(
-                    filter = filter,
-                    isSelected = filter == selectedFilter,
-                    onClick = {
-                        NavigateDestinations.CoinFilters.setResult(filter)
-                        onDismissRequest()
-                    }
-                )
+        GreenColumn(padding = 0, space = 26) {
+            Text(
+                text = stringResource(Res.string.id_coin_type_d_of_d, pendingFilters.size, availableFilters.size),
+                style = bodyMedium,
+                color = whiteMedium
+            )
 
-                if (index < filters.lastIndex) {
-                    HorizontalDivider()
-                }
-            }
-        }
-    }
-}
-
-@Composable
-private fun CoinFilterRow(
-    filter: CoinFilter,
-    isSelected: Boolean,
-    onClick: () -> Unit
-) {
-    Box(
-        modifier = Modifier
-            .fillMaxWidth()
-            .clickable { onClick() }
-    ) {
-        GreenRow(verticalAlignment = Alignment.CenterVertically) {
-            Column(modifier = Modifier.weight(1f)) {
-                Text(
-                    text = filter.title(),
-                    style = titleSmall,
-                    color = if (isSelected) green else whiteHigh
-                )
-
-                filter.description()?.also {
-                    Text(
-                        text = it,
-                        style = bodySmall,
-                        color = whiteLow,
-                        modifier = Modifier.padding(top = 2.dp)
+            GreenColumn(padding = 0, space = 8) {
+                availableFilters.forEach { filter ->
+                    CoinFilterItem(
+                        filter = filter,
+                        isSelected = filter in pendingFilters,
+                        onClick = {
+                            pendingFilters = if (filter in pendingFilters) {
+                                pendingFilters - filter
+                            } else {
+                                pendingFilters + filter
+                            }
+                        }
                     )
                 }
             }
 
-            if (isSelected) {
-                Icon(
-                    painter = painterResource(Res.drawable.check_circle),
-                    contentDescription = null,
-                    tint = green,
-                    modifier = Modifier.size(24.dp)
-                )
-            } else {
-                Spacer(modifier = Modifier.size(24.dp))
+            Column(verticalArrangement = Arrangement.spacedBy(8.dp)) {
+                GreenButton(
+                    text = stringResource(Res.string.id_apply),
+                    size = GreenButtonSize.BIG,
+                    modifier = Modifier.fillMaxWidth()
+                ) {
+                    NavigateDestinations.CoinFilters.setResult(
+                        CoinFilterResult(filters = pendingFilters, sort = selectedSort)
+                    )
+                    onDismissRequest()
+                }
+
+                GreenButton(
+                    text = stringResource(Res.string.id_reset),
+                    type = GreenButtonType.OUTLINE,
+                    size = GreenButtonSize.BIG,
+                    modifier = Modifier.fillMaxWidth()
+                ) {
+                    NavigateDestinations.CoinFilters.setResult(
+                        CoinFilterResult(filters = emptySet(), sort = selectedSort)
+                    )
+                    onDismissRequest()
+                }
             }
         }
     }
 }
 
 @Composable
-fun CoinFilter.title(): String {
-    return when (this) {
-        CoinFilter.ALL -> stringResource(Res.string.id_all)
-        CoinFilter.DUST -> stringResource(Res.string.id_dust)
-        CoinFilter.EXPIRED -> stringResource(Res.string.id_2fa_expired)
+private fun CoinFilterItem(
+    filter: CoinFilter,
+    isSelected: Boolean,
+    onClick: () -> Unit
+) {
+    Surface(
+        shape = RoundedCornerShape(8.dp),
+        color = if (isSelected) blueSurface else Color.Transparent,
+        border = BorderStroke(1.dp, if (isSelected) blueOutline else md_theme_outline),
+        modifier = Modifier
+            .fillMaxWidth()
+            .clickable(onClick = onClick)
+    ) {
+        Row(
+            modifier = Modifier.padding(horizontal = 16.dp, vertical = 14.dp),
+            verticalAlignment = Alignment.CenterVertically,
+            horizontalArrangement = Arrangement.spacedBy(12.dp)
+        ) {
+            Icon(
+                imageVector = filter.icon(),
+                contentDescription = null,
+                tint = if (isSelected) green else whiteMedium,
+                modifier = Modifier.size(20.dp)
+            )
+            Text(
+                text = stringResource(filter.title()),
+                style = bodyMedium,
+                color = if (isSelected) green else whiteHigh
+            )
+        }
     }
 }
 
-@Composable
-private fun CoinFilter.description(): String? {
-    return when (this) {
-        CoinFilter.ALL -> stringResource(Res.string.id_all_available_coins)
-        CoinFilter.DUST -> stringResource(
-            Res.string.id_amount_below_the_dust_threshold_s,
-            GetSpendableUtxosUseCase.DUST_COIN_THRESHOLD_SATS
-        )
-        CoinFilter.EXPIRED -> stringResource(Res.string.id_timelock_passed_spend_to_refresh_protection)
-    }
+private fun CoinFilter.title() = when (this) {
+    CoinFilter.DUST -> Res.string.id_dust
+    CoinFilter.EXPIRED -> Res.string.id_2fa_expired
+    CoinFilter.LEGACY_RECOVERY -> Res.string.id_legacy_recovery
+}
+
+private fun CoinFilter.icon(): ImageVector = when (this) {
+    CoinFilter.DUST -> PhosphorIcons.Regular.Coins
+    CoinFilter.EXPIRED -> PhosphorIcons.Regular.Warning
+    CoinFilter.LEGACY_RECOVERY -> PhosphorIcons.Regular.ArrowsCounterClockwise
 }

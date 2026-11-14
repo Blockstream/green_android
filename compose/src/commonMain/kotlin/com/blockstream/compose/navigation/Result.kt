@@ -1,10 +1,8 @@
 package com.blockstream.compose.navigation
 
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.State
-import androidx.compose.runtime.derivedStateOf
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.mutableStateMapOf
-import androidx.compose.runtime.remember
 import co.touchlab.kermit.Logger
 import kotlin.reflect.KClass
 
@@ -18,26 +16,19 @@ fun setNavigationResultForKey(key: String, result: Any?) {
 }
 
 @Composable
-inline fun <reified T> getNavigationResult(screenKey: String): State<T?> {
+inline fun <reified T> getNavigationResultForKey(screenKey: String, crossinline fn: (T) -> Unit) {
     val result = results[screenKey] as? T
-    val resultState = remember(screenKey, result) {
-        derivedStateOf {
+    LaunchedEffect(screenKey, result) {
+        if (result != null) {
             results.remove(screenKey)
-            result
+            fn(result)
         }
     }
-    return resultState
 }
 
 @Composable
-inline fun <reified T> getNavigationResult(kClass: KClass<*>, fn: (T) -> Unit) =
+inline fun <reified T> getNavigationResult(kClass: KClass<*>, crossinline fn: (T) -> Unit) =
     getNavigationResultForKey<T>(kClass.resultKey, fn)
-
-@Composable
-inline fun <reified T> getNavigationResultForKey(screenKey: String, fn: (T) -> Unit) =
-    getNavigationResult<T>(screenKey).value?.also {
-        fn(it)
-    }
 
 inline fun <reified T> setNavigationResult(kClass: KClass<*>, result: T) = setNavigationResultForKey(kClass.resultKey, result)
 
@@ -46,6 +37,6 @@ inline fun <reified T> Any.setResult(result: T) {
 }
 
 @Composable
-inline fun <reified T> Any.getResult(fn: (result: T) -> Unit) {
+inline fun <reified T> Any.getResult(crossinline fn: (result: T) -> Unit) {
     getNavigationResult(this::class, fn)
 }

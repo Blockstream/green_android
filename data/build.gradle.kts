@@ -145,7 +145,6 @@ kotlin {
                 api(libs.filekit.dialogs)
                 api(libs.okio) // Filesystem
                 api(libs.kable.core)
-                api(libs.kotlincrypto.hash.md)
                 api(libs.kotlincrypto.hash.sha2)
                 api(libs.multiplatform.settings)
                 api(libs.multiplatform.settings.no.arg)
@@ -177,12 +176,6 @@ kotlin {
             api(libs.androidx.biometric)
 
             api(libs.androidx.preference.ktx)
-
-            /**  --- Breez FDroid ----------------------------------------------------------------------- */
-            // Temp fix for FDroid breez dependencies
-            // api(libs.breez.sdk.android.get().toString()) { exclude(group = "net.java.dev.jna", module = "jna") }
-            // implementation("${libs.jna.get()}@aar")
-            /** ----------------------------------------------------------------------------------------- */
         }
 
         getByName("androidDeviceTest") {

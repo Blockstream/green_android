@@ -19,8 +19,8 @@ import blockstream_green.common.generated.resources.blockstream_jade_plus_device
 import blockstream_green.common.generated.resources.eye
 import blockstream_green.common.generated.resources.flask
 import blockstream_green.common.generated.resources.generic_device
-import blockstream_green.common.generated.resources.id_2of2
-import blockstream_green.common.generated.resources.id_2of3
+import blockstream_green.common.generated.resources.id_2fa_protected
+import blockstream_green.common.generated.resources.id_2of3_with_2fa
 import blockstream_green.common.generated.resources.id_amp
 import blockstream_green.common.generated.resources.id_amp_legacy
 import blockstream_green.common.generated.resources.id_fastest
@@ -29,9 +29,9 @@ import blockstream_green.common.generated.resources.id_legacy
 import blockstream_green.common.generated.resources.id_legacy_segwit
 import blockstream_green.common.generated.resources.id_lightning
 import blockstream_green.common.generated.resources.id_multisig__s
-import blockstream_green.common.generated.resources.id_native_segwit
 import blockstream_green.common.generated.resources.id_not_on_longest_chain
 import blockstream_green.common.generated.resources.id_singlesig__s
+import blockstream_green.common.generated.resources.id_standard
 import blockstream_green.common.generated.resources.id_taproot
 import blockstream_green.common.generated.resources.id_transaction_completed
 import blockstream_green.common.generated.resources.id_transaction_confirmed_ss
@@ -286,12 +286,12 @@ fun String.toImageVector(): ImageVector? = when (this) {
 
 @Composable
 fun AccountType.policyRes(): String = when (this) {
-    AccountType.STANDARD -> stringResource(Res.string.id_2of2)
+    AccountType.STANDARD -> stringResource(Res.string.id_2fa_protected)
     AccountType.AMP2_ACCOUNT, AccountType.AMP_LEGACY_ACCOUNT -> stringResource(Res.string.id_amp)
-    AccountType.TWO_OF_THREE -> stringResource(Res.string.id_2of3)
+    AccountType.TWO_OF_THREE -> stringResource(Res.string.id_2of3_with_2fa)
     AccountType.BIP44_LEGACY -> stringResource(Res.string.id_legacy)
     AccountType.BIP49_SEGWIT_WRAPPED -> stringResource(Res.string.id_legacy_segwit)
-    AccountType.BIP84_SEGWIT -> stringResource(Res.string.id_native_segwit)
+    AccountType.BIP84_SEGWIT -> stringResource(Res.string.id_standard)
     AccountType.BIP86_TAPROOT -> stringResource(Res.string.id_taproot)
     AccountType.LIGHTNING -> stringResource(Res.string.id_fastest)
     else -> stringResource(Res.string.id_unknown)

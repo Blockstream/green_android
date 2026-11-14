@@ -24,7 +24,7 @@ import kotlin.test.assertTrue
 /** Exercises the real HTTP client with an in-memory transport, without creating live sessions. */
 class MeldRepositoryTest {
     @Test
-    fun `Request CryptoQuoteRequest`() = runTest {
+    fun requestCryptoQuoteRequest() = runTest {
         val engine = MockEngine { request ->
             assertEquals(HttpMethod.Post, request.method)
             assertEquals("https://ramps.blockstream.com/payments/crypto/quote", request.url.toString())
@@ -45,7 +45,7 @@ class MeldRepositoryTest {
     }
 
     @Test
-    fun `Request CryptoWidgetRequest`() = runTest {
+    fun requestCryptoWidgetRequest() = runTest {
         val engine = MockEngine { request ->
             assertEquals(HttpMethod.Post, request.method)
             assertEquals("ramps.blockstream.com", request.url.host)
@@ -75,7 +75,7 @@ class MeldRepositoryTest {
     }
 
     @Test
-    fun `Request CryptoLimitsRequest`() = runTest {
+    fun requestCryptoLimitsRequest() = runTest {
         val engine = MockEngine { request ->
             assertEquals(HttpMethod.Get, request.method)
             assertEquals("/payments/crypto/limits", request.url.encodedPath)
@@ -95,7 +95,7 @@ class MeldRepositoryTest {
     }
 
     @Test
-    fun `Forbidden response remains an error`() = runTest {
+    fun forbiddenResponseRemainsAnError() = runTest {
         val engine = MockEngine {
             respond("""{"message":"Forbidden"}""", HttpStatusCode.Forbidden, jsonHeaders)
         }
@@ -105,7 +105,7 @@ class MeldRepositoryTest {
     }
 
     @Test
-    fun `Malformed successful response remains an error`() = runTest {
+    fun malformedSuccessfulResponseRemainsAnError() = runTest {
         val engine = MockEngine { respond("not json", HttpStatusCode.OK, jsonHeaders) }
         withRepository(engine) { repository ->
             assertTrue(repository.getCryptoLimits("EUR") is NetworkResponse.Error)

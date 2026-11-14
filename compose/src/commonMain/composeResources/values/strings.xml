@@ -110,7 +110,7 @@
     <string name="id_after_2fa_expires_you_can_send">After 2FA expires, you can send funds without your 2FA method or utilize or open source recovery tool.</string>
     <string name="id_all">All</string>
     <string name="id_all_assets">All Assets</string>
-    <string name="id_all_coins">(All coins)</string>
+    <string name="id_all_coins">All coins</string>
     <string name="id_all_available_coins">All available coins.</string>
     <string name="id_all_networks">All networks</string>
     <string name="id_all_of_the_accounts_in_your">All of the accounts in your wallet need to be empty before deleting it.</string>
@@ -136,6 +136,8 @@
     <string name="id_amount_to_receive">Amount to Receive</string>
     <string name="id_amount_too_high">Amount too high</string>
     <string name="id_amount_too_low">Amount too low</string>
+    <string name="id_amount_high_to_low">Amount (High to Low)</string>
+    <string name="id_amount_low_to_high">Amount (Low to High)</string>
     <string name="id_amp">AMP</string>
     <string name="id_amp_account">AMP Account</string>
     <string name="id_amp_accounts_allow_you_to_send">AMP accounts allow you to send, receive, and store managed assets issued on the Liquid Network.</string>
@@ -150,6 +152,7 @@
     <string name="id_any_wallet_found_will_be">Any wallet found will be displayed here.</string>
     <string name="id_app_access">APP ACCESS</string>
     <string name="id_app_settings">App Settings</string>
+    <string name="id_apply">Apply</string>
     <string name="id_apply_filter">Apply filter</string>
     <string name="id_apply_filters">Apply filters</string>
     <string name="id_applies_to_every_wallet">Applies to every wallet</string>
@@ -291,6 +294,7 @@
     <string name="id_choose_twofactor_authentication">Choose Two-Factor authentication method</string>
     <string name="id_choose_watchonly">Choose Watch-Only</string>
     <string name="id_choose_which_account_you_want">Choose which account you want to receive funds in.</string>
+    <string name="id_choose_which_coins_to_use">Choose which coins to use for the transaction.</string>
     <string name="id_choose_your_network">Choose Your Network</string>
     <string name="id_clear">Clear</string>
     <string name="id_clear_cache">Clear cache</string>
@@ -302,6 +306,10 @@
     <string name="id_closing_transaction_id">Closing Transaction ID</string>
     <string name="id_code">Code</string>
     <string name="id_coin">Coin</string>
+    <string name="id_coin_details">Coin Details</string>
+    <string name="id_coin_selection">Coin Selection</string>
+    <string name="id_coin_type">Coin Type</string>
+    <string name="id_coin_type_d_of_d">Coin Type • %1$d of %2$d</string>
     <string name="id_coins">Coins</string>
     <string name="id_coins_for_which_2fa_protection">Coins for which 2FA protection is expired.</string>
     <string name="id_coins_locked">Coins locked</string>
@@ -338,6 +346,7 @@
     <string name="id_confirmation_in_d_blocks">Confirmation in %1$d blocks</string>
     <string name="id_confirmation_time">Confirmation Time</string>
     <string name="id_confirmations">Confirmations</string>
+    <string name="id_confirmed">Confirmed</string>
     <string name="id_confirming_your_transaction">Confirming your transaction</string>
     <string name="id_congratulations">Congratulations!</string>
     <string name="id_connect_a_different_hardware">Connect a different Hardware Device</string>
@@ -611,6 +620,7 @@
     <string name="id_you_may_experience_bugs">You may experience bugs or instability during active development.</string>
     <string name="id_lightning_beta_disclaimer">While your underlying funds remain secure, you may experience occasional payment failures or temporary delays when accessing your balance during network updates.\n\nWe recommend only using funds that you don't need immediate, urgent access to.</string>
     <string name="id_lightning_funding_fees">Lightning Funding &amp; Fees</string>
+    <string name="id_lightning_is_unavailable">Lightning is unavailable</string>
     <string name="id_expiration">Expiration</string>
     <string name="id_expires_s">Expires %1$s</string>
     <string name="id_explore_your_wallet">Explore Your Wallet</string>
@@ -650,6 +660,7 @@
     <string name="id_fees_are_not_collected_by_short">Fees are not collected by Blockstream, but by Bitcoin miners, Liquid functionaries, and Lightning nodes that process your transaction.</string>
     <string name="id_fees_are_too_low">Fees are too low</string>
     <string name="id_fetching_new_firmware">Fetching new firmware</string>
+    <string name="id_filter">Filter</string>
     <string name="id_filters">Filters</string>
     <string name="id_finishing_up">Finishing Up</string>
     <string name="id_firmware">Firmware</string>
@@ -867,6 +878,7 @@
     <string name="id_legacy">Legacy</string>
     <string name="id_legacy_account">Legacy Account</string>
     <string name="id_legacy_bip44">Legacy (BIP44)</string>
+    <string name="id_legacy_recovery">Legacy Recovery</string>
     <string name="id_legacy_script_coins">Legacy script coins</string>
     <string name="id_legacy_segwit">Legacy SegWit</string>
     <string name="id_legacy_segwit_account">Legacy SegWit Account</string>
@@ -928,6 +940,7 @@
     <string name="id_logging_in">Logging in…</string>
     <string name="id_login_failed">Login Failed</string>
     <string name="id_login_options">Login options</string>
+    <string name="id_login_taking_longer_than_usual">Login is taking longer than usual</string>
     <string name="id_logout">Logout</string>
     <string name="id_logout_and_switch">Logout and Switch</string>
     <string name="id_look_at_the_device_for_the">Look at the device for the number positions</string>
@@ -980,6 +993,7 @@
     <string name="id_more_actions">More actions</string>
     <string name="id_more_details">More Details</string>
     <string name="id_more_info">More Info</string>
+    <string name="id_more_information">More information:</string>
     <string name="id_more_options">More Options</string>
     <string name="id_move_across_accounts">Move across accounts</string>
     <string name="id_move_to_2fa_protected">Move to 2FA Protected</string>
@@ -1043,6 +1057,7 @@
     <string name="id_no_recipients">No recipients</string>
     <string name="id_no_registered_name_for_this">No registered name for this asset.</string>
     <string name="id_no_registered_ticker_for_this">No registered ticker for this asset.</string>
+    <string name="id_no_coins_available">No coins available</string>
     <string name="id_no_utxos_found">No UTXOs found</string>
     <string name="id_node_info">Node Info</string>
     <string name="id_non_confidential">Non Confidential</string>
@@ -1104,6 +1119,7 @@
     <string name="id_outgoing">Outgoing</string>
     <string name="id_output__descriptor">Output  Descriptor</string>
     <string name="id_output_descriptors">Output Descriptors</string>
+    <string name="id_output_index">Output Index</string>
     <string name="id_overview">Overview</string>
     <string name="id_p2sh">P2sh</string>
     <string name="id_p2wsh">P2wsh</string>
@@ -1242,6 +1258,7 @@
     <string name="id_refund_in_progress">Refund in progress</string>
     <string name="id_refund_initiated">Refund initiated</string>
     <string name="id_refundable">Refundable</string>
+    <string name="id_reinstall_from_google_play">Reinstall from Google Play</string>
     <string name="id_reload">Reload</string>
     <string name="id_remember_device">Remember Device</string>
     <string name="id_remember_device_connection">Remember Device Connection</string>
@@ -1269,6 +1286,7 @@
     <string name="id_rescan_swaps_completed">Rescan Swaps completed</string>
     <string name="id_rescan_swaps_initiated">Rescan Swaps initiated</string>
     <string name="id_reset">Reset</string>
+    <string name="id_reset_filters">Reset Filters</string>
     <string name="id_reset_language_to_system_default">Reset language to system default</string>
     <string name="id_reset_spv">Reset SPV</string>
     <string name="id_reset_to_system_default">Reset to system default</string>
@@ -1320,6 +1338,7 @@
     <string name="id_scan_to_send_here">Scan to send here</string>
     <string name="id_scan_with_jade">Scan with Jade</string>
     <string name="id_scan_your_xpub_on_jade_by">Scan your xpub on Jade by Options -> Wallet -> Export Xpub</string>
+    <string name="id_script_type">Script Type</string>
     <string name="id_screen_lock">Screen Lock</string>
     <string name="id_search">Search</string>
     <string name="id_search_address">Search address</string>
@@ -1343,6 +1362,11 @@
     <string name="id_select_a_fiat_currency_and">Select a fiat currency and bitcoin denomination to show amounts in your wallet</string>
     <string name="id_select_a_new_value_to_change_csv">Select a new value to change csv</string>
     <string name="id_select_all">Select all</string>
+    <string name="id_sort">Sort</string>
+    <string name="id_newest">Newest</string>
+    <string name="id_oldest">Oldest</string>
+    <string name="id_no_coins_match_your_filters">No coins match your filters</string>
+    <string name="id_try_adjusting_or_resetting_your_filters">Try adjusting or resetting your filters.</string>
     <string name="id_select_account">Select Account</string>
     <string name="id_select_account__asset">Select account &amp; asset</string>
     <string name="id_select_an_account_for_receiving">Select an account for receiving bitcoin.</string>
@@ -1478,6 +1502,7 @@
     <string name="id_socks5_hostname">Socks5 Hostname</string>
     <string name="id_socks5_port">Socks5 Port</string>
     <string name="id_socks5_proxy_and_port_must_be">SOCKS5 proxy and port must be set</string>
+    <string name="id_some_app_files_are_missing">Some app files are missing, so Lightning is unavailable. Your funds are safe. Contact support for help.</string>
     <string name="id_some_coins_are_no_longer_2fa">Some coins are no longer 2FA protected.</string>
     <string name="id_some_coins_in_your_wallet">Some coins in your wallet haven&apos;t moved for a long time, so 2FA expired to keep you in control. To reactivate 2FA:\n\n• Send normally and refresh the 2FA on change coins (optimizes fees)\n• Redeposit all your expired 2FA coins</string>
     <string name="id_something_went_wrong">Something went wrong</string>
@@ -1667,8 +1692,10 @@
     <string name="id_type_pin">Type PIN</string>
     <string name="id_type_the_next_word">Type the next word</string>
     <string name="id_unable_to_contact_the_green">Unable to contact the Blockstream app service. Please check your network connection and wait to be reconnected.</string>
+    <string name="id_unable_to_load_coins">Unable to load coins. Please try again.</string>
     <string name="id_unarchive">Unarchive</string>
     <string name="id_unselect_all">Unselect all</string>
+    <string name="id_using_all_available_coins">Using all available coins</string>
     <string name="id_unarchive_account">Unarchive account</string>
     <string name="id_unblinding_data">Unblinding data</string>
     <string name="id_unconfirmed">Unconfirmed</string>
@@ -2082,4 +2109,5 @@
     <string name="id_paying_lightning_invoices_with_liquid">Paying Lightning invoices with Liquid Bitcoin is temporarily disabled.</string>
     <string name="id_swaps_are_temporarily_unavailable">Swaps are temporarily unavailable.</string>
     <string name="id_no_stuck_swaps_to_reset">No stuck swaps to reset</string>
+    <string name="id_multisig_accounts_require_your_jade">Multisig accounts require your Jade.\n\nFrom then on, this wallet can only be accessed with your Jade connected — watch-only access with biometrics will be disabled.</string>
 </resources>

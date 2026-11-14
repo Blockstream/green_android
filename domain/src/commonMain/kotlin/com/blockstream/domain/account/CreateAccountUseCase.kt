@@ -16,6 +16,8 @@ import com.blockstream.data.gdk.data.Network
 import com.blockstream.data.gdk.device.DeviceResolver
 import com.blockstream.data.gdk.device.HardwareWalletInteraction
 import com.blockstream.data.gdk.params.SubAccountParams
+import com.blockstream.domain.hardware.DisableHardwareWatchOnlyUseCase
+import com.blockstream.domain.hardware.EnableHardwareWatchOnlyUseCase
 import com.blockstream.domain.lightning.LightningNodeIdUseCase
 import com.blockstream.domain.wallet.SaveGreenlightMnemonicAndCredentialsUseCase
 import com.blockstream.utils.Loggable
@@ -26,7 +28,9 @@ class CreateAccountUseCase(
     private val countly: CountlyBase,
     private val lightningNodeIdUseCase: LightningNodeIdUseCase,
     private val saveGreenlightMnemonicAndCredentialsUseCase: SaveGreenlightMnemonicAndCredentialsUseCase,
-    private val hasHistoryUseCase: HasHistoryUseCase
+    private val hasHistoryUseCase: HasHistoryUseCase,
+    private val disableHardwareWatchOnlyUseCase: DisableHardwareWatchOnlyUseCase,
+    private val enableHardwareWatchOnlyUseCase: EnableHardwareWatchOnlyUseCase
 ) : Loggable() {
 
     suspend operator fun invoke(
@@ -37,7 +41,8 @@ class CreateAccountUseCase(
         accountName: String? = null,
         mnemonic: String? = null,
         xpub: String? = null,
-        hwInteraction: HardwareWalletInteraction? = null
+        hwInteraction: HardwareWalletInteraction? = null,
+        trackAnalytics: Boolean = true
     ): Account {
         check(accountType != AccountType.AMP2_ACCOUNT || canCreateAmp2Account(session, network)) {
             "AMP2 account creation is only available for software testnet wallets"
@@ -69,7 +74,11 @@ class CreateAccountUseCase(
             // Save Lightning Node Id
             lightningNodeIdUseCase.invoke(wallet = wallet, session = session)
 
-            session.lightningAccount
+            session.lightningAccount.also {
+                if (trackAnalytics) {
+                    countly.createAccount(session, it)
+                }
+            }
         } else {
 
             // Check if network needs initialization
@@ -115,14 +124,16 @@ class CreateAccountUseCase(
                 null
             } else {
                 session.allAccounts.value.find {
-                    it.hidden && it.network == network && it.type == accountType && !hasHistoryUseCase.invoke(session = session, wallet = wallet, account = it)
+                    it.hidden && it.network == network && it.type == accountType && !hasHistoryUseCase.invoke(
+                        session = session,
+                        wallet = wallet,
+                        account = it
+                    )
                 }
             }
 
-
-
             // Check if account unarchive is needed
-            if (noHistoryArchivedAccount != null) {
+            (if (noHistoryArchivedAccount != null) {
                 session.updateAccount(noHistoryArchivedAccount, false)
             } else {
                 session.createAccount(
@@ -132,12 +143,26 @@ class CreateAccountUseCase(
                         session.gdkHwWallet,
                         hwInteraction
                     )
-                )
+                ).also {
+                    if (trackAnalytics) {
+                        countly.createAccount(session, it)
+                    }
+                }
+            }).also {
+                if (hasHardwareWatchOnlyCredentials(wallet)) {
+                    if (accountType.isMutlisig()) {
+                        disableHardwareWatchOnlyUseCase(greenWallet = wallet)
+                    } else {
+                        // Re-export so the descriptor set covers the account that just became visible
+                        enableHardwareWatchOnlyUseCase(greenWallet = wallet, session = session)
+                    }
+                }
             }
-        }).also {
-            countly.createAccount(session, it)
-        }
+        })
     }
+
+    private suspend fun hasHardwareWatchOnlyCredentials(wallet: GreenWallet): Boolean =
+        database.getLoginCredential(wallet.id, CredentialType.KEYSTORE_HW_WATCHONLY_CREDENTIALS) != null
 
     private fun canCreateAmp2Account(session: GdkSession, network: Network): Boolean =
         isAmp2Available(session) && network == session.liquidAmp2

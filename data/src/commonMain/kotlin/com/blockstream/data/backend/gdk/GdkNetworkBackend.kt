@@ -367,19 +367,16 @@ open class GdkNetworkBackend constructor(
             return
         }
 
-        // Only relevant once 2FA has been activated; mirrors the prior !needs2faActivation guard
-        if (twoFactorConfig.value?.anyEnabled != true) {
-            expired2FA.value = emptyList()
-            return
-        }
-
+        // No 2FA-activation guard, to match iOS. Contained per account because this also runs
+        // inline in the block notification handler, which drives balance updates after it.
         expired2FA.value = accounts.value.filter { account ->
-            account.type == AccountType.STANDARD &&
+            account.type == AccountType.STANDARD && tryCatch {
                 (accountBackend(account) as GdkAccountBackend).getUnspentOutputs(
                     isBump = false,
                     isExpired = true,
                     expiredAt = blockStateFlow.value.height
                 ).unspentOutputs.isNotEmpty()
+            } == true
         }
     }
 
@@ -513,6 +510,7 @@ open class GdkNetworkBackend constructor(
             gaAuthHandler = this,
             network = network,
             gdkHwWallet = gdkHwWallet,
+            assetsProvider = this@GdkNetworkBackend,
             gdk = gdk,
             getTwoFactorConfig = {
                 gdk.getTwoFactorConfig(gaSession)
@@ -533,6 +531,7 @@ open class GdkNetworkBackend constructor(
             gaAuthHandler = this,
             network = network,
             gdkHwWallet = gdkHwWallet,
+            assetsProvider = this@GdkNetworkBackend,
             gdk = gdk,
             getTwoFactorConfig = {
                 gdk.getTwoFactorConfig(gaSession)
