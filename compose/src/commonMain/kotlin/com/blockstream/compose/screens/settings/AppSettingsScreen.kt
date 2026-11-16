@@ -564,6 +564,22 @@ fun AppSettingsScreen(
                         modifier = Modifier.appTestTag("design_system_catalog_button"),
                     )
 
+                    SettingsItem(
+                        title = "Rive animations",
+                        subtitle = "Every animation the app plays",
+                        onClick = {
+                            viewModel.postEvent(AppSettingsViewModel.LocalEvents.OpenRiveAnimations)
+                        },
+                        rightContent = {
+                            Icon(
+                                imageVector = PhosphorIcons.Regular.CaretRight,
+                                contentDescription = null,
+                                tint = MaterialTheme.colorScheme.onSurface.copy(alpha = 0.6f)
+                            )
+                        },
+                        modifier = Modifier.appTestTag("rive_animations_button"),
+                    )
+
                     val designV2Enabled by viewModel.designV2Enabled.collectAsStateWithLifecycle()
                     SettingSwitch(
                         title = "Design V2",

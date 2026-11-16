@@ -25,28 +25,7 @@ import com.blockstream.compose.R
 
 @Composable
 actual fun Rive(riveAnimation: RiveAnimation, previewContent: @Composable (() -> Unit)?) {
-    val path = when (riveAnimation) {
-        RiveAnimation.LIGHTNING_TRANSACTION -> "lightning_transaction.riv"
-        RiveAnimation.ROCKET -> "rocket.riv"
-        RiveAnimation.ACCOUNT_ARCHIVED -> "account_archived.riv"
-        RiveAnimation.CHECKMARK -> "checkmark.riv"
-        RiveAnimation.WALLET -> "wallet.riv"
-        RiveAnimation.RECOVERY_PHRASE -> "recovery_phrase.riv"
-        RiveAnimation.GREEN_TO_BLOCKSTREAM -> "green_to_blockstream.riv"
-        RiveAnimation.CREATE_WALLET -> "create_wallet.riv"
-        RiveAnimation.JADE_BUTTON -> "jade_button.riv"
-        RiveAnimation.JADE_SCROLL -> "jade_scroll.riv"
-        RiveAnimation.JADE_POWER -> "jade_power.riv"
-        RiveAnimation.JADE_UPDATE -> "jade_power.riv"
-        RiveAnimation.JADE_PLUS_BUTTON -> "jade_plus_button.riv"
-        RiveAnimation.JADE_PLUS_SCROLL -> "jade_plus_scroll.riv"
-        RiveAnimation.JADE_PLUS_POWER -> "jade_plus_power.riv"
-        RiveAnimation.JADE_PLUS_UPDATE -> "jade_plus_update.riv"
-        RiveAnimation.LIGHTNING_SUCCESS -> "lightning_success.riv"
-        RiveAnimation.NONE -> null
-    }?.let {
-        "files/rive/$it"
-    }
+    val path = riveAnimation.filePath
 
     var bytes: ByteArray? by remember {
         mutableStateOf(null)

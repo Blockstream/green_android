@@ -162,6 +162,7 @@ class AppSettingsViewModel : AppSettingsViewModelAbstract() {
     class LocalEvents {
         object AnalyticsMoreInfo : Events.EventSideEffect(SideEffects.NavigateTo(NavigateDestinations.Analytics()))
         object OpenDesignSystemCatalog : Events.EventSideEffect(SideEffects.NavigateTo(NavigateDestinations.DesignSystemCatalog))
+        object OpenRiveAnimations : Events.EventSideEffect(SideEffects.NavigateTo(NavigateDestinations.RiveAnimations))
         object Save : Event
         object AutoSave : Event
         object Cancel : Event

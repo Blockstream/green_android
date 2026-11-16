@@ -30,6 +30,7 @@ import com.blockstream.compose.models.assetaccounts.AssetAccountDetailsViewModel
 import com.blockstream.compose.models.assetaccounts.AssetAccountListViewModel
 import com.blockstream.compose.models.camera.CameraViewModel
 import com.blockstream.compose.models.designsystem.DesignSystemCatalogViewModel
+import com.blockstream.compose.models.developer.RiveAnimationsViewModel
 import com.blockstream.compose.models.devices.DeviceInfoViewModel
 import com.blockstream.compose.models.devices.DeviceListViewModel
 import com.blockstream.compose.models.devices.DeviceScanViewModel
@@ -119,6 +120,7 @@ import com.blockstream.compose.screens.assetaccounts.AssetAccountDetailsScreen
 import com.blockstream.compose.screens.assetaccounts.AssetAccountListScreen
 import com.blockstream.compose.screens.designsystem.DesignSystemCatalogEntryScreen
 import com.blockstream.compose.screens.designsystem.DesignSystemCatalogScreen
+import com.blockstream.compose.screens.developer.RiveAnimationsScreen
 import com.blockstream.compose.screens.devices.DeviceInfoScreen
 import com.blockstream.compose.screens.devices.DeviceListScreen
 import com.blockstream.compose.screens.devices.DeviceScanScreen
@@ -262,6 +264,9 @@ fun Router(
             appComposable<NavigateDestinations.DesignSystemCatalogEntry> {
                 val args = it.toRoute<NavigateDestinations.DesignSystemCatalogEntry>()
                 DesignSystemCatalogEntryScreen(viewModel { DesignSystemCatalogViewModel(entryId = args.id, initialIsLight = args.isLight) })
+            }
+            appComposable<NavigateDestinations.RiveAnimations> {
+                RiveAnimationsScreen(viewModel { RiveAnimationsViewModel() })
             }
             appComposable<NavigateDestinations.SetupNewWallet> {
                 SetupNewWalletScreen(viewModel { SetupNewWalletViewModel() })

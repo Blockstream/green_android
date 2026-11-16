@@ -83,11 +83,20 @@ kotlin {
             implementation(libs.kotlin.test)
         }
 
+        val desktopTest by getting
+        desktopTest.dependencies {
+            implementation(libs.kotlinx.coroutines.test)
+        }
+
         val desktopMain by getting
         desktopMain.dependencies {
             api(compose.desktop.currentOs)
             implementation(libs.kotlinx.coroutines.swing)
             api(libs.kotlin.multiplatform.appdirs)
+
+            /**  --- Rive ------------------------------------------------------------------------------- */
+            implementation(libs.rive.cmp)
+            /** ----------------------------------------------------------------------------------------- */
         }
 
         androidMain.dependencies {
