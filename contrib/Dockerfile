@@ -1,15 +1,20 @@
-FROM debian:bullseye@sha256:e8c184b56a94db0947a9d51ec68f42ef5584442f20547fa3bd8cbd00203b2e7a
+FROM ubuntu:26.04@sha256:d66b366dac61b575bee2aef07e9c26e8070096fbe84a3d4d3eb0da069b5d76db
 
 # Deps
-COPY bullseye_deps.sh /deps.sh
+COPY ubuntu_deps.sh /deps.sh
 RUN /deps.sh && rm /deps.sh
 
 # Volume
 VOLUME /ga
 
 # Env
-ENV JAVA_HOME=/usr/lib/jvm/java-1.17.0-openjdk-amd64
+ENV JAVA_HOME=/usr/lib/jvm/jbr-25
+# apksigner runs the java on PATH
+ENV PATH=/usr/lib/jvm/jbr-25/bin:${PATH}
 ENV ANDROID_HOME=/opt
+
+# Builds use the image's JDK: a missing one fails the build instead of being downloaded through foojay
+RUN mkdir -p /root/.gradle && echo "org.gradle.java.installations.auto-download=false" >> /root/.gradle/gradle.properties
 
 # Cache Gradle
 COPY gradle /gradle
