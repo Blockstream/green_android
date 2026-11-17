@@ -30,7 +30,6 @@ allprojects {
         google()
         mavenCentral()
         mavenLocal()
-        maven("https://maven.pkg.jetbrains.space/public/p/compose/dev")
         maven("https://jitpack.io")
         maven("https://central.sonatype.com/repository/maven-snapshots/") // LWK Snapshots
     }
