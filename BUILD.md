@@ -11,6 +11,10 @@ You need to have the following Android developer tools installed:
 
 The above tools can be installed from the Android SDK manager.
 
+Gradle also needs a JDK 25: every module compiles with it, for Java 17, and the desktop app runs and is packaged
+on it. Gradle uses one it finds, for example installed through SDKMAN or in `/usr/lib/jvm` on Linux. Without one
+it downloads a JDK 25 through the foojay toolchain resolver.
+
 ## Clone the repo
 
 ``` 

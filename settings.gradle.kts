@@ -20,6 +20,11 @@ pluginManagement {
     }
 }
 
+plugins {
+    // Downloads a JDK matching the toolchain when none is installed. CI turns downloads off and uses its image's.
+    id("org.gradle.toolchains.foojay-resolver-convention") version "1.0.0"
+}
+
 dependencyResolutionManagement {
     repositories {
         google()

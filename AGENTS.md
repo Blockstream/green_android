@@ -12,6 +12,7 @@ Blockstream App (`green_android`) is a non-custodial Bitcoin, Liquid and Lightni
 
 - Debug build: `./gradlew assembleDevelopmentDebug` (production flavor: `assembleProductionGoogleDebug`).
 - Lightning needs the base64 Greenlight credentials. Gradle reads `GREENLIGHT_CERT` and `GREENLIGHT_KEY` from the environment, where CI sets them, or else from `local.properties`. Local builds without them turn Lightning off; CI builds (`CI=true`) fail.
+- Every module compiles with JDK 25 (`jvm` in `gradle/libs.versions.toml`) for Java 17 (`jvmTarget`): the root `build.gradle.kts` sets the class file version and the JDK API Kotlin compiles against for every compile task. The desktop app runs and is packaged on the same toolchain. Gradle downloads a JDK 25 through the foojay toolchain resolver when none is installed; the CI image has a JetBrains Runtime 25 and turns downloads off.
 - Unit tests, as CI runs them: `./gradlew test :compose:testAndroidHostTest -x :androidApp:testProductionGoogleDebugUnitTest`.
 - That command skips the Kotlin Multiplatform modules `data`, `domain`, `jade` and `utils`, which have no `test` task. Run their JVM and Android host tests with `./gradlew :<module>:allTests`.
 - Prefer a single module's tasks while iterating; list them with `./gradlew :<module>:tasks --all`.

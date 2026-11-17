@@ -1,7 +1,10 @@
 [versions]
 filekit-core = "0.16.0"
 filekit-dialogs = "0.16.0"
-jvm = "17"
+# JDK every module compiles with and the desktop app runs and is packaged on, from any vendor
+jvm = "25"
+# Java version the code targets: the class files and the JDK API that Kotlin compiles against. Android needs 17
+jvmTarget = "17"
 accompanistPermissions = "0.37.3"
 constraintlayoutComposeMultiplatform = "0.8.3"
 kotlin = "2.4.21"
