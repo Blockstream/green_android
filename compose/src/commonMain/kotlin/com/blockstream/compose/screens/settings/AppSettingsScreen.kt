@@ -574,6 +574,13 @@ fun AppSettingsScreen(
                         },
                         testTag = "design_v2_switch"
                     )
+
+                    SettingsItem(
+                        title = "Runtime",
+                        subtitle = viewModel.runtimeInfo.joinToString("\n") { (key, value) -> "$key = $value" },
+                        subtitleMaxLines = Int.MAX_VALUE,
+                        modifier = Modifier.appTestTag("runtime_info"),
+                    )
                 }
             }
         }

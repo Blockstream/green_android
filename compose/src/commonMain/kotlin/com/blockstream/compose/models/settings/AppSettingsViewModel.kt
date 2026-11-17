@@ -19,6 +19,7 @@ import com.blockstream.compose.navigation.NavData
 import com.blockstream.compose.navigation.NavigateDestinations
 import com.blockstream.compose.sideeffects.SideEffect
 import com.blockstream.compose.sideeffects.SideEffects
+import com.blockstream.compose.utils.runtimeInfo
 import com.blockstream.data.data.ApplicationSettings
 import com.blockstream.data.data.ScreenLockSetting
 import com.blockstream.data.extensions.isHostPortFormatValid
@@ -52,6 +53,8 @@ abstract class AppSettingsViewModelAbstract() :
     abstract val designSystemCatalogEnabled: Boolean
 
     abstract val designV2Enabled: MutableStateFlow<Boolean>
+
+    abstract val runtimeInfo: List<Pair<String, String>>
 
     abstract val analyticsFeatureEnabled: Boolean
 
@@ -114,6 +117,8 @@ class AppSettingsViewModel : AppSettingsViewModelAbstract() {
     override val designSystemCatalogEnabled = appInfo.isDevelopmentOrDebug
 
     override val designV2Enabled = MutableStateFlow(settingsManager.isDesignV2Enabled())
+
+    override val runtimeInfo = runtimeInfo()
 
     override val analyticsFeatureEnabled = settingsManager.analyticsFeatureEnabled
 
@@ -496,6 +501,11 @@ class AppSettingsViewModelPreview(initValue: Boolean = false) : AppSettingsViewM
     override val multiServerValidationFeatureEnabled: Boolean = false
     override val designSystemCatalogEnabled: Boolean = true
     override val designV2Enabled: MutableStateFlow<Boolean> = MutableStateFlow(false)
+    override val runtimeInfo: List<Pair<String, String>> = listOf(
+        "java.runtime.version" to "25.0.4.1+1-b329.142",
+        "java.vendor" to "JetBrains s.r.o.",
+        "os.arch" to "aarch64",
+    )
     override val analyticsFeatureEnabled: Boolean = true
     override val experimentalFeatureEnabled: Boolean = true
     override val enhancedPrivacyEnabled: MutableStateFlow<Boolean> = MutableStateFlow(initValue)
