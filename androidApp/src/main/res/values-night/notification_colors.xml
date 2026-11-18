@@ -1,0 +1,5 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <!-- Light enough to clear the 4.5:1 contrast Android enforces on a dark shade, so the system keeps it as is. -->
+    <color name="notification_accent">#FFFFFF</color>
+</resources>

@@ -63,6 +63,7 @@
     <color name="brand_surface_light">#273545</color>
     <color name="brand_surface_light_variant">#475361</color>
     <color name="brand_background">#14161c</color>
+    <color name="notification_accent">#121E29</color>
 
 
     <color name="brand_surface_variant">#14161D</color>

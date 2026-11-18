@@ -90,10 +90,10 @@ fun HomeScreen(
                                     contentDescription = null,
                                     modifier = Modifier
                                         .align(Alignment.CenterHorizontally)
-                                        .height(34.dp)
+                                        .size(width = 227.dp, height = 48.dp)
                                 )
 
-                                Spacer(modifier = Modifier.height(48.dp))
+                                Spacer(modifier = Modifier.height(34.dp))
 
                                 Text(
                                     modifier = Modifier.fillMaxWidth(),

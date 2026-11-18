@@ -8,10 +8,8 @@ import android.content.BroadcastReceiver
 import android.content.Context
 import android.content.Intent
 import android.content.IntentFilter
-import android.graphics.BitmapFactory
 import android.media.RingtoneManager
 import android.os.Build
-import androidx.compose.ui.graphics.toArgb
 import androidx.core.app.NotificationCompat
 import androidx.core.app.NotificationManagerCompat
 import androidx.core.content.ContextCompat
@@ -30,7 +28,6 @@ import blockstream_green.common.generated.resources.id_payment_sent
 import blockstream_green.common.generated.resources.id_swap_completed
 import blockstream_green.common.generated.resources.id_swaps_notifications
 import blockstream_green.common.generated.resources.id_transactions_notifications
-import com.blockstream.compose.theme.md_theme_primary
 import com.blockstream.data.data.GreenWallet
 import com.blockstream.data.data.LogoutReason
 import com.blockstream.data.database.Database
@@ -63,6 +60,10 @@ class NotificationManagerAndroid constructor(
     private var scope: CoroutineScope = CoroutineScope(SupervisorJob())
 
     private var isOnForeground: Boolean = false
+
+    private val accentColor: Int
+        get() = ContextCompat.getColor(context, R.color.notification_accent)
+
     private var lastForegroundTime: Long = System.currentTimeMillis()
 
     private var broadcastReceiver: BroadcastReceiver = object : BroadcastReceiver() {
@@ -209,7 +210,7 @@ class NotificationManagerAndroid constructor(
 
         return NotificationCompat.Builder(context, WALLETS_CHANNEL_ID).setContentTitle(wallet.name)
             .setColorized(true).setSmallIcon(R.drawable.ic_stat_green)
-            .setContentIntent(pendingIntent).setColor(md_theme_primary.toArgb())
+            .setContentIntent(pendingIntent).setColor(accentColor)
             .setOngoing(true).setPriority(NotificationCompat.PRIORITY_HIGH)
             .addAction(R.drawable.ic_close, getString(Res.string.id_logout), logoutIntent).apply {
 
@@ -249,7 +250,7 @@ class NotificationManagerAndroid constructor(
         return NotificationCompat.Builder(context, LIGHTNING_CHANNEL_ID)
             .setSmallIcon(R.drawable.ic_stat_green).setContentTitle(wallet.name)
             .setContentText(getString(Res.string.id_open_wallet_to_receive_a_payment))
-            .setContentIntent(pendingIntent).setColorized(true).setColor(md_theme_primary.toArgb())
+            .setContentIntent(pendingIntent).setColorized(true).setColor(accentColor)
             .setSound(notificationSound).setPriority(NotificationCompat.PRIORITY_MAX)
             .setAutoCancel(true).setVisibility(NotificationCompat.VISIBILITY_PUBLIC).build().also {
                 androidNotificationManager.notify(
@@ -274,7 +275,7 @@ class NotificationManagerAndroid constructor(
         return NotificationCompat.Builder(context, LIGHTNING_CHANNEL_ID)
             .setSmallIcon(R.drawable.ic_stat_green).setContentTitle(wallet.name)
             .setContentText(getString(Res.string.id_payment_received))
-            .setContentIntent(pendingIntent).setColorized(true).setColor(md_theme_primary.toArgb())
+            .setContentIntent(pendingIntent).setColorized(true).setColor(accentColor)
             .setPriority(NotificationCompat.PRIORITY_DEFAULT).setAutoCancel(true)
             .setVisibility(NotificationCompat.VISIBILITY_PUBLIC).build().also {
                 androidNotificationManager.notify(
@@ -335,7 +336,7 @@ class NotificationManagerAndroid constructor(
         return NotificationCompat.Builder(context, SWAPS_CHANNEL_ID)
             .setSmallIcon(R.drawable.ic_stat_green).setContentTitle(wallet.name)
             .setContentText(text)
-            .setContentIntent(pendingIntent).setColorized(true).setColor(md_theme_primary.toArgb())
+            .setContentIntent(pendingIntent).setColorized(true).setColor(accentColor)
             .setPriority(NotificationCompat.PRIORITY_DEFAULT).setAutoCancel(true)
             .setVisibility(NotificationCompat.VISIBILITY_PUBLIC).build().also {
                 androidNotificationManager.notify(
@@ -354,9 +355,8 @@ class NotificationManagerAndroid constructor(
 
         return NotificationCompat.Builder(context, TRANSACTION_CHANNEL_ID)
             .setSmallIcon(R.drawable.ic_stat_green)
-            .setLargeIcon(BitmapFactory.decodeResource(context.resources, R.mipmap.ic_launcher))
             .setContentTitle(title).setContentText(body)
-            .setColorized(true).setColor(md_theme_primary.toArgb())
+            .setColorized(true).setColor(accentColor)
             .setPriority(NotificationCompat.PRIORITY_DEFAULT).setAutoCancel(true)
             .setVisibility(NotificationCompat.VISIBILITY_PUBLIC).build().also {
                 androidNotificationManager.notify(meldNotificationData.hashCode(), it)
@@ -373,7 +373,7 @@ class NotificationManagerAndroid constructor(
 
         return NotificationCompat.Builder(context, LIGHTNING_CHANNEL_ID)
             .setSmallIcon(R.drawable.ic_stat_green).setContentTitle(title).setContentText(message)
-            .setColorized(true).setColor(md_theme_primary.toArgb()).setSound(notificationSound)
+            .setColorized(true).setColor(accentColor).setSound(notificationSound)
             .setPriority(NotificationCompat.PRIORITY_MAX).setAutoCancel(true)
             .setOnlyAlertOnce(false).setVisibility(NotificationCompat.VISIBILITY_PUBLIC).build()
             .also {
@@ -401,7 +401,7 @@ class NotificationManagerAndroid constructor(
         return NotificationCompat.Builder(context, LIGHTNING_CHANNEL_ID)
             .setSmallIcon(R.drawable.ic_stat_green).setContentTitle(wallet.name)
             .setContentText(getString(Res.string.id_lightning_is_running_in_the_background))
-            .setContentIntent(pendingIntent).setColorized(true).setColor(md_theme_primary.toArgb())
+            .setContentIntent(pendingIntent).setColorized(true).setColor(accentColor)
             .setPriority(NotificationCompat.PRIORITY_DEFAULT).setAutoCancel(true)
             .setVisibility(NotificationCompat.VISIBILITY_PUBLIC).build().also {
                 androidNotificationManager.notify(
