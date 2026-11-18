@@ -1,51 +1,86 @@
 package com.blockstream.compose.navigation
 
-import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.graphics.vector.ImageVector
-import androidx.compose.ui.unit.Dp
-import androidx.compose.ui.unit.dp
-import org.jetbrains.compose.resources.DrawableResource
-import org.jetbrains.compose.resources.StringResource
-
-enum class IconContainer {
-    NONE, OUTLINED
-}
+import com.blockstream.compose.events.Event
+import com.blockstream.compose.utils.StringHolder
 
 sealed interface NavAction {
-    data class Text(
-        val title: String? = null,
-        val titleRes: StringResource? = null,
-        val icon: DrawableResource? = null,
-        val imageVector: ImageVector? = null,
-        val iconTint: Color? = null,
-        val iconSize: Dp = 18.dp,
-        val testTag: String? = null,
-        val enabled: Boolean = true,
-        val onClick: () -> Unit = { }
+    val event: () -> Event
+
+    data class Help(
+        override val event: () -> Event
     ) : NavAction
 
-    data class Icon(
-        val title: String? = null,
-        val titleRes: StringResource? = null,
-        val icon: DrawableResource? = null,
-        val imageVector: ImageVector? = null,
-        val iconTint: Color? = null,
-        val iconSize: Dp = 24.dp,
-        val container: IconContainer = IconContainer.NONE,
+    data class Note(
+        val hasNote: Boolean,
+        override val event: () -> Event
+    ) : NavAction
+
+    data class InvoiceDescription(
+        val hasDescription: Boolean,
+        override val event: () -> Event
+    ) : NavAction
+
+    data class About(
         val testTag: String? = null,
-        val enabled: Boolean = true,
-        val onClick: () -> Unit = { }
+        override val event: () -> Event
+    ) : NavAction
+
+    data class AppSettings(
+        val testTag: String? = null,
+        override val event: () -> Event
+    ) : NavAction
+
+    data class Filter(
+        val isActive: Boolean,
+        val testTag: String? = null,
+        override val event: () -> Event
+    ) : NavAction
+
+    data class ThemeToggle(
+        val isLight: Boolean,
+        val testTag: String? = null,
+        override val event: () -> Event
+    ) : NavAction
+
+    data class WatchOnly(
+        override val event: () -> Event
+    ) : NavAction
+
+    data class Troubleshoot(
+        override val event: () -> Event
+    ) : NavAction
+
+    data class SetupGuide(
+        override val event: () -> Event
+    ) : NavAction
+
+    data class Region(
+        val name: String,
+        override val event: () -> Event
     ) : NavAction
 
     data class Menu(
-        val title: String? = null,
-        val titleRes: StringResource? = null,
-        val icon: DrawableResource? = null,
-        val imageVector: ImageVector? = null,
+        val title: StringHolder,
+        val icon: MenuIcon? = null,
         val testTag: String? = null,
         val enabled: Boolean = true,
-        val onClick: () -> Unit = { }
+        override val event: () -> Event
     ) : NavAction
 
     // TODO: an Avatar action is coming for the profile button
+}
+
+enum class MenuIcon {
+    Info,
+    Rename,
+    WatchOnly,
+    Archive,
+    Help,
+    Passphrase,
+    RecoveryPhrase,
+    Delete,
+    RequestAmount,
+    Addresses,
+    Sweep,
+    Sign
 }

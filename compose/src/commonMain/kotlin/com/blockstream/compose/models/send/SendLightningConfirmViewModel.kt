@@ -1,5 +1,6 @@
 package com.blockstream.compose.models.send
 
+import com.blockstream.compose.utils.StringHolder
 import androidx.lifecycle.viewModelScope
 import blockstream_green.common.generated.resources.Res
 import blockstream_green.common.generated.resources.id_confirm_transaction
@@ -10,7 +11,6 @@ import com.blockstream.compose.extensions.previewWallet
 import com.blockstream.compose.navigation.NavData
 import com.blockstream.compose.navigation.toSwapFeesDestination
 import com.blockstream.compose.sideeffects.SideEffects
-import com.blockstream.compose.utils.StringHolder
 import com.blockstream.data.InvoiceType
 import com.blockstream.data.data.Denomination
 import com.blockstream.data.data.GreenWallet
@@ -28,7 +28,6 @@ import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.launch
-import org.jetbrains.compose.resources.getString
 
 abstract class SendLightningConfirmViewModelAbstract(greenWallet: GreenWallet, accountAsset: AccountAsset) :
     SendConfirmViewModelAbstract(greenWallet = greenWallet, accountAsset = accountAsset) {
@@ -67,12 +66,10 @@ class SendLightningConfirmViewModel(
     override val sentTxHash: StateFlow<String?> = MutableStateFlow(null)
 
     init {
-        viewModelScope.launch {
-            _navData.value = NavData(
-                title = getString(Res.string.id_confirm_transaction),
-                isCentered = true,
-            )
-        }
+        _navData.value = NavData(
+            title = StringHolder(stringResource = Res.string.id_confirm_transaction),
+            isCentered = true,
+        )
 
         session.ifConnected {
             denomination?.takeIf { !it.isFiat }?.also { _denomination.value = it }

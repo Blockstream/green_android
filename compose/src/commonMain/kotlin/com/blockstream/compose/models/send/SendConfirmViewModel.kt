@@ -1,13 +1,13 @@
 package com.blockstream.compose.models.send
 
+import com.blockstream.compose.navigation.MenuIcon
+import com.blockstream.compose.utils.StringHolder
+import kotlinx.coroutines.flow.combine
 import androidx.lifecycle.viewModelScope
 import blockstream_green.common.generated.resources.Res
-import blockstream_green.common.generated.resources.id_add_note
 import blockstream_green.common.generated.resources.id_confirm_transaction
 import blockstream_green.common.generated.resources.id_sign_transaction
 import blockstream_green.common.generated.resources.id_the_address_is_valid
-import blockstream_green.common.generated.resources.note_pencil
-import blockstream_green.common.generated.resources.signature
 import com.blockstream.compose.events.Event
 import com.blockstream.compose.extensions.launchIn
 import com.blockstream.compose.extensions.previewAccountAsset
@@ -18,7 +18,6 @@ import com.blockstream.compose.navigation.NavData
 import com.blockstream.compose.navigation.NavigateDestinations
 import com.blockstream.compose.navigation.toSwapFeesDestination
 import com.blockstream.compose.sideeffects.SideEffects
-import com.blockstream.compose.utils.StringHolder
 import com.blockstream.data.BTC_POLICY_ASSET
 import com.blockstream.data.data.Denomination
 import com.blockstream.data.data.GreenWallet
@@ -34,9 +33,7 @@ import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
-import kotlinx.coroutines.flow.onEach
 import kotlinx.coroutines.launch
-import org.jetbrains.compose.resources.getString
 
 abstract class SendConfirmViewModelAbstract(greenWallet: GreenWallet, accountAsset: AccountAsset) :
     CreateTransactionViewModelAbstract(greenWallet = greenWallet, accountAssetOrNull = accountAsset) {
@@ -89,27 +86,17 @@ class SendConfirmViewModel constructor(
     }
 
     init {
-        onProgressSending.onEach { onProgressSending ->
+        combine(onProgressSending, note) { onProgressSending, note ->
             _navData.value = NavData(
-                title = getString(Res.string.id_confirm_transaction),
+                title = StringHolder(stringResource = Res.string.id_confirm_transaction),
                 isVisible = !onProgressSending,
                 actions = listOfNotNull(
-                    NavAction.Text(
-                        title = getString(Res.string.id_add_note),
-                        icon = Res.drawable.note_pencil
-                    ) {
-                        postEvent(LocalEvents.Note)
-                    },
+                    NavAction.Note(hasNote = note.isNotBlank(), event = { LocalEvents.Note }),
                     (NavAction.Menu(
-                        title = getString(Res.string.id_sign_transaction),
-                        icon = Res.drawable.signature
-                    ) {
-                        postEvent(
-                            CreateTransactionViewModelAbstract.LocalEvents.SignTransaction(
-                                broadcastTransaction = false
-                            )
-                        )
-                    }).takeIf { appInfo.isDevelopmentOrDebug },
+                        title = StringHolder(stringResource = Res.string.id_sign_transaction),
+                        icon = MenuIcon.Sign,
+                        event = { CreateTransactionViewModelAbstract.LocalEvents.SignTransaction(broadcastTransaction = false) }
+                    )).takeIf { appInfo.isDevelopmentOrDebug },
                 )
             )
         }.launchIn(this)

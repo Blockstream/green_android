@@ -1,5 +1,6 @@
 package com.blockstream.compose.models.send
 
+import com.blockstream.compose.utils.StringHolder
 import androidx.lifecycle.viewModelScope
 import blockstream_green.common.generated.resources.Res
 import blockstream_green.common.generated.resources.id_bolt12_amount
@@ -11,7 +12,6 @@ import com.blockstream.compose.components.AmountFieldSecondaryValue
 import com.blockstream.compose.components.AmountFieldState
 import com.blockstream.compose.events.Event
 import com.blockstream.compose.events.Events
-import com.blockstream.compose.extensions.getNetworkIcon
 import com.blockstream.compose.extensions.launchIn
 import com.blockstream.compose.extensions.previewAccountAsset
 import com.blockstream.compose.extensions.previewWallet
@@ -20,7 +20,6 @@ import com.blockstream.compose.models.initialAmountFieldState
 import com.blockstream.compose.navigation.NavData
 import com.blockstream.compose.navigation.NavigateDestinations
 import com.blockstream.compose.sideeffects.SideEffects
-import com.blockstream.compose.utils.StringHolder
 import com.blockstream.data.AddressInputType
 import com.blockstream.data.TransactionSegmentation
 import com.blockstream.data.TransactionType
@@ -56,7 +55,6 @@ import kotlinx.coroutines.flow.mapLatest
 import kotlinx.coroutines.flow.onEach
 import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.launch
-import org.jetbrains.compose.resources.getString
 import org.koin.core.component.inject
 
 abstract class SendLightningAmountViewModelAbstract(greenWallet: GreenWallet, accountAsset: AccountAsset) :
@@ -140,14 +138,12 @@ class SendLightningAmountViewModel(
         _addressInputType = addressType
         _network.value = accountAsset.account.network
 
-        viewModelScope.launch {
-            _navData.value = NavData(
-                title = getString(Res.string.id_send_lightning_bitcoin),
-                titleIcon = accountAsset.account.network.id.getNetworkIcon(),
-                titleIconTestTag = "send_lightning_bitcoin_icon",
-                isCentered = true,
-            )
-        }
+        _navData.value = NavData(
+            title = StringHolder(stringResource = Res.string.id_send_lightning_bitcoin),
+            titleNetwork = accountAsset.account.network,
+            titleIconTestTag = "send_lightning_bitcoin_icon",
+            isCentered = true,
+        )
 
         viewModelScope.launch {
             _instruction.value = tryCatch {
@@ -158,7 +154,7 @@ class SendLightningAmountViewModel(
                 is PaymentInstruction.LnUrl -> Res.string.id_lnurl_amount
                 else -> Res.string.id_send_lightning_bitcoin
             }
-            _navData.value = _navData.value.copy(title = getString(titleRes))
+            _navData.value = _navData.value.copy(title = StringHolder(stringResource = titleRes))
         }
 
         @OptIn(FlowPreview::class)

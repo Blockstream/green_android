@@ -1,5 +1,6 @@
 package com.blockstream.compose.models.recovery
 
+import com.blockstream.compose.utils.StringHolder
 import androidx.lifecycle.viewModelScope
 import blockstream_green.common.generated.resources.Res
 import blockstream_green.common.generated.resources.id_back_up_recovery_phrase
@@ -18,7 +19,6 @@ import com.blockstream.data.gdk.data.Credentials
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.launch
-import org.jetbrains.compose.resources.getString
 
 abstract class RecoveryPhraseViewModelAbstract(
     val isLightning: Boolean,
@@ -56,12 +56,12 @@ class RecoveryPhraseViewModel(
     }
 
     init {
-        viewModelScope.launch {
-            _navData.value = NavData(
-                title = getString(Res.string.id_back_up_recovery_phrase),
-                subtitle = if (isLightningDerived) getString(Res.string.id_lightning) else null
-            )
+        _navData.value = NavData(
+            title = StringHolder(stringResource = Res.string.id_back_up_recovery_phrase),
+            subtitle = StringHolder(stringResource = Res.string.id_lightning).takeIf { isLightningDerived }
+        )
 
+        viewModelScope.launch {
             val credentials = when {
                 providedCredentials != null -> providedCredentials
                 isLightningDerived && greenWallet != null -> database.getLoginCredential(

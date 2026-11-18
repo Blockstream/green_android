@@ -1,5 +1,6 @@
 package com.blockstream.compose.models.exchange
 
+import com.blockstream.compose.utils.StringHolder
 import androidx.lifecycle.viewModelScope
 import blockstream_green.common.generated.resources.Res
 import blockstream_green.common.generated.resources.id_amount_too_high
@@ -7,8 +8,6 @@ import blockstream_green.common.generated.resources.id_amount_too_low
 import blockstream_green.common.generated.resources.id_buy
 import blockstream_green.common.generated.resources.id_connecting_to_1d
 import blockstream_green.common.generated.resources.id_error
-import blockstream_green.common.generated.resources.id_please_select_your_correct_billing
-import blockstream_green.common.generated.resources.id_select_your_region
 import blockstream_green.common.generated.resources.id_something_went_wrong
 import blockstream_green.common.generated.resources.id_the_address_is_valid
 import blockstream_green.common.generated.resources.id_verify_address
@@ -29,7 +28,6 @@ import com.blockstream.compose.navigation.NavData
 import com.blockstream.compose.navigation.NavigateDestinations
 import com.blockstream.compose.sideeffects.OpenBrowserType
 import com.blockstream.compose.sideeffects.SideEffects
-import com.blockstream.compose.utils.StringHolder
 import com.blockstream.data.data.DenominatedValue
 import com.blockstream.data.data.Denomination
 import com.blockstream.data.data.GreenWallet
@@ -300,10 +298,19 @@ class BuyViewModel(greenWallet: GreenWallet, initialAccountAsset: AccountAsset? 
         countly.buyInitiate()
     }
 
+    class LocalEvents {
+        object ChooseRegion : Event
+        object VerifyAddress : Event
+    }
+
     override suspend fun handleEvent(event: Event) {
         super.handleEvent(event)
 
         when (event) {
+            is LocalEvents.ChooseRegion -> postEvent(NavigateDestinations.MeldCountries(greenWallet = greenWallet))
+
+            is LocalEvents.VerifyAddress -> verifyAddressOnDevice()
+
             is Events.DismissWalletBackupAlert -> {
                 viewModelScope.launch {
                     hideWalletBackupAlert.value = true
@@ -312,28 +319,13 @@ class BuyViewModel(greenWallet: GreenWallet, initialAccountAsset: AccountAsset? 
         }
     }
 
-    private suspend fun updateNavData(country: String) {
+    private fun updateNavData(country: String) {
         _navData.value = NavData(
-            title = getString(Res.string.id_buy), actions = listOfNotNull(
-                NavAction.Text(
-                    title = country,
-                    onClick = {
-                        viewModelScope.launch {
-                            postEvent(
-                                NavigateDestinations.MeldCountries(
-                                    greenWallet = greenWallet,
-                                    title = getString(Res.string.id_select_your_region),
-                                    subtitle = getString(Res.string.id_please_select_your_correct_billing),
-                                )
-                            )
-                        }
-                    }
-                ),
+            title = StringHolder(stringResource = Res.string.id_buy), actions = listOfNotNull(
+                NavAction.Region(name = country, event = { LocalEvents.ChooseRegion }),
                 NavAction.Menu(
-                    title = getString(Res.string.id_verify_address),
-                    onClick = {
-                        verifyAddressOnDevice()
-                    }
+                    title = StringHolder(stringResource = Res.string.id_verify_address),
+                    event = { LocalEvents.VerifyAddress }
                 ).takeIf { session.isHardwareWallet }
             )
         )

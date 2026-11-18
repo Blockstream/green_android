@@ -1,6 +1,7 @@
 package com.blockstream.compose.models.twofactor
 
-import androidx.lifecycle.viewModelScope
+import com.blockstream.compose.utils.toStringHolder
+import com.blockstream.compose.utils.StringHolder
 import blockstream_green.common.generated.resources.Res
 import blockstream_green.common.generated.resources.id_insufficient_lbtc_for_fees
 import blockstream_green.common.generated.resources.id_insufficient_lbtc_to_send_a
@@ -16,11 +17,8 @@ import com.blockstream.compose.models.GreenViewModel
 import com.blockstream.compose.navigation.NavData
 import com.blockstream.compose.navigation.NavigateDestinations
 import com.blockstream.compose.sideeffects.SideEffects
-import com.blockstream.compose.utils.StringHolder
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
-import kotlinx.coroutines.launch
-import org.jetbrains.compose.resources.getString
 
 abstract class ReEnable2FAViewModelAbstract(greenWallet: GreenWallet) :
     GreenViewModel(greenWalletOrNull = greenWallet) {
@@ -40,9 +38,7 @@ class ReEnable2FAViewModel(greenWallet: GreenWallet) :
 
     init {
 
-        viewModelScope.launch {
-            _navData.value = NavData(title = getString(Res.string.id_reenable_2fa), subtitle = greenWallet.name)
-        }
+        _navData.value = NavData(title = StringHolder(stringResource = Res.string.id_reenable_2fa), subtitle = greenWallet.name.toStringHolder())
         bootstrap()
     }
 

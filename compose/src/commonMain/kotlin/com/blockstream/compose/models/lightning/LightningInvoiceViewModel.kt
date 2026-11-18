@@ -1,6 +1,6 @@
 package com.blockstream.compose.models.lightning
 
-import androidx.lifecycle.viewModelScope
+import com.blockstream.compose.utils.StringHolder
 import blockstream_green.common.generated.resources.Res
 import blockstream_green.common.generated.resources.id_address_copied_to_clipboard
 import blockstream_green.common.generated.resources.id_lightning_invoice
@@ -14,7 +14,6 @@ import com.blockstream.data.MediaType
 import com.blockstream.data.Urls
 import com.blockstream.data.data.GreenWallet
 import com.blockstream.domain.receive.SaveAndShareQrCodeUseCase
-import kotlinx.coroutines.launch
 import org.jetbrains.compose.resources.getString
 import org.koin.core.component.inject
 
@@ -51,12 +50,10 @@ class LightningInvoiceViewModel(
     }
 
     init {
-        viewModelScope.launch {
-            _navData.value = NavData(
-                title = getString(Res.string.id_lightning_invoice),
-                isCentered = true
-            )
-        }
+        _navData.value = NavData(
+            title = StringHolder(stringResource = Res.string.id_lightning_invoice),
+            isCentered = true
+        )
 
         this.bootstrap()
     }

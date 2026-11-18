@@ -1,6 +1,7 @@
 package com.blockstream.compose.models.settings
 
-import androidx.lifecycle.viewModelScope
+import com.blockstream.compose.utils.toStringHolder
+import com.blockstream.compose.utils.StringHolder
 import blockstream_green.common.generated.resources.Res
 import blockstream_green.common.generated.resources.id_2fa_methods
 import com.blockstream.data.data.GreenWallet
@@ -9,8 +10,6 @@ import com.blockstream.compose.extensions.previewWallet
 import com.blockstream.data.gdk.data.Network
 import com.blockstream.compose.models.GreenViewModel
 import com.blockstream.compose.navigation.NavData
-import kotlinx.coroutines.launch
-import org.jetbrains.compose.resources.getString
 
 abstract class TwoFactorAuthenticationViewModelAbstract(
     greenWallet: GreenWallet,
@@ -30,12 +29,10 @@ class TwoFactorAuthenticationViewModel(
         listOfNotNull(sessionOrNull?.activeBitcoinMultisig, sessionOrNull?.activeLiquidMultisig)
 
     init {
-        viewModelScope.launch {
-            _navData.value = NavData(
-                title = getString(Res.string.id_2fa_methods),
-                subtitle = greenWallet.name
-            )
-        }
+        _navData.value = NavData(
+            title = StringHolder(stringResource = Res.string.id_2fa_methods),
+            subtitle = greenWallet.name.toStringHolder()
+        )
 
         bootstrap()
     }

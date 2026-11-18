@@ -1,5 +1,6 @@
 package com.blockstream.compose.models.exchange
 
+import com.blockstream.compose.utils.StringHolder
 import androidx.lifecycle.viewModelScope
 import blockstream_green.common.generated.resources.Res
 import blockstream_green.common.generated.resources.id_buy
@@ -10,7 +11,6 @@ import com.blockstream.compose.components.AmountFieldSecondaryValue
 import com.blockstream.compose.components.AmountFieldState
 import com.blockstream.compose.models.amountFieldDenomination
 import com.blockstream.compose.models.initialAmountFieldState
-import com.blockstream.compose.utils.StringHolder
 import com.blockstream.data.lightning.LightningSwapInfo
 import com.blockstream.data.data.DenominatedValue
 import com.blockstream.data.data.Denomination
@@ -159,9 +159,7 @@ class OnOffRampsViewModel(greenWallet: GreenWallet) :
     private var swapInfo: LightningSwapInfo? = null
 
     init {
-        viewModelScope.launch {
-            _navData.value = NavData(title = getString(Res.string.id_buy))
-        }
+        _navData.value = NavData(title = StringHolder(stringResource = Res.string.id_buy))
 
         session.ifConnected {
             viewModelScope.launch {

@@ -3,10 +3,6 @@ package com.blockstream.compose.models.onboarding
 import androidx.lifecycle.viewModelScope
 import blockstream_green.common.generated.resources.Res
 import blockstream_green.common.generated.resources.id_creating_wallet
-import blockstream_green.common.generated.resources.id_set_up_watchonly
-import com.adamglin.PhosphorIcons
-import com.adamglin.phosphoricons.Regular
-import com.adamglin.phosphoricons.regular.Eye
 import com.blockstream.data.Urls
 import com.blockstream.data.crypto.BiometricsException
 import com.blockstream.data.crypto.PlatformCipher
@@ -28,7 +24,6 @@ import kotlinx.coroutines.async
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.onEach
-import kotlinx.coroutines.launch
 import org.jetbrains.compose.resources.getString
 import org.koin.core.component.inject
 
@@ -65,24 +60,23 @@ class SetupNewWalletViewModel(greenWalletOrNull: GreenWallet? = null) :
     }
 
     init {
-        viewModelScope.launch {
-            _navData.value = NavData(
-                actions = listOfNotNull(
-                    NavAction.Text(
-                        titleRes = Res.string.id_set_up_watchonly,
-                        imageVector = PhosphorIcons.Regular.Eye,
-                    ) {
-                        postSideEffect(SideEffects.NavigateTo(NavigateDestinations.WatchOnlySinglesig(
-                            SetupArgs(
-                                isRestoreFlow = true,
-                                isWatchOnly = true,
-                                isSinglesig = true,
+        _navData.value = NavData(
+            actions = listOfNotNull(
+                NavAction.WatchOnly(
+                    event = {
+                        Events.NavigateTo(
+                            NavigateDestinations.WatchOnlySinglesig(
+                                SetupArgs(
+                                    isRestoreFlow = true,
+                                    isWatchOnly = true,
+                                    isSinglesig = true,
+                                )
                             )
-                        )))
+                        )
                     }
                 )
             )
-        }
+        )
 
         onProgress.onEach {
             _navData.value = _navData.value.copy(isVisible = !it)

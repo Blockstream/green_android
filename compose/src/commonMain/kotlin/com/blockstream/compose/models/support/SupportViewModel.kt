@@ -1,6 +1,6 @@
 package com.blockstream.compose.models.support
 
-import androidx.lifecycle.viewModelScope
+import com.blockstream.compose.utils.StringHolder
 import blockstream_green.common.generated.resources.Res
 import blockstream_green.common.generated.resources.id_contact_support
 import blockstream_green.common.generated.resources.id_thank_you_for_your_feedback
@@ -17,13 +17,10 @@ import com.blockstream.compose.extensions.previewWallet
 import com.blockstream.compose.models.GreenViewModel
 import com.blockstream.compose.navigation.NavData
 import com.blockstream.compose.sideeffects.SideEffects
-import com.blockstream.compose.utils.StringHolder
 import com.blockstream.utils.Loggable
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.flow.onEach
-import kotlinx.coroutines.launch
-import org.jetbrains.compose.resources.getString
 
 abstract class SupportViewModelAbstract(
     val type: SupportType,
@@ -52,11 +49,9 @@ class SupportViewModel(type: SupportType, supportData: SupportData, greenWalletO
     override val torAcknowledged: MutableStateFlow<Boolean> = MutableStateFlow(false)
 
     init {
-        viewModelScope.launch {
-            _navData.value = NavData(
-                title = getString(Res.string.id_contact_support)
-            )
-        }
+        _navData.value = NavData(
+            title = StringHolder(stringResource = Res.string.id_contact_support)
+        )
 
         settingsManager.appSettingsStateFlow.onEach {
             isTorEnabled.value = it.tor

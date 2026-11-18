@@ -1,5 +1,7 @@
 package com.blockstream.compose.models.lightning
 
+import com.blockstream.compose.utils.toStringHolder
+import com.blockstream.compose.utils.StringHolder
 import androidx.lifecycle.viewModelScope
 import blockstream_green.common.generated.resources.Res
 import blockstream_green.common.generated.resources.id_amount_must_be_at_least_s
@@ -39,7 +41,6 @@ import com.blockstream.compose.events.Events
 import com.blockstream.compose.models.GreenViewModel
 import com.blockstream.compose.navigation.NavData
 import com.blockstream.compose.sideeffects.SideEffects
-import com.blockstream.compose.utils.StringHolder
 import com.blockstream.utils.Loggable
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -133,9 +134,9 @@ class LnUrlWithdrawViewModel(greenWallet: GreenWallet, val requestData: LnUrlWit
     private var maxWithdraw: Long = 0
 
     init {
-        viewModelScope.launch {
-            _navData.value = NavData(title = getString(Res.string.id_withdraw), subtitle = greenWallet.name)
+        _navData.value = NavData(title = StringHolder(stringResource = Res.string.id_withdraw), subtitle = greenWallet.name.toStringHolder())
 
+        viewModelScope.launch {
             redeemMessage = getString(Res.string.id_you_are_redeeming_funds_from_s, requestData.domain())
         }
 

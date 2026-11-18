@@ -1,5 +1,6 @@
 package com.blockstream.compose.models.assetaccounts
 
+import com.blockstream.compose.utils.toStringHolder
 import androidx.lifecycle.viewModelScope
 import com.blockstream.data.data.DataState
 import com.blockstream.data.data.Denomination
@@ -69,7 +70,7 @@ class AssetAccountListViewModel(
 
             _asset.value = asset
             _navData.value = NavData(
-                title = asset.name(session),
+                title = asset.name(session).toStringHolder(),
             )
         }
 

@@ -1,13 +1,13 @@
 package com.blockstream.compose.models.receive
 
+import com.blockstream.compose.navigation.MenuIcon
+import com.blockstream.compose.utils.toStringHolder
+import com.blockstream.compose.utils.StringHolder
 import androidx.lifecycle.viewModelScope
 import blockstream_green.common.generated.resources.Res
-import blockstream_green.common.generated.resources.at
 import blockstream_green.common.generated.resources.id_address_copied_to_clipboard
 import blockstream_green.common.generated.resources.id_funds_received
-import blockstream_green.common.generated.resources.id_help
 import blockstream_green.common.generated.resources.id_list_of_addresses
-import blockstream_green.common.generated.resources.id_note
 import blockstream_green.common.generated.resources.id_payment_received
 import blockstream_green.common.generated.resources.id_please_hold_on_while_your
 import blockstream_green.common.generated.resources.id_please_wait_until_your_ledger
@@ -16,10 +16,6 @@ import blockstream_green.common.generated.resources.id_request_amount
 import blockstream_green.common.generated.resources.id_sweep_from_paper_wallet
 import blockstream_green.common.generated.resources.id_the_address_is_valid
 import blockstream_green.common.generated.resources.lightning_fill
-import blockstream_green.common.generated.resources.note_pencil
-import blockstream_green.common.generated.resources.qr_code
-import blockstream_green.common.generated.resources.question
-import blockstream_green.common.generated.resources.text_aa
 import com.blockstream.compose.components.AmountFieldFeedback
 import com.blockstream.compose.components.AmountFieldFeedbackSeverity
 import com.blockstream.compose.components.AmountFieldInteraction
@@ -39,7 +35,6 @@ import com.blockstream.compose.navigation.NavAction
 import com.blockstream.compose.navigation.NavData
 import com.blockstream.compose.navigation.NavigateDestinations
 import com.blockstream.compose.sideeffects.SideEffects
-import com.blockstream.compose.utils.StringHolder
 import com.blockstream.data.AddressType
 import com.blockstream.data.MediaType
 import com.blockstream.data.Urls
@@ -324,6 +319,7 @@ class ReceiveViewModel(greenWallet: GreenWallet, accountAsset: AccountAsset) :
         object ClickLedgerSupportedAssets : Events.OpenBrowser(Urls.LEDGER_SUPPORTED_ASSETS)
         object ClickFundingFeeLearnWhy : Event
         object ShowRequestAmount : Event
+        object EditNote : Event
     }
 
     private val _generateAddressLock = Mutex()
@@ -347,57 +343,39 @@ class ReceiveViewModel(greenWallet: GreenWallet, accountAsset: AccountAsset) :
         combine(
             showLightningOnChainAddress,
             receiveAddress,
-            onProgress
-        ) { showLightningOnChainAddress, receiveAddress, onProgress ->
+            onProgress,
+            note
+        ) { showLightningOnChainAddress, receiveAddress, onProgress, currentNote ->
             _navData.value = NavData(
-                title = getString(Res.string.id_receive),
-                subtitle = accountAsset.account.name,
+                title = StringHolder(stringResource = Res.string.id_receive),
+                subtitle = accountAsset.account.name.toStringHolder(),
                 actions = listOfNotNull(
-                    NavAction.Text(
-                        title = getString(Res.string.id_note),
-                        icon = Res.drawable.note_pencil,
-                        onClick = {
-                            postSideEffect(
-                                SideEffects.NavigateTo(
-                                    NavigateDestinations.Note(
-                                        greenWallet = greenWallet,
-                                        note = note.value ?: "",
-                                        noteType = if (accountAsset.account.isLightning) NoteType.Description else NoteType.Note
-                                    )
-                                )
-                            )
-                        }
+                    NavAction.InvoiceDescription(
+                        hasDescription = !currentNote.isNullOrBlank(),
+                        event = { LocalEvents.EditNote }
                     ).takeIf { accountAsset.account.isLightning == true && !showLightningOnChainAddress && receiveAddress == null },
-                    NavAction.Text(
-                        title = getString(Res.string.id_help),
-                        icon = Res.drawable.question,
-                        onClick = {
-                            postSideEffect(SideEffects.OpenBrowser(if (accountAsset.account.isAmpOrLecacy) Urls.HELP_AMP_ASSETS else Urls.HELP_RECEIVE_ASSETS))
+                    NavAction.Help(
+                        event = {
+                            Events.EventSideEffect(
+                                SideEffects.OpenBrowser(if (accountAsset.account.isAmpOrLecacy) Urls.HELP_AMP_ASSETS else Urls.HELP_RECEIVE_ASSETS)
+                            )
                         }
                     ),
 
                     NavAction.Menu(
-                        title = getString(Res.string.id_request_amount),
-                        icon = Res.drawable.text_aa,
-                        onClick = {
-                            postEvent(LocalEvents.ShowRequestAmount)
-                        }
+                        title = StringHolder(stringResource = Res.string.id_request_amount),
+                        icon = MenuIcon.RequestAmount,
+                        event = { LocalEvents.ShowRequestAmount }
                     ).takeIf { receiveAddress.isNotBlank() && !accountAsset.account.isLightning },
                     NavAction.Menu(
-                        title = getString(Res.string.id_list_of_addresses),
-                        icon = Res.drawable.at,
-                        onClick = {
-                            accountAsset?.also {
-                                postEvent(NavigateDestinations.Addresses(greenWallet = greenWallet, accountAsset = it))
-                            }
-                        }
+                        title = StringHolder(stringResource = Res.string.id_list_of_addresses),
+                        icon = MenuIcon.Addresses,
+                        event = { NavigateDestinations.Addresses(greenWallet = greenWallet, accountAsset = accountAsset) }
                     ).takeIf { receiveAddress.isNotBlank() && !accountAsset.account.isLightning && !accountAsset.account.isAmpOrLecacy },
                     NavAction.Menu(
-                        title = getString(Res.string.id_sweep_from_paper_wallet),
-                        icon = Res.drawable.qr_code,
-                        onClick = {
-                            postEvent(NavigateDestinations.Sweep(greenWallet = greenWallet, accountAsset = accountAsset))
-                        }
+                        title = StringHolder(stringResource = Res.string.id_sweep_from_paper_wallet),
+                        icon = MenuIcon.Sweep,
+                        event = { NavigateDestinations.Sweep(greenWallet = greenWallet, accountAsset = accountAsset) }
                     ).takeIf { receiveAddress.isNotBlank() && !accountAsset.account.isLightning && !accountAsset.account.isLiquid },
                 ),
                 backHandlerEnabled = onProgress
@@ -483,6 +461,16 @@ class ReceiveViewModel(greenWallet: GreenWallet, accountAsset: AccountAsset) :
         super.handleEvent(event)
 
         when (event) {
+            is LocalEvents.EditNote -> postSideEffect(
+                SideEffects.NavigateTo(
+                    NavigateDestinations.Note(
+                        greenWallet = greenWallet,
+                        note = note.value ?: "",
+                        noteType = if (accountAsset.value?.account?.isLightning == true) NoteType.Description else NoteType.Note
+                    )
+                )
+            )
+
             is LocalEvents.CreateAccount -> {
                 postSideEffect(
                     SideEffects.NavigateTo(

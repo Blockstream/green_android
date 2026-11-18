@@ -1,5 +1,8 @@
 package com.blockstream.compose.navigation
 
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.setValue
+import com.blockstream.compose.events.Event
 import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.animation.fadeIn
 import androidx.compose.animation.fadeOut
@@ -16,10 +19,8 @@ import androidx.compose.material3.SnackbarHostState
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.derivedStateOf
-import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
-import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.vector.ImageVector
@@ -91,6 +92,7 @@ fun AppScaffold(
     mainViewModel: MainViewModel,
     navigate: (destination: NavigateDestination) -> Unit = {},
     goBack: () -> Unit = { },
+    onNavAction: (Event) -> Unit = { },
     content: @Composable (PaddingValues) -> Unit
 ) {
     val navigator = LocalNavigator.current
@@ -139,11 +141,17 @@ fun AppScaffold(
         containerColor = designVersion(MaterialTheme.colorScheme.background, AppTheme.colors.surface.canvas),
         contentColor = MaterialTheme.colorScheme.onBackground,
         topBar = {
-            GreenTopAppBar(
-                hasBackStack = currentBackStack.size > 2,
-                scrollBehavior = scrollBehavior,
-                navData = navData,
-                goBack = goBack
+            DesignVersion(
+                v1 = {
+                    GreenTopAppBar(
+                        hasBackStack = currentBackStack.size > 2,
+                        scrollBehavior = scrollBehavior,
+                        navData = navData,
+                        goBack = goBack,
+                        onAction = onNavAction
+                    )
+                },
+                v2 = {}
             )
         }, snackbarHost = {
             snackbarHostState?.also {

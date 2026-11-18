@@ -1,6 +1,6 @@
 package com.blockstream.compose.models.settings
 
-import androidx.lifecycle.viewModelScope
+import com.blockstream.compose.utils.StringHolder
 import blockstream_green.common.generated.resources.Res
 import blockstream_green.common.generated.resources.id_watchonly
 import com.blockstream.data.data.GreenWallet
@@ -19,8 +19,6 @@ import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.flow.onEach
-import kotlinx.coroutines.launch
-import org.jetbrains.compose.resources.getString
 
 abstract class WatchOnlyCredentialsSettingsViewModelAbstract(
     greenWallet: GreenWallet,
@@ -47,9 +45,7 @@ class WatchOnlyCredentialsSettingsViewModel(greenWallet: GreenWallet, network: N
     }
 
     init {
-        viewModelScope.launch {
-            _navData.value = NavData(title = getString(Res.string.id_watchonly))
-        }
+        _navData.value = NavData(title = StringHolder(stringResource = Res.string.id_watchonly))
 
         session.watchOnlyUsername(network).onEach {
             username.value = it ?: ""

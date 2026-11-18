@@ -1,6 +1,7 @@
 package com.blockstream.compose.models.send
 
-import androidx.lifecycle.viewModelScope
+import com.blockstream.compose.utils.toStringHolder
+import com.blockstream.compose.utils.StringHolder
 import blockstream_green.common.generated.resources.Res
 import blockstream_green.common.generated.resources.id_address_was_filled_by_a_payment
 import blockstream_green.common.generated.resources.id_send
@@ -11,7 +12,6 @@ import com.blockstream.compose.extensions.previewWallet
 import com.blockstream.compose.navigation.NavData
 import com.blockstream.compose.navigation.NavigateDestinations
 import com.blockstream.compose.sideeffects.SideEffects
-import com.blockstream.compose.utils.StringHolder
 import com.blockstream.compose.utils.getStringFromId
 import com.blockstream.data.AddressInputType
 import com.blockstream.data.TransactionSegmentation
@@ -31,7 +31,6 @@ import kotlinx.coroutines.flow.debounce
 import kotlinx.coroutines.flow.filterNotNull
 import kotlinx.coroutines.flow.mapLatest
 import kotlinx.coroutines.flow.onEach
-import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
 import org.jetbrains.compose.resources.getString
 
@@ -58,13 +57,11 @@ class SendAddressViewModel(
     private val sendFlow: MutableStateFlow<SendFlow?> = MutableStateFlow(null)
 
     init {
-        viewModelScope.launch {
-            _navData.value = NavData(
-                isCentered = true,
-                subtitle = greenWallet.name,
-                title = getString(Res.string.id_send),
-            )
-        }
+        _navData.value = NavData(
+            isCentered = true,
+            subtitle = greenWallet.name.toStringHolder(),
+            title = StringHolder(stringResource = Res.string.id_send),
+        )
 
         _addressInputType = addressType
 

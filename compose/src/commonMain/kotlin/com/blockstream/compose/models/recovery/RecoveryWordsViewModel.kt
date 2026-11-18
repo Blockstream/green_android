@@ -1,6 +1,6 @@
 package com.blockstream.compose.models.recovery
 
-import androidx.lifecycle.viewModelScope
+import com.blockstream.compose.utils.toStringHolder
 import com.blockstream.data.data.SetupArgs
 import com.blockstream.compose.events.Event
 import com.blockstream.compose.events.Events
@@ -9,7 +9,6 @@ import com.blockstream.compose.navigation.NavData
 import com.blockstream.compose.navigation.NavigateDestinations
 import com.blockstream.compose.sideeffects.SideEffects
 import com.blockstream.utils.Loggable
-import kotlinx.coroutines.launch
 
 abstract class RecoveryWordsViewModelAbstract(val setupArgs: SetupArgs) :
     GreenViewModel(greenWalletOrNull = setupArgs.greenWallet) {
@@ -42,10 +41,8 @@ class RecoveryWordsViewModel(setupArgs: SetupArgs) : RecoveryWordsViewModelAbstr
 
         words = mnemonicWords.subList(from, from + WORDS_PER_PAGE)
 
-        viewModelScope.launch {
-            _navData.value =
-                NavData(title = setupArgs.accountType?.toString(), subtitle = setupArgs.accountType?.let { greenWalletOrNull?.name })
-        }
+        _navData.value =
+            NavData(title = setupArgs.accountType?.toString().toStringHolder(), subtitle = setupArgs.accountType?.let { greenWalletOrNull?.name }.toStringHolder())
 
         bootstrap()
     }

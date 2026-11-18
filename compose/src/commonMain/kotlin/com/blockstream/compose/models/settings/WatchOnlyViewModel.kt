@@ -1,5 +1,6 @@
 package com.blockstream.compose.models.settings
 
+import com.blockstream.compose.utils.StringHolder
 import androidx.lifecycle.viewModelScope
 import blockstream_green.common.generated.resources.Res
 import blockstream_green.common.generated.resources.id_watchonly
@@ -19,8 +20,6 @@ import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.flow.stateIn
-import kotlinx.coroutines.launch
-import org.jetbrains.compose.resources.getString
 
 abstract class WatchOnlyViewModelAbstract(greenWallet: GreenWallet) :
     GreenViewModel(greenWalletOrNull = greenWallet) {
@@ -69,9 +68,7 @@ class WatchOnlyViewModel(greenWallet: GreenWallet) :
         }.stateIn(viewModelScope, SharingStarted.WhileSubscribed(), listOf())
 
     init {
-        viewModelScope.launch {
-            _navData.value = NavData(title = getString(Res.string.id_watchonly))
-        }
+        _navData.value = NavData(title = StringHolder(stringResource = Res.string.id_watchonly))
 
         bootstrap()
     }

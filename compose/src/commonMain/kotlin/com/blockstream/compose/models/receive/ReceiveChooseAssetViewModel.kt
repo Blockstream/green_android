@@ -1,6 +1,6 @@
 package com.blockstream.compose.models.receive
 
-import androidx.lifecycle.viewModelScope
+import com.blockstream.compose.utils.StringHolder
 import blockstream_green.common.generated.resources.Res
 import blockstream_green.common.generated.resources.id_receive
 import blockstream_green.common.generated.resources.id_select_asset
@@ -20,8 +20,6 @@ import com.blockstream.domain.swap.SwapDirection
 import com.blockstream.domain.swap.SwapUseCase
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
-import kotlinx.coroutines.launch
-import org.jetbrains.compose.resources.getString
 import org.koin.core.component.inject
 import org.koin.core.parameter.parametersOf
 
@@ -55,12 +53,10 @@ class ReceiveChooseAssetViewModel(
     override val isSwapsEnabled: StateFlow<Boolean> = _isSwapsEnabled
 
     init {
-        viewModelScope.launch {
-            _navData.value = NavData(
-                title = getString(Res.string.id_receive),
-                subtitle = getString(Res.string.id_select_asset),
-            )
-        }
+        _navData.value = NavData(
+            title = StringHolder(stringResource = Res.string.id_receive),
+            subtitle = StringHolder(stringResource = Res.string.id_select_asset),
+        )
 
         doAsync({
             _assets.value = getReceiveAssetsUseCase()

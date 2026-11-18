@@ -1,10 +1,12 @@
 package com.blockstream.compose.models.devices
 
+import com.blockstream.compose.utils.StringHolder
+import com.blockstream.compose.utils.toStringHolder
+import com.blockstream.compose.events.Events
 import androidx.lifecycle.viewModelScope
 import blockstream_green.common.generated.resources.Res
 import blockstream_green.common.generated.resources.id_connection_failed
 import blockstream_green.common.generated.resources.id_connection_failed_device_offline
-import blockstream_green.common.generated.resources.id_setup_guide
 import blockstream_green.common.generated.resources.id_your_device_was_disconnected
 import com.blockstream.compose.events.Event
 import com.blockstream.compose.extensions.launchIn
@@ -14,7 +16,6 @@ import com.blockstream.compose.navigation.NavData
 import com.blockstream.compose.navigation.NavigateDestinations
 import com.blockstream.compose.sideeffects.SideEffect
 import com.blockstream.compose.sideeffects.SideEffects
-import com.blockstream.compose.utils.StringHolder
 import com.blockstream.data.data.DeviceIdentifier
 import com.blockstream.data.data.GreenWallet
 import com.blockstream.data.devices.DeviceState
@@ -30,7 +31,6 @@ import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.onEach
 import kotlinx.coroutines.launch
-import org.jetbrains.compose.resources.getString
 
 abstract class DeviceInfoViewModelAbstract(val deviceId: String) : AbstractDeviceViewModel() {
     override fun screenName(): String = "DeviceInfo"
@@ -81,31 +81,26 @@ class DeviceInfoViewModel(deviceId: String) : DeviceInfoViewModelAbstract(device
             }.launchIn(this)
         }
 
-        viewModelScope.launch {
-            _navData.value = NavData(
-                title = deviceOrNull?.deviceBrand?.name,
-                isVisible = !onProgress.value,
-                actions = listOfNotNull(
-                    NavAction.Text(title = getString(Res.string.id_setup_guide), onClick = {
-                        postEvent(NavigateDestinations.JadeGuide)
-                    }).takeIf { deviceOrNull?.isJade == true },
-                    NavAction.Menu(title = "Update Firmware", onClick = {
-                        postSideEffect(LocalSideEffects.SelectFirmwareChannel())
-                    }).takeIf { appInfo.isDevelopmentOrDebug && deviceOrNull?.isJade == true },
-                    NavAction.Menu(title = "Genuine Check", onClick = {
-                        postSideEffect(
-                            SideEffects.NavigateTo(
-                                NavigateDestinations.JadeGenuineCheck(
-                                    greenWalletOrNull = greenWalletOrNull,
-                                    deviceId = deviceId
-                                )
+        _navData.value = NavData(
+            title = deviceOrNull?.deviceBrand?.name.toStringHolder(),
+            isVisible = !onProgress.value,
+            actions = listOfNotNull(
+                NavAction.SetupGuide(event = { NavigateDestinations.JadeGuide }).takeIf { deviceOrNull?.isJade == true },
+                NavAction.Menu(title = StringHolder(string = "Update Firmware"), event = { Events.EventSideEffect(LocalSideEffects.SelectFirmwareChannel()) }).takeIf { appInfo.isDevelopmentOrDebug && deviceOrNull?.isJade == true },
+                NavAction.Menu(
+                    title = StringHolder(string = "Genuine Check"),
+                    event = {
+                        Events.NavigateTo(
+                            NavigateDestinations.JadeGenuineCheck(
+                                greenWalletOrNull = greenWalletOrNull,
+                                deviceId = deviceId
                             )
                         )
-                    }).takeIf { appInfo.isDevelopmentOrDebug && deviceOrNull?.isJade == true }
+                    }
+                ).takeIf { appInfo.isDevelopmentOrDebug && deviceOrNull?.isJade == true }
 
-                )
             )
-        }
+        )
 
         onProgress.onEach {
             _navData.value = _navData.value.copy(isVisible = !it)

@@ -1,6 +1,6 @@
 package com.blockstream.compose.models.send
 
-import androidx.lifecycle.viewModelScope
+import com.blockstream.compose.utils.StringHolder
 import blockstream_green.common.generated.resources.Res
 import blockstream_green.common.generated.resources.id_select_asset
 import blockstream_green.common.generated.resources.id_send
@@ -16,8 +16,6 @@ import com.blockstream.data.data.GreenWallet
 import com.blockstream.data.gdk.data.AccountAsset
 import com.blockstream.data.gdk.data.PendingTransaction
 import com.blockstream.domain.send.SendFlow
-import kotlinx.coroutines.launch
-import org.jetbrains.compose.resources.getString
 
 abstract class SendChooseAssetViewModelAbstract(
     greenWallet: GreenWallet, accountAssetOrNull: AccountAsset? = null
@@ -38,13 +36,11 @@ class SendChooseAssetViewModel(
 ) : SendChooseAssetViewModelAbstract(greenWallet = greenWallet, accountAssetOrNull = accountAssetOrNull) {
 
     init {
-        viewModelScope.launch {
-            _navData.value = NavData(
-                isCentered = true,
-                title = getString(Res.string.id_send),
-                subtitle = getString(Res.string.id_select_asset),
-            )
-        }
+        _navData.value = NavData(
+            isCentered = true,
+            title = StringHolder(stringResource = Res.string.id_send),
+            subtitle = StringHolder(stringResource = Res.string.id_select_asset),
+        )
     }
 
     override fun selectAsset(asset: EnrichedAsset) {

@@ -1,5 +1,6 @@
 package com.blockstream.compose.models.overview
 
+import com.blockstream.compose.utils.StringHolder
 import androidx.lifecycle.viewModelScope
 import blockstream_green.common.generated.resources.Res
 import blockstream_green.common.generated.resources.id_transact
@@ -33,7 +34,6 @@ import kotlinx.coroutines.flow.onEach
 import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.isActive
 import kotlinx.coroutines.launch
-import org.jetbrains.compose.resources.getString
 import org.koin.core.component.inject
 import org.koin.core.parameter.parametersOf
 import kotlin.collections.mutableSetOf
@@ -197,9 +197,9 @@ class TransactViewModel(greenWallet: GreenWallet) : TransactViewModelAbstract(gr
         }
     }
 
-    private suspend fun updateNavData(greenWallet: GreenWallet) {
+    private fun updateNavData(greenWallet: GreenWallet) {
         _navData.value = NavData(
-            title = getString(Res.string.id_transact),
+            title = StringHolder(stringResource = Res.string.id_transact),
             walletName = greenWallet.name,
             showBadge = !greenWallet.isRecoveryConfirmed,
             showBottomNavigation = true

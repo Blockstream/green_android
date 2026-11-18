@@ -1,12 +1,8 @@
 package com.blockstream.compose.models.home
 
+import kotlinx.coroutines.flow.onEach
 import androidx.lifecycle.viewModelScope
 import blockstream_green.common.generated.resources.Res
-import blockstream_green.common.generated.resources.brand
-import blockstream_green.common.generated.resources.id_app_settings
-import com.adamglin.PhosphorIcons
-import com.adamglin.phosphoricons.Regular
-import com.adamglin.phosphoricons.regular.Gear
 import com.blockstream.compose.events.Event
 import com.blockstream.compose.events.Events
 import com.blockstream.compose.extensions.launchIn
@@ -14,7 +10,6 @@ import com.blockstream.compose.extensions.previewWalletListView
 import com.blockstream.compose.looks.wallet.WalletListLook
 import com.blockstream.compose.models.GreenViewModel
 import com.blockstream.compose.navigation.NavAction
-import com.blockstream.compose.navigation.IconContainer
 import com.blockstream.compose.navigation.NavData
 import com.blockstream.compose.navigation.NavigateDestinations
 import com.blockstream.compose.navigation.NavigateToWallet
@@ -36,7 +31,6 @@ import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.flow.filterNotNull
 import kotlinx.coroutines.flow.flowOf
 import kotlinx.coroutines.flow.map
-import kotlinx.coroutines.flow.onEach
 import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.launch
 import org.koin.core.component.inject
@@ -116,17 +110,13 @@ class HomeViewModel(isGetStarted: Boolean = false) : HomeViewModelAbstract(isGet
         combine(showV5Upgrade, isEmptyWallet) { showV5Upgrade, isEmptyWallet ->
             _navData.value = NavData(
                 isVisible = !showV5Upgrade,
-                logo = Res.drawable.brand.takeIf { isEmptyWallet == false },
+                showBrandLogo = isEmptyWallet == false,
                 actions = listOf(
                     // TODO: profile button goes here
-                    NavAction.Icon(
-                        titleRes = Res.string.id_app_settings,
-                        imageVector = PhosphorIcons.Regular.Gear,
-                        container = IconContainer.OUTLINED,
+                    NavAction.AppSettings(
                         testTag = "btn_home_app_settings",
-                    ) {
-                        postSideEffect(SideEffects.NavigateTo(NavigateDestinations.AppSettings))
-                    }
+                        event = { Events.NavigateTo(NavigateDestinations.AppSettings) }
+                    )
                 )
             )
         }.launchIn(this)

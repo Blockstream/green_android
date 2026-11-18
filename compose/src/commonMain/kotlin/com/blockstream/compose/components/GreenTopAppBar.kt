@@ -1,5 +1,9 @@
 package com.blockstream.compose.components
 
+import com.blockstream.compose.extensions.icon
+import blockstream_green.common.generated.resources.brand
+import blockstream_green.common.generated.resources.Res
+import com.blockstream.compose.events.Event
 import androidx.compose.animation.AnimatedContent
 import androidx.compose.animation.AnimatedContentTransitionScope
 import androidx.compose.animation.AnimatedVisibility
@@ -54,7 +58,6 @@ import com.blockstream.compose.theme.titleMedium
 import com.blockstream.compose.utils.appTestTag
 import com.blockstream.compose.utils.ifTrue
 import org.jetbrains.compose.resources.painterResource
-import org.jetbrains.compose.resources.stringResource
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -63,9 +66,12 @@ fun GreenTopAppBar(
     scrollBehavior: TopAppBarScrollBehavior? = null,
     navData: NavData,
     modifier: Modifier = Modifier,
-    goBack: () -> Unit = { }
+    goBack: () -> Unit = { },
+    onAction: (Event) -> Unit = { }
 ) {
     val navigator = LocalNavigator.current
+    val titleText = navData.title?.string()
+    val subtitleText = navData.subtitle?.string()
 
     // CenterAlignedTopAppBar if you want center aligned
     TopAppBar(
@@ -103,8 +109,8 @@ fun GreenTopAppBar(
                 ) { targetState ->
                     when (targetState) {
                         true -> IconButton(onClick = {
-                            navData.onBackClicked?.also {
-                                it.invoke()
+                            navData.backEvent?.also {
+                                onAction(it)
                             } ?: run {
                                 goBack()
                             }
@@ -128,9 +134,9 @@ fun GreenTopAppBar(
                 enter = fadeIn(),
                 exit = fadeOut()
             ) {
-                navData.logo?.also { logo ->
+                if (navData.showBrandLogo) {
                     Image(
-                        painter = painterResource(logo),
+                        painter = painterResource(Res.drawable.brand),
                         contentDescription = null,
                         modifier = Modifier.height(28.dp)
                     )
@@ -154,20 +160,20 @@ fun GreenTopAppBar(
                                     start.linkTo(parent.start)
                                 }
                                 top.linkTo(parent.top)
-                                if (navData.subtitle.isNullOrBlank()) {
+                                if (subtitleText.isNullOrBlank()) {
                                     bottom.linkTo(parent.bottom)
                                 }
                             },
                     ) {
                         AnimatedVisibility(
-                            visible = navData.titleIcon != null,
+                            visible = navData.titleNetwork != null,
                             enter = fadeIn(),
                             exit = fadeOut(),
                         ) {
-                            navData.titleIcon?.also { iconRes ->
+                            navData.titleNetwork?.also { network ->
                                 Row(verticalAlignment = Alignment.CenterVertically) {
                                     Image(
-                                        painter = painterResource(iconRes),
+                                        painter = painterResource(network.icon()),
                                         contentDescription = null,
                                         modifier = Modifier
                                             .size(20.dp)
@@ -178,7 +184,7 @@ fun GreenTopAppBar(
                             }
                         }
                         Crossfade(
-                            targetState = navData.title ?: navData.titleRes?.let { stringResource(it) } ?: "",
+                            targetState = titleText ?: "",
                             animationSpec = tween(220),
                         ) {
                             Text(
@@ -206,7 +212,7 @@ fun GreenTopAppBar(
 //                    )
 
                     AnimatedVisibility(
-                        visible = !navData.subtitle.isNullOrBlank(),
+                        visible = !subtitleText.isNullOrBlank(),
                         enter = fadeIn(),
                         exit = fadeOut(),
                         modifier = Modifier.constrainAs(subtitle) {
@@ -219,7 +225,7 @@ fun GreenTopAppBar(
                             top.linkTo(title.bottom)
                         }
                     ) {
-                        Crossfade(targetState = navData.subtitle ?: "") { currentSubtitle ->
+                        Crossfade(targetState = subtitleText ?: "") { currentSubtitle ->
                             Text(
                                 text = currentSubtitle,
                                 maxLines = 1,
@@ -246,7 +252,7 @@ fun GreenTopAppBar(
                         Text(
                             text = navData.walletName,
                             style = bodyLarge,
-                            modifier = Modifier.ifTrue(navData.title.isNotBlank() || navData.titleRes != null) {
+                            modifier = Modifier.ifTrue(!titleText.isNullOrBlank()) {
                                 it.widthIn(max = 180.dp)
                             },
                             overflow = TextOverflow.Ellipsis,
@@ -277,7 +283,7 @@ fun GreenTopAppBar(
                 }
             }
 
-            ActionMenu(navData = navData)
+            ActionMenu(navData = navData, onAction = onAction)
             // If the title is centered, we add an invisible box to balance
             // the space taken by the navigation icon on the left
             if (navData.isCentered && navData.actions.isEmpty()) {

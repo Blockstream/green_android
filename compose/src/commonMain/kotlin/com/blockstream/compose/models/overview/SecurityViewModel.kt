@@ -1,5 +1,6 @@
 package com.blockstream.compose.models.overview
 
+import com.blockstream.compose.utils.StringHolder
 import androidx.lifecycle.viewModelScope
 import blockstream_green.common.generated.resources.Res
 import blockstream_green.common.generated.resources.id_security
@@ -18,7 +19,6 @@ import com.blockstream.compose.navigation.NavData
 import com.blockstream.compose.navigation.NavigateDestinations
 import com.blockstream.compose.sideeffects.SideEffect
 import com.blockstream.compose.sideeffects.SideEffects
-import com.blockstream.compose.utils.StringHolder
 import com.blockstream.utils.Loggable
 import com.blockstream.jade.firmware.JadeFirmwareManager
 import com.blockstream.jade.firmware.JadeFirmwareManager.Companion.JADE_FW_VERSIONS_LATEST
@@ -34,7 +34,6 @@ import kotlinx.coroutines.flow.onEach
 import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.launch
 import kotlinx.serialization.Serializable
-import org.jetbrains.compose.resources.getString
 import org.koin.core.component.inject
 
 @Serializable
@@ -180,9 +179,9 @@ class SecurityViewModel(greenWallet: GreenWallet) :
         bootstrap()
     }
 
-    private suspend fun updateNavData(greenWallet: GreenWallet) {
+    private fun updateNavData(greenWallet: GreenWallet) {
         _navData.value = NavData(
-            title = getString(Res.string.id_security),
+            title = StringHolder(stringResource = Res.string.id_security),
             walletName = greenWallet.name,
             showBadge = !greenWallet.isRecoveryConfirmed,
             showBottomNavigation = true

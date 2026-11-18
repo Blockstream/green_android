@@ -1,6 +1,6 @@
 package com.blockstream.compose.models.recovery
 
-import androidx.lifecycle.viewModelScope
+import com.blockstream.compose.utils.toStringHolder
 import blockstream_green.common.generated.resources.Res
 import blockstream_green.common.generated.resources.id_wrong_choice_check_your
 import com.blockstream.compose.events.Event
@@ -15,7 +15,6 @@ import com.blockstream.data.gdk.Wally
 import com.blockstream.data.gdk.getBip39WordList
 import com.blockstream.data.utils.getSecureRandom
 import com.blockstream.utils.Loggable
-import kotlinx.coroutines.launch
 import org.koin.core.component.get
 import org.koin.core.component.inject
 
@@ -78,10 +77,8 @@ class RecoveryCheckViewModel(setupArgs: SetupArgs) : RecoveryCheckViewModelAbstr
         wordRight = mnemonicWords[offset + wordIndex + 1]
         checkWordIndex = offset + wordIndex + 1
 
-        viewModelScope.launch {
-            _navData.value =
-                NavData(title = setupArgs.accountType?.toString(), subtitle = setupArgs.accountType?.let { greenWalletOrNull?.name })
-        }
+        _navData.value =
+            NavData(title = setupArgs.accountType?.toString().toStringHolder(), subtitle = setupArgs.accountType?.let { greenWalletOrNull?.name }.toStringHolder())
 
         bootstrap()
     }

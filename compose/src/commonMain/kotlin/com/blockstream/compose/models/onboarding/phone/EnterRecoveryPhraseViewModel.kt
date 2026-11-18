@@ -1,17 +1,16 @@
 package com.blockstream.compose.models.onboarding.phone
 
+import com.blockstream.compose.utils.toStringHolder
 import androidx.lifecycle.viewModelScope
 import blockstream_green.common.generated.resources.Res
 import blockstream_green.common.generated.resources.id_enter_your_12_24_or_27_words
 import blockstream_green.common.generated.resources.id_enter_your_24_or_27_words
 import blockstream_green.common.generated.resources.id_enter_your_27_words_recovery
-import blockstream_green.common.generated.resources.id_help
 import blockstream_green.common.generated.resources.id_invalid_mnemonic_continue
 import blockstream_green.common.generated.resources.id_recovery_phrase_check
 import blockstream_green.common.generated.resources.id_restoring_your_wallet
 import blockstream_green.common.generated.resources.id_well_done_you_can_continue
 import blockstream_green.common.generated.resources.id_well_done_you_can_continue_with
-import blockstream_green.common.generated.resources.question
 import com.arkivanov.essenty.statekeeper.StateKeeper
 import com.arkivanov.essenty.statekeeper.StateKeeperDispatcher
 import com.blockstream.data.crypto.BiometricsException
@@ -43,7 +42,6 @@ import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.flow.launchIn
 import kotlinx.coroutines.flow.onEach
-import kotlinx.coroutines.launch
 import kotlinx.serialization.Serializable
 import org.jetbrains.compose.resources.getString
 import org.koin.core.component.inject
@@ -130,20 +128,12 @@ class EnterRecoveryPhraseViewModel(setupArgs: SetupArgs, stateKeeper: StateKeepe
             setRecoveryPhrase(it)
         }
 
-        viewModelScope.launch {
-            _navData.value = NavData(
-                title = setupArgs.accountType?.toString(),
-                subtitle = greenWalletOrNull?.name,
-                actions = listOf(
-                    NavAction.Text(
-                        title = getString(Res.string.id_help),
-                        icon = Res.drawable.question,
-                        onClick = {
-                            postSideEffect(SideEffects.NavigateTo(NavigateDestinations.RecoveryHelp))
-                        }
-                    ))
-            )
-        }
+        _navData.value = NavData(
+            title = setupArgs.accountType?.toString().toStringHolder(),
+            subtitle = greenWalletOrNull?.name.toStringHolder(),
+            actions = listOf(
+                NavAction.Help(event = { Events.NavigateTo(NavigateDestinations.RecoveryHelp) }))
+        )
 
         combine(recoveryPhrase, recoveryPhraseSize, activeWord) { _, _, _ ->
             checkRecoveryPhrase()

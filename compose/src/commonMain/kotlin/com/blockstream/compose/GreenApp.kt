@@ -2,6 +2,7 @@
 
 package com.blockstream.compose
 
+import androidx.compose.runtime.getValue
 import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.animation.EnterTransition
 import androidx.compose.animation.fadeOut
@@ -18,7 +19,6 @@ import androidx.compose.runtime.CompositionLocalProvider
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.ProvidableCompositionLocal
 import androidx.compose.runtime.compositionLocalOf
-import androidx.compose.runtime.getValue
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.staticCompositionLocalOf
 import androidx.compose.ui.Modifier
@@ -106,7 +106,8 @@ fun GreenApp(mainViewModel: MainViewModel, modifier: Modifier = Modifier) {
 
     val backstackEntry by navController.currentBackStackEntryAsState()
 
-    val navData by LocalNavData.current.data
+    val navDataState = LocalNavData.current
+    val navData by navDataState.data
 
     navController.addOnDestinationChangedListener { _, destination, _ ->
         // Listen only to ComposeNavigator events
@@ -184,7 +185,8 @@ fun GreenApp(mainViewModel: MainViewModel, modifier: Modifier = Modifier) {
                     },
                     goBack = {
                         navController.navigateUp()
-                    }
+                    },
+                    onNavAction = { navDataState.onEvent(it) }
                 ) { innerPadding ->
 
                     val dialogState = LocalDialog.current

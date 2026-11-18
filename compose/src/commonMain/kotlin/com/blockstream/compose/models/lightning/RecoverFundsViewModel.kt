@@ -1,5 +1,7 @@
 package com.blockstream.compose.models.lightning
 
+import com.blockstream.compose.utils.toStringHolder
+import com.blockstream.compose.utils.StringHolder
 import androidx.lifecycle.viewModelScope
 import blockstream_green.common.generated.resources.Res
 import blockstream_green.common.generated.resources.id_empty_lightning_account
@@ -17,7 +19,6 @@ import com.blockstream.compose.models.GreenViewModel
 import com.blockstream.compose.navigation.NavData
 import com.blockstream.compose.sideeffects.SideEffect
 import com.blockstream.compose.sideeffects.SideEffects
-import com.blockstream.compose.utils.StringHolder
 import com.blockstream.compose.utils.getStringFromIdOrNull
 import com.blockstream.data.data.Denomination
 import com.blockstream.data.data.FeePriority
@@ -156,18 +157,14 @@ class RecoverFundsViewModel(
     }
 
     init {
-        viewModelScope.launch {
-            _navData.value = NavData(
-                title = getString(
-                    when {
-                        isRefund -> Res.string.id_refund
-                        isEmptyChannels -> Res.string.id_empty_lightning_account
-                        else -> Res.string.id_sweep
-                    }
-                ),
-                subtitle = greenWallet.name
-            )
-        }
+        _navData.value = NavData(
+            title = StringHolder(stringResource = when {
+                    isRefund -> Res.string.id_refund
+                    isEmptyChannels -> Res.string.id_empty_lightning_account
+                    else -> Res.string.id_sweep
+                }),
+            subtitle = greenWallet.name.toStringHolder()
+        )
 
         sessionOrNull?.ifConnected {
             accountAsset.value =

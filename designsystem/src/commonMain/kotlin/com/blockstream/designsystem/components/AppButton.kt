@@ -1,5 +1,6 @@
 package com.blockstream.designsystem.components
 
+import com.blockstream.designsystem.AppRadius
 import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.interaction.MutableInteractionSource
 import androidx.compose.foundation.interaction.collectIsPressedAsState
@@ -173,7 +174,7 @@ class AppButtonStyle(
 )
 
 object AppButtonDefaults {
-    val Shape: Shape = RoundedCornerShape(12.dp)
+    val Shape: Shape = RoundedCornerShape(AppRadius.lg)
     val BorderWidth = 1.dp
 
     @Composable

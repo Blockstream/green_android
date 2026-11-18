@@ -608,9 +608,7 @@ sealed class NavigateDestinations : NavigateDestination() {
 
     @Serializable
     data class MeldCountries(
-        val greenWallet: GreenWallet,
-        val title: String? = null,
-        val subtitle: String? = null
+        val greenWallet: GreenWallet
     ) : NavigateDestination()
 
     @Serializable

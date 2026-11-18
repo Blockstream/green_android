@@ -1,5 +1,6 @@
 package com.blockstream.compose.models.send
 
+import com.blockstream.compose.utils.StringHolder
 import androidx.lifecycle.viewModelScope
 import blockstream_green.common.generated.resources.Res
 import blockstream_green.common.generated.resources.id_enter_amount_in
@@ -16,7 +17,6 @@ import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.launch
-import org.jetbrains.compose.resources.getString
 
 abstract class DenominationViewModelAbstract(
     greenWallet: GreenWallet,
@@ -41,11 +41,9 @@ class DenominationViewModel(
 
     init {
 
-        viewModelScope.launch {
-            _navData.value = NavData(
-                title = getString(Res.string.id_enter_amount_in)
-            )
-        }
+        _navData.value = NavData(
+            title = StringHolder(stringResource = Res.string.id_enter_amount_in)
+        )
 
         _denomination.value = denominatedValue.denomination
 

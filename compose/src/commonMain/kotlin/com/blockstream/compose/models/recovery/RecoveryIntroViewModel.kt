@@ -1,5 +1,7 @@
 package com.blockstream.compose.models.recovery
 
+import com.blockstream.compose.utils.toStringHolder
+import com.blockstream.compose.utils.StringHolder
 import androidx.lifecycle.viewModelScope
 import blockstream_green.common.generated.resources.Res
 import blockstream_green.common.generated.resources.id_before_you_back_up
@@ -18,9 +20,7 @@ import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.drop
 import kotlinx.coroutines.flow.launchIn
 import kotlinx.coroutines.flow.onEach
-import kotlinx.coroutines.launch
 import kotlinx.serialization.Serializable
-import org.jetbrains.compose.resources.getString
 import org.koin.core.component.inject
 
 abstract class RecoveryIntroViewModelAbstract(val setupArgs: SetupArgs) :
@@ -63,12 +63,10 @@ class RecoveryIntroViewModel(
             }.launchIn(viewModelScope)
         }
 
-        viewModelScope.launch {
-            _navData.value = NavData(
-                title = getString(Res.string.id_before_you_back_up),
-                subtitle = greenWalletOrNull?.name
-            )
-        }
+        _navData.value = NavData(
+            title = StringHolder(stringResource = Res.string.id_before_you_back_up),
+            subtitle = greenWalletOrNull?.name.toStringHolder()
+        )
 
         bootstrap()
     }

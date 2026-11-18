@@ -19,7 +19,7 @@ Each hit is a pair:
 
 - in `Router.kt`: `<Name>Screen` and `<Name>ScreenV2`, and `NavTransitions` and `NavTransitionsV2`;
 - inside a screen: `<Part>` and `<Part>V2`, in the same feature folder;
-- in `AppScaffold.kt`: `BottomNavigationBar` and `BottomNavigationBarV2`.
+- in `AppScaffold.kt`: `BottomNavigationBar` and `BottomNavigationBarV2`, and `GreenTopAppBar`, whose V2 counterpart `TopAppBarV2` is drawn per screen by `ScreenSurface`.
 
 ## Check the diff
 

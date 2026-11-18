@@ -1,12 +1,11 @@
 package com.blockstream.compose.models.send
 
+import com.blockstream.compose.utils.StringHolder
 import androidx.lifecycle.viewModelScope
 import blockstream_green.common.generated.resources.Res
-import blockstream_green.common.generated.resources.id_add_note
 import blockstream_green.common.generated.resources.id_limits_s__s
 import blockstream_green.common.generated.resources.id_payment_requested_by_s
 import blockstream_green.common.generated.resources.id_send
-import blockstream_green.common.generated.resources.note_pencil
 import com.blockstream.compose.components.AmountFieldFeedback
 import com.blockstream.compose.components.AmountFieldFeedbackSeverity
 import com.blockstream.compose.components.AmountFieldInteraction
@@ -24,7 +23,6 @@ import com.blockstream.compose.navigation.NavAction
 import com.blockstream.compose.navigation.NavData
 import com.blockstream.compose.navigation.NavigateDestinations
 import com.blockstream.compose.sideeffects.SideEffects
-import com.blockstream.compose.utils.StringHolder
 import com.blockstream.compose.utils.getStringFromId
 import com.blockstream.data.AddressInputType
 import com.blockstream.data.TransactionSegmentation
@@ -276,29 +274,11 @@ class SendViewModel(
             }
         }
 
-        isNoteEditable.onEach { isEditable ->
+        combine(isNoteEditable, onProgressSending, note) { isNoteEditable, onProgressSending, note ->
             _navData.value = NavData(
-                title = getString(Res.string.id_send),
+                title = StringHolder(stringResource = Res.string.id_send),
                 actions = listOfNotNull(
-                    (NavAction.Text(
-                        title = getString(Res.string.id_add_note),
-                        icon = Res.drawable.note_pencil
-                    ) {
-                        postEvent(LocalEvents.Note)
-                    }).takeIf { isEditable }
-                ))
-        }.launchIn(this)
-
-        combine(isNoteEditable, onProgressSending) { isNoteEditable, onProgressSending ->
-            _navData.value = NavData(
-                title = getString(Res.string.id_send),
-                actions = listOfNotNull(
-                    (NavAction.Text(
-                        title = getString(Res.string.id_add_note),
-                        icon = Res.drawable.note_pencil
-                    ) {
-                        postEvent(LocalEvents.Note)
-                    }).takeIf { isNoteEditable }
+                    NavAction.Note(hasNote = note.isNotBlank(), event = { LocalEvents.Note }).takeIf { isNoteEditable }
                 ),
                 isVisible = !onProgressSending
             )

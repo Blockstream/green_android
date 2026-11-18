@@ -1,15 +1,16 @@
 package com.blockstream.compose.models.assetaccounts
 
+import com.blockstream.compose.navigation.MenuIcon
+import com.blockstream.compose.utils.StringHolder
+import com.blockstream.compose.utils.toStringHolder
+import com.blockstream.domain.transaction.GetWalletTransactionsUseCase
+import com.blockstream.compose.events.Event
 import androidx.lifecycle.viewModelScope
 import blockstream_green.common.generated.resources.Res
-import blockstream_green.common.generated.resources.binoculars
-import blockstream_green.common.generated.resources.box_arrow_down
 import blockstream_green.common.generated.resources.id_archive_account
 import blockstream_green.common.generated.resources.id_node_info
 import blockstream_green.common.generated.resources.id_rename_account
 import blockstream_green.common.generated.resources.id_watchonly
-import blockstream_green.common.generated.resources.info
-import blockstream_green.common.generated.resources.text_aa
 import com.blockstream.compose.events.Events
 import com.blockstream.compose.looks.account.LightningInfoLook
 import com.blockstream.compose.looks.transaction.TransactionLook
@@ -36,7 +37,6 @@ import com.blockstream.domain.send.SendActionAvailability
 import com.blockstream.domain.swap.IsSwapAvailableUseCase
 import com.blockstream.domain.swap.IsSwapsEnabledUseCase
 import com.blockstream.domain.transaction.GetAccountTransactionsUseCase
-import com.blockstream.domain.transaction.GetWalletTransactionsUseCase
 import com.blockstream.utils.Loggable
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.Flow
@@ -55,7 +55,6 @@ import kotlinx.coroutines.flow.merge
 import kotlinx.coroutines.flow.onEach
 import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.launch
-import org.jetbrains.compose.resources.getString
 import org.koin.core.component.inject
 import org.koin.core.parameter.parametersOf
 
@@ -201,8 +200,8 @@ class AssetAccountDetailsViewModel(
                     } > 1
 
                     _navData.value = NavData(
-                        title = assetName,
-                        subtitle = accountName,
+                        title = assetName.toStringHolder(),
+                        subtitle = accountName.toStringHolder(),
                         actions = getMenuActions(
                             account = updatedAccount,
                             accountAsset = accountAsset,
@@ -298,6 +297,24 @@ class AssetAccountDetailsViewModel(
         }
     }
 
+    class LocalEvents {
+        class WatchOnly(val account: Account, val accountAsset: AccountAsset?) : Event
+    }
+
+    override suspend fun handleEvent(event: Event) {
+        super.handleEvent(event)
+
+        if (event is LocalEvents.WatchOnly) {
+            if (event.account.isSinglesig) {
+                event.accountAsset?.also {
+                    postEvent(NavigateDestinations.AccountDescriptor(greenWallet = greenWallet, accountAsset = it))
+                }
+            } else {
+                postEvent(NavigateDestinations.WatchOnlyCredentialsSettings(greenWallet = greenWallet, network = event.account.network))
+            }
+        }
+    }
+
     private suspend fun getMenuActions(
         account: Account,
         accountAsset: AccountAsset?,
@@ -309,11 +326,9 @@ class AssetAccountDetailsViewModel(
         if (account.isLightning) {
             return listOfNotNull(
                 NavAction.Menu(
-                    title = getString(Res.string.id_node_info),
-                    icon = Res.drawable.info,
-                    onClick = {
-                        postEvent(NavigateDestinations.LightningNode(greenWallet))
-                    }
+                    title = StringHolder(stringResource = Res.string.id_node_info),
+                    icon = MenuIcon.Info,
+                    event = { NavigateDestinations.LightningNode(greenWallet) }
                 ).takeIf {
                     appInfo.isDevelopmentOrDebug
                 }
@@ -322,34 +337,21 @@ class AssetAccountDetailsViewModel(
 
         return listOfNotNull(
             NavAction.Menu(
-                title = getString(Res.string.id_rename_account),
-                icon = Res.drawable.text_aa,
-                onClick = {
-                    postEvent(NavigateDestinations.RenameAccount(greenWallet = greenWallet, account = account))
-                }
+                title = StringHolder(stringResource = Res.string.id_rename_account),
+                icon = MenuIcon.Rename,
+                event = { NavigateDestinations.RenameAccount(greenWallet = greenWallet, account = account) }
             ).takeIf { !isWatchOnly },
 
             NavAction.Menu(
-                title = getString(Res.string.id_watchonly),
-                icon = Res.drawable.binoculars,
-                onClick = {
-                    if (account.isSinglesig) {
-                        accountAsset?.also {
-                            postEvent(NavigateDestinations.AccountDescriptor(greenWallet = greenWallet, accountAsset = it))
-                        }
-                    } else {
-                        // For multisig accounts, show the watch-only credentials bottom sheet
-                        postEvent(NavigateDestinations.WatchOnlyCredentialsSettings(greenWallet = greenWallet, network = account.network))
-                    }
-                }
+                title = StringHolder(stringResource = Res.string.id_watchonly),
+                icon = MenuIcon.WatchOnly,
+                event = { LocalEvents.WatchOnly(account = account, accountAsset = accountAsset) }
             ),
             NavAction.Menu(
-                title = getString(Res.string.id_archive_account),
-                icon = Res.drawable.box_arrow_down,
+                title = StringHolder(stringResource = Res.string.id_archive_account),
+                icon = MenuIcon.Archive,
                 enabled = !account.isFunded(session) && !session.hasUnconfirmedTransactions(transactions),
-                onClick = {
-                    postEvent(Events.ArchiveAccount(account))
-                }
+                event = { Events.ArchiveAccount(account) }
             ).takeIf { !isWatchOnly && isArchiveEnabled }
         )
     }

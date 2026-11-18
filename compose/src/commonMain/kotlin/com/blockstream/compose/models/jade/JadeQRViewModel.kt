@@ -1,5 +1,6 @@
 package com.blockstream.compose.models.jade
 
+import com.blockstream.compose.utils.StringHolder
 import androidx.lifecycle.viewModelScope
 import blockstream_green.common.generated.resources.Res
 import blockstream_green.common.generated.resources.id_enable_lightning
@@ -26,7 +27,6 @@ import com.blockstream.compose.models.abstract.AbstractScannerViewModel
 import com.blockstream.compose.navigation.NavData
 import com.blockstream.compose.navigation.NavigateDestinations
 import com.blockstream.compose.sideeffects.SideEffects
-import com.blockstream.compose.utils.StringHolder
 import com.blockstream.data.Urls
 import com.blockstream.data.data.GreenWallet
 import com.blockstream.data.data.ScanResult
@@ -76,7 +76,6 @@ import kotlinx.serialization.json.decodeFromJsonElement
 import kotlinx.serialization.json.jsonObject
 import kotlinx.serialization.json.jsonPrimitive
 import org.jetbrains.compose.resources.StringResource
-import org.jetbrains.compose.resources.getString
 import org.koin.core.component.inject
 import kotlin.io.encoding.Base64
 import kotlin.time.Clock
@@ -205,11 +204,9 @@ class JadeQRViewModel(
 
         combine(scenario, _step) { scenario, step ->
             _navData.value = NavData(
-                title = getString(if (deviceModel.isJade) (if (scenario.isPinUnlock) Res.string.id_qr_pin_unlock else Res.string.id_scan_qr_with_jade) else Res.string.id_scan_qr_with_device),
+                title = StringHolder(stringResource = if (deviceModel.isJade) (if (scenario.isPinUnlock) Res.string.id_qr_pin_unlock else Res.string.id_scan_qr_with_jade) else Res.string.id_scan_qr_with_device),
                 backHandlerEnabled = true,
-                onBackClicked = {
-                    postEvent(Events.NavigateBackUserAction)
-                }
+                backEvent = Events.NavigateBackUserAction
             )
         }.launchIn(this)
 

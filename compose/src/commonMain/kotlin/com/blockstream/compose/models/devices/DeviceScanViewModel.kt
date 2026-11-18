@@ -1,8 +1,6 @@
 package com.blockstream.compose.models.devices
 
-import androidx.lifecycle.viewModelScope
-import blockstream_green.common.generated.resources.Res
-import blockstream_green.common.generated.resources.id_troubleshoot
+import com.blockstream.compose.utils.toStringHolder
 import com.blockstream.data.data.GreenWallet
 import com.blockstream.data.devices.GreenDevice
 import com.blockstream.compose.extensions.launchIn
@@ -18,8 +16,6 @@ import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.combine
-import kotlinx.coroutines.launch
-import org.jetbrains.compose.resources.getString
 
 abstract class DeviceScanViewModelAbstract(greenWallet: GreenWallet) :
     AbstractDeviceViewModel(greenWalletOrNull = greenWallet) {
@@ -73,15 +69,11 @@ class DeviceScanViewModel(
             }.launchIn(this)
         }
 
-        viewModelScope.launch {
-            _navData.value = NavData(
-                title = greenWallet.name, actions = listOfNotNull(
-                    NavAction.Text(title = getString(Res.string.id_troubleshoot), onClick = {
-                        postEvent(LocalEvents.Troubleshoot)
-                    }),
-                )
+        _navData.value = NavData(
+            title = greenWallet.name.toStringHolder(), actions = listOfNotNull(
+                NavAction.Troubleshoot(event = { LocalEvents.Troubleshoot }),
             )
-        }
+        )
 
         bootstrap()
     }

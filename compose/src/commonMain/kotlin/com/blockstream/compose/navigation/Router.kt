@@ -912,8 +912,6 @@ fun Router(
                             greenWallet = args.greenWallet
                         )
                     },
-                    title = args.title,
-                    subtitle = args.subtitle,
                     onDismissRequest = navController.onDismissRequest()
                 )
             }

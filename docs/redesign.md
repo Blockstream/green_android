@@ -51,9 +51,11 @@ DesignVersion(
 )
 ```
 
-**The app chrome** (`BottomNavigationBar` / `BottomNavigationBarV2`, scaffold background) switches in `AppScaffold`. It is global: with the flag on, legacy screens also get the new chrome. The top bar stays legacy for now.
+**The app chrome** (`BottomNavigationBar` / `BottomNavigationBarV2`, scaffold background) switches in `AppScaffold`. It is global: with the flag on, legacy screens also get the new chrome.
 
 **Screen transitions** switch in `Router` between `NavTransitions` and `NavTransitionsV2`: in V2 new screens slide in over the previous one and bottom tabs crossfade. `appComposable` wraps every screen in `ScreenSurface`, which gives it an opaque canvas background in V2, since screens draw none of their own.
+
+**The top bar** belongs to the screen in V2: `ScreenSurface` draws `TopAppBarV2` above the screen from the screen's own `NavData`, so the bar slides with its screen and needs no animation of its own. `AppScaffold` keeps the global `GreenTopAppBar` for V1 only. ViewModels need no change: `AppBarState`, called by `SetupScreen`, feeds both.
 
 `git grep -nE "DesignVersion|designVersion|LocalDesignV2"` lists every switch, and therefore every migrated screen and part.
 
@@ -62,6 +64,8 @@ DesignVersion(
 - Style with `AppTheme.colors`, `AppTheme.typography` and the `App…` components. Don't use `MaterialTheme`, `androidx.compose.material3` widgets, `Green…` components or anything from `com.blockstream.compose.theme`.
 - Infrastructure from `compose` is fine: `SetupScreen`, `HandleSideEffect`, `appTestTag`, `Rive`, `GreenPreview`, navigation and resources.
 - Go through `SetupScreen` (or call `AppBarState` and `HandleSideEffect` yourself). Without it the ViewModel's side effects and `NavData` are silently dropped.
+- `NavData` and `NavAction` say what the top bar shows, not how it looks. Don't put icons, colors or click lambdas in a ViewModel: add a semantic `NavAction` type or `NavData` field, give it an `Event` for the click, and draw it in both `ActionMenu` (legacy) and `TopAppBarV2`.
+- When migrating a screen, move the texts its ViewModel still resolves with `getString` (snackbars, dialogs, errors) to `StringHolder`, so the UI resolves them.
 - Move UI logic that a legacy screen keeps in its composable (side-effect handlers, dialogs, local state with behavior) into the ViewModel or a shared helper before writing the redesigned screen, so both versions call the same code.
 - Keep the legacy E2E test tags (`appTestTag`) on the matching elements.
 - Add a `@Preview` for the redesigned composable.

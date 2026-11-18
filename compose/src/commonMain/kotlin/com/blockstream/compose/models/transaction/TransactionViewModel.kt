@@ -1,5 +1,7 @@
 package com.blockstream.compose.models.transaction
 
+import com.blockstream.compose.utils.toStringHolder
+import com.blockstream.compose.utils.StringHolder
 import androidx.lifecycle.viewModelScope
 import blockstream_green.common.generated.resources.Res
 import blockstream_green.common.generated.resources.id_received
@@ -23,7 +25,6 @@ import com.blockstream.compose.navigation.NavData
 import com.blockstream.compose.navigation.NavigateDestinations
 import com.blockstream.compose.sideeffects.SideEffect
 import com.blockstream.compose.sideeffects.SideEffects
-import com.blockstream.compose.utils.StringHolder
 import com.blockstream.data.BTC_POLICY_ASSET
 import com.blockstream.data.SATOSHI_UNIT
 import com.blockstream.data.data.Denomination
@@ -56,7 +57,6 @@ import kotlinx.coroutines.plus
 import kotlinx.serialization.json.Json
 import kotlinx.serialization.json.jsonArray
 import kotlinx.serialization.json.jsonObject
-import org.jetbrains.compose.resources.getString
 import org.koin.core.component.inject
 import kotlin.time.Clock
 
@@ -172,15 +172,13 @@ class TransactionViewModel(transaction: Transaction, greenWallet: GreenWallet) :
             viewModelScope.launch {
                 _status.value = TransactionStatus.create(transaction, session)
                 _navData.value = NavData(
-                    title = getString(
-                        when (transaction.txType) {
+                    title = StringHolder(stringResource = when (transaction.txType) {
                             Transaction.Type.OUT -> Res.string.id_sent
                             Transaction.Type.REDEPOSIT -> Res.string.id_redeposited
                             Transaction.Type.MIXED -> Res.string.id_swap
                             else -> if (status.value.confirmations > 0) Res.string.id_received else Res.string.id_receiving
-                        }
-                    ),
-                    subtitle = account.name
+                        }),
+                    subtitle = account.name.toStringHolder()
                 )
             }
 

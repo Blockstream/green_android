@@ -1,5 +1,7 @@
 package com.blockstream.compose.models.addresses
 
+import com.blockstream.compose.utils.toStringHolder
+import com.blockstream.compose.utils.StringHolder
 import androidx.lifecycle.viewModelScope
 import blockstream_green.common.generated.resources.Res
 import blockstream_green.common.generated.resources.id_addresses
@@ -21,9 +23,7 @@ import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.flow.stateIn
-import kotlinx.coroutines.launch
 import kotlinx.serialization.Serializable
-import org.jetbrains.compose.resources.getString
 
 @Serializable
 sealed class PendingAction {
@@ -90,9 +90,7 @@ class AddressesViewModel(greenWallet: GreenWallet, accountAsset: AccountAsset) :
     }
 
     init {
-        viewModelScope.launch {
-            _navData.value = NavData(title = getString(Res.string.id_addresses), subtitle = greenWallet.name)
-        }
+        _navData.value = NavData(title = StringHolder(stringResource = Res.string.id_addresses), subtitle = greenWallet.name.toStringHolder())
         getPreviousAddresses()
 
         bootstrap()

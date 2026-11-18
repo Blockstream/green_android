@@ -1,5 +1,7 @@
 package com.blockstream.compose.models.assetaccounts
 
+import com.blockstream.compose.utils.toStringHolder
+import com.blockstream.compose.utils.StringHolder
 import androidx.lifecycle.viewModelScope
 import blockstream_green.common.generated.resources.Res
 import blockstream_green.common.generated.resources.id_watchonly
@@ -14,7 +16,6 @@ import com.blockstream.data.extensions.ifConnectedSuspend
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.launch
-import org.jetbrains.compose.resources.getString
 
 abstract class AccountDescriptorViewModelAbstract(
     greenWallet: GreenWallet,
@@ -33,12 +34,12 @@ class AccountDescriptorViewModel(
         field = MutableStateFlow(null)
 
     init {
-        viewModelScope.launch {
-            _navData.value = NavData(
-                title = getString(Res.string.id_watchonly),
-                subtitle = account.name
-            )
+        _navData.value = NavData(
+            title = StringHolder(stringResource = Res.string.id_watchonly),
+            subtitle = account.name.toStringHolder()
+        )
 
+        viewModelScope.launch {
             session.ifConnectedSuspend {
                 descriptor.value = session.getAccountDescriptors(account)
             }

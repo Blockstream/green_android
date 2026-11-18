@@ -1,6 +1,6 @@
 package com.blockstream.compose.models.add
 
-import androidx.lifecycle.viewModelScope
+import com.blockstream.compose.utils.toStringHolder
 import com.blockstream.data.data.SetupArgs
 import com.blockstream.compose.extensions.previewNetwork
 import com.blockstream.compose.extensions.previewWallet
@@ -8,7 +8,6 @@ import com.blockstream.data.gdk.data.AccountType
 import com.blockstream.compose.events.Event
 import com.blockstream.compose.events.Events
 import com.blockstream.compose.navigation.NavData
-import kotlinx.coroutines.launch
 
 abstract class ReviewAddAccountViewModelAbstract(
     val setupArgs: SetupArgs
@@ -22,9 +21,7 @@ abstract class ReviewAddAccountViewModelAbstract(
 
 class ReviewAddAccountViewModel(setupArgs: SetupArgs) : ReviewAddAccountViewModelAbstract(setupArgs = setupArgs) {
     init {
-        viewModelScope.launch {
-            _navData.value = NavData(title = setupArgs.accountType?.toString(), subtitle = greenWallet.name)
-        }
+        _navData.value = NavData(title = setupArgs.accountType?.toString().toStringHolder(), subtitle = greenWallet.name.toStringHolder())
 
         _isValid.value = true
 

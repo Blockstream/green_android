@@ -1,6 +1,6 @@
 package com.blockstream.compose.models.send
 
-import androidx.lifecycle.viewModelScope
+import com.blockstream.compose.utils.StringHolder
 import blockstream_green.common.generated.resources.Res
 import blockstream_green.common.generated.resources.id_network_fee
 import com.blockstream.compose.extensions.launchIn
@@ -20,8 +20,6 @@ import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.filterNotNull
 import kotlinx.coroutines.flow.onEach
 import kotlinx.coroutines.flow.update
-import kotlinx.coroutines.launch
-import org.jetbrains.compose.resources.getString
 
 data class FeeUiState(
     val feePriorities: List<FeePriority> = listOf(),
@@ -58,11 +56,9 @@ class FeeViewModel(
 
     init {
 
-        viewModelScope.launch {
-            _navData.value = NavData(
-                title = getString(Res.string.id_network_fee)
-            )
-        }
+        _navData.value = NavData(
+            title = StringHolder(stringResource = Res.string.id_network_fee)
+        )
 
         uiState.update { uiState ->
             uiState.copy(

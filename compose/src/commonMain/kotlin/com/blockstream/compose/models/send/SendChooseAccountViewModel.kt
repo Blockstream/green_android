@@ -1,8 +1,7 @@
 package com.blockstream.compose.models.send
 
-import androidx.lifecycle.viewModelScope
+import com.blockstream.compose.utils.StringHolder
 import blockstream_green.common.generated.resources.Res
-import blockstream_green.common.generated.resources.id_amount_is_above_the_maximum_payment_limit_of_s
 import blockstream_green.common.generated.resources.id_insufficient_funds
 import blockstream_green.common.generated.resources.id_select_account
 import blockstream_green.common.generated.resources.id_send
@@ -25,7 +24,6 @@ import com.blockstream.data.utils.toAmountLook
 import com.blockstream.domain.send.SendFlow
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
-import kotlinx.coroutines.launch
 import org.jetbrains.compose.resources.getString
 
 data class AccountState(
@@ -57,13 +55,11 @@ class SendChooseAccountViewModel(
     override val accountsState: StateFlow<List<AccountState>> = _accountsWithMessage
 
     init {
-        viewModelScope.launch {
-            _navData.value = NavData(
-                isCentered = true,
-                title = getString(Res.string.id_send),
-                subtitle = getString(Res.string.id_select_account),
-            )
-        }
+        _navData.value = NavData(
+            isCentered = true,
+            title = StringHolder(stringResource = Res.string.id_send),
+            subtitle = StringHolder(stringResource = Res.string.id_select_account),
+        )
 
         doAsync({
 

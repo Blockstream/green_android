@@ -1,5 +1,6 @@
 package com.blockstream.designsystem.components
 
+import com.blockstream.designsystem.AppRadius
 import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.animation.core.MutableTransitionState
 import androidx.compose.animation.expandVertically
@@ -407,7 +408,7 @@ class AppTextFieldStyle(
 )
 
 object AppTextFieldDefaults {
-    val Shape: Shape = RoundedCornerShape(8.dp)
+    val Shape: Shape = RoundedCornerShape(AppRadius.md)
     val BorderWidth = 1.dp
     val MinHeight = 60.dp
     val MultilineMinHeight = 120.dp

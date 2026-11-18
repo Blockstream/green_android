@@ -1,5 +1,7 @@
 package com.blockstream.compose.models.settings
 
+import com.blockstream.compose.utils.toStringHolder
+import com.blockstream.compose.utils.StringHolder
 import androidx.lifecycle.viewModelScope
 import blockstream_green.common.generated.resources.Res
 import blockstream_green.common.generated.resources.id_1s_twofactor_setup
@@ -34,7 +36,6 @@ import com.blockstream.compose.extensions.previewWallet
 import com.blockstream.compose.models.GreenViewModel
 import com.blockstream.compose.navigation.NavData
 import com.blockstream.compose.sideeffects.SideEffects
-import com.blockstream.compose.utils.StringHolder
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
@@ -118,23 +119,23 @@ class TwoFactorSetupViewModel(
         viewModelScope.launch {
             val title = when (action) {
                 TwoFactorSetupAction.SETUP, TwoFactorSetupAction.SETUP_EMAIL -> {
-                    getString(Res.string.id_1s_twofactor_setup, getString(method.localized))
+                    StringHolder(stringResource = Res.string.id_1s_twofactor_setup, args = listOf(StringHolder(stringResource = method.localized)))
                 }
 
                 TwoFactorSetupAction.RESET -> {
-                    getString(Res.string.id_request_twofactor_reset)
+                    StringHolder(stringResource = Res.string.id_request_twofactor_reset)
                 }
 
                 TwoFactorSetupAction.CANCEL -> {
-                    getString(Res.string.id_cancel_2fa_reset)
+                    StringHolder(stringResource = Res.string.id_cancel_2fa_reset)
                 }
 
                 TwoFactorSetupAction.DISPUTE -> {
-                    getString(Res.string.id_dispute_twofactor_reset)
+                    StringHolder(stringResource = Res.string.id_dispute_twofactor_reset)
                 }
 
                 TwoFactorSetupAction.UNDO_DISPUTE -> {
-                    getString(Res.string.id_undo_2fa_dispute)
+                    StringHolder(stringResource = Res.string.id_undo_2fa_dispute)
                 }
             }
 
@@ -173,7 +174,7 @@ class TwoFactorSetupViewModel(
                 }
             }
 
-            _navData.value = NavData(title = title, subtitle = greenWallet.name)
+            _navData.value = NavData(title = title, subtitle = greenWallet.name.toStringHolder())
         }
 
         session.ifConnected {

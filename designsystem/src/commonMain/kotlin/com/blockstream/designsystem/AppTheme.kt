@@ -34,6 +34,9 @@ object AppTheme {
         @Composable
         @ReadOnlyComposable
         get() = LocalAppTypography.current
+
+    val radius: AppRadius
+        get() = AppRadius
 }
 
 @Composable

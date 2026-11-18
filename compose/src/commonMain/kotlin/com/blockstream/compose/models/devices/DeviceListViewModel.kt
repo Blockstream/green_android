@@ -1,8 +1,7 @@
 package com.blockstream.compose.models.devices
 
+import com.blockstream.compose.utils.toStringHolder
 import androidx.lifecycle.viewModelScope
-import blockstream_green.common.generated.resources.Res
-import blockstream_green.common.generated.resources.id_setup_guide
 import com.blockstream.data.devices.DeviceModel
 import com.blockstream.data.devices.GreenDevice
 import com.blockstream.compose.events.Event
@@ -16,8 +15,6 @@ import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.flow.stateIn
-import kotlinx.coroutines.launch
-import org.jetbrains.compose.resources.getString
 
 abstract class DeviceListViewModelAbstract(val isJade: Boolean) : AbstractDeviceViewModel() {
     override fun screenName(): String = "DeviceList"
@@ -40,15 +37,11 @@ class DeviceListViewModel(isJade: Boolean = true) :
     }.stateIn(viewModelScope, SharingStarted.WhileSubscribed(), listOf())
 
     init {
-        viewModelScope.launch {
-            _navData.value =
-                NavData(
-                    title = if (isJade) "Blockstream Jade" else "", actions = listOfNotNull(
-                        NavAction.Text(title = getString(Res.string.id_setup_guide), onClick = {
-                            postEvent(NavigateDestinations.JadeGuide)
-                        }).takeIf { isJade }
-                    ))
-        }
+        _navData.value =
+            NavData(
+                title = (if (isJade) "Blockstream Jade" else "").toStringHolder(), actions = listOfNotNull(
+                    NavAction.SetupGuide(event = { NavigateDestinations.JadeGuide }).takeIf { isJade }
+                ))
 
         bootstrap()
     }

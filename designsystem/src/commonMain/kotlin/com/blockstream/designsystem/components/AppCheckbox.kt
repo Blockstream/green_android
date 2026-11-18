@@ -1,5 +1,6 @@
 package com.blockstream.designsystem.components
 
+import com.blockstream.designsystem.AppRadius
 import androidx.compose.animation.core.animateFloatAsState
 import androidx.compose.animation.core.spring
 import androidx.compose.foundation.Canvas
@@ -173,7 +174,7 @@ class AppCheckboxStyle(
 object AppCheckboxDefaults {
     val Size = 48.dp
     val BoxSize = 20.dp
-    val Shape: Shape = RoundedCornerShape(4.dp)
+    val Shape: Shape = RoundedCornerShape(AppRadius.sm)
     val BorderWidth = 1.dp
     val CheckSize = 12.dp
     val CheckStrokeWidth = 1.5.dp

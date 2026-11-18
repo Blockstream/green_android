@@ -1,5 +1,7 @@
 package com.blockstream.compose.models.send
 
+import com.blockstream.compose.utils.toStringHolder
+import com.blockstream.compose.utils.StringHolder
 import androidx.lifecycle.viewModelScope
 import blockstream_green.common.generated.resources.Res
 import blockstream_green.common.generated.resources.id_increase_fee
@@ -32,7 +34,6 @@ import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.flow.filterNotNull
 import kotlinx.coroutines.launch
 import kotlinx.serialization.json.Json
-import org.jetbrains.compose.resources.getString
 
 abstract class BumpViewModelAbstract(
     greenWallet: GreenWallet,
@@ -92,12 +93,10 @@ class BumpViewModel(
 
     init {
 
-        viewModelScope.launch {
-            _navData.value = NavData(
-                title = getString(Res.string.id_increase_fee),
-                subtitle = account.name
-            )
-        }
+        _navData.value = NavData(
+            title = StringHolder(stringResource = Res.string.id_increase_fee),
+            subtitle = account.name.toStringHolder()
+        )
 
         // Always show fee selector
         _showFeeSelector.value = true

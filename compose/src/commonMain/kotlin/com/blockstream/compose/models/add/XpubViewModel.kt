@@ -1,5 +1,6 @@
 package com.blockstream.compose.models.add
 
+import com.blockstream.compose.utils.toStringHolder
 import androidx.lifecycle.viewModelScope
 import blockstream_green.common.generated.resources.Res
 import blockstream_green.common.generated.resources.id_invalid_xpub
@@ -19,7 +20,6 @@ import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.launchIn
 import kotlinx.coroutines.flow.onEach
-import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
 import org.jetbrains.compose.resources.getString
 import org.koin.core.component.inject
@@ -43,9 +43,7 @@ class XpubViewModel(setupArgs: SetupArgs) : XpubViewModelAbstract(setupArgs = se
     private val wally: Wally by inject()
 
     init {
-        viewModelScope.launch {
-            _navData.value = NavData(title = setupArgs.accountType?.toString(), subtitle = greenWallet.name)
-        }
+        _navData.value = NavData(title = setupArgs.accountType?.toString().toStringHolder(), subtitle = greenWallet.name.toStringHolder())
 
         xpub.onEach {
             if (it.isBlank()) {

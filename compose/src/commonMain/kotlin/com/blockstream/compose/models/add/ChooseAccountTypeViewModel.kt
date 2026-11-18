@@ -1,5 +1,6 @@
 package com.blockstream.compose.models.add
 
+import com.blockstream.compose.utils.StringHolder
 import androidx.lifecycle.viewModelScope
 import blockstream_green.common.generated.resources.Res
 import blockstream_green.common.generated.resources.id_add_new_account
@@ -33,7 +34,6 @@ import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.flow.launchIn
 import kotlinx.coroutines.flow.onEach
 import kotlinx.coroutines.launch
-import org.jetbrains.compose.resources.getString
 import org.koin.core.component.inject
 
 abstract class ChooseAccountTypeViewModelAbstract(
@@ -91,9 +91,7 @@ class ChooseAccountTypeViewModel(greenWallet: GreenWallet, initAsset: AssetBalan
     init {
         bootstrap()
 
-        viewModelScope.launch {
-            _navData.value = NavData(title = getString(Res.string.id_add_new_account))
-        }
+        _navData.value = NavData(title = StringHolder(stringResource = Res.string.id_add_new_account))
 
         session.ifConnected {
 

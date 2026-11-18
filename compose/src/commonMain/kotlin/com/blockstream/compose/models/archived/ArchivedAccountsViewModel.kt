@@ -1,6 +1,7 @@
 package com.blockstream.compose.models.archived
 
-import androidx.lifecycle.viewModelScope
+import com.blockstream.compose.utils.toStringHolder
+import com.blockstream.compose.utils.StringHolder
 import blockstream_green.common.generated.resources.Res
 import blockstream_green.common.generated.resources.id_archived_accounts
 import com.blockstream.compose.extensions.launchIn
@@ -21,7 +22,6 @@ import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.flow.onEach
 import kotlinx.coroutines.flow.stateIn
-import kotlinx.coroutines.launch
 import org.jetbrains.compose.resources.getString
 import org.koin.core.component.inject
 
@@ -52,12 +52,10 @@ class ArchivedAccountsViewModel(greenWallet: GreenWallet, navigateToRoot: Boolea
 
 
     init {
-        viewModelScope.launch {
-            _navData.value = NavData(
-                title = getString(Res.string.id_archived_accounts),
-                subtitle = greenWallet.name
-            )
-        }
+        _navData.value = NavData(
+            title = StringHolder(stringResource = Res.string.id_archived_accounts),
+            subtitle = greenWallet.name.toStringHolder()
+        )
 
         session.allAccounts.onEach { allAccounts ->
             archivedAccounts.value = DataState.Success(

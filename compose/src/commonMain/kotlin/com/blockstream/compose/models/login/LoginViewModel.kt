@@ -1,5 +1,8 @@
 package com.blockstream.compose.models.login
 
+import com.blockstream.compose.navigation.MenuIcon
+import com.blockstream.compose.utils.StringHolder
+import com.blockstream.compose.utils.toStringHolder
 import androidx.lifecycle.viewModelScope
 import blockstream_green.common.generated.resources.Res
 import blockstream_green.common.generated.resources.id_bip39_passphrase_login
@@ -11,11 +14,6 @@ import blockstream_green.common.generated.resources.id_last_attempt_if_failed_yo
 import blockstream_green.common.generated.resources.id_remove_wallet
 import blockstream_green.common.generated.resources.id_rename_wallet
 import blockstream_green.common.generated.resources.id_show_recovery_phrase
-import blockstream_green.common.generated.resources.key
-import blockstream_green.common.generated.resources.password
-import blockstream_green.common.generated.resources.question
-import blockstream_green.common.generated.resources.text_aa
-import blockstream_green.common.generated.resources.trash
 import com.blockstream.compose.events.Event
 import com.blockstream.compose.events.Events
 import com.blockstream.compose.extensions.launchIn
@@ -28,7 +26,6 @@ import com.blockstream.compose.navigation.NavigateDestinations
 import com.blockstream.compose.sideeffects.SideEffect
 import com.blockstream.compose.sideeffects.SideEffects
 import com.blockstream.compose.utils.SetupDevelopmentEnv
-import com.blockstream.compose.utils.StringHolder
 import com.blockstream.compose.utils.observeIsSlow
 import com.blockstream.data.Urls
 import com.blockstream.data.banner.Banner
@@ -212,6 +209,7 @@ class LoginViewModel constructor(
 
         object LoginWatchOnly : Event
         object Login : Event
+        object OpenBip39Passphrase : Event
         object LoginWithDevice : Event
         object ClickRestoreWithRecovery : Event
         object ClickBiometrics : Event
@@ -321,47 +319,34 @@ class LoginViewModel constructor(
 
         combine(greenWalletFlow.filterNotNull(), pinCredentials) { it, _ ->
             _navData.value = NavData(
-                title = it.name,
+                title = it.name.toStringHolder(),
                 actions = listOfNotNull(
                     NavAction.Menu(
-                        title = getString(Res.string.id_help),
-                        icon = Res.drawable.question,
-
-                        ) {
-                        postEvent(LocalEvents.ClickHelp)
-                    }.takeIf { check2 && pinCredentials.isEmpty() && passwordCredentials.isEmpty() },
+                        title = StringHolder(stringResource = Res.string.id_help),
+                        icon = MenuIcon.Help,
+                        event = { LocalEvents.ClickHelp }
+                    ).takeIf { check2 && pinCredentials.isEmpty() && passwordCredentials.isEmpty() },
                     NavAction.Menu(
-                        title = getString(Res.string.id_bip39_passphrase_login),
-                        icon = Res.drawable.password,
-                    ) {
-                        postSideEffect(
-                            SideEffects.NavigateTo(
-                                NavigateDestinations.Bip39Passphrase(
-                                    greenWallet = greenWallet,
-                                    passphrase = bip39Passphrase.value
-                                )
-                            )
-                        )
-                    }.takeIf { check2 && (pinCredentials.value.isNotEmpty() || biometricsCredentials.value.isNotEmpty() || passwordCredentials.value.isNotEmpty()) },
+                        title = StringHolder(stringResource = Res.string.id_bip39_passphrase_login),
+                        icon = MenuIcon.Passphrase,
+                        event = { LocalEvents.OpenBip39Passphrase }
+                    ).takeIf { check2 && (pinCredentials.value.isNotEmpty() || biometricsCredentials.value.isNotEmpty() || passwordCredentials.value.isNotEmpty()) },
                     NavAction.Menu(
-                        title = getString(Res.string.id_show_recovery_phrase),
-                        icon = Res.drawable.key,
-                    ) {
-                        postEvent(LocalEvents.EmergencyRecovery(true))
-                    }.takeIf { check2 && (pinCredentials.value.isNotEmpty() || biometricsCredentials.value.isNotEmpty() || passwordCredentials.value.isNotEmpty()) },
+                        title = StringHolder(stringResource = Res.string.id_show_recovery_phrase),
+                        icon = MenuIcon.RecoveryPhrase,
+                        event = { LocalEvents.EmergencyRecovery(true) }
+                    ).takeIf { check2 && (pinCredentials.value.isNotEmpty() || biometricsCredentials.value.isNotEmpty() || passwordCredentials.value.isNotEmpty()) },
                     NavAction.Menu(
-                        title = getString(Res.string.id_rename_wallet),
-                        icon = Res.drawable.text_aa,
-                    ) {
-                        postSideEffect(SideEffects.NavigateTo(NavigateDestinations.RenameWallet(it)))
-                    }.takeIf { check1 },
+                        title = StringHolder(stringResource = Res.string.id_rename_wallet),
+                        icon = MenuIcon.Rename,
+                        event = { Events.NavigateTo(NavigateDestinations.RenameWallet(it)) }
+                    ).takeIf { check1 },
 
                     NavAction.Menu(
-                        title = getString(Res.string.id_remove_wallet),
-                        icon = Res.drawable.trash,
-                    ) {
-                        postSideEffect(SideEffects.NavigateTo(NavigateDestinations.DeleteWallet(it)))
-                    }.takeIf { check1 },
+                        title = StringHolder(stringResource = Res.string.id_remove_wallet),
+                        icon = MenuIcon.Delete,
+                        event = { Events.NavigateTo(NavigateDestinations.DeleteWallet(it)) }
+                    ).takeIf { check1 },
 
                     )
             )
@@ -388,6 +373,15 @@ class LoginViewModel constructor(
     override suspend fun handleEvent(event: Event) {
         super.handleEvent(event)
         when (event) {
+            is LocalEvents.OpenBip39Passphrase -> postSideEffect(
+                SideEffects.NavigateTo(
+                    NavigateDestinations.Bip39Passphrase(
+                        greenWallet = greenWallet,
+                        passphrase = bip39Passphrase.value
+                    )
+                )
+            )
+
             is LocalEvents.Authenticated -> {
                 (watchOnlyCredentials.data() ?: hwWatchOnlyCredentials.data())?.also {
                     loginWatchOnlyWithLoginCredentials(it)

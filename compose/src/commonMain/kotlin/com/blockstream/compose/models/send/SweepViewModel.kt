@@ -1,5 +1,6 @@
 package com.blockstream.compose.models.send
 
+import com.blockstream.compose.utils.StringHolder
 import androidx.lifecycle.viewModelScope
 import blockstream_green.common.generated.resources.Res
 import blockstream_green.common.generated.resources.id_sweep
@@ -39,8 +40,6 @@ import kotlinx.coroutines.flow.filterNotNull
 import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.flow.onEach
 import kotlinx.coroutines.flow.stateIn
-import kotlinx.coroutines.launch
-import org.jetbrains.compose.resources.getString
 import org.koin.core.component.inject
 
 abstract class SweepViewModelAbstract(
@@ -87,11 +86,9 @@ class SweepViewModel(greenWallet: GreenWallet, privateKey: String?, accountAsset
 
     init {
 
-        viewModelScope.launch {
-            _navData.value = NavData(
-                title = getString(Res.string.id_sweep)
-            )
-        }
+        _navData.value = NavData(
+            title = StringHolder(stringResource = Res.string.id_sweep)
+        )
 
         session.ifConnected {
             if (accountAsset.value == null) {

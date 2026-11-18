@@ -7,16 +7,21 @@ import org.jetbrains.compose.resources.stringResource
 data class StringHolder(
     val stringResource: StringResource? = null,
     val id: String? = null,
-    val string: String? = null
+    val string: String? = null,
+    val args: List<Any> = emptyList()
 ) {
     @Composable
-    fun stringOrNull(): String? = stringResource?.let { stringResource(stringResource) }
+    fun stringOrNull(): String? = stringResource?.let {
+        stringResource(it, *args.map { arg -> if (arg is StringHolder) arg.string() else arg }.toTypedArray())
+    }
         ?: id?.let { stringResourceFromId(id) } ?: string
 
     @Composable
     fun string(): String = stringOrNull() ?: ""
 
-    suspend fun getStringOrNull(): String? = stringResource?.let { org.jetbrains.compose.resources.getString(stringResource) }
+    suspend fun getStringOrNull(): String? = stringResource?.let {
+        org.jetbrains.compose.resources.getString(it, *args.map { arg -> if (arg is StringHolder) arg.getString() else arg }.toTypedArray())
+    }
         ?: id?.let { getStringFromId(id) } ?: string
 
     suspend fun getString(): String = getStringOrNull() ?: ""
@@ -41,3 +46,5 @@ data class StringHolder(
         }
     }
 }
+
+fun String?.toStringHolder(): StringHolder? = this?.let { StringHolder(string = it) }

@@ -3,11 +3,12 @@ package com.blockstream.compose.models.developer
 
 import com.blockstream.compose.models.GreenViewModel
 import com.blockstream.compose.navigation.NavData
+import com.blockstream.compose.utils.toStringHolder
 
 class RiveAnimationsViewModel : GreenViewModel() {
 
     init {
-        _navData.value = NavData(title = "Rive animations")
+        _navData.value = NavData(title = "Rive animations".toStringHolder())
 
         bootstrap()
     }

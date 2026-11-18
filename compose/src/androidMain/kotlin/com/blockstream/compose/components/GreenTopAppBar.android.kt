@@ -1,17 +1,19 @@
 package com.blockstream.compose.components
 
+import com.blockstream.compose.navigation.MenuIcon
+import com.blockstream.compose.utils.StringHolder
+import com.blockstream.compose.utils.toStringHolder
+import com.blockstream.compose.events.Events
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.setValue
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.padding
 import androidx.compose.material3.Scaffold
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
-import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import blockstream_green.common.generated.resources.Res
-import blockstream_green.common.generated.resources.note_pencil
-import blockstream_green.common.generated.resources.signature
 import com.blockstream.compose.GreenPreview
 import com.blockstream.compose.navigation.NavAction
 import com.blockstream.compose.navigation.NavData
@@ -26,22 +28,21 @@ private fun GreenTopAppScreenPreview() {
         var appBar by remember {
             mutableStateOf(
                 NavData(
-                    title = "Title",
-                    subtitle = "This is the Subtitle",
+                    title = "Title".toStringHolder(),
+                    subtitle = "This is the Subtitle".toStringHolder(),
                     walletName = "Liquid Wallet Singlesig",
                     actions = listOf(
-                        NavAction.Text(title = "Action"),
-                        NavAction.Text(
-                            title = "Action",
-                            icon = Res.drawable.note_pencil
+                        NavAction.Help(event = { Events.Continue }),
+                        NavAction.Note(hasNote = false, event = { Events.Continue }),
+                        NavAction.Menu(
+                            title = StringHolder(string = "Action Menu"),
+                            icon = MenuIcon.Sign,
+                            event = { Events.Continue }
                         ),
                         NavAction.Menu(
-                            title = "Action Menu",
-                            icon = Res.drawable.signature
-                        ),
-                        NavAction.Menu(
-                            title = "Action Menu",
-                            icon = Res.drawable.note_pencil
+                            title = StringHolder(string = "Action Menu"),
+                            icon = MenuIcon.Rename,
+                            event = { Events.Continue }
                         ),
                     )
                 )

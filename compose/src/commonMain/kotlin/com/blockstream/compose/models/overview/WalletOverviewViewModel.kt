@@ -1,5 +1,6 @@
 package com.blockstream.compose.models.overview
 
+import com.blockstream.compose.utils.StringHolder
 import androidx.lifecycle.viewModelScope
 import blockstream_green.common.generated.resources.Res
 import blockstream_green.common.generated.resources.id_home
@@ -52,7 +53,6 @@ import kotlinx.coroutines.flow.onEach
 import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.plus
-import org.jetbrains.compose.resources.getString
 import org.koin.core.component.inject
 
 abstract class WalletOverviewViewModelAbstract(
@@ -306,9 +306,9 @@ class WalletOverviewViewModel(
         bootstrap()
     }
 
-    private suspend fun updateNavData(greenWallet: GreenWallet) {
+    private fun updateNavData(greenWallet: GreenWallet) {
         _navData.value = NavData(
-            title = getString(Res.string.id_home),
+            title = StringHolder(stringResource = Res.string.id_home),
             walletName = greenWallet.name,
             isVisible = !showWalletOnboarding.value,
             showBadge = !greenWallet.isRecoveryConfirmed,

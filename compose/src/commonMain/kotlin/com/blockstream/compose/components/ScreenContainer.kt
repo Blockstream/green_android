@@ -28,6 +28,7 @@ import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.input.pointer.pointerInput
+import androidx.compose.ui.unit.coerceAtLeast
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.blockstream.compose.theme.titleMedium
@@ -159,7 +160,7 @@ fun ScreenContainer(
             ) {
                 LinearProgressIndicator(
                     modifier = Modifier
-                        .padding(top = innerPadding.calculateTopPadding() - 64.dp)
+                        .padding(top = (innerPadding.calculateTopPadding() - 64.dp).coerceAtLeast(0.dp))
                         .padding(horizontal = 16.dp)
                         .fillMaxWidth()
                 )

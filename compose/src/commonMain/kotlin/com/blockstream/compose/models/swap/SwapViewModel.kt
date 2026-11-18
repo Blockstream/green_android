@@ -2,6 +2,8 @@
 
 package com.blockstream.compose.models.swap
 
+import com.blockstream.compose.utils.toStringHolder
+import com.blockstream.compose.utils.StringHolder
 import androidx.lifecycle.viewModelScope
 import blockstream_green.common.generated.resources.Res
 import blockstream_green.common.generated.resources.id_account_selector
@@ -19,7 +21,6 @@ import com.blockstream.compose.models.send.CreateTransactionViewModelAbstract
 import com.blockstream.compose.navigation.NavData
 import com.blockstream.compose.navigation.NavigateDestinations
 import com.blockstream.compose.sideeffects.SideEffects
-import com.blockstream.compose.utils.StringHolder
 import com.blockstream.data.AddressInputType
 import com.blockstream.data.TransactionSegmentation
 import com.blockstream.data.TransactionType
@@ -143,12 +144,10 @@ class SwapViewModel(
     private var resetJob: Job? = null
 
     init {
-        viewModelScope.launch {
-            _navData.value = NavData(
-                title = getString(Res.string.id_swap),
-                subtitle = greenWallet.name
-            )
-        }
+        _navData.value = NavData(
+            title = StringHolder(stringResource = Res.string.id_swap),
+            subtitle = greenWallet.name.toStringHolder()
+        )
 
         viewModelScope.launch {
             val hasSwaps = runCatching { hasWalletSwapsUseCase(greenWallet.xPubHashId) }

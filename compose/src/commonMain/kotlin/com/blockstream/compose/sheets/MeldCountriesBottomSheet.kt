@@ -17,6 +17,8 @@ import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import blockstream_green.common.generated.resources.Res
 import blockstream_green.common.generated.resources.id_loading
+import blockstream_green.common.generated.resources.id_please_select_your_correct_billing
+import blockstream_green.common.generated.resources.id_select_your_region
 import com.blockstream.compose.components.CountriesList
 import com.blockstream.compose.components.CountryItem
 import com.blockstream.compose.components.GreenBottomSheet
@@ -31,15 +33,13 @@ import org.jetbrains.compose.resources.stringResource
 @Composable
 fun MeldCountriesBottomSheet(
     viewModel: MeldCountriesViewModel,
-    title: String? = null,
-    subtitle: String? = null,
     onDismissRequest: () -> Unit,
 ) {
     val uiState by viewModel.uiState.collectAsStateWithLifecycle()
 
     GreenBottomSheet(
-        title = title,
-        subtitle = subtitle,
+        title = stringResource(Res.string.id_select_your_region),
+        subtitle = stringResource(Res.string.id_please_select_your_correct_billing),
         viewModel = viewModel,
         withHorizontalPadding = false,
         withBottomPadding = false,

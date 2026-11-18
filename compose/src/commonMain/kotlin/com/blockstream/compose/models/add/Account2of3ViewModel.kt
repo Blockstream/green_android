@@ -1,13 +1,12 @@
 package com.blockstream.compose.models.add
 
-import androidx.lifecycle.viewModelScope
+import com.blockstream.compose.utils.toStringHolder
 import com.blockstream.data.data.SetupArgs
 import com.blockstream.compose.extensions.previewWallet
 import com.blockstream.compose.events.Event
 import com.blockstream.compose.navigation.NavData
 import com.blockstream.compose.navigation.NavigateDestinations
 import com.blockstream.compose.sideeffects.SideEffects
-import kotlinx.coroutines.launch
 
 abstract class Account2of3ViewModelAbstract(
     val setupArgs: SetupArgs
@@ -61,9 +60,7 @@ class Account2of3ViewModel(setupArgs: SetupArgs) :
     }
 
     init {
-        viewModelScope.launch {
-            _navData.value = NavData(title = setupArgs.accountType?.toString(), subtitle = greenWallet.name)
-        }
+        _navData.value = NavData(title = setupArgs.accountType?.toString().toStringHolder(), subtitle = greenWallet.name.toStringHolder())
 
         bootstrap()
     }

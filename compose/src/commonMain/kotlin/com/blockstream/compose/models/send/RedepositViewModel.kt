@@ -1,5 +1,7 @@
 package com.blockstream.compose.models.send
 
+import com.blockstream.compose.utils.toStringHolder
+import com.blockstream.compose.utils.StringHolder
 import androidx.lifecycle.viewModelScope
 import blockstream_green.common.generated.resources.Res
 import blockstream_green.common.generated.resources.id_redeposit
@@ -12,7 +14,6 @@ import com.blockstream.compose.extensions.previewWallet
 import com.blockstream.compose.navigation.NavData
 import com.blockstream.compose.navigation.NavigateDestinations
 import com.blockstream.compose.sideeffects.SideEffects
-import com.blockstream.compose.utils.StringHolder
 import com.blockstream.data.TransactionSegmentation
 import com.blockstream.data.TransactionType
 import com.blockstream.data.banner.Banner
@@ -33,8 +34,6 @@ import com.blockstream.domain.receive.GetReceiveAddressUseCase
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.flow.filterNotNull
-import kotlinx.coroutines.launch
-import org.jetbrains.compose.resources.getString
 import org.koin.core.component.inject
 
 abstract class RedepositViewModelAbstract(
@@ -60,12 +59,10 @@ class RedepositViewModel(
     private val getReceiveAddressUseCase: GetReceiveAddressUseCase by inject()
 
     init {
-        viewModelScope.launch {
-            _navData.value = NavData(
-                title = getString(if (isRedeposit2FA) Res.string.id_reenable_2fa else Res.string.id_redeposit),
-                subtitle = greenWallet.name,
-            )
-        }
+        _navData.value = NavData(
+            title = StringHolder(stringResource = if (isRedeposit2FA) Res.string.id_reenable_2fa else Res.string.id_redeposit),
+            subtitle = greenWallet.name.toStringHolder(),
+        )
 
         if (account.isLightning) {
             postSideEffect(

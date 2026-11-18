@@ -1,5 +1,6 @@
 package com.blockstream.compose.models.settings
 
+import com.blockstream.compose.utils.StringHolder
 import androidx.lifecycle.viewModelScope
 import blockstream_green.common.generated.resources.Res
 import blockstream_green.common.generated.resources.id_12_months_51840_blocks
@@ -44,7 +45,6 @@ import com.blockstream.compose.navigation.NavigateDestinations
 import com.blockstream.compose.navigation.NavigateDestinations.ChooseAccountType
 import com.blockstream.compose.sideeffects.SideEffect
 import com.blockstream.compose.sideeffects.SideEffects
-import com.blockstream.compose.utils.StringHolder
 import com.blockstream.data.BTC_UNIT
 import com.blockstream.data.Urls
 import com.blockstream.data.crypto.PlatformCipher
@@ -250,14 +250,14 @@ class WalletSettingsViewModel(
         bootstrap()
     }
 
-    private suspend fun updateNavData(greenWallet: GreenWallet, isVisible: Boolean) {
+    private fun updateNavData(greenWallet: GreenWallet, isVisible: Boolean) {
         when (section) {
             WalletSettingsSection.RecoveryTransactions -> Res.string.id_recovery_transactions
             WalletSettingsSection.TwoFactor -> Res.string.id_2fa_methods
             else -> Res.string.id_settings
         }.also {
             _navData.value = NavData(
-                title = getString(it),
+                title = StringHolder(stringResource = it),
                 isVisible = isVisible,
                 walletName = greenWallet.name.takeIf { section == WalletSettingsSection.General },
                 showBadge = !greenWallet.isRecoveryConfirmed && section == WalletSettingsSection.General,

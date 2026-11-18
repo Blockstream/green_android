@@ -1,10 +1,8 @@
 package com.blockstream.compose.models.designsystem
 
+import com.blockstream.compose.utils.toStringHolder
+import com.blockstream.compose.events.Event
 import androidx.lifecycle.viewModelScope
-import com.adamglin.PhosphorIcons
-import com.adamglin.phosphoricons.Regular
-import com.adamglin.phosphoricons.regular.Moon
-import com.adamglin.phosphoricons.regular.Sun
 import com.blockstream.compose.models.GreenViewModel
 import com.blockstream.compose.navigation.NavAction
 import com.blockstream.compose.navigation.NavData
@@ -24,20 +22,26 @@ class DesignSystemCatalogViewModel(val entryId: String? = null, initialIsLight: 
     init {
         isLight.onEach { light ->
             _navData.value = NavData(
-                title = entry?.title ?: "Design system",
+                title = (entry?.title ?: "Design system").toStringHolder(),
                 actions = listOf(
-                    NavAction.Icon(
-                        title = if (light) "Switch to dark" else "Switch to light",
-                        imageVector = if (light) PhosphorIcons.Regular.Moon else PhosphorIcons.Regular.Sun,
-                        testTag = "btn_catalog_theme"
-                    ) {
-                        isLight.value = !light
-                    }
+                    NavAction.ThemeToggle(isLight = light, testTag = "btn_catalog_theme", event = { LocalEvents.ToggleTheme })
                 )
             )
         }.launchIn(viewModelScope)
 
         bootstrap()
+    }
+
+    class LocalEvents {
+        object ToggleTheme : Event
+    }
+
+    override suspend fun handleEvent(event: Event) {
+        super.handleEvent(event)
+
+        if (event is LocalEvents.ToggleTheme) {
+            isLight.value = !isLight.value
+        }
     }
 
     fun open(entryId: String) {

@@ -1,6 +1,6 @@
 package com.blockstream.compose.models.receive
 
-import androidx.lifecycle.viewModelScope
+import com.blockstream.compose.utils.StringHolder
 import blockstream_green.common.generated.resources.Res
 import blockstream_green.common.generated.resources.id_receive
 import blockstream_green.common.generated.resources.id_select_account
@@ -12,8 +12,6 @@ import com.blockstream.compose.models.GreenViewModel
 import com.blockstream.compose.navigation.NavData
 import com.blockstream.compose.navigation.NavigateDestinations
 import com.blockstream.compose.sideeffects.SideEffects
-import kotlinx.coroutines.launch
-import org.jetbrains.compose.resources.getString
 
 abstract class ReceiveChooseAccountViewModelAbstract(
     greenWallet: GreenWallet, accountAssetOrNull: AccountAsset? = null
@@ -32,12 +30,10 @@ class ReceiveChooseAccountViewModel(
 ) : ReceiveChooseAccountViewModelAbstract(greenWallet = greenWallet, accountAssetOrNull = accountAssetOrNull) {
 
     init {
-        viewModelScope.launch {
-            _navData.value = NavData(
-                title = getString(Res.string.id_receive),
-                subtitle = getString(Res.string.id_select_account),
-            )
-        }
+        _navData.value = NavData(
+            title = StringHolder(stringResource = Res.string.id_receive),
+            subtitle = StringHolder(stringResource = Res.string.id_select_account),
+        )
     }
 
     override fun selectAccount(account: AccountAsset) {

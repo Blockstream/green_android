@@ -1,14 +1,9 @@
 package com.blockstream.compose.models.send
 
-import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.unit.dp
+import com.blockstream.compose.utils.StringHolder
 import androidx.lifecycle.viewModelScope
 import blockstream_green.common.generated.resources.Res
-import blockstream_green.common.generated.resources.funnel_outline_active
 import blockstream_green.common.generated.resources.id_coin_selection
-import com.adamglin.PhosphorIcons
-import com.adamglin.phosphoricons.Regular
-import com.adamglin.phosphoricons.regular.Funnel
 import com.blockstream.compose.events.Event
 import com.blockstream.compose.extensions.previewAccountAsset
 import com.blockstream.compose.extensions.previewWallet
@@ -32,7 +27,6 @@ import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.launch
 import kotlinx.serialization.Serializable
 import kotlinx.serialization.json.JsonElement
-import org.jetbrains.compose.resources.getString
 import org.koin.core.component.inject
 
 @Serializable
@@ -160,12 +154,10 @@ class CoinSelectionViewModel(
     override val hasError: StateFlow<Boolean> = _hasError.asStateFlow()
 
     init {
-        viewModelScope.launch {
-            _navData.value = NavData(
-                title = getString(Res.string.id_coin_selection),
-                isCentered = true
-            )
-        }
+        _navData.value = NavData(
+            title = StringHolder(stringResource = Res.string.id_coin_selection),
+            isCentered = true
+        )
 
         refreshCoins()
         bootstrap()
@@ -379,18 +371,10 @@ class CoinSelectionViewModel(
     }
 
     private fun buildFilterAction(): NavAction {
-        // Phosphor doesn't ship a funnel+dot icon, so the active state is the one
-        // remaining custom asset; the inactive state uses the stock Phosphor icon.
-        val isActive = _selectedFilters.value.isNotEmpty()
-        return NavAction.Icon(
-            icon = Res.drawable.funnel_outline_active.takeIf { isActive },
-            imageVector = if (isActive) null else PhosphorIcons.Regular.Funnel,
-            iconTint = if (isActive) Color.Unspecified else null,
-            iconSize = 22.dp,
+        return NavAction.Filter(
+            isActive = _selectedFilters.value.isNotEmpty(),
             testTag = "coin_filter_button",
-            onClick = {
-                postEvent(LocalEvents.OpenFilters)
-            }
+            event = { LocalEvents.OpenFilters }
         )
     }
 

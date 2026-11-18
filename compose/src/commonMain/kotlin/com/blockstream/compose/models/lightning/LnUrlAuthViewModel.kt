@@ -1,6 +1,6 @@
 package com.blockstream.compose.models.lightning
 
-import androidx.lifecycle.viewModelScope
+import com.blockstream.compose.utils.toStringHolder
 import blockstream_green.common.generated.resources.Res
 import blockstream_green.common.generated.resources.id_authentication_successful
 import com.blockstream.data.data.GreenWallet
@@ -14,7 +14,6 @@ import com.blockstream.compose.sideeffects.SideEffects
 import com.blockstream.compose.utils.StringHolder
 import com.blockstream.data.lightning.LnUrlAuthData
 import com.blockstream.data.lightning.LnUrlAuthOutcome
-import kotlinx.coroutines.launch
 
 abstract class LnUrlAuthViewModelAbstract(
     greenWallet: GreenWallet,
@@ -29,9 +28,7 @@ class LnUrlAuthViewModel(greenWallet: GreenWallet, requestData: LnUrlAuthData) :
     LnUrlAuthViewModelAbstract(greenWallet = greenWallet, requestData = requestData) {
 
     init {
-        viewModelScope.launch {
-            _navData.value = NavData(title = "LNURL Auth", subtitle = greenWallet.name)
-        }
+        _navData.value = NavData(title = "LNURL Auth".toStringHolder(), subtitle = greenWallet.name.toStringHolder())
         bootstrap()
     }
 
