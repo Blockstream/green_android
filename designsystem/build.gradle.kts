@@ -41,8 +41,13 @@ kotlin {
             api(compose.components.resources)
         }
 
+        androidMain.dependencies {
+            implementation(libs.androidx.activity)
+        }
+
         commonTest.dependencies {
             implementation(libs.kotlin.test)
+            implementation(libs.kotlinx.coroutines.test)
         }
     }
 }

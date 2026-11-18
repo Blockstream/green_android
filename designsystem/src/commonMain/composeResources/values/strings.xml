@@ -1,4 +1,10 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
     <string name="textfield_clear">Clear</string>
+    <string name="bottomsheet_pane_title">Bottom sheet</string>
+    <string name="bottomsheet_drag_handle">Drag handle</string>
+    <string name="bottomsheet_dismiss">Dismiss bottom sheet</string>
+    <string name="bottomsheet_expand">Expand bottom sheet</string>
+    <string name="bottomsheet_collapse">Collapse bottom sheet</string>
+    <string name="bottomsheet_close">Close sheet</string>
 </resources>

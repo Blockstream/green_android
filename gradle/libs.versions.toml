@@ -5,6 +5,7 @@ filekit-dialogs = "0.16.0"
 jvm = "25"
 # Java version the code targets: the class files and the JDK API that Kotlin compiles against. Android needs 17
 jvmTarget = "17"
+activity = "1.13.0"
 accompanistPermissions = "0.37.3"
 constraintlayoutComposeMultiplatform = "0.8.3"
 kotlin = "2.4.21"
@@ -170,6 +171,7 @@ uri-kmp = { module = "com.eygraber:uri-kmp", version.ref = "uriKmp" }
 turbine = { module = "app.cash.turbine:turbine", version.ref = "turbine" }
 usb-serial = { module = "com.github.angelix:UsbSerial", version.ref = "usb-serial" }
 zxing-android-embedded = { module = "com.journeyapps:zxing-android-embedded", version.ref = "zxing-android-embedded" }
+androidx-activity = { module = "androidx.activity:activity", version.ref = "activity" }
 androidx-activity-compose = { module = "androidx.activity:activity-compose" }
 navigation-compose = { module = "org.jetbrains.androidx.navigation:navigation-compose", version.ref = "navigation" }
 compose-backhandler = { module = "org.jetbrains.compose.ui:ui-backhandler", version.ref = "jetbrains-compose" }
