@@ -363,28 +363,24 @@ class NotificationManagerAndroid constructor(
             }
     }
 
-    fun createDebugNotification(
-        context: Context,
-        title: String,
-        message: String,
-    ): Notification {
-
-        val notificationSound = RingtoneManager.getDefaultUri(RingtoneManager.TYPE_NOTIFICATION)
-
-        return NotificationCompat.Builder(context, LIGHTNING_CHANNEL_ID)
-            .setSmallIcon(R.drawable.ic_stat_green).setContentTitle(title).setContentText(message)
-            .setColorized(true).setColor(accentColor).setSound(notificationSound)
-            .setPriority(NotificationCompat.PRIORITY_MAX).setAutoCancel(true)
-            .setOnlyAlertOnce(false).setVisibility(NotificationCompat.VISIBILITY_PUBLIC).build()
-            .also {
-                androidNotificationManager.notify(237_237, it)
-            }
+    // Android 11 and below show the foreground notification of expedited work, and reject one without a small icon
+    suspend fun createLightningForegroundServiceNotification(context: Context): Notification {
+        return foregroundServiceNotificationBuilder(context)
+            .setContentText(getString(Res.string.id_lightning_is_running_in_the_background))
+            .build()
     }
 
-    suspend fun createLightningForegroundServiceNotification(context: Context): Notification {
+    suspend fun createSwapForegroundServiceNotification(context: Context): Notification {
+        return foregroundServiceNotificationBuilder(context).build()
+    }
+
+    private suspend fun foregroundServiceNotificationBuilder(context: Context): NotificationCompat.Builder {
         return NotificationCompat.Builder(context, LIGHTNING_CHANNEL_ID)
+            .setSmallIcon(R.drawable.ic_stat_green)
+            .setColor(accentColor)
             .setContentTitle(getString(Res.string.id_lightning))
-            .setTicker(getString(Res.string.id_lightning)).setOngoing(true).build()
+            .setTicker(getString(Res.string.id_lightning))
+            .setOngoing(true)
     }
 
     suspend fun createLightningBackgroundNotification(

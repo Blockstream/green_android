@@ -27,7 +27,7 @@ class BoltzWork(val context: Context, workerParams: WorkerParameters) : Coroutin
     private val notificationManager: NotificationManagerAndroid by inject()
 
     override suspend fun getForegroundInfo(): ForegroundInfo {
-        val notification = notificationManager.createLightningForegroundServiceNotification(context)
+        val notification = notificationManager.createSwapForegroundServiceNotification(context)
         return ForegroundInfo(id.hashCode(), notification)
     }
 

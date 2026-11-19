@@ -100,10 +100,6 @@ fun initKoinDesktop(appConfig: AppConfig, appInfo: AppInfo) {
             }
             single<FcmCommon> {
                 object : FcmCommon(get()) {
-                    override fun showDebugNotification(title: String, message: String) {
-
-                    }
-
                     override fun showBuyTransactionNotification(
                         meldNotificationData: MeldNotificationData
                     ) {

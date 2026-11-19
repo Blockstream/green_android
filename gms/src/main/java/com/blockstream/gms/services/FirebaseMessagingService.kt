@@ -1,6 +1,5 @@
 package com.blockstream.gms.services
 
-import com.blockstream.data.config.AppInfo
 import com.blockstream.data.extensions.tryCatchNull
 import com.blockstream.data.fcm.FcmCommon
 import com.blockstream.data.notifications.models.BoltzNotificationSimple
@@ -15,7 +14,6 @@ import org.koin.core.component.inject
 class FirebaseMessagingService : FirebaseMessagingService(), KoinComponent {
 
     val fcm: FcmCommon by inject()
-    val appInfo: AppInfo by inject()
     val json: Json by inject()
 
     override fun onMessageReceived(remoteMessage: RemoteMessage) {
@@ -23,12 +21,6 @@ class FirebaseMessagingService : FirebaseMessagingService(), KoinComponent {
         val data = remoteMessage.data
 
         if (data.isEmpty()) return
-
-        if (appInfo.isDevelopmentOrDebug) {
-            fcm.showDebugNotification(
-                title = "Notification Received", message = data.toString()
-            )
-        }
 
         when (data["type"]) {
             "BOLTZ_EVENT" -> {

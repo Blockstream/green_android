@@ -69,17 +69,6 @@ class FcmAndroid constructor(
         notificationManager.createLightningBackgroundNotification(context, wallet)
     }
 
-    override fun showDebugNotification(
-        title: String,
-        message: String,
-    ) {
-        notificationManager.createDebugNotification(
-            context = context,
-            title = title,
-            message = message
-        )
-    }
-
     fun scheduleMeldBackgroundJob(
         externalCustomerId: String
     ) {

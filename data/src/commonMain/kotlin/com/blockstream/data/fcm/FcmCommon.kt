@@ -70,11 +70,6 @@ abstract class FcmCommon constructor(val applicationScope: ApplicationScope) : K
         wallet: GreenWallet
     )
 
-    abstract fun showDebugNotification(
-        title: String,
-        message: String,
-    )
-
     abstract fun showBuyTransactionNotification(
         meldNotificationData: MeldNotificationData
     )
