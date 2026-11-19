@@ -5,6 +5,35 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/).
 
 ## [Unreleased]
 
+## [5.8.0] - 2026-11-24
+
+### Added
+
+- App Settings button in the header and an About bottom sheet
+- Explain what Tor and the proxy cover before enabling them
+- Check Lightning availability before creating a Lightning node
+- Wake Lightning in the background through push notifications to settle payments
+
+### Changed
+
+- Update Blockstream logo and app icons
+- Send support requests through the Zendesk Requests API, enabling the in-app support form on F-Droid
+- Update AMP2 accounts in real time through waterfalls subscriptions instead of polling
+- Hide Lightning on testnet
+- Update GDK to version 0.78.2
+- Update LWK to version 0.20.0
+- Update Greenlight SDK to version 0.5.0
+- Update Android dependencies and build tooling
+
+### Fixed
+
+- Show snackbars above open bottom sheets
+- Prevent crash when restoring the transaction screen after process death
+- Don't open Jade Enable Swaps screen after a failed hardware login
+- Show Ledger-formatted confidential Liquid P2WPKH addresses on device confirmation
+- Show insufficient funds on the recipient screen for an empty account
+- Tighten cloud backup rules to exclude app data on Android 7–11 devices without backup encryption
+
 ## [5.7.1] - 2026-11-04
 
 ### Changed
