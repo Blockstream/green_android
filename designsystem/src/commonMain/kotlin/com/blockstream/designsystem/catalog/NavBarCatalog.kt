@@ -50,6 +50,7 @@ fun NavBarCatalog() {
         Column(verticalArrangement = Arrangement.spacedBy(8.dp)) {
             CatalogLabel("Trailing items")
             NavBar(leading = { AppNavBarTitle(title = "Send", onBack = {}, backContentDescription = "Back") }, trailing = { AppNavBarTextAction(text = "Add Note", onClick = {}) })
+            NavBar(leading = { AppNavBarTitle(title = "Send", onBack = {}, backContentDescription = "Back") }, trailing = { AppNavBarTextAction(text = "Add Note", onClick = {}, enabled = false) })
             NavBar(leading = { AppNavBarTitle(title = "Home") }, trailing = { AppNavBarWalletChip(name = "My Wallet with a long name", onClick = {}) })
             NavBar(leading = { AppNavBarTitle(title = "Buy", onBack = {}, backContentDescription = "Back") }, trailing = { AppNavBarRegionButton(code = "UA", onClick = {}) })
         }

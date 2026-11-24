@@ -6,14 +6,12 @@ import androidx.compose.ui.semantics.semantics
 import androidx.compose.ui.semantics.heading
 import androidx.compose.runtime.Immutable
 import androidx.compose.foundation.layout.offset
-import androidx.compose.animation.core.animateFloatAsState
-import androidx.compose.animation.core.tween
 import androidx.compose.foundation.BorderStroke
-import androidx.compose.foundation.interaction.MutableInteractionSource
-import androidx.compose.foundation.interaction.collectIsPressedAsState
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable
+import androidx.compose.foundation.indication
+import androidx.compose.foundation.interaction.MutableInteractionSource
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -29,12 +27,9 @@ import androidx.compose.foundation.layout.widthIn
 import androidx.compose.foundation.layout.windowInsetsPadding
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.State
-import androidx.compose.runtime.getValue
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.draw.alpha
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.draw.scale
 import androidx.compose.ui.graphics.Color
@@ -125,7 +120,6 @@ fun AppNavBarTitle(
     ) {
         if (onBack != null) {
             val interactionSource = remember { MutableInteractionSource() }
-            val pressedAlpha by animatePressedAlpha(interactionSource)
             Box(
                 modifier = Modifier
                     .layout { measurable, constraints ->
@@ -139,18 +133,25 @@ fun AppNavBarTitle(
                         indication = null,
                         role = Role.Button,
                         onClick = onBack
-                    )
-                    .alpha(pressedAlpha),
+                    ),
                 contentAlignment = Alignment.Center
             ) {
-                AppIcon(
-                    PhosphorIcons.Light.ArrowLeft,
-                    contentDescription = backContentDescription,
-                    tint = colors.contentColor,
+                Box(
                     modifier = Modifier
-                        .size(AppNavBarDefaults.BackIconSize)
-                        .scale(scaleX = if (LocalLayoutDirection.current == LayoutDirection.Rtl) -1f else 1f, scaleY = 1f)
-                )
+                        .size(AppNavBarDefaults.IconButtonSize)
+                        .clip(CircleShape)
+                        .indication(interactionSource, appRipple()),
+                    contentAlignment = Alignment.Center
+                ) {
+                    AppIcon(
+                        PhosphorIcons.Light.ArrowLeft,
+                        contentDescription = backContentDescription,
+                        tint = colors.contentColor,
+                        modifier = Modifier
+                            .size(AppNavBarDefaults.BackIconSize)
+                            .scale(scaleX = if (LocalLayoutDirection.current == LayoutDirection.Rtl) -1f else 1f, scaleY = 1f)
+                    )
+                }
             }
         }
         if (icon != null || title != null || subtitle != null) {
@@ -202,8 +203,6 @@ fun AppNavBarTextAction(
     colors: AppNavBarColors = AppNavBarDefaults.colors()
 ) {
     val interactionSource = remember { MutableInteractionSource() }
-    val pressedAlpha by animatePressedAlpha(interactionSource)
-
     Box(
         modifier = modifier
             .height(AppNavBarDefaults.ItemHeight)
@@ -213,18 +212,25 @@ fun AppNavBarTextAction(
                 indication = null,
                 role = Role.Button,
                 onClick = onClick
-            )
-            .alpha(pressedAlpha)
-            .padding(horizontal = AppNavBarDefaults.TrailingItemInset),
+            ),
         contentAlignment = Alignment.Center
     ) {
-        AppText(
-            text = text,
-            style = AppTheme.typography.label.mMedium,
-            color = if (enabled) colors.actionColor else colors.disabledContentColor,
-            maxLines = 1,
-            overflow = TextOverflow.Ellipsis
-        )
+        Box(
+            modifier = Modifier
+                .height(AppNavBarDefaults.ActionContainerHeight)
+                .clip(CircleShape)
+                .indication(interactionSource, appRipple())
+                .padding(horizontal = AppNavBarDefaults.TrailingItemInset),
+            contentAlignment = Alignment.Center
+        ) {
+            AppText(
+                text = text,
+                style = AppTheme.typography.label.mMedium,
+                color = if (enabled) colors.actionColor else colors.disabledContentColor,
+                maxLines = 1,
+                overflow = TextOverflow.Ellipsis
+            )
+        }
     }
 }
 
@@ -244,10 +250,18 @@ fun AppNavBarIconButton(
     active: Boolean = false,
     colors: AppNavBarColors = AppNavBarDefaults.colors()
 ) {
+    val interactionSource = remember { MutableInteractionSource() }
     Box(
         modifier = modifier
             .then(if (variant == AppNavBarIconButtonVariant.Bordered) Modifier.padding(end = AppNavBarDefaults.BorderedButtonEndInset) else Modifier)
-            .size(AppNavBarDefaults.ItemHeight),
+            .size(AppNavBarDefaults.ItemHeight)
+            .clickable(
+                enabled = enabled,
+                interactionSource = interactionSource,
+                indication = null,
+                role = Role.Button,
+                onClick = onClick
+            ),
         contentAlignment = Alignment.Center
     ) {
         Box(
@@ -262,13 +276,7 @@ fun AppNavBarIconButton(
                             .border(BorderStroke(AppNavBarDefaults.BorderWidth, colors.buttonBorderColor), CircleShape)
                     }
                 )
-                .clickable(
-                    enabled = enabled,
-                    interactionSource = null,
-                    indication = appRipple(),
-                    role = Role.Button,
-                    onClick = onClick
-                ),
+                .indication(interactionSource, appRipple()),
             contentAlignment = Alignment.Center
         ) {
             AppNavBarIcon(
@@ -320,20 +328,23 @@ fun AppNavBarRegionButton(
     modifier: Modifier = Modifier,
     colors: AppNavBarColors = AppNavBarDefaults.colors()
 ) {
+    val interactionSource = remember { MutableInteractionSource() }
     Box(
-        modifier = modifier.size(AppNavBarDefaults.ItemHeight),
+        modifier = modifier
+            .size(AppNavBarDefaults.ItemHeight)
+            .clickable(
+                interactionSource = interactionSource,
+                indication = null,
+                role = Role.Button,
+                onClick = onClick
+            ),
         contentAlignment = Alignment.Center
     ) {
         Box(
             modifier = Modifier
                 .size(AppNavBarDefaults.IconButtonSize)
                 .clip(CircleShape)
-                .clickable(
-                    interactionSource = null,
-                    indication = appRipple(),
-                    role = Role.Button,
-                    onClick = onClick
-                ),
+                .indication(interactionSource, appRipple()),
             contentAlignment = Alignment.Center
         ) {
             Box(
@@ -361,9 +372,7 @@ fun AppNavBarWalletChip(
     colors: AppNavBarColors = AppNavBarDefaults.colors()
 ) {
     val interactionSource = remember { MutableInteractionSource() }
-    val pressedAlpha by animatePressedAlpha(interactionSource)
-
-    Row(
+    Box(
         modifier = modifier
             .height(AppNavBarDefaults.ItemHeight)
             .clickable(
@@ -371,34 +380,41 @@ fun AppNavBarWalletChip(
                 indication = null,
                 role = Role.Button,
                 onClick = onClick
-            )
-            .alpha(pressedAlpha)
-            .padding(start = AppNavBarDefaults.LeadingSpacing, end = AppNavBarDefaults.TrailingItemInset),
-        horizontalArrangement = Arrangement.spacedBy(AppNavBarDefaults.LeadingSpacing),
-        verticalAlignment = Alignment.CenterVertically
+            ),
+        contentAlignment = Alignment.Center
     ) {
-        AppText(
-            text = name,
-            style = AppTheme.typography.label.lMedium,
-            color = colors.actionColor,
-            maxLines = 1,
-            overflow = TextOverflow.Ellipsis,
+        Row(
             modifier = Modifier
-                .weight(1f, fill = false)
-                .widthIn(max = AppNavBarDefaults.WalletChipNameMaxWidth)
-        )
-        Box(
-            modifier = Modifier
-                .size(AppNavBarDefaults.WalletChipIconContainerSize)
-                .background(colors.chipContainerColor, CircleShape),
-            contentAlignment = Alignment.Center
+                .height(AppNavBarDefaults.ActionContainerHeight)
+                .clip(CircleShape)
+                .indication(interactionSource, appRipple())
+                .padding(start = AppNavBarDefaults.WalletChipSpacing, end = AppNavBarDefaults.TrailingItemInset),
+            horizontalArrangement = Arrangement.spacedBy(AppNavBarDefaults.WalletChipSpacing),
+            verticalAlignment = Alignment.CenterVertically
         ) {
-            AppIcon(
-                PhosphorIcons.Light.Wallet,
-                contentDescription = null,
-                tint = colors.chipContentColor,
-                modifier = Modifier.size(AppNavBarDefaults.WalletChipIconSize)
+            AppText(
+                text = name,
+                style = AppTheme.typography.label.lMedium,
+                color = colors.actionColor,
+                maxLines = 1,
+                overflow = TextOverflow.Ellipsis,
+                modifier = Modifier
+                    .weight(1f, fill = false)
+                    .widthIn(max = AppNavBarDefaults.WalletChipNameMaxWidth)
             )
+            Box(
+                modifier = Modifier
+                    .size(AppNavBarDefaults.WalletChipIconContainerSize)
+                    .background(colors.chipContainerColor, CircleShape),
+                contentAlignment = Alignment.Center
+            ) {
+                AppIcon(
+                    PhosphorIcons.Light.Wallet,
+                    contentDescription = null,
+                    tint = colors.chipContentColor,
+                    modifier = Modifier.size(AppNavBarDefaults.WalletChipIconSize)
+                )
+            }
         }
     }
 }
@@ -421,12 +437,13 @@ object AppNavBarDefaults {
     val Height = 56.dp
     val ItemHeight = 48.dp
     val IconButtonSize = 40.dp
+    val ActionContainerHeight = 40.dp
     val IconSize = 24.dp
     val BackIconSize = 20.dp
     val StartPadding = 20.dp
     val EndPadding = 8.dp
     val SlotGap = 8.dp
-    val LeadingSpacing = 8.dp
+    val LeadingSpacing = 16.dp
     val TrailingSpacing = 4.dp
     val TitleIconSpacing = 12.dp
     val TrailingItemInset = 12.dp
@@ -439,6 +456,7 @@ object AppNavBarDefaults {
     val WalletChipNameMaxWidth = 180.dp
     val WalletChipIconContainerSize = 28.dp
     val WalletChipIconSize = 16.dp
+    val WalletChipSpacing = 8.dp
 
     @Composable
     fun colors(): AppNavBarColors {
@@ -459,14 +477,6 @@ object AppNavBarDefaults {
         chipContentColor = colors.action.onPrimary
     )
 }
-
-@Composable
-private fun animatePressedAlpha(interactionSource: MutableInteractionSource): State<Float> {
-    val pressed by interactionSource.collectIsPressedAsState()
-    return animateFloatAsState(if (pressed) PressedAlpha else 1f, tween(100))
-}
-
-private const val PressedAlpha = 0.5f
 
 @Preview
 @Composable
