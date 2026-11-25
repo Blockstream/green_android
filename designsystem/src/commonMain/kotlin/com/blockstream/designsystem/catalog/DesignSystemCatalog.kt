@@ -25,6 +25,7 @@ object DesignSystemCatalog {
         CatalogEntry(id = "switch", title = "Switch", group = CatalogGroup.Components) { SwitchCatalog() },
         CatalogEntry(id = "checkbox", title = "Checkbox", group = CatalogGroup.Components) { CheckboxCatalog() },
         CatalogEntry(id = "radio", title = "Radio", group = CatalogGroup.Components) { RadioCatalog() },
+        CatalogEntry(id = "segmented", title = "Segmented control", group = CatalogGroup.Components) { SegmentedControlCatalog() },
         CatalogEntry(id = "bottomsheet", title = "Bottom sheet", group = CatalogGroup.Components) { BottomSheetCatalog() },
         CatalogEntry(id = "navbar", title = "Nav bar", group = CatalogGroup.Components) { NavBarCatalog() }
     )

@@ -61,7 +61,7 @@ DesignVersion(
 
 ## Rules for redesigned code
 
-- Style with `AppTheme.colors`, `AppTheme.typography` and the `App…` components. Don't use `MaterialTheme`, `androidx.compose.material3` widgets, `Green…` components or anything from `com.blockstream.compose.theme`.
+- Style with `AppTheme.colors`, `AppTheme.typography` and the `App…` components. Don't use `MaterialTheme` tokens, `Green…` components or anything from `com.blockstream.compose.theme`. An `App…` component may wrap a `material3` component when it matches the design and uses the design system tokens (`AppMenu` wraps `DropdownMenu`).
 - Infrastructure from `compose` is fine: `SetupScreen`, `HandleSideEffect`, `appTestTag`, `Rive`, `GreenPreview`, navigation and resources.
 - Go through `SetupScreen` (or call `AppBarState` and `HandleSideEffect` yourself). Without it the ViewModel's side effects and `NavData` are silently dropped.
 - `NavData` and `NavAction` say what the top bar shows, not how it looks. Don't put icons, colors or click lambdas in a ViewModel: add a semantic `NavAction` type or `NavData` field, give it an `Event` for the click, and draw it in both `ActionMenu` (legacy) and `TopAppBarV2`.
